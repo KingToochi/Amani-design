@@ -2,6 +2,9 @@ import { useForm } from "react-hook-form";
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
+    const onSubmit = (data) => {
+    console.log(data);
+    }
    
 
     return ( 
