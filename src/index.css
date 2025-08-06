@@ -1,19 +1,5 @@
-@import "tailwindcss"
-/* @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto:wght@400;700&display=swap');
+@import "tailwindcss";
 
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-.font-abril {
-  font-family: 'Abril Fatface', serif;
-}
-
-.font-roboto {
-  font-family: 'Roboto', sans-serif;
-}
- */
-
-
-
+    /* @tailwind base;
+    @tailwind components;
+   @tailwind utilities; */

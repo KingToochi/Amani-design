@@ -102,7 +102,7 @@ const LandingPage = () => {
                     className="w-[50px]  h-[50px] rounded-[50%]"
                     src={logo} alt="SITE LOGO" />
                     <h1
-                    className="text-center text-2xl font-bold text-gray-100"
+                    className="text-center text-2xl font-bold text-gray-100 font-abril"
                     >Welcome to <br /> AmaniSky Design</h1>
                 </div>
 
