@@ -3,17 +3,18 @@
 
 import logo from "../images/mainLogo.jpg"
 
-const Logo = () => {
+const Logo = ({className, ImageClassName, textClassName}) => {
     return (  
         <div 
-        className="flex gap-2 items-center"
+        className={className}
         >
             <img
-            className="w-[50px] h-[50px] rounded-[50%]" 
+            className={ImageClassName}
             src={logo} 
             alt="Amani Design Logo" 
             />
-            <h1 className="text-xl font-[roboto] font-bold text-center"
+            <h1 className={textClassName}
+        
             >
                 AmaniSky <br/>Design
             </h1>

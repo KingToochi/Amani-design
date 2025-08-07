@@ -21,7 +21,7 @@ const LandingImages = [trending, trending1, trending2, trending3, ,trending4, tr
 
 const LandingPage = () => {
     // this component maps through array of images and return grids of images that are mobile responsive, it also has interactive buttons where
-    // users can decide whether to sign or login and when the buttons are clicked it returns a sign up or login container as a modal 
+    // users can decide whether to sign up or login and when the buttons are clicked it returns a sign up or login container as a modal 
 
     const [showModal, SetShowModal] = useState(false)
     const handleClick = () => SetShowModal(true);

@@ -1,5 +1,5 @@
 import Logo from "./Logo";
-import DropDownBar, { WishList, ShoppingCart } from "./Icons";
+import MenuBar, { WishList, ShoppingCart, UserLogo } from "./Icons";
 const Header = () => {
     return ( 
         <div
@@ -7,10 +7,23 @@ const Header = () => {
         
         "
         >
-            <DropDownBar />
+            <MenuBar/>
+            <WishList 
+            className="group relative"
+            />
             <Logo />
-            <ShoppingCart />
-            <WishList />
+            <WishList 
+            className="group relative hidden
+            lg:flex
+            "
+            />
+
+            <ShoppingCart 
+            className="group relative"
+            />
+            <UserLogo
+            className="group relative"
+            />
         </div>
     )
 }
