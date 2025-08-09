@@ -11,7 +11,6 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
     const onSubmit = (data) => {
         setMeansOfIdentification(data.meansOfIdentification);
         console.log(data);
-        console.log("Submitted Means of ID:", data.meansOfIdentification);
         onClick();
     }
     return (
@@ -119,6 +118,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
     const {register, handleSubmit, formState : { errors }} = useForm()
     const onSubmit = (data) => {
         console.log(data);
+        onClickNext()
     }
 
     return (
@@ -132,8 +132,8 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 <label className="text-gray-900 font-semibold text-base font-[abril]">
                     Upload Proof of Address
                 </label>
-                <input type="file" accept="image/*" capture="rear"  
-                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                <input type="file" accept="image/*" capture="environment"  
+                className="cursor-pointer w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("proofOfAddress", {required: "proof of address required!"})}
                 />
                 {errors.proofOfAddress && <p className="text-red-300 text-sm font-[abril] ">{errors.proofOfAddress.message}</p>}
@@ -180,35 +180,37 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 </div>
             )}
 
-            <div>
+            <div
+            className="w-full flex justify-between items-center gap-4"
+            >
                 <button
-                className="w-auto px-3 py-1 flex-col items center gap-2 border-2 border-gray-900 rounded-lg"
+                className="w-auto px-3 py-1 flex-col items-center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
                 type="button"
                 onClick={onClickPrev}
                 >
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-start" />
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-left" />
                     Prev
                 </button>
 
                 <button
-                className="w-auto px-3 py-1 flex-col items center gap-2 border-2 border-gray-900 rounded-lg"
-                type="button"
-                onClick={onClickNext}
+                className="w-auto px-3 py-1 flex-col items center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
+                type="submit"
                 >
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
                     Next
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
                 </button>
             </div>
         </form>
     )
 }
 
-export const CreateUser = () => {
-    const {register, handleSubmit, watch, formState : { errors }} = useForm();
+export const CreateUser = ({onClickBack}) => {
+    const {register, handleSubmit, watch, formState : { errors, isSubmitting }} = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");
     const password = watch("createPassword");
     const togglePassword = () => setShowPassword((prev) => !prev);
+
     // Helper: Evaluate password strength
     const checkPasswordStrength = (value) => {
         let strength = 0;
@@ -230,17 +232,38 @@ export const CreateUser = () => {
         setPasswordStrength(strength);
     };
 
+    const onSubmit = (data) => {
+        console.log(data)
+    } 
+
 
     return (
-        <form>
-            <div>
+        <form 
+        className="w-full flex flex-col items-center gap-6"
+        onSubmit={handleSubmit(onSubmit)}>
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <label  className="text-gray-900 font-semibold text-base font-[abril]">Add Profile Picture</label>
+                <input type="file" capture="user" accept="image/*"
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"
+                {...register("dp")}
+                />
+            </div>
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
                 <input type="text" placeholder="Create Username" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("createUsername", {required: "This field is required"})} />
-                {errors.createUsername && <p>{errors.createUsername.message}</p>}
+                {errors.createUsername && <p className="text-red-300 text-sm font-[abril] ">{errors.createUsername.message}</p>}
             </div>
 
-            <div>
+            <div
+             className="w-full flex flex-col items-start gap-2 "
+            >
                 <input 
+                className="w-full relative border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 type={showPassword ? "text" : "password"}
                 placeholder="Create Password" 
                 {...register("createPassword", {
@@ -260,16 +283,10 @@ export const CreateUser = () => {
                                     /[^A-Za-z0-9]/.test(value) || "At least one special character required",
                             },
                             onChange: handlePasswordChange,})} />
-                            <button
-                            type="button"
-                            onClick={togglePassword}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm"
-                            >
-                             {showPassword ? "Hide" : "Show"}
-                            </button>
-                        {errors.createPassword && <p>{errors.createPassword.message}</p>}
+                        {errors.createPassword && <p className="text-red-300 text-sm font-[abril] ">{errors.createPassword.message}</p>}
             </div>
-            <div className="text-sm mt-1">
+            {password && (
+                <div className="text-sm">
                     <span>Password Strength: </span>
                     <span
                         className={
@@ -282,20 +299,51 @@ export const CreateUser = () => {
                     >
                         {passwordStrength}
                     </span>
-                </div>
+                </div>)}
 
-            <div>
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
                 <input type="password" placeholder="Confirm Password" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"             
                 {...register("confirmPassword", {required: "This field is required",
                     validate: (value) => value === password || "Passwords do not match",
                 })} />
-                {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+                {errors.confirmPassword && <p className="text-red-300 text-sm font-[abril] ">{errors.confirmPassword.message}</p>}
             </div>
-            <div>
-                <input type="checkbox" 
-                {...register("termsAndConditions", {required: "You must accept the terms and conditions"})} />
-                <label>I accept the terms and conditions</label>
-                {errors.termsAndConditions && <p>{errors.termsAndConditions.message}</p>}
+            <div
+              className="w-full flex flex-col items-start gap-2"
+            >
+                <div
+                className="w-full flex justify-start items-center gap-2"
+                >
+                    <input type="checkbox" 
+                    className="cursor-pointer"
+                    {...register("termsAndConditions", {required: "You must accept the terms and conditions"})} />
+                    <label
+                     className="text-gray-900 font-semibold text-base font-[abril]"
+                    >I accept the terms and conditions</label>
+                </div>
+                {errors.termsAndConditions && <p className="text-red-300 text-sm font-[abril] ">{errors.termsAndConditions.message}</p>}
+            </div>
+
+            <div
+            className="flex justify-between items-center gap-4 w-full"
+            >
+                <button 
+                onClick={onClickBack}
+                className="w-auto px-3 py-1 flex-col items-center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
+                 type="button">
+                    <FontAwesomeIcon icon="fa fa-arrow-left" />
+                    prev
+                </button>
+
+                <button
+                className="w-auto px-3 py-1 flex-col items-center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
+                disabled = {isSubmitting}
+                type="submit">
+                    {isSubmitting ? "submitting" : "submit"}
+                </button>
             </div>
         </form>
     )

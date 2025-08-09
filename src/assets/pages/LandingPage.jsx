@@ -15,6 +15,8 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import Login from "./Login";
 import  Registration from "./DesignersRegistration";
+import RegisterWithEmail from "./EmailSignUp";
+import SignInWithGoogle from "./GoogleSignUp"
 
 const LandingImages = [
   trending,
@@ -37,8 +39,100 @@ const LandingPage = () => {
 
   const [showLoginModal, SetShowLoginModal] = useState(false);
   const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
+  const [showEmailSignUpModal, setShowEmailSignUpModal] = useState(false);
+  const [showGoogleSignUpModal, setShowGoogleSignUpModal] = useState(false);
   const handleLogin = () => SetShowLoginModal(true);
   const handlRegistration = () => SetShowRegistrationModal(true);
+  const handleEmailSignUp = () => setShowEmailSignUpModal(true);
+  const handleGoogleSignUp = () => setShowGoogleSignUpModal(true);
+
+  const displayEmailSignUpModal = () => {
+    return (
+      showEmailSignUpModal && (
+        <div className="w-full  fixed inset-0 px-2 py-4 flex flex-col items-center justify-center backdrop-blur">
+          <div
+            className="w-[90%] bg-white px-2 py-4 relative flex flex-col items-center justify-start gap-10 min-h-screen  
+                sd:w-[80%]
+                lg:w-[60%]
+                "
+          >
+            <div className="flex flex-col items-center ">
+              <img
+                className="w-[50px]  h-[50px] rounded-[50%]"
+                src={logo}
+                alt=""
+              />
+              <h1 className="text-center text-2xl font-bold text-gray-900">
+                AmaniSky Design
+              </h1>
+            </div>
+            <div className="absolute right-4 top-1">
+              <button
+                type="button"
+                onClick={() => setShowEmailSignUpModal(false)}
+                className="text-2xl font-bold"
+              >
+                x
+              </button>
+            </div>
+            <div
+              className="w-[90%]
+                    sd:w-[80%]
+                    md:w-[80%]
+                    lg:w-[60%]
+                    "
+            >
+              <RegisterWithEmail />
+            </div>
+          </div>
+        </div>
+      )
+    );
+  }
+
+const displayGoogleSignUpModal = () => {
+    return (
+      showGoogleSignUpModal && (
+        <div className="w-full  fixed inset-0 px-2 py-4 flex flex-col items-center justify-center backdrop-blur">
+          <div
+            className="w-[90%] bg-white px-2 py-4 relative flex flex-col items-center justify-start gap-10 min-h-screen  
+                sd:w-[80%]
+                lg:w-[60%]
+                "
+          >
+            <div className="flex flex-col items-center ">
+              <img
+                className="w-[50px]  h-[50px] rounded-[50%]"
+                src={logo}
+                alt=""
+              />
+              <h1 className="text-center text-2xl font-bold text-gray-900">
+                AmaniSky Design
+              </h1>
+            </div>
+            <div className="absolute right-4 top-1">
+              <button
+                type="button"
+                onClick={() => setShowGoogleSignUpModal(false)}
+                className="text-2xl font-bold"
+              >
+                x
+              </button>
+            </div>
+            <div
+              className="w-[90%]
+                    sd:w-[80%]
+                    md:w-[80%]
+                    lg:w-[60%]
+                    "
+            >
+              <SignInWithGoogle />
+            </div>
+          </div>
+        </div>
+      )
+    );
+}
 
   const displayShowLoginModal = () => {
     return (
@@ -165,24 +259,22 @@ const LandingPage = () => {
 
         <div className="flex flex-col w-full items-center gap-2">
           <button
+          // onClick={handleEmailSignUp}
             className="w-[auto] bg-cyan-600  border-1 border-blue-400 rounded-lg px-2 py-2"
             type="button"
           >
-            <Link to="">
-              <span className="text-center text-base font-semibold text-gray-100">
-                Continue with email
-              </span>
-            </Link>
+            <h2>
+              Sign up with Email
+            </h2>
           </button>
           <button
+            // onClick={handleGoogleSignUp}
             className="w-auto bg-white  border-1 border-white rounded-lg px-2 py-2 "
             type="button"
           >
-            <Link to="">
-              <span className="text-center text-base font-semibold text-gray-900">
-                Continue with Google
-              </span>
-            </Link>
+            <h2>
+              Continue with Google
+            </h2>
           </button>
         </div>
 
@@ -211,6 +303,8 @@ const LandingPage = () => {
       </div>
       {displayShowLoginModal()}
       {displayShowRegistrationModal()}
+      {displayEmailSignUpModal()}
+      {displayGoogleSignUpModal()}
     </div>
   );
 };

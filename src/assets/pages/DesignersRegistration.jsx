@@ -4,16 +4,22 @@ import logo from "../images/mainLogo.jpg";
 const Registration = () => {
     const [meansOfIdentification, setMeansOfIdentification] = useState("");
     const [showDetailsVerification, setShowDetailsVerification] = useState(false);
-    const [CreateUser, setCreateUser] = useState(false);
+    const [showCreateUser, setShowCreateUser] = useState(false);
     const onClick = () => {
         setShowDetailsVerification(true);
     }
 
     const onClickNext = ( ) => {
-        setCreateUser(true);
+        setShowCreateUser(true);
+        setShowDetailsVerification(false)
     }
     const onClickPrev = () => {
         setShowDetailsVerification(false);
+    }
+
+    const onClickBack = () => {
+        setShowCreateUser(false);
+        setShowDetailsVerification(true);
     }
 
 
@@ -65,9 +71,9 @@ const Registration = () => {
 
     const displayCreateUser = ( ) => {
         return (
-            CreateUser && (
+            showCreateUser && (
                 <div 
-                className="w-full  fixed inset-0 px-2 py-4 flex flex-col items-center justify-center backdrop-blur"
+                className="w-full  fixed right-0 left-0 top-0 h-auto px-2 py-4 flex flex-col items-center justify-center backdrop-blur"
                 >
                     <div
                     className="w-[90%] bg-white px-2 py-4 relative flex flex-col items-center justify-start gap-10 min-h-screen  
@@ -87,7 +93,7 @@ const Registration = () => {
                         <div className="absolute right-4 top-1">
                             <button
                             type="button"
-                            onClick={() => setShowDetailsVerification(false)}
+                            onClick={() => setShowCreateUser(false)}
                             className="text-2xl font-bold"
                         >
                             x
@@ -101,7 +107,7 @@ const Registration = () => {
                         lg:w-[60%]
                         "
                         > 
-                            <CreateUser />
+                            <CreateUser onClickBack={onClickBack} />
                         </div>
                     </div>
                 </div>
