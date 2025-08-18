@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import logo from "../images/mainLogo.jpg";
 
 // this component contains all the required form components for the registration page
 
@@ -10,8 +9,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
     
     const onSubmit = (data) => {
         setMeansOfIdentification(data.meansOfIdentification);
-        console.log(data);
-        onClick();
+        onClick(data);
     }
     return (
         <form
@@ -89,9 +87,8 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
             >
                 <select 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                // onChange={onChange}
                 {...register("meansOfIdentification", {required: "Means of Identification is required"})}>
-                    <option value="">Select Means of Identification</option>
+                    <option value="" hidden>Select Means of Identification</option>
                     <option value="nin">National Identification Number</option>
                     <option value="vin">Voter's Card</option>
                     <option value="passport">International Passport</option>
@@ -117,8 +114,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
 export const DetailsVerification = ({meansOfIdentification, onClickNext, onClickPrev}) => {
     const {register, handleSubmit, formState : { errors }} = useForm()
     const onSubmit = (data) => {
-        console.log(data);
-        onClickNext()
+        onClickNext(data)
     }
 
     return (
@@ -126,7 +122,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
         className="w-full flex flex-col items-center gap-6"
         onSubmit={handleSubmit(onSubmit)}
         >
-            <div
+            {/* <div
             className="w-full flex flex-col items-start gap-2 "
             >
                 <label className="text-gray-900 font-semibold text-base font-[abril]">
@@ -137,7 +133,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 {...register("proofOfAddress", {required: "proof of address required!"})}
                 />
                 {errors.proofOfAddress && <p className="text-red-300 text-sm font-[abril] ">{errors.proofOfAddress.message}</p>}
-            </div>
+            </div> */}
 
             {meansOfIdentification === "nin" && (
                 <div
@@ -204,22 +200,21 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
     )
 }
 
-export const CreateUser = ({onClickBack}) => {
+export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
     const {register, handleSubmit, watch, formState : { errors, isSubmitting }} = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");
     const password = watch("createPassword");
-    const togglePassword = () => setShowPassword((prev) => !prev);
+    // const togglePassword = () => setShowPassword((prev) => !prev);
 
     // Helper: Evaluate password strength
     const checkPasswordStrength = (value) => {
         let strength = 0;
-        if (value.length >= 8) strength++;
-        if (/[A-Z]/.test(value)) strength++;
-        if (/[0-9]/.test(value)) strength++;
-        if (/[a-z]/.test(value)) strength++;
-        if (/\d/.test(value)) strength++;
-        if (/[^A-Za-z0-9]/.test(value)) strength++;
+        if (value.length >= 8) strength++; /* check if password is upto 8*/
+        if (/[A-Z]/.test(value)) strength++;  /* if it contains uppercase*/
+        if (/[a-z]/.test(value)) strength++;  /* if it contains lowercase*/
+        if (/\d/.test(value)) strength++;  /* if it contains digit*/
+        if (/[^A-Za-z0-9]/.test(value)) strength++;  /* if it contains special character*/
 
         if (strength <= 2) return "Weak";
         if (strength === 3 || strength === 4) return "Moderate";
@@ -234,6 +229,7 @@ export const CreateUser = ({onClickBack}) => {
 
     const onSubmit = (data) => {
         console.log(data)
+        handleFinalSubmit(data); // Pass final data to Firebase
     } 
 
 
@@ -241,7 +237,7 @@ export const CreateUser = ({onClickBack}) => {
         <form 
         className="w-full flex flex-col items-center gap-6"
         onSubmit={handleSubmit(onSubmit)}>
-            <div
+            {/* <div
             className="w-full flex flex-col items-start gap-2 "
             >
                 <label  className="text-gray-900 font-semibold text-base font-[abril]">Add Profile Picture</label>
@@ -249,7 +245,7 @@ export const CreateUser = ({onClickBack}) => {
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"
                 {...register("dp")}
                 />
-            </div>
+            </div> */}
             <div
             className="w-full flex flex-col items-start gap-2 "
             >
