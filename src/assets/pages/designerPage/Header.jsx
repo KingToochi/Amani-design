@@ -101,7 +101,7 @@ const Header = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link
+                                    <Link to="products"
                                     className="flex gap-6 items-center text-2xl font-semibold font-[abril]
                                     sm:text-3xl"
                                     >

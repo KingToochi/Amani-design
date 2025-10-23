@@ -44,7 +44,7 @@ const SideBar = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link
+                    <Link to="products"
                     className="flex w-full items-center gap-2 text-2xl font-[abril] font-normal"
                     >
                         <AiFillProduct />
