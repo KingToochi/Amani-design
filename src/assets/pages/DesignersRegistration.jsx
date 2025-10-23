@@ -2,9 +2,7 @@ import { BasicInformation, DetailsVerification, CreateUser } from "../components
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import logo from "../images/mainLogo.jpg";
-import {db, auth} from "../../../firebase";
-import {collection, doc, setDoc} from "firebase/firestore"
-// import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const Registration = () => {
     const [meansOfIdentification, setMeansOfIdentification] = useState("");
     const [showDetailsVerification, setShowDetailsVerification] = useState(false);

@@ -10,13 +10,12 @@ import trending7 from "../images/image4.jpg";
 import trending8 from "../images/image5.jpg";
 import trending9 from "../images/image6.jpg";
 import trending0 from "../images/women.png";
-import logo from "../images/mainLogo.jpg";
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import Login from "./Login";
 import  Registration from "./DesignersRegistration";
 import RegisterWithEmail from "./EmailSignUp";
 import SignInWithGoogle from "./GoogleSignUp"
+import Logo from "../images/mainLogo.jpg";
 
 const LandingImages = [
   trending,
@@ -147,7 +146,7 @@ const displayGoogleSignUpModal = () => {
             <div className="flex flex-col items-center ">
               <img
                 className="w-[50px]  h-[50px] rounded-[50%]"
-                src={logo}
+                src={Logo}
                 alt=""
               />
               <h1 className="text-center text-2xl font-bold text-gray-900">
@@ -192,7 +191,7 @@ const displayGoogleSignUpModal = () => {
                 "
                 >
                     <div className="flex flex-col items-center ">
-                        <img className="w-[50px]  h-[50px] rounded-[50%]" src={logo} alt="" />
+                        <img className="w-[50px]  h-[50px] rounded-[50%]" src={Logo} alt="" />
                         <h1 className="text-center text-2xl font-bold text-gray-900">
                         AmaniSky Design
                         </h1>
@@ -249,7 +248,7 @@ const displayGoogleSignUpModal = () => {
         <div className="flex flex-col items-center">
           <img
             className="w-[50px]  h-[50px] rounded-[50%]"
-            src={logo}
+            src={Logo}
             alt="SITE LOGO"
           />
           <h1 className="text-center text-2xl font-bold text-gray-100 font-abril">

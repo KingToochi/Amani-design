@@ -1,5 +1,3 @@
-import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../../firebase";
 
 const signInWithGoogle = async () => {
   try {

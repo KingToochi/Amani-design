@@ -1,5 +1,3 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../firebase";
 
 const registerWithEmail = async (email, password) => {
   try {

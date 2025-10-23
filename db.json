@@ -1,6 +1,13 @@
 {
   "users": [
-    { "id": 1, "name": "Alice" },
-    { "id": 2, "name": "Bob" }
+    {
+      "id": 1, 
+      "name": "Toochukwu Umoke",
+      "userName": "Toochi",
+      "profilePicture": "/src/assets/images/4.jpg",
+      "location": "Ebonyi State",
+      "isActive": "true",
+      "status": "seller"
+      }
   ]
 }

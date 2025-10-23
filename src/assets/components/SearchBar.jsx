@@ -1,19 +1,19 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FiSearch } from "react-icons/fi";
 
 const SearchBar = ({className}) => {
     // this components create a search bar and a search icon with a prop called className 
     // which can be used to style it whenever its been imported
     return (  
-        <div>
+        <form>
             <input 
             className="classname"
             type="text" placeholder="Search" name="searchBar" value="" />
             <button 
             className={className}
             type="button">
-                <FontAwesomeIcon icon="fa fa-search" />
+                <FiSearch />
             </button>
-        </div>
+        </form>
     );
 }
  
