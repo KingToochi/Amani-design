@@ -14,8 +14,10 @@ function App() {
     <div className="">
       {/* <LandingPage /> */}
       <Routes>
-        <Route path="/" element={<DesignerLayout/>} />
-        <Route path="products" element={<Products/>} />
+        <Route path="/" element={<DesignerLayout/>}>
+          <Route path="products" element={<Products/>} />
+        </Route>
+        
       </Routes>
     </div>
   );

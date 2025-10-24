@@ -10,12 +10,12 @@ import logo from "../../images/mainLogo.jpg"
 import { FiSearch } from "react-icons/fi";
 
 
-const SideBar = () => {
+const SideBar = ({className}) => {
 
 
     return(
         <div
-        className="flex flex-col w-[20%] bg-gray-50 gap-6 min-h-screen px-2 py-4 border-r-1 border-gray-700"
+        className={`flex flex-col w-[20%] bg-gray-50 gap-6 min-h-screen px-2 py-4 border-r-1 border-gray-700 ${className}`}
         >
             <div
             className="w-full flex items-center justify-center"

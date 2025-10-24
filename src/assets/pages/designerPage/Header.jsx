@@ -194,9 +194,9 @@ const Header = () => {
             <div
             className="w-full flex"
             >
-                <SideBar />
+                {/* <SideBar /> */}
                 <div
-                className="w-[80%] h-[100px] flex flex-col"
+                className="w-full h-[100px] flex flex-col"
                 >
                     <div
                     className="w-[100%] h-[60px] flex items-center"
