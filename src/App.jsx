@@ -4,7 +4,6 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import LandingPage from "./assets/pages/LandingPage";
-
 import HomePage from "./assets/pages/designerPage/HomePage";
 import DesignerLayout from "./assets/pages/designerPage/Layout";
 import Products from "./assets/pages/designerPage/Products";
