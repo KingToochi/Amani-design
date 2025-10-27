@@ -32,10 +32,7 @@ const Products = () => {
         const handleEdit = (id) => {
             setEditProductById((prev) =>  (prev === id ? null : id))
         }
-        // const handleChange = (event) =>{
-        //         const value = object.Values(productList)
-        //         event.target(value)
-        //     }
+          
         const handleChange = (e, id) => {
             const { name, value } = e.target;
             setProductList(prev =>
