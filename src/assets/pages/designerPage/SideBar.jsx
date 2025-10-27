@@ -68,7 +68,7 @@ const SideBar = ({className}) => {
                     </Link>
                 </li>
                 <li>
-                    <Link
+                    <Link to="profile"
                     className="flex w-full items-center gap-2 text-2xl font-[abril] font-normal"
                     >
                         <FaRegUserCircle />

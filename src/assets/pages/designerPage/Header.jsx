@@ -83,7 +83,7 @@ const Header = () => {
                             className="w-full flex flex-col gap-6 px-6 px-2"
                             >
                                 <li>
-                                    <Link
+                                    <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-2xl font-semibold font-[abril]
                                     sm:text-3xl"
                                     >
@@ -92,7 +92,7 @@ const Header = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link
+                                    <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-2xl font-semibold font-[abril]
                                     sm:text-3xl"
                                     >
@@ -101,7 +101,7 @@ const Header = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="products"
+                                    <Link to="products" onClick={menubar}
                                     className="flex gap-6 items-center text-2xl font-semibold font-[abril]
                                     sm:text-3xl"
                                     >
@@ -110,7 +110,7 @@ const Header = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link
+                                    <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-2xl font-semibold font-[abril]
                                     sm:text-3xl"
                                     >
@@ -119,7 +119,7 @@ const Header = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link
+                                    <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-2xl font-semibold font-[abril]
                                     sm:text-3xl"
                                     >
@@ -128,7 +128,7 @@ const Header = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link
+                                    <Link to="profile" onClick={menubar}
                                     className="flex gap-6 items-center text-2xl font-semibold font-[abril]
                                     sm:text-3xl"
                                     >

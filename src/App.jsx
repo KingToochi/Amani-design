@@ -7,6 +7,7 @@ import LandingPage from "./assets/pages/LandingPage";
 import HomePage from "./assets/pages/designerPage/HomePage";
 import DesignerLayout from "./assets/pages/designerPage/Layout";
 import Products from "./assets/pages/designerPage/Products";
+import Profile from "./assets/pages/designerPage/Profile";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
+          <Route path="profile" element={<Profile />} />
         </Route>
         
       </Routes>
