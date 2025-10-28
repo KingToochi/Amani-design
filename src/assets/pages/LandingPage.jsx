@@ -14,7 +14,7 @@ import { useState } from "react";
 import Login from "./Login";
 import  Registration from "./DesignersRegistration";
 import RegisterWithEmail from "./EmailSignUp";
-import SignInWithGoogle from "./GoogleSignUp"
+// import SignInWithGoogle from "./GoogleSignUp"
 import Logo from "../images/mainLogo.jpg";
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
@@ -345,7 +345,7 @@ const LandingPage = () => {
       {displayShowLoginModal()}
       {displayShowRegistrationModal()}
       {displayEmailSignUpModal()}
-      {displayGoogleSignUpModal()}
+      {/* {displayGoogleSignUpModal()} */}
     </div>
   );
 };
