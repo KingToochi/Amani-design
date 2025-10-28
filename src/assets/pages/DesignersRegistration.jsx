@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import logo from "../images/mainLogo.jpg";
 
+
 const Registration = () => {
     const [meansOfIdentification, setMeansOfIdentification] = useState("");
     const [showDetailsVerification, setShowDetailsVerification] = useState(false);
@@ -28,53 +29,53 @@ const Registration = () => {
         setShowDetailsVerification(true);
     }
 
-    
-  // Final submit to Firebase
     // Async function that handles the final form submission
 const handleFinalSubmit = async (data) => {
     
     // Merge existing userData state with the latest form data submitted
-    const finalData = { ...userData, ...data };
+    const formData = { ...userData, ...data };
+    const imageData = new FormData()
+    let ProofOfAddressUrl = ""
+    let dpurl = ""
 
-    try {
-        // 1️⃣ Create a new Firebase Auth account using email + password
-        // `createPassword` comes from your form's password input field
-        const userCredential = await createUserWithEmailAndPassword(
-            auth, 
-            finalData.email, 
-            finalData.createPassword
-        );
-
-        // 2️⃣ Extract the actual Firebase user object from the returned credentials
-        const user = userCredential.user;
-
-        // 3️⃣ Update the user's display name in Firebase Authentication
-        await updateProfile(user, {
-            displayName: `${finalData.fullName} ${finalData.lastName}`,
-        });
-
-        // 4️⃣ Remove `createPassword` before saving to Firestore for security reasons
-        //    - This uses object destructuring to separate password from other data
-        const { createPassword, ...safeData } = finalData;
-
-        // 5️⃣ Save the rest of the user's data in Firestore under `users/{uid}`
-        await setDoc(
-            doc(db, "users", user.uid), // path: collection "users" → document with UID
-            {
-                ...safeData,              // spread all safe fields
-                uid: user.uid,            // store the Firebase Auth UID
-                createdAt: new Date().toISOString(), // store creation date/time
-            }
-        );
-
-        // 6️⃣ Notify success and log the saved data
-        alert("User registered successfully!");
-        console.log("Saved Data:", finalData);
-
-    } catch (error) {
-        // 7️⃣ Catch and log any errors during signup or Firestore save
-        console.error("Error saving data:", error);
+    if (formData.dp?.[0]) {
+        imageData.append("dp", formData.dp[0]);
     }
+
+    if (formData.proofOfAddress?.[0]) {
+        imageData.append("proofOfAddress", formData.proofOfAddress[0]);
+    }
+
+    const uploadData = async() => {
+        try {
+            let response = await fetch ("http://localhost:4000/upload", {
+                method: "post",
+                body: imageData
+            })
+            let uploadImage = await response.json()
+            ProofOfAddressUrl = uploadImage.ProofOfAddressUrl
+            dpurl = uploadImage.dpUrl
+        } catch(error) {
+            console.log(error.name)
+        }
+
+        Object.assign = {...formData, ProofOfAddressUrl, dpurl}
+    }
+
+    try{
+        let response = await fetch("http://localhost:3000/users", {
+            method: "post",
+            body: JSON.stringify(formData)
+        })
+
+        let Data = await response.json()
+    } catch(error) {
+        console.log(error.name)
+    }
+
+
+    uploadData()
+
 };
 
 

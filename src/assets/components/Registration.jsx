@@ -122,7 +122,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
         className="w-full flex flex-col items-center gap-6"
         onSubmit={handleSubmit(onSubmit)}
         >
-            {/* <div
+            <div
             className="w-full flex flex-col items-start gap-2 "
             >
                 <label className="text-gray-900 font-semibold text-base font-[abril]">
@@ -133,7 +133,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 {...register("proofOfAddress", {required: "proof of address required!"})}
                 />
                 {errors.proofOfAddress && <p className="text-red-300 text-sm font-[abril] ">{errors.proofOfAddress.message}</p>}
-            </div> */}
+            </div>
 
             {meansOfIdentification === "nin" && (
                 <div
@@ -237,7 +237,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
         <form 
         className="w-full flex flex-col items-center gap-6"
         onSubmit={handleSubmit(onSubmit)}>
-            {/* <div
+            <div
             className="w-full flex flex-col items-start gap-2 "
             >
                 <label  className="text-gray-900 font-semibold text-base font-[abril]">Add Profile Picture</label>
@@ -245,7 +245,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"
                 {...register("dp")}
                 />
-            </div> */}
+            </div>
             <div
             className="w-full flex flex-col items-start gap-2 "
             >

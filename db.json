@@ -9,12 +9,34 @@
       "location": "Ebonyi State",
       "isActive": "true",
       "status": "seller",
-      "Business Address" : "10c Nibo street",
+      "Business Address": "10c Nibo street",
       "email": "umoketoochukwu@gmail.com",
       "phone number": "09031183272",
       "dob": "22/05/1996",
       "means of identification": "nin",
       "nin": "234455635785"
+    },
+    {
+      "id": "d604",
+      "firstName": "Toochukwu",
+      "lastName": "Umoke",
+      "email": "prime@gmail.com",
+      "phoneNumber": "09031183272",
+      "dob": "2025-10-30",
+      "homeaddress": "10cnionn",
+      "officeaddress": "33",
+      "meansOfIdentification": "nin",
+      "proofOfAddress": {
+        "0": {}
+      },
+      "ninNumber": "33245r54545",
+      "dp": {
+        "0": {}
+      },
+      "createUsername": "prime@gmail.com",
+      "createPassword": "Kingtoochi@1996",
+      "confirmPassword": "Kingtoochi@1996",
+      "termsAndConditions": true
     }
   ],
   "products": [
