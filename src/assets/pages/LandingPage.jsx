@@ -228,10 +228,6 @@ const LandingPage = () => {
 
   const handleGoogleSignUp = useGoogleLogin({
       scope: `
-        openid email profile
-        https://www.googleapis.com/auth/user.addresses.read
-        https://www.googleapis.com/auth/user.phonenumbers.read
-        https://www.googleapis.com/auth/user.birthday.read
       `,
       onSuccess: async (tokenResponse) => {
         console.log("Access Token:", tokenResponse.access_token);
@@ -239,7 +235,7 @@ const LandingPage = () => {
         try {
           // Fetch extended user info from Google People API
           const res = await axios.get(
-            "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,birthdays,addresses,phoneNumbers",
+            "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,birthdays",
             {
               headers: {
                 Authorization: `Bearer ${tokenResponse.access_token}`,
