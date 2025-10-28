@@ -2,12 +2,19 @@
   "users": [
     {
       "id": "1",
-      "name": "Toochukwu Umoke",
+      "fname": "Toochukwu",
+      "lname": "Umoke",
       "userName": "Toochi",
       "profilePicture": "/src/assets/images/4.jpg",
       "location": "Ebonyi State",
       "isActive": "true",
-      "status": "seller"
+      "status": "seller",
+      "Business Address" : "10c Nibo street",
+      "email": "umoketoochukwu@gmail.com",
+      "phone number": "09031183272",
+      "dob": "22/05/1996",
+      "means of identification": "nin",
+      "nin": "234455635785"
     }
   ],
   "products": [

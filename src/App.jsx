@@ -12,13 +12,14 @@ import Profile from "./assets/pages/designerPage/Profile";
 function App() {
   return (
     <div className="">
-      {/* <LandingPage /> */}
       <Routes>
-        <Route path="/" element={<DesignerLayout/>}>
-          <Route path="products" element={<Products/>} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
+        <Route path="/" element={<LandingPage />}>
+          <Route path="/" element={<DesignerLayout/>}>
+            <Route path="products" element={<Products/>} />
+            <Route path="profile" element={<Profile />} />
+          </Route>
         
+        </Route>
       </Routes>
     </div>
   );

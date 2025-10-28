@@ -58,7 +58,7 @@ const LandingPage = () => {
             <div className="flex flex-col items-center ">
               <img
                 className="w-[50px]  h-[50px] rounded-[50%]"
-                src={logo}
+                src={Logo}
                 alt=""
               />
               <h1 className="text-center text-2xl font-bold text-gray-900">
@@ -102,7 +102,7 @@ const displayGoogleSignUpModal = () => {
             <div className="flex flex-col items-center ">
               <img
                 className="w-[50px]  h-[50px] rounded-[50%]"
-                src={logo}
+                src={Logo}
                 alt=""
               />
               <h1 className="text-center text-2xl font-bold text-gray-900">
@@ -258,8 +258,8 @@ const displayGoogleSignUpModal = () => {
 
         <div className="flex flex-col w-full items-center gap-2">
           <button
-          // onClick={handleEmailSignUp}
-            className="w-[auto] bg-cyan-600  border-1 border-blue-400 rounded-lg px-2 py-2"
+          onClick={handleEmailSignUp}
+            className="w-[auto] bg-cyan-600  border-1 border-blue-400 rounded-lg px-2 py-2 cursor-pointer"
             type="button"
           >
             <h2>
@@ -267,8 +267,8 @@ const displayGoogleSignUpModal = () => {
             </h2>
           </button>
           <button
-            // onClick={handleGoogleSignUp}
-            className="w-auto bg-white  border-1 border-white rounded-lg px-2 py-2 "
+            onClick={handleGoogleSignUp}
+            className="w-auto bg-white  border-1 border-white rounded-lg px-2 py-2 cursor-pointer"
             type="button"
           >
             <h2>
