@@ -2,9 +2,11 @@ import { BasicInformation, DetailsVerification, CreateUser } from "../components
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import logo from "../images/mainLogo.jpg";
+import { useNavigate } from "react-router-dom";
 
 
 const Registration = () => {
+    const navigate = useNavigate()
     const [meansOfIdentification, setMeansOfIdentification] = useState("");
     const [showDetailsVerification, setShowDetailsVerification] = useState(false);
     const [showCreateUser, setShowCreateUser] = useState(false);
@@ -69,6 +71,9 @@ const handleFinalSubmit = async (data) => {
         })
 
         let Data = await response.json()
+        if (response.ok) {
+            navigate("products")
+        }
     } catch(error) {
         console.log(error.name)
     }
