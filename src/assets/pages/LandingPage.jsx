@@ -16,6 +16,8 @@ import  Registration from "./DesignersRegistration";
 import RegisterWithEmail from "./EmailSignUp";
 import SignInWithGoogle from "./GoogleSignUp"
 import Logo from "../images/mainLogo.jpg";
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 const LandingImages = [
   trending,
@@ -39,11 +41,11 @@ const LandingPage = () => {
   const [showLoginModal, SetShowLoginModal] = useState(false);
   const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
   const [showEmailSignUpModal, setShowEmailSignUpModal] = useState(false);
-  const [showGoogleSignUpModal, setShowGoogleSignUpModal] = useState(false);
+  // const [showGoogleSignUpModal, setShowGoogleSignUpModal] = useState(false);
   const handleLogin = () => SetShowLoginModal(true);
   const handlRegistration = () => SetShowRegistrationModal(true);
   const handleEmailSignUp = () => setShowEmailSignUpModal(true);
-  const handleGoogleSignUp = () => setShowGoogleSignUpModal(true);
+  // const handleGoogleSignUp = () => setShowGoogleSignUpModal(true);
 
   const displayEmailSignUpModal = () => {
     return (
@@ -89,49 +91,49 @@ const LandingPage = () => {
     );
   }
 
-const displayGoogleSignUpModal = () => {
-    return (
-      showGoogleSignUpModal && (
-        <div className="w-full  fixed inset-0 px-2 py-4 flex flex-col items-center justify-center backdrop-blur">
-          <div
-            className="w-[90%] bg-white px-2 py-4 relative flex flex-col items-center justify-start gap-10 min-h-screen  
-                sd:w-[80%]
-                lg:w-[60%]
-                "
-          >
-            <div className="flex flex-col items-center ">
-              <img
-                className="w-[50px]  h-[50px] rounded-[50%]"
-                src={Logo}
-                alt=""
-              />
-              <h1 className="text-center text-2xl font-bold text-gray-900">
-                AmaniSky Design
-              </h1>
-            </div>
-            <div className="absolute right-4 top-1">
-              <button
-                type="button"
-                onClick={() => setShowGoogleSignUpModal(false)}
-                className="text-2xl font-bold"
-              >
-                x
-              </button>
-            </div>
-            <div
-              className="w-[90%]
-                    sd:w-[80%]
-                    md:w-[80%]
-                    lg:w-[60%]
-                    "
-            >
-              <SignInWithGoogle />
-            </div>
-          </div>
-        </div>
-      )
-    );
-}
+// const displayGoogleSignUpModal = () => {
+//     return (
+//       showGoogleSignUpModal && (
+//         <div className="w-full  fixed inset-0 px-2 py-4 flex flex-col items-center justify-center backdrop-blur">
+//           <div
+//             className="w-[90%] bg-white px-2 py-4 relative flex flex-col items-center justify-start gap-10 min-h-screen  
+//                 sd:w-[80%]
+//                 lg:w-[60%]
+//                 "
+//           >
+//             <div className="flex flex-col items-center ">
+//               <img
+//                 className="w-[50px]  h-[50px] rounded-[50%]"
+//                 src={Logo}
+//                 alt=""
+//               />
+//               <h1 className="text-center text-2xl font-bold text-gray-900">
+//                 AmaniSky Design
+//               </h1>
+//             </div>
+//             <div className="absolute right-4 top-1">
+//               <button
+//                 type="button"
+//                 onClick={() => setShowGoogleSignUpModal(false)}
+//                 className="text-2xl font-bold"
+//               >
+//                 x
+//               </button>
+//             </div>
+//             <div
+//               className="w-[90%]
+//                     sd:w-[80%]
+//                     md:w-[80%]
+//                     lg:w-[60%]
+//                     "
+//             >
+//               <SignInWithGoogle />
+//             </div>
+//           </div>
+//         </div>
+//       )
+//     );
+// }
 
   const displayShowLoginModal = () => {
     return (
@@ -223,6 +225,46 @@ const displayGoogleSignUpModal = () => {
     )
     )
   };
+
+  const handleGoogleSignUp = useGoogleLogin({
+      scope: `
+        openid email profile
+        https://www.googleapis.com/auth/user.addresses.read
+        https://www.googleapis.com/auth/user.phonenumbers.read
+        https://www.googleapis.com/auth/user.birthday.read
+      `,
+      onSuccess: async (tokenResponse) => {
+        console.log("Access Token:", tokenResponse.access_token);
+  
+        try {
+          // Fetch extended user info from Google People API
+          const res = await axios.get(
+            "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,birthdays,addresses,phoneNumbers",
+            {
+              headers: {
+                Authorization: `Bearer ${tokenResponse.access_token}`,
+              },
+            }
+          );
+  
+          console.log("User Info:", res.data);
+  
+          const userData = {
+            name: res.data.names?.[0]?.displayName || "",
+            email: res.data.emailAddresses?.[0]?.value || "",
+            picture: res.data.photos?.[0]?.url || "",
+            birthday: res.data.birthdays?.[0]?.date || {},
+            address: res.data.addresses?.[0]?.formattedValue || "",
+            phone: res.data.phoneNumbers?.[0]?.value || "",
+          };
+  
+          console.log("Simplified User Data:", userData);
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+        }
+      },
+      onError: (error) => console.log("Login Failed:", error),
+    });
 
   return (
     <div>
