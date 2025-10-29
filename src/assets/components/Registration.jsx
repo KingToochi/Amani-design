@@ -24,8 +24,8 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
             >
                 <input type="text" placeholder="First Name" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("firstName", {required: "First name is required"})} />
-                {errors.firstName && <p className="text-red-300 text-sm font-[abril] ">{errors.firstName.message}</p>}
+                {...register("fname", {required: "First name is required"})} />
+                {errors.fname && <p className="text-red-300 text-sm font-[abril] ">{errors.fname.message}</p>}
             </div>
 
             <div
@@ -33,8 +33,8 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
             >
                 <input type="text" placeholder="last Name" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("lastName", {required: "Last name is required"})} />
-                {errors.lastName && <p className="text-red-300 text-sm font-[abril] ">{errors.lastName.message}</p>}
+                {...register("lname", {required: "Last name is required"})} />
+                {errors.lname && <p className="text-red-300 text-sm font-[abril] ">{errors.lname.message}</p>}
             </div>
 
             <div
@@ -204,7 +204,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
     const {register, handleSubmit, watch, formState : { errors, isSubmitting }} = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");
-    const password = watch("createPassword");
+    const password = watch("password");
     // const togglePassword = () => setShowPassword((prev) => !prev);
 
     // Helper: Evaluate password strength
@@ -243,7 +243,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                 <label  className="text-gray-900 font-semibold text-base font-[abril]">Add Profile Picture</label>
                 <input type="file" capture="user" accept="image/*"
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"
-                {...register("dp")}
+                {...register("profilePicture")}
                 />
             </div>
             <div
@@ -251,8 +251,8 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
             >
                 <input type="text" placeholder="Create Username" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("createUsername", {required: "This field is required"})} />
-                {errors.createUsername && <p className="text-red-300 text-sm font-[abril] ">{errors.createUsername.message}</p>}
+                {...register("userName", {required: "This field is required"})} />
+                {errors.userName && <p className="text-red-300 text-sm font-[abril] ">{errors.userName.message}</p>}
             </div>
 
             <div
@@ -262,7 +262,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                 className="w-full relative border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 type={showPassword ? "text" : "password"}
                 placeholder="Create Password" 
-                {...register("createPassword", {
+                {...register("password", {
                             required: "Password is required",
                             minLength: {
                                 value: 8,
@@ -279,7 +279,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                                     /[^A-Za-z0-9]/.test(value) || "At least one special character required",
                             },
                             onChange: handlePasswordChange,})} />
-                        {errors.createPassword && <p className="text-red-300 text-sm font-[abril] ">{errors.createPassword.message}</p>}
+                        {errors.password && <p className="text-red-300 text-sm font-[abril] ">{errors.password.message}</p>}
             </div>
             {password && (
                 <div className="text-sm">

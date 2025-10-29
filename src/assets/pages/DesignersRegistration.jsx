@@ -72,7 +72,7 @@ const handleFinalSubmit = async (data) => {
 
         let Data = await response.json()
         if (response.ok) {
-            navigate("products")
+            navigate("/products")
         }
     } catch(error) {
         console.log(error.name)
