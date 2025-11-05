@@ -9,29 +9,53 @@ dotenv.config();
 const app = express();
 app.use(cors());
 
-// Configure Multer (temporary file storage)
+// Multer config (temporary folder)
 const upload = multer({ dest: "uploads/" });
 
-// Configure Cloudinary
+// Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload endpoint
-app.post("/upload", upload.single("image"), async (req, res) => {
-  try {
-    const filePath = req.file.path;
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: "my_website_uploads",
-    });
+// Upload endpoint for multiple files
+app.post(
+  "/upload",
+  upload.fields([
+    { name: "profilePicture", maxCount: 1 },
+    { name: "proofOfAddress", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const dpFile = req.files["profilePicture"]?.[0];
+      const proofFile = req.files["proofOfAddress"]?.[0];
 
-    fs.unlinkSync(filePath); // remove temp file
-    res.json({ imageUrl: result.secure_url });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+      let profilePictureUrl = "";
+      let ProofOfAddressUrl = "";
+
+      // Upload to Cloudinary if files exist
+      if (dpFile) {
+        const dpResult = await cloudinary.uploader.upload(dpFile.path, {
+          folder: "my_website_uploads",
+        });
+        profilePictureUrl = dpResult.secure_url;
+        fs.unlinkSync(dpFile.path);
+      }
+
+      if (proofFile) {
+        const proofResult = await cloudinary.uploader.upload(proofFile.path, {
+          folder: "my_website_uploads",
+        });
+        ProofOfAddressUrl = proofResult.secure_url;
+        fs.unlinkSync(proofFile.path);
+      }
+
+      res.json({ profilePictureUrl, ProofOfAddressUrl });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-});
+);
 
 app.listen(4000, () => console.log("Upload server running on port 4000"));

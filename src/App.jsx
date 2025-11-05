@@ -13,8 +13,8 @@ function App() {
   return (
     <div className="">
       <Routes>
-        {/* <Route path="/" element={<LandingPage />} /> */}
-        <Route path="/" element={<DesignerLayout/>}>
+        <Route path="/" element={<LandingPage />} />
+        <Route element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
         </Route>

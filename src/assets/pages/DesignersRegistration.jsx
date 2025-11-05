@@ -1,5 +1,4 @@
 import { BasicInformation, DetailsVerification, CreateUser } from "../components/Registration";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import logo from "../images/mainLogo.jpg";
 import { useNavigate } from "react-router-dom";
@@ -37,49 +36,46 @@ const handleFinalSubmit = async (data) => {
     // Merge existing userData state with the latest form data submitted
     const formData = { ...userData, ...data };
     const imageData = new FormData()
-    let ProofOfAddressUrl = ""
-    let dpurl = ""
-
-    if (formData.dp?.[0]) {
-        imageData.append("dp", formData.dp[0]);
+   
+    if (formData.profilePicture?.[0]) {
+        imageData.append("profilePicture", formData.profilePicture[0]);
     }
 
     if (formData.proofOfAddress?.[0]) {
         imageData.append("proofOfAddress", formData.proofOfAddress[0]);
     }
 
-    const uploadData = async() => {
-        try {
-            let response = await fetch ("http://localhost:4000/upload", {
-                method: "post",
-                body: imageData
-            })
-            let uploadImage = await response.json()
-            ProofOfAddressUrl = uploadImage.ProofOfAddressUrl
-            dpurl = uploadImage.dpUrl
-        } catch(error) {
-            console.log(error.name)
-        }
 
-        Object.assign = {...formData, ProofOfAddressUrl, dpurl}
-    }
-
-    try{
-        let response = await fetch("http://localhost:3000/users", {
-            method: "post",
-            body: JSON.stringify(formData)
+    try {
+        const upLoadImage = await fetch("http://localhost:4000/upload", {
+            method: "POST",
+            body: imageData
         })
 
-        let Data = await response.json()
-        if (response.ok) {
-            navigate("/products")
-        }
-    } catch(error) {
-        console.log(error.name)
+        if (!upLoadImage.ok) throw new Error("unable to upload data")
+        const uploadResult = await upLoadImage.json();
+        const { ProofOfAddressUrl, profilePictureUrl } = uploadResult;
+        const finalUserData = {
+            ...formData,
+            proofOfAddressUrl: ProofOfAddressUrl,
+            profilePictureUrl: profilePictureUrl,
+            };
+        try {
+        const uploadFormData = await fetch("http://localhost:3000/users", {
+            method: "POST",
+            body: JSON.stringify(finalUserData)
+        })
+        if (!uploadFormData.ok) throw new Error("User save failed");
+
+        const savedUser = await uploadFormData.json();
+        console.log("User saved:", savedUser);
+
+        navigate("/products");
     }
-
-
-    uploadData()
+        catch(error) {
+        console.log(error)}
+    } catch(error) {
+        console.log(error)}
 
 };
 
