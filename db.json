@@ -1,68 +1,50 @@
 {
   "users": [
     {
-      "id": "1",
-      "fname": "Toochukwu",
-      "lname": "Umoke",
-      "userName": "Toochi",
-      "profilePicture": "/src/assets/images/4.jpg",
-      "location": "Ebonyi State",
-      "isActive": "true",
-      "status": "seller",
-      "Business Address": "10c Nibo street",
-      "email": "umoketoochukwu@gmail.com",
-      "phoneNumber": "09031183272",
-      "dob": "22/05/1996",
-      "meansOfIdentification": "nin",
-      "nin": "234455635785"
-    },
-    {
-      "id": "2474",
+      "id": "9cf2",
       "fname": "Toochukwu",
       "lname": "Umoke",
       "email": "umoketoochukwu@gmail.com",
       "phoneNumber": "09031183272",
-      "dob": "2025-11-05",
-      "homeaddress": "10c Nibo street",
-      "officeaddress": "10c Nibo street",
+      "dob": "1996-05-22",
+      "homeaddress": "10c nibo street",
+      "officeaddress": "10c nibo street",
       "meansOfIdentification": "nin",
       "proofOfAddress": {
         "0": {}
       },
-      "ninNumber": "33245r54545",
-      "profilePicture": {
-        "0": {}
-      },
+      "ninNumber": "90624036573",
+      "profilePicture": {},
       "userName": "Toochi",
       "password": "Kingtoochi@1996",
       "confirmPassword": "Kingtoochi@1996",
       "termsAndConditions": true,
-      "proofOfAddressUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762213901/my_website_uploads/uphidvywnpstvscffrcs.jpg",
-      "dpUrl": ""
-    },
-    {
-      "id": "8183",
-      "fname": "Toochukwu",
-      "lname": "Umoke",
-      "email": "umoketoochukwu@gmail.com",
-      "phoneNumber": "09031183272",
-      "dob": "2025-11-07",
-      "homeaddress": "10c Nibo street",
-      "officeaddress": "10c nibo",
-      "meansOfIdentification": "nin",
-      "proofOfAddress": {
-        "0": {}
-      },
-      "ninNumber": "33245r54545",
-      "profilePicture": {
-        "0": {}
-      },
-      "userName": "prime@gmail.com",
-      "password": "Kingtoochi@1996",
-      "confirmPassword": "Kingtoochi@1996",
-      "termsAndConditions": true,
-      "proofOfAddressUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762344486/my_website_uploads/rwo4yyy6c8n5dh0tphsg.jpg",
+      "proofOfAddressUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762345785/my_website_uploads/u4bcy3hamxmangcuq5wj.jpg",
       "profilePictureUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762344483/my_website_uploads/bpzjnmqtjjxsjgwoofnf.jpg"
+    },
+    {
+      "id": "504f",
+      "fname": "Toochukwu",
+      "lname": "Umoke",
+      "email": "umoketoochukwu@gmail.com",
+      "phoneNumber": "9999",
+      "dob": "2025-11-06",
+      "homeaddress": "ww22",
+      "officeaddress": "223w",
+      "meansOfIdentification": "nin",
+      "proofOfAddress": {
+        "0": {}
+      },
+      "ninNumber": "2222",
+      "profilePicture": {
+        "0": {}
+      },
+      "userName": "222ww",
+      "password": "Kingtoochi@1996",
+      "confirmPassword": "Kingtoochi@1996",
+      "termsAndConditions": true,
+      "proofOfAddressUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762346322/my_website_uploads/sile2utkzsevorssjiz8.jpg",
+      "profilePictureUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762346321/my_website_uploads/ms9o0e9abj0dk6b2neir.jpg"
     }
   ],
   "products": [
