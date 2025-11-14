@@ -11,10 +11,10 @@ import Profile from "./assets/pages/designerPage/Profile";
 
 function App() {
   return (
-    <div className="">
+    <div className="w-full overflow-x-hidden min-h-screen bg-gray-950 ">
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route element={<DesignerLayout/>}>
+        {/* <Route path="/" element={<LandingPage />} /> */}
+        <Route path="/" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
         </Route>

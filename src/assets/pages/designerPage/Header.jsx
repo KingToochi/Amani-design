@@ -1,16 +1,14 @@
 import { useEffect, useState} from "react";
-import { FaHome } from "react-icons/fa";
+import { MdOutlineDashboard  } from "react-icons/md"
 import { FcSalesPerformance } from "react-icons/fc"
-import { AiFillProduct } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import { IoChatboxOutline } from "react-icons/io5";
-import { FaRegUserCircle } from "react-icons/fa";
-import { FaStoreAlt } from "react-icons/fa";
+import { IoChatboxOutline, IoSettingsOutline } from "react-icons/io5";
 import { IoMenuOutline } from "react-icons/io5";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import logo from "../../images/mainLogo.jpg"
 import { FiSearch } from "react-icons/fi";
-import SideBar from "./SideBar";
+import { FaPalette } from "react-icons/fa6";
+import { BsTag } from "react-icons/bs";
 
 
 const Header = () => {
@@ -50,13 +48,13 @@ const Header = () => {
             {isMobile
             ?
             <div
-            className="w-full  flex items-center gap-6 bg-white px-2 py-2"
+            className="w-full  flex items-center gap-6 bg-stone-800 px-2 py-2"
             >
                 <div
                 className="w-[10%] flex justify-center"
                 >
                     <IoMenuOutline 
-                    className={`${showMenu ? "hidden" : "block"} text-2xl sm:text-4xl`}
+                    className={`${showMenu ? "hidden" : "block"} text-lg text-gray-50`}
                     onClick={onClickMenuBar}
                     />
                     {
@@ -78,23 +76,33 @@ const Header = () => {
                                 className="w-[50px] h-[50px] rounded-[50%]
                                 sm:w-[100px] sm:h-[100px] rounded-[50%]"
                                 />
+                                <div
+                                className="flex flex-col items-center"
+                                >
+                                    <h1
+                                    className="font-[abril] font-normal text-base"
+                                    >Toochi Umoke</h1>
+                                    <h1
+                                    className="font-[abril] font-light text-gray-400 text-lg"
+                                    >Fashion Designer</h1>
+                                </div>
                             </div>
                             <ul
                             className="w-full flex flex-col gap-6 px-6 px-2"
                             >
                                 <li>
                                     <Link  onClick={menubar}
-                                    className="flex gap-6 items-center text-2xl font-semibold font-[abril]
-                                    sm:text-3xl"
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril] 
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
                                     >
-                                        <FaHome/>
+                                        <MdOutlineDashboard />
                                         <h2>Dashboard</h2>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link  onClick={menubar}
-                                    className="flex gap-6 items-center text-2xl font-semibold font-[abril]
-                                    sm:text-3xl"
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
                                     >
                                         <FcSalesPerformance/>
                                         <h2>Analytics</h2>
@@ -102,26 +110,26 @@ const Header = () => {
                                 </li>
                                 <li>
                                     <Link to="products" onClick={menubar}
-                                    className="flex gap-6 items-center text-2xl font-semibold font-[abril]
-                                    sm:text-3xl"
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
                                     >
-                                        <AiFillProduct/>
-                                        <h2>Products</h2>
+                                        <FaPalette/>
+                                        <h2>My Designs</h2>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link  onClick={menubar}
-                                    className="flex gap-6 items-center text-2xl font-semibold font-[abril]
-                                    sm:text-3xl"
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
                                     >
-                                        <FaStoreAlt/>
-                                        <h2>Store</h2>
+                                        <BsTag/>
+                                        <h2>Sales</h2>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link  onClick={menubar}
-                                    className="flex gap-6 items-center text-2xl font-semibold font-[abril]
-                                    sm:text-3xl"
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
                                     >
                                         <IoChatboxOutline/>
                                         <h2>Message</h2>
@@ -129,11 +137,11 @@ const Header = () => {
                                 </li>
                                 <li>
                                     <Link to="profile" onClick={menubar}
-                                    className="flex gap-6 items-center text-2xl font-semibold font-[abril]
-                                    sm:text-3xl"
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
                                     >
-                                        <FaRegUserCircle/>
-                                        <h2>Profile</h2>
+                                        <IoSettingsOutline/>
+                                        <h2>Settings</h2>
                                     </Link>
                                 </li>
                             </ul>
@@ -146,7 +154,7 @@ const Header = () => {
                         className="w-[70%] flex gap-4 items-center font-[abril]"
                         >
                             <h1
-                            className="w-[20%] h-[60%] text-2xl font-semibold text-gray-300 bg-blue-300 text-center rounded-[60%]
+                            className="w-[20%] h-[60%] text-2xl font-semibold text-gray-50 bg-blue-300 text-center rounded-[60%]
                             sm:h-[50px] sm:rounded-[50%] sm:w-[15%] flex items-center justify-center
                             "
                             >
@@ -156,20 +164,17 @@ const Header = () => {
                             className="w-[65%] flex flex-col items-left"
                             >
                                 <h1
-                                className="text-2xl font-bold text-gray-600"
+                                className="text-2xl font-bold text-gray-50"
                                 >{user.userName}</h1>
-                                <h2
-                                className="text-2xl font-medium text-gray-300"
-                                >{user.status}</h2>
                             </div>
                         </div>
                     )
                 )}
                 <div
-                className="w-[25%] flex gap-6 justify-around"
+                className="w-[25%] flex gap-6 justify-around items-center"
                 >
                     <FiSearch 
-                    className={`text-2xl sm:text-4xl" ${showSearchBar? "hidden" : "flex"}`}
+                    className={`text-lg" ${showSearchBar? "hidden" : "flex"} text-white`}
                     onClick={onClickSearchIcon}
                     />
                     <IoMdNotificationsOutline
@@ -194,7 +199,6 @@ const Header = () => {
             <div
             className="w-full flex"
             >
-                {/* <SideBar /> */}
                 <div
                 className="w-full h-[100px] flex flex-col"
                 >
@@ -202,7 +206,7 @@ const Header = () => {
                     className="w-[100%] h-[60px] flex items-center"
                     >
                         <form onSubmit={onSubmit}
-                        className="w-[90%] flex px-2 py-2  bg-white gap-2 bg-black"
+                        className="w-[90%] flex px-2 py-2 bg-white gap-2 bg-black"
                         >
                             <input type="search" placeholder="search"
                             className="w-[90%] h-[50px] border-2 border-gray-900 rounded-lg px-2 text-2xl font-medium font-[abril] focus:outline-none"
