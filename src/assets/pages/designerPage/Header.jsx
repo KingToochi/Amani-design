@@ -54,7 +54,7 @@ const Header = () => {
                 className="w-[10%] flex justify-center"
                 >
                     <IoMenuOutline 
-                    className={`${showMenu ? "hidden" : "block"} text-lg text-gray-50`}
+                    className={`${showMenu ? "hidden" : "block"} text-lg text-gray-50 sm:text-xl`}
                     onClick={onClickMenuBar}
                     />
                     {
@@ -80,10 +80,14 @@ const Header = () => {
                                 className="flex flex-col items-center"
                                 >
                                     <h1
-                                    className="font-[abril] font-normal text-base"
+                                    className="font-[abril] font-normal text-base
+                                    sm:text-xl
+                                    "
                                     >Toochi Umoke</h1>
                                     <h1
-                                    className="font-[abril] font-light text-gray-400 text-lg"
+                                    className="font-[abril] font-light text-gray-400 text-lg
+                                    sm:text-xl
+                                    "
                                     >Fashion Designer</h1>
                                 </div>
                             </div>
@@ -93,7 +97,9 @@ const Header = () => {
                                 <li>
                                     <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril] 
-                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
                                     >
                                         <MdOutlineDashboard />
                                         <h2>Dashboard</h2>
@@ -102,7 +108,9 @@ const Header = () => {
                                 <li>
                                     <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
-                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
                                     >
                                         <FcSalesPerformance/>
                                         <h2>Analytics</h2>
@@ -111,7 +119,9 @@ const Header = () => {
                                 <li>
                                     <Link to="products" onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
-                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
                                     >
                                         <FaPalette/>
                                         <h2>My Designs</h2>
@@ -120,7 +130,9 @@ const Header = () => {
                                 <li>
                                     <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
-                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
                                     >
                                         <BsTag/>
                                         <h2>Sales</h2>
@@ -129,7 +141,9 @@ const Header = () => {
                                 <li>
                                     <Link  onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
-                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
                                     >
                                         <IoChatboxOutline/>
                                         <h2>Message</h2>
@@ -138,7 +152,9 @@ const Header = () => {
                                 <li>
                                     <Link to="profile" onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
-                                    focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
                                     >
                                         <IoSettingsOutline/>
                                         <h2>Settings</h2>
@@ -151,20 +167,22 @@ const Header = () => {
                 {userData.map(
                     user => (
                         <div key={user.id}
-                        className="w-[70%] flex gap-4 items-center font-[abril]"
+                        className="w-[80%] flex gap-2 items-center font-[abril]"
                         >
                             <h1
-                            className="w-[20%] h-[60%] text-2xl font-semibold text-gray-50 bg-blue-300 text-center rounded-[60%]
-                            sm:h-[50px] sm:rounded-[50%] sm:w-[15%] flex items-center justify-center
+                            className="text-lg font-medium text-gray-50 
+                            sm:text-xl
                             "
                             >
-                                {user.userName[0]}
+                                Welcome
                             </h1>
                             <div
                             className="w-[65%] flex flex-col items-left"
                             >
                                 <h1
-                                className="text-2xl font-bold text-gray-50"
+                                className="text-lg font-semibold text-gray-50
+                                sm:text-xl
+                                "
                                 >{user.userName}</h1>
                             </div>
                         </div>
@@ -174,11 +192,11 @@ const Header = () => {
                 className="w-[25%] flex gap-6 justify-around items-center"
                 >
                     <FiSearch 
-                    className={`text-lg" ${showSearchBar? "hidden" : "flex"} text-white`}
+                    className={`text-lg" ${showSearchBar? "hidden" : "flex"} text-gray-50 sm:text-xl`}
                     onClick={onClickSearchIcon}
                     />
                     <IoMdNotificationsOutline
-                    className="text-2xl  sm:text-4xl"
+                    className="text-lg text-gray-50 sm:text-xl"
                     />
                 </div>
                 {showSearchBar &&
