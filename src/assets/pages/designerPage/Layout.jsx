@@ -14,7 +14,7 @@ return(
         className="hidden md:flex"
         />
         <div
-        className="flex flex-col w-full md:w-[80%]"
+        className="flex flex-col w-full md:w-[75%] lg:w-[82%] xl:w-[85%]"
         >
             <Header />
             <Outlet />

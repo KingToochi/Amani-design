@@ -215,45 +215,49 @@ const Header = () => {
             </div>
             :
             <div
-            className="w-full flex"
+            className="w-full flex bg-stone-800 py-4 h-auto"
             >
                 <div
-                className="w-full h-[100px] flex flex-col"
+                className="w-full flex"
                 >
-                    <div
-                    className="w-[100%] h-[60px] flex items-center"
-                    >
-                        <form onSubmit={onSubmit}
-                        className="w-[90%] flex px-2 py-2 bg-white gap-2 bg-black"
-                        >
-                            <input type="search" placeholder="search"
-                            className="w-[90%] h-[50px] border-2 border-gray-900 rounded-lg px-2 text-2xl font-medium font-[abril] focus:outline-none"
-                            />
-                            <button
-                            >
-                                <FiSearch 
-                                className="text-4xl"
-                                />
-                            </button>
-                        </form>
-                        <IoMdNotificationsOutline
-                        className="text-4xl"
-                        />
-                    </div>
                     {userData.map(
                         user => (
                             <div key={user.id}
-                            className="w-full flex gap-2 px-4 py-2"
+                            className="w-[65%] flex gap-2 px-2 py-2 items-center
+                            lg:w-[80%] 
+                            "
                             >
                                 <h1
-                                className="text-4xl font-semibold font-[abril] text-gray-500"
+                                className="text-xl font-normal font-[abril] text-gray-50"
                                 >Welcome,</h1>
                                 <h1
-                                className="text-4xl font-bold font-[abril] text-gray-900"
+                                className="text-xl font-bold font-[abril] text-gray-50"
                                 >{user.userName}</h1>
                             </div>
                         )
                     )}
+                    <div
+                    className="w-[35%] flex items-center justify-around px-2
+                    lg:w-[20%]
+                    "
+                    >
+                        <form onSubmit={onSubmit}
+                        className="w-[90%] flex items-center pl-2 bg-gray-400/50 rounded-lg"
+                        >
+                            <button
+                            >
+                                <FiSearch 
+                                className="text-xl text-gray-300"
+                                />
+                            </button>
+                            <input type="search" placeholder="search"
+                            className="w-full h-[30px]  pl-2 text-2xl text-gray-100 font-medium font-[abril] focus:outline-none focus:text-gray-50"
+                            />
+                        </form>
+                        <IoMdNotificationsOutline
+                        className="text-xl text-gray-50"
+                        />
+                    </div>
                 </div>
             </div>
             }

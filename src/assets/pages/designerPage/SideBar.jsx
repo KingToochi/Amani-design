@@ -14,8 +14,8 @@ const SideBar = ({className}) => {
 
     return(
         <div
-        className={`flex flex-col w-[35%]  bg-stone-900 text-gray-50 gap-6 min-h-screen px-4 py-4 border-r-1 border-gray-700  ${className} 
-        lg:w-[30%] xl:w-[25%]
+        className={`flex flex-col w-[25%]  bg-stone-900 text-gray-50 gap-6 min-h-screen px-4 py-4 border-r-1 border-gray-700  ${className} 
+        lg:w-[18%] xl:w-[15%]
         `}
         >
             <div
