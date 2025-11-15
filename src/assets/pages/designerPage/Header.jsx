@@ -54,7 +54,7 @@ const Header = () => {
                 className="w-[10%] flex justify-center"
                 >
                     <IoMenuOutline 
-                    className={`${showMenu ? "hidden" : "block"} text-lg text-gray-50 sm:text-xl`}
+                    className={`${showMenu ? "hidden" : "block"} text-lg text-gray-50 sm:text-2xl`}
                     onClick={onClickMenuBar}
                     />
                     {
@@ -174,7 +174,7 @@ const Header = () => {
                             sm:text-xl
                             "
                             >
-                                Welcome
+                                Welcome,
                             </h1>
                             <div
                             className="w-[65%] flex flex-col items-left"
@@ -192,11 +192,11 @@ const Header = () => {
                 className="w-[25%] flex gap-6 justify-around items-center"
                 >
                     <FiSearch 
-                    className={`text-lg" ${showSearchBar? "hidden" : "flex"} text-gray-50 sm:text-xl`}
+                    className={`text-lg" ${showSearchBar? "hidden" : "flex"} text-gray-50 sm:text-2xl`}
                     onClick={onClickSearchIcon}
                     />
                     <IoMdNotificationsOutline
-                    className="text-lg text-gray-50 sm:text-xl"
+                    className="text-lg text-gray-50 sm:text-2xl"
                     />
                 </div>
                 {showSearchBar &&
