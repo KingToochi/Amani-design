@@ -8,6 +8,7 @@ import HomePage from "./assets/pages/designerPage/HomePage";
 import DesignerLayout from "./assets/pages/designerPage/Layout";
 import Products from "./assets/pages/designerPage/Products";
 import Profile from "./assets/pages/designerPage/Profile";
+import ProductDetails from "./assets/pages/designerPage/ProductDetails";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
+          <Route path="productdetails/:id" element={<ProductDetails />} />
         </Route>
       
       </Routes>

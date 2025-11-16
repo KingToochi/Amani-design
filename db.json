@@ -93,13 +93,6 @@
       "productImage": "/src/assets/images/women3.jpg",
       "productCategory": "women clothing",
       "productPrice": "20000"
-    },
-    {
-      "id": "204l",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/womenPic.jpg",
-      "productCategory": "women clothing",
-      "productPrice": "20000"
     }
   ]
 }
