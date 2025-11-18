@@ -9,17 +9,20 @@ import DesignerLayout from "./assets/pages/designerPage/Layout";
 import Products from "./assets/pages/designerPage/Products";
 import Profile from "./assets/pages/designerPage/Profile";
 import ProductDetails from "./assets/pages/designerPage/ProductDetails";
+import Layout from "./assets/pages/marketPlace/MarketPlaceLayout";
 
 function App() {
   return (
     <div className="w-full overflow-x-hidden min-h-screen bg-gray-950 ">
       <Routes>
         {/* <Route path="/" element={<LandingPage />} /> */}
+        <Route path="/" element={<Layout />}>
+        </Route>
         <Route path="/" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />
-        </Route>
+        </Route> 
       
       </Routes>
     </div>

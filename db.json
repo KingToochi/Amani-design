@@ -39,13 +39,6 @@
       "productPrice": "229222444"
     },
     {
-      "id": "204d",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/women2.jpg",
-      "productCategory": "wommen clothing",
-      "productPrice": "20000"
-    },
-    {
       "id": "204e",
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/image6.jpg",
@@ -61,10 +54,10 @@
     },
     {
       "id": "204g",
-      "productDescription": "Nice african clothing outfit",
+      "productDescription": "Nice african clothing outfit. welcom",
       "productImage": "/src/assets/images/image5.jpg",
       "productCategory": "men clothing",
-      "productPrice": "20000"
+      "productPrice": "202000"
     },
     {
       "id": "204h",
@@ -74,24 +67,10 @@
       "productPrice": "20000"
     },
     {
-      "id": "204i",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/image3.jpg",
-      "productCategory": "men clothing",
-      "productPrice": "20000"
-    },
-    {
       "id": "204j",
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/image4.jpg",
       "productCategory": "men clothing",
-      "productPrice": "20000"
-    },
-    {
-      "id": "204k",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/women3.jpg",
-      "productCategory": "women clothing",
       "productPrice": "20000"
     }
   ]
