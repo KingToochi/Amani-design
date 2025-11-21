@@ -29,49 +29,63 @@
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/men2.jpg",
       "productCategory": "men clothing",
-      "productPrice": "2000064545"
+      "productPrice": "2000064545",
+      "color": "black",
+      "size" : "xl"
     },
     {
       "id": "204c",
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/woman.jpg",
       "productCategory": "women clothing",
-      "productPrice": "229222444"
+      "productPrice": "229222444",
+      "color": "black",
+      "size" : "xl"
     },
     {
       "id": "204e",
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/image6.jpg",
       "productCategory": "men clothingAccessory",
-      "productPrice": "20000"
+      "productPrice": "20000",
+      "color": "black",
+      "size" : "xl"
     },
     {
       "id": "204f",
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/image5.jpg",
       "productCategory": "men clothing",
-      "productPrice": "20000"
+      "productPrice": "20000",
+      "color": "black",
+      "size" : "xl"
     },
     {
       "id": "204g",
       "productDescription": "Nice african clothing outfit. welcom",
       "productImage": "/src/assets/images/image5.jpg",
       "productCategory": "men clothing",
-      "productPrice": "202000"
+      "productPrice": "202000",
+      "color": "black",
+      "size" : "xl"
     },
     {
       "id": "204h",
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/image2.jpg",
       "productCategory": "men clothing",
-      "productPrice": "20000"
+      "productPrice": "20000",
+      "color": "black",
+      "size" : "xl"
     },
     {
       "id": "204j",
       "productDescription": "Nice african clothing outfit",
       "productImage": "/src/assets/images/image4.jpg",
       "productCategory": "men clothing",
-      "productPrice": "20000"
+      "productPrice": "20000",
+      "color": "black",
+      "size" : "xl"
     }
   ]
 }

@@ -4,12 +4,14 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import LandingPage from "./assets/pages/LandingPage";
-import HomePage from "./assets/pages/designerPage/HomePage";
 import DesignerLayout from "./assets/pages/designerPage/Layout";
 import Products from "./assets/pages/designerPage/Products";
 import Profile from "./assets/pages/designerPage/Profile";
 import ProductDetails from "./assets/pages/designerPage/ProductDetails";
 import Layout from "./assets/pages/marketPlace/MarketPlaceLayout";
+import HomePage from "./assets/pages/marketPlace/HomePage";
+import PDetails from "./assets/pages/marketPlace/PDetails";
+import Cart from "./assets/pages/marketPlace/Cart";
 
 function App() {
   return (
@@ -17,6 +19,10 @@ function App() {
       <Routes>
         {/* <Route path="/" element={<LandingPage />} /> */}
         <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="product-details/:id" element={<PDetails />} />
+          <Route path="cart" element={<Cart/>} />
+          
         </Route>
         <Route path="/" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
