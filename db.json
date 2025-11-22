@@ -31,7 +31,8 @@
       "productCategory": "men clothing",
       "productPrice": "2000064545",
       "color": "black",
-      "size" : "xl"
+      "size" : "xl",
+      "productName" : "fashion"
     },
     {
       "id": "204c",
@@ -40,7 +41,8 @@
       "productCategory": "women clothing",
       "productPrice": "229222444",
       "color": "black",
-      "size" : "xl"
+      "size" : "xl",
+      "productName" : "fashion"
     },
     {
       "id": "204e",
@@ -49,7 +51,8 @@
       "productCategory": "men clothingAccessory",
       "productPrice": "20000",
       "color": "black",
-      "size" : "xl"
+      "size" : "xl",
+      "productName" : "fashion"
     },
     {
       "id": "204f",
@@ -58,7 +61,8 @@
       "productCategory": "men clothing",
       "productPrice": "20000",
       "color": "black",
-      "size" : "xl"
+      "size" : "xl",
+      "productName" : "fashion"
     },
     {
       "id": "204g",
@@ -67,7 +71,8 @@
       "productCategory": "men clothing",
       "productPrice": "202000",
       "color": "black",
-      "size" : "xl"
+      "size" : "xl",
+      "productName" : "fashion"
     },
     {
       "id": "204h",
@@ -76,7 +81,8 @@
       "productCategory": "men clothing",
       "productPrice": "20000",
       "color": "black",
-      "size" : "xl"
+      "size" : "xl",
+      "productName" : "fashion"
     },
     {
       "id": "204j",
@@ -85,7 +91,8 @@
       "productCategory": "men clothing",
       "productPrice": "20000",
       "color": "black",
-      "size" : "xl"
+      "size" : "xl",
+      "productName" : "fashion"
     }
   ]
 }

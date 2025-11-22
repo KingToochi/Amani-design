@@ -84,7 +84,7 @@ const Navigation = ()=> {
                 
 
                 <li>
-                    <Link
+                    <Link to="/cart"
                     className="flex flex-col gap-2 items-center"
                     >
                         <GiShoppingCart />

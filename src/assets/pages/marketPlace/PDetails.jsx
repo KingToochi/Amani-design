@@ -8,7 +8,8 @@ import { CartContext } from "./hooks/CartContext"
 const PDetails = () => {
     const {id} = useParams()
     const [productDetails, setProductDetails] = useState([])
-    const {cart, setCart} = useContext(CartContext);
+    const [cart, setCart] = useContext(CartContext);
+    const [quantity, setQuantity] = useState(1)
 
 
     const  fetchProduct = async() => {
@@ -27,14 +28,30 @@ const PDetails = () => {
     }, [])
 
     const handleCart = () => {
-        setCart(cart.concat(productDetails))
+
+        setCart(prevCart => {
+            const  existing = prevCart.find(item => item.id === productDetails.id)
+
+            if (existing) {
+                return prevCart.map(item =>
+                    item.id === productDetails.id
+                    ? {...item, quantity: item.quantity + quantity}
+                    : item
+                )
+            }else {
+                return[...prevCart, {...productDetails, quantity}]
+            }
+        })
+
         console.log(cart)
+        
+        
     }
 
 
 
     return(
-        <div className="flex flex-col gap-4 pt-2 px-2 w-full min-h-screen text-gray-50 text-lg font-[abril] pb-[80px]
+        <div className="flex flex-col gap-4 pt-2 px-2 w-full min-h-screen text-gray-50 text-lg font-[abril] mb-[75px]
         sm:text-xl
         md:text-2xl
         ">
