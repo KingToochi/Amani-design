@@ -32,7 +32,7 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    <Link
+                    <Link to="/wishlist"
                     className="flex flex-col gap-2 items-center"
                     >
                         <FiHeart className="text-red-400" />

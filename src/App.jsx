@@ -12,6 +12,7 @@ import Layout from "./assets/pages/marketPlace/MarketPlaceLayout";
 import HomePage from "./assets/pages/marketPlace/HomePage";
 import PDetails from "./assets/pages/marketPlace/PDetails";
 import Cart from "./assets/pages/marketPlace/Cart";
+import WishList from "./assets/pages/marketPlace/WishList";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="product-details/:id" element={<PDetails />} />
           <Route path="cart" element={<Cart/>} />
+          <Route path="wishlist" element={<WishList />} />
           
         </Route>
         <Route path="/" element={<DesignerLayout/>}>
