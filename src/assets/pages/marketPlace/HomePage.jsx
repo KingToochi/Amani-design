@@ -39,14 +39,14 @@ const Homepage = () => {
 
     return (
         <div 
-        className="flex flex-col text-gray-50 text-lg font-[abril] px-4 py-4 gap-4
+        className="flex flex-col text-gray-50 text-lg font-[abril] px-2 py-4 gap-4
         sm:text-xl
         md-text-2xl 
         
         "
         >
             <ul
-            className="hidden w-full items-center justify-between text-lg
+            className=" w-full flex items-center gap-4 text-lg overflow-x-auto justify-between
             sm:flex
             "
             >

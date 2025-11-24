@@ -16,7 +16,8 @@ import WishList from "./assets/pages/marketPlace/WishList";
 
 function App() {
   return (
-    <div className="w-full overflow-x-hidden min-h-screen bg-gray-950 ">
+    <div className="w-full overflow-x-hidden min-h-screen bg-gray-950 
+    ">
       <Routes>
         {/* <Route path="/" element={<LandingPage />} /> */}
         <Route path="/" element={<Layout />}>
