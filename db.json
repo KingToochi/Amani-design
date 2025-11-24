@@ -25,74 +25,112 @@
   ],
   "products": [
     {
-      "id": "204a",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/men2.jpg",
+      "id": "3b28",
+      "productDescription": "Men,s senator long sleeve",
       "productCategory": "men clothing",
-      "productPrice": "2000064545",
-      "color": "black",
-      "size" : "xl",
-      "productName" : "fashion"
+      "productPrice": "35000",
+      "color": "dark blue",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763958898/my_website_products/camjw6yma8flsnlm42iv.jpg"
     },
     {
-      "id": "204c",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/woman.jpg",
+      "id": "4a7d",
+      "productDescription": "Men senator long sleeve",
+      "productCategory": "men clothing",
+      "productPrice": "15000",
+      "color": "brown",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763958951/my_website_products/qudrnxnpllapiisndro4.jpg"
+    },
+    {
+      "id": "ce20",
+      "productDescription": "Women Ankara, beautiful design",
       "productCategory": "women clothing",
-      "productPrice": "229222444",
-      "color": "black",
-      "size" : "xl",
-      "productName" : "fashion"
+      "productPrice": "35000",
+      "color": "mixed color",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959018/my_website_products/fgim9mamobo2zjfjpvxg.jpg"
     },
     {
-      "id": "204e",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/image6.jpg",
-      "productCategory": "men clothingAccessory",
-      "productPrice": "20000",
-      "color": "black",
-      "size" : "xl",
-      "productName" : "fashion"
+      "id": "9315",
+      "productDescription": "Women jumpsuit",
+      "productCategory": "women clothing",
+      "productPrice": "50000",
+      "color": "ash",
+      "size": "",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959069/my_website_products/ni7eeiq8lskjqqmwqn4u.jpg"
     },
     {
-      "id": "204f",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/image5.jpg",
+      "id": "5f21",
+      "productDescription": "Men long sleeve senator, hausa pattern",
       "productCategory": "men clothing",
-      "productPrice": "20000",
-      "color": "black",
-      "size" : "xl",
-      "productName" : "fashion"
+      "productPrice": "45000",
+      "color": "brown",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959130/my_website_products/rz1szfppizm9h2vnhtq9.jpg"
     },
     {
-      "id": "204g",
-      "productDescription": "Nice african clothing outfit. welcom",
-      "productImage": "/src/assets/images/image5.jpg",
-      "productCategory": "men clothing",
-      "productPrice": "202000",
-      "color": "black",
-      "size" : "xl",
-      "productName" : "fashion"
+      "id": "227b",
+      "productDescription": "women designers jumpsuit",
+      "productCategory": "women clothing",
+      "productPrice": "45000",
+      "color": "red",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959174/my_website_products/k8n1txdoj3fox8mdl1pt.jpg"
     },
     {
-      "id": "204h",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/image2.jpg",
+      "id": "a122",
+      "productDescription": "men designer shirt",
       "productCategory": "men clothing",
-      "productPrice": "20000",
+      "productPrice": "35000",
       "color": "black",
-      "size" : "xl",
-      "productName" : "fashion"
+      "size": "xl",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959220/my_website_products/vmlxjnuem7shdqg3ly2t.jpg"
     },
     {
-      "id": "204j",
-      "productDescription": "Nice african clothing outfit",
-      "productImage": "/src/assets/images/image4.jpg",
+      "id": "9cbf",
+      "productDescription": "footwear unisex",
+      "productCategory": "men footWear",
+      "productPrice": "25000",
+      "color": "brown",
+      "size": "m",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959279/my_website_products/fbg3ahbi0oxzbzbllfrh.jpg"
+    },
+    {
+      "id": "0293",
+      "productDescription": "men designer T-shirt",
       "productCategory": "men clothing",
-      "productPrice": "20000",
+      "productPrice": "30000",
       "color": "black",
-      "size" : "xl",
-      "productName" : "fashion"
+      "size": "xl",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959350/my_website_products/iozv1cyio8e7fb4eeyod.jpg"
+    },
+    {
+      "id": "9da9",
+      "productDescription": "men shirt",
+      "productCategory": "men clothing",
+      "productPrice": "30000",
+      "color": "black",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959413/my_website_products/r06xddyqxfpd8ypftixc.webp"
+    },
+    {
+      "id": "3a16",
+      "productDescription": "women stylish design",
+      "productCategory": "women clothing",
+      "productPrice": "100000",
+      "color": "mixed color",
+      "size": "xl",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959473/my_website_products/nc1dijnnlfbezro75bj2.jpg"
+    },
+    {
+      "id": "c67b",
+      "productDescription": "Men short sleeve senator",
+      "productCategory": "men clothing",
+      "productPrice": "50000",
+      "color": "blue",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959559/my_website_products/jhpb3svzhhw3tyne6xcj.jpg"
     }
   ]
 }

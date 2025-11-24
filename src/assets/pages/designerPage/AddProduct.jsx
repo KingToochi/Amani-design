@@ -3,49 +3,95 @@ import { useState } from "react";
 const AddProduct = () => {
     const [fileName, setFileName] = useState("")
     // const [formData, setFormData] = useState({})
-    const submitProduct = async(productData) => {
-        try {
-            let response = await fetch("http://localhost:3000/products", {
-                method : "post",
-                body:JSON.stringify( productData),
+    // const submitProduct = async(productData) => {
+    //     try {
+    //         let response = await fetch("http://localhost:3000/products", {
+    //             method : "post",
+    //             body:JSON.stringify( productData),
 
-            })
-            if(!response.ok) throw new Error("unable to post")
+    //         })
+    //         if(!response.ok) throw new Error("unable to post")
             
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
     const handleChange =(e) => {
         const file = e.target.files[0];
         if (file) {
             setFileName(file)
-            // const reader = new FileReader();
-            // reader.onloadend = () => {
-            //     const base64String = reader.result;
-            //     setFormData((prev) => ({
-            //         ...prev,
-            //         image: base64String,
-            //     }));
-            // }
-            // reader.readAsDataURL(file)
         }
         else {
             setFileName("")
         }
     }
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
         event.preventDefault()
-        const formData = new FormData(event.target)
-        const productData = Object.fromEntries(formData.entries())
-        // const finalProductData = {
-        //     ...productData, 
-        //     image: formData.image,
-        // }
-        submitProduct(productData)
-        event.target.reset()
-        setFileName("")
+        const form = event.target;
+        const formData = new FormData(form)
+        // extract the productImage
+        const productImageFile = formData.get("productImage");
+        let productImageUrl = "";
+
+        // upload image to cloudinary 
+        if (productImageFile && productImageFile.size > 0) {
+            const imageData = new FormData()
+            imageData.append("productImage", productImageFile);
+            imageData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // from Cloudinary settings
+
+            try {
+                const cloudRes = await fetch("http://localhost:4000/products", {
+                method: "POST",
+                body: imageData
+            })
+
+            const cloudData = await cloudRes.json();
+            productImageUrl = cloudData.productImageUrl; // URL of uploaded image
+            console.log(cloudData)
+            }
+            catch (err) {
+            console.error("Error uploading image:", err);
+            }
+
         }
+
+
+
+         // 3️⃣ Collect rest of the product data
+    const productData = {
+        productDescription: formData.get("productDescription"),
+        productCategory: formData.get("productCategory"),
+        productPrice: formData.get("productPrice"),
+        color: formData.get("color"),
+        size: formData.get("size"),
+        productImage: productImageUrl, // add the Cloudinary URL here
+    };
+
+  // 4️⃣ Send product data (JSON) to your backend
+  try {
+    const res = await fetch("http://localhost:3000/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(productData),
+    });
+
+    if (!res.ok) throw new Error("Failed to submit product");
+    console.log("Product submitted successfully");
+  } catch (err) {
+    console.error(err);
+  }
+
+  // Reset form
+  form.reset();
+  setFileName("");
+};
+
+
+        // const productData = Object.fromEntries(formData.entries())
+        // submitProduct(productData)
+        // event.target.reset()
+        // setFileName("")
+    
 
     return(
         <form onSubmit={handleSubmit}
@@ -80,6 +126,22 @@ const AddProduct = () => {
                 <option value="kid footWear">Kid's Footwear</option>  
                 <option value="kid clothingAccessory">Kid's Clothing Accessories</option>              
             </select>
+            <div
+            className="w-full flex items-center gap-2"
+            >
+                <input type="text" name="color" placeholder="color" 
+                className="w-1/2 px-1"
+                />
+                <select id="size" name="size" className="w-1/2 flex flex-col justify-center items-center px-2">
+                    <option value="" hidden>select size</option>
+                    <option value="xs">XS</option>
+                    <option value="s">S</option>
+                    <option value="m">M</option>
+                    <option value="l">L</option>
+                    <option value="xl">XL</option>
+                    <option value="xxl">XXl</option>
+                </select>
+            </div>
             <div
             className="flex w-full items-center justify-center gap-2 sm:text-xl font-[abril]"
             >
