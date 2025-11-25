@@ -40,7 +40,7 @@ const AddProduct = () => {
             imageData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // from Cloudinary settings
 
             try {
-                const cloudRes = await fetch("http://localhost:4000/products", {
+                const cloudRes = await fetch("https://amani-design-backend.onrender.com/products", {
                 method: "POST",
                 body: imageData
             })
@@ -69,7 +69,7 @@ const AddProduct = () => {
 
   // 4️⃣ Send product data (JSON) to your backend
   try {
-    const res = await fetch("http://localhost:3000/products", {
+    const res = await fetch("https://amani-design-backend.onrender.com/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(productData),

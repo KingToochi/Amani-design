@@ -11,7 +11,7 @@ const Homepage = () => {
 
     const fetchDesigns = async () => {
         try {
-            let response = await fetch("http://localhost:3000/products")
+            let response = await fetch("https://amani-design-backend.onrender.com/products")
             let data = await response.json()
             setTrendingDesigns(data)
                 

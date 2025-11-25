@@ -11,7 +11,7 @@ const Products = () => {
     const [editProductById, setEditProductById] = useState(null)
     const fetchProduct = async () => {
         try{
-            let response = await fetch ("http://localhost:3000/products")
+            let response = await fetch ("https://amani-design-backend.onrender.com/products")
             const products = await response.json()
             setProductList(products)
             console.log(products)
@@ -44,7 +44,7 @@ const Products = () => {
 
         const handleDelete = async (id) => {
             try {
-                    await fetch(`http://localhost:3000/products/${id}`, {
+                    await fetch(`https://amani-design-backend.onrender.com/products/${id}`, {
                     method: "DELETE",
                 });
                 setProductList(prev => prev.filter(product => product.id !== id));
@@ -59,7 +59,7 @@ const Products = () => {
             const productToUpdate = productList.find(product => product.id === id)
             if (!productToUpdate) return;
                 try {
-                    let response = await fetch(`http://localhost:3000/products/${id}`, {
+                    let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`, {
                         method: "PUT",
                         body:JSON.stringify( productToUpdate),
 

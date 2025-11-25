@@ -21,7 +21,7 @@ const ProductDetails = () => {
     const fetchProductDetail = async(id) => {
         
         try {
-            let response = await fetch(`http://localhost:3000/products/${id}`)
+            let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`)
             let data = await response.json()
             setProductDetails(data)
         } catch(error) {
@@ -59,7 +59,7 @@ const ProductDetails = () => {
   const handleUpdate = async(productDetails, e) => {
     e.preventDefault()
     try {
-        let response = await fetch (`http://localhost:3000/products/${id}`, {
+        let response = await fetch (`https://amani-design-backend.onrender.com/products/${id}`, {
             "method" : "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(productDetails)
@@ -76,14 +76,14 @@ const ProductDetails = () => {
 
   const handleDelete = async() => {
     try {
-        let response = await fetch (`http://localhost:3000/products/`, {
+        let response = await fetch (`https://amani-design-backend.onrender.com/products/`, {
             "method": "GET",
         })
         let data = response.JSON
         setProductList(data)
         if (response.ok){
             try {
-                let response = await fetch(`http://localhost:3000/products/${id}`, {
+                let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`, {
                 "method": "DELETE",
                 })
                 setProductList(prev => prev.filter(product => product.id !== id))

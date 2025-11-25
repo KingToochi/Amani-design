@@ -14,7 +14,7 @@ const PDetails = () => {
 
     const  fetchProduct = async() => {
         try {
-            let response = await fetch(`http://localhost:3000/products/${id}`)
+            let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`)
             let data = await response.json()
             setProductDetails(data)
         
