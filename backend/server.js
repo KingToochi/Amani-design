@@ -29,6 +29,17 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+
+// get all product 
+app.get("/products", (req, res) => {
+  res.json(products)
+})
+// Get single product
+app.get("/products/:id", (req, res) => {
+  const product = products.find(p => p.id === req.params.id);
+  if (!product) return res.status(404).json({ message: "Product not found" });
+  res.json(product);
+});
 // upload a single file to product endpüoint
 
 app.post("/products", uploadProduct.single("productImage"),

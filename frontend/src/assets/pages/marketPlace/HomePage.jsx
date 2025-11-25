@@ -6,12 +6,13 @@ import { WishiListContext } from "./hooks/WishListContext";
 
 
 const Homepage = () => {
+    const BASE_URL = "https://amani-design-backend.onrender.com";
     const [trendingDesigns, setTrendingDesigns] = useState([])
     const [wishList, setWishList] = useContext(WishiListContext)
 
     const fetchDesigns = async () => {
         try {
-            let response = await fetch("https://amani-design-backend.onrender.com/products")
+            let response = await fetch(`${BASE_URL}/products`)
             let data = await response.json()
             setTrendingDesigns(data)
                 
