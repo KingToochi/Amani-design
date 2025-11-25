@@ -1,0 +1,136 @@
+{
+  "users": [
+    {
+      "id": "9cf2",
+      "fname": "Toochukwu",
+      "lname": "Umoke",
+      "email": "umoketoochukwu@gmail.com",
+      "phoneNumber": "09031183272",
+      "dob": "1996-05-22",
+      "homeaddress": "10c nibo street",
+      "officeaddress": "10c nibo street",
+      "meansOfIdentification": "nin",
+      "proofOfAddress": {
+        "0": {}
+      },
+      "ninNumber": "90624036573",
+      "profilePicture": {},
+      "userName": "Toochi",
+      "password": "Kingtoochi@1996",
+      "confirmPassword": "Kingtoochi@1996",
+      "termsAndConditions": true,
+      "proofOfAddressUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762345785/my_website_uploads/u4bcy3hamxmangcuq5wj.jpg",
+      "profilePictureUrl": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1762344483/my_website_uploads/bpzjnmqtjjxsjgwoofnf.jpg"
+    }
+  ],
+  "products": [
+    {
+      "id": "3b28",
+      "productDescription": "Men,s senator long sleeve",
+      "productCategory": "men clothing",
+      "productPrice": "35000",
+      "color": "dark blue",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763958898/my_website_products/camjw6yma8flsnlm42iv.jpg"
+    },
+    {
+      "id": "4a7d",
+      "productDescription": "Men senator long sleeve",
+      "productCategory": "men clothing",
+      "productPrice": "15000",
+      "color": "brown",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763958951/my_website_products/qudrnxnpllapiisndro4.jpg"
+    },
+    {
+      "id": "ce20",
+      "productDescription": "Women Ankara, beautiful design",
+      "productCategory": "women clothing",
+      "productPrice": "35000",
+      "color": "mixed color",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959018/my_website_products/fgim9mamobo2zjfjpvxg.jpg"
+    },
+    {
+      "id": "9315",
+      "productDescription": "Women jumpsuit",
+      "productCategory": "women clothing",
+      "productPrice": "50000",
+      "color": "ash",
+      "size": "",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959069/my_website_products/ni7eeiq8lskjqqmwqn4u.jpg"
+    },
+    {
+      "id": "5f21",
+      "productDescription": "Men long sleeve senator, hausa pattern",
+      "productCategory": "men clothing",
+      "productPrice": "45000",
+      "color": "brown",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959130/my_website_products/rz1szfppizm9h2vnhtq9.jpg"
+    },
+    {
+      "id": "227b",
+      "productDescription": "women designers jumpsuit",
+      "productCategory": "women clothing",
+      "productPrice": "45000",
+      "color": "red",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959174/my_website_products/k8n1txdoj3fox8mdl1pt.jpg"
+    },
+    {
+      "id": "a122",
+      "productDescription": "men designer shirt",
+      "productCategory": "men clothing",
+      "productPrice": "35000",
+      "color": "black",
+      "size": "xl",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959220/my_website_products/vmlxjnuem7shdqg3ly2t.jpg"
+    },
+    {
+      "id": "9cbf",
+      "productDescription": "footwear unisex",
+      "productCategory": "men footWear",
+      "productPrice": "25000",
+      "color": "brown",
+      "size": "m",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959279/my_website_products/fbg3ahbi0oxzbzbllfrh.jpg"
+    },
+    {
+      "id": "0293",
+      "productDescription": "men designer T-shirt",
+      "productCategory": "men clothing",
+      "productPrice": "30000",
+      "color": "black",
+      "size": "xl",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959350/my_website_products/iozv1cyio8e7fb4eeyod.jpg"
+    },
+    {
+      "id": "9da9",
+      "productDescription": "men shirt",
+      "productCategory": "men clothing",
+      "productPrice": "30000",
+      "color": "black",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959413/my_website_products/r06xddyqxfpd8ypftixc.webp"
+    },
+    {
+      "id": "3a16",
+      "productDescription": "women stylish design",
+      "productCategory": "women clothing",
+      "productPrice": "100000",
+      "color": "mixed color",
+      "size": "xl",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959473/my_website_products/nc1dijnnlfbezro75bj2.jpg"
+    },
+    {
+      "id": "c67b",
+      "productDescription": "Men short sleeve senator",
+      "productCategory": "men clothing",
+      "productPrice": "50000",
+      "color": "blue",
+      "size": "l",
+      "productImage": "https://res.cloudinary.com/dvcivf1ei/image/upload/v1763959559/my_website_products/jhpb3svzhhw3tyne6xcj.jpg"
+    }
+  ]
+}
