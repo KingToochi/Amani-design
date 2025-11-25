@@ -4,7 +4,7 @@ import multer from "multer";
 import dotenv from "dotenv";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import data from "db.json"
+
 
 
 dotenv.config();
