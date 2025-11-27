@@ -2,20 +2,21 @@ import { useState, useEffect, useContext} from "react";
 import { FiHeart } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { WishiListContext } from "./hooks/WishListContext";
+import { BASE_URL} from "../../Url";  
 
 
 
 const Homepage = () => {
-    const BASE_URL = "https://amani-design-backend.onrender.com";
-    const [trendingDesigns, setTrendingDesigns] = useState([])
+    const url = BASE_URL;
+    const [designs, setDesigns] = useState([])
     const [wishList, setWishList] = useContext(WishiListContext)
 
     const fetchDesigns = async () => {
         try {
-            let response = await fetch(`${BASE_URL}/products`)
+            let response = await fetch(`${url}/products`)
             let data = await response.json()
-            setTrendingDesigns(data)
-                
+            setDesigns(data)
+
         } catch (error) {
             console.log(error)
         }
@@ -40,32 +41,60 @@ const Homepage = () => {
 
     return (
         <div 
-        className="flex flex-col text-gray-50 text-lg font-[abril] px-2 py-4 gap-4
+        className="flex flex-col text-gray-50 text-lg font-[abril] px-2 gap-4
         sm:text-xl
         md-text-2xl 
         
         "
         >
             <ul
-            className=" w-full flex items-center gap-4 text-lg overflow-x-auto justify-between
-            sm:flex
+            className=" w-full flex items-center gap-4 text-lg overflow-x-auto px-2 flex-nowrap
+            sm:flex h-[50px]
+            md:h-[70px]
             "
             >
-                <li className=" border-1 rounded-lg px-2">
-                    <Link>Clothings</Link>
+                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500  ">
+                    <Link>Men's Clothing</Link>
                 </li>
 
-                <li  className=" border-1 rounded-lg px-2">
-                    <Link>Footwears</Link>
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Men's Footwears</Link>
+                </li>
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Women's Footwears</Link>
+                </li>
+                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Women's Clothing</Link>
                 </li>
 
-                <li  className=" border-1 rounded-lg px-2">
-                    <Link>Handbags/Purses</Link>
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Men's handBag/purse</Link>
                 </li>
 
-                <li  className=" border-1 rounded-lg px-2">
-                    <Link>Accessories</Link>
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Women's handBag/purse</Link>
                 </li>
+
+                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Men's Clothing Accessories</Link>
+                </li>
+
+                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Women's Clothing Accessories</Link>
+                </li>
+
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Kid's Clothing</Link>
+                </li>
+
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Kid's Footwear</Link>
+                </li>
+
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500">
+                    <Link>Kid's Clothing Accessories</Link>
+                </li>
+                
             </ul>
             <div
             className="columns-2 gap-2
@@ -73,7 +102,7 @@ const Homepage = () => {
             lg:columns-4
             "
             >
-            {trendingDesigns.map(design =>(
+            {designs.map(design =>(
                 <div key={design.id}
                 className="w-full flex relative"
                 >
