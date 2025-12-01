@@ -14,12 +14,12 @@ const removeFromWishList = (id) => {
 
 
 if (wishList.length == 0) return (
-    <div className="text-gray-50">No item added yet</div>
+    <div className="text-gray-500">No item added yet</div>
 )
 
 return(
     <div
-    className="w-full min-h-screen mb-[75px] colums-2 gap-2 text-gray-50 columns-2 text-lg 
+    className="w-full min-h-screen mb-[75px] colums-2 gap-2 text-gray-500 columns-2 text-lg 
     sm:text-xl
     md:columns-3 md:text-2xl
     lg:columns-4

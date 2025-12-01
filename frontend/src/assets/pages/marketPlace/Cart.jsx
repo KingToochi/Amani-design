@@ -51,7 +51,7 @@ const subTotal = cart.reduce((sum, cart) => sum + (cart.productPrice * cart.quan
 
     return (
         <div
-        className="text-gray-50 font-[abril] text-lg mb-[75px]
+        className="text-gray-500 font-[abril] text-lg mb-[75px] 
         sm:text-xl
         md:text-2xl
         "
@@ -132,7 +132,7 @@ const subTotal = cart.reduce((sum, cart) => sum + (cart.productPrice * cart.quan
                                         <h1 className="w-1/2">
                                             Subtotal
                                         </h1>
-                                        <div className="w-1/2 flex justify-end">
+                                        <div className="w-1/2 flex justify-end items-center">
                                             <TbCurrencyNaira/>
                                             <span>
                                                 {subTotal}

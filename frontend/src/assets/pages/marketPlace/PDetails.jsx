@@ -51,7 +51,7 @@ const PDetails = () => {
 
 
     return(
-        <div className="flex flex-col gap-4 pt-2 px-2 w-full min-h-screen text-gray-50 text-lg font-[abril] mb-[75px]
+        <div className="flex flex-col gap-4 pt-2 px-2 w-full min-h-screen text-gray-500 text-lg font-[abril] mb-[75px]
         sm:text-xl
         md:text-2xl
         ">
@@ -78,7 +78,7 @@ const PDetails = () => {
                     <h1>Size: xl </h1>
                     <h1>color: Black</h1>
                     <div 
-                    className="w-full flex justify-between "
+                    className="w-full flex justify-between text-gray-50 "
                     >
                         <button 
                         className="border-1 px-2 rounded-lg bg-blue-700 cursor-pointer"
