@@ -6,6 +6,7 @@ import { FaUser } from "react-icons/fa6";
 import logo from "../../images/mainLogo.jpg"
 import { Link } from "react-router-dom";
 import { useState } from "react";
+
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
     const onClickSearchIcon = () => setShowSearchBar((prev) => !prev)
@@ -97,7 +98,7 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    <Link
+                    <Link to="/profile"
                     className="flex flex-col gap-2 items-center"
                     >
                         <FaUser />
