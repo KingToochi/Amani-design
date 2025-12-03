@@ -7,7 +7,7 @@ const ProfilePage = () => {
 
     useEffect(()  =>{
         if (!isLoggedIn) {
-        navigate("/registration")
+        navigate("/login")
     }
     })
 

@@ -14,6 +14,7 @@ import PDetails from "./assets/pages/marketPlace/PDetails";
 import Cart from "./assets/pages/marketPlace/Cart";
 import WishList from "./assets/pages/marketPlace/WishList";
 import ProfilePage from "./assets/pages/marketPlace/ProfilePage";
+import Login from "./assets/pages/Login";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
     ">
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="registration" element={<LandingPage />} />
+          <Route path="login" element={<Login />} />
           <Route index element={<HomePage />} />
           <Route path="product-details/:id" element={<PDetails />} />
           <Route path="cart" element={<Cart/>} />
