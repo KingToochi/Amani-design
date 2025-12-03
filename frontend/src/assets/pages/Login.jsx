@@ -63,25 +63,27 @@ const Login = () => {
 
     return ( 
         <div 
-        className="flex flex-col items-center gap-10
+        className="flex flex-col items-center gap-10 text-lg font-[abril]
+        sm:text-xl
+        md:text-2xl
         lg:gap-6
         ">
             <button 
-            className="w-full border-1 rounded-lg py-2 border-gray-100"
+            className="w-full border-1 rounded-lg py-2 border-gray-100 cursor-pointer"
             >
                 <h2
-                className="text-base font-semibold"
+                className="font-semibold"
                 >
                     Continue With Google
                 </h2>
             </button>
 
             <h2
-            className="text-xl font-bold"
+            className="font-bold"
             >OR</h2>
 
             <form 
-            className="w-full flex flex-col items-center gap-10
+            className="w-[90%] mx-auto flex flex-col items-center gap-10
             lg:gap-6 "
             onSubmit={handleSubmit(onSubmit)}>
                 <input 
@@ -107,14 +109,14 @@ const Login = () => {
                 )}
 
                 <button to="" 
-                className="w-full text-sm font-medium text-left"
+                className="w-full font-medium text-left"
                 >Forgot your password?
                 </button>
 
                 <button
                 type="submit"
                 disabled= {isSubmitting}
-                className="w-full border-2px border-gray-600 rounded-lg bg-gray-600 text-gray-400 text-base font-semibold py-2"
+                className="w-full border-2px border-gray-600 rounded-lg bg-gray-600 text-gray-400 font-semibold py-2"
                 >
                     {isSubmitting ? "login in ..." : "Log in" } 
                 </button>
