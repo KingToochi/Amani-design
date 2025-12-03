@@ -16,8 +16,8 @@ const Login = () => {
     return (
         showRegistrationModal && (
             <div 
-            className="w-full  absolute top-0 left-0 right-0 px-2 py-4 flex flex-col items-center justify-center backdrop-blur
-            lg:fixed lg:inset-0 
+            className="w-full  absolute top-0 left-0 right-0 pt-2 pb-[75px] py-4 flex flex-col items-center justify-center backdrop-blur
+             mb-[1000px]
             "
             >
                 <div
@@ -63,7 +63,7 @@ const Login = () => {
 
     return ( 
         <div 
-        className="flex flex-col items-center gap-10 text-lg font-[abril]
+        className="flex flex-col items-center gap-10 text-lg font-[abril] mb-[75px]
         sm:text-xl
         md:text-2xl
         lg:gap-6
