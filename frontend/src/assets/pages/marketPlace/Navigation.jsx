@@ -5,10 +5,12 @@ import { GiShoppingCart } from "react-icons/gi";
 import { FaUser } from "react-icons/fa6";
 import logo from "../../images/mainLogo.jpg"
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext} from "react";
+import { CartContext } from "./hooks/CartContext";
 
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
+    const [cart]= useContext(CartContext)
     const onClickSearchIcon = () => setShowSearchBar((prev) => !prev)
 
     return (
@@ -88,7 +90,16 @@ const Navigation = ()=> {
                     <Link to="/cart"
                     className="flex flex-col gap-2 items-center"
                     >
-                        <GiShoppingCart />
+                        <div
+                        className="flex relative items-center"
+                        >
+                            <GiShoppingCart />
+                            <sup 
+                            className={`${cart.length === 0 && "hidden"}`}
+                            >
+                                {cart.length}
+                            </sup>
+                        </div>
                         <h1
                         className="hidden 
                         sm:flex
