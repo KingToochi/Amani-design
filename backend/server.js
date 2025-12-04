@@ -1,35 +1,148 @@
 
+// import express from "express";
+// import cors from "cors";
+// import multer from "multer";
+// import dotenv from "dotenv";
+// import { v2 as cloudinary } from "cloudinary";
+// import fs from "fs";
+
+// dotenv.config();
+// const app = express();
+// app.use(cors());
+// app.use(express.json()); // parse JSON bodies
+
+// // Load DB
+// const DB_FILE = "./db.json";
+// let rawData = fs.readFileSync(DB_FILE);
+// let db = JSON.parse(rawData);
+
+// // Multer setup
+// const uploadProduct = multer({ dest: "./products" });
+
+// // Cloudinary config
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
+
+// // Helper to save DB
+// const saveDB = () => {
+//   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+// };
+
+// // GET all products
+// app.get("/products", (req, res) => {
+//   res.json(db.products);
+// });
+
+// // GET single product
+// app.get("/products/:id", (req, res) => {
+//   const product = db.products.find(p => p.id === req.params.id);
+//   if (!product) return res.status(404).json({ message: "Product not found" });
+//   res.json(product);
+// });
+
+// // POST new product
+// app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
+//   try {
+//     const { productDescription, productCategory, productPrice, color, size } = req.body;
+//     let productImageUrl = "";
+
+//     if (req.file) {
+//       const result = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "my_website_products",
+//       });
+//       productImageUrl = result.secure_url;
+//       fs.unlinkSync(req.file.path);
+//     }
+
+//     const newProduct = {
+//       id: `${Date.now()}`, // simple unique id
+//       productDescription,
+//       productCategory,
+//       productPrice,
+//       color,
+//       size,
+//       productImage: productImageUrl,
+//     };
+
+//     db.products.push(newProduct);
+//     saveDB();
+
+//     res.status(201).json(newProduct);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// // PUT (update) product
+// app.put("/products/:id", (req, res) => {
+//   const index = db.products.findIndex(p => p.id === req.params.id);
+//   if (index === -1) return res.status(404).json({ message: "Product not found" });
+
+//   db.products[index] = { ...db.products[index], ...req.body };
+//   saveDB();
+//   res.json(db.products[index]);
+// });
+
+// // DELETE product
+// app.delete("/products/:id", (req, res) => {
+//   db.products = db.products.filter(p => p.id !== req.params.id);
+//   saveDB();
+//   res.json({ message: "Product deleted" });
+// });
+
+// app.listen(4000, () => console.log("Server running on port 4000"));
+
+
 import express from "express";
 import cors from "cors";
 import multer from "multer";
 import dotenv from "dotenv";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import http from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
 const app = express();
 app.use(cors());
-app.use(express.json()); // parse JSON bodies
+app.use(express.json());
 
-// Load DB
+// ---- Socket.IO Setup ----
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on("connection", (socket) => {
+  socket.on("sendNotification", (data) => {
+    io.emit("receiveNotification", data);
+  });
+});
+
+server.listen(4000, () => console.log("Server running on port 4000"));
+
+// ---- Load DB ----
 const DB_FILE = "./db.json";
 let rawData = fs.readFileSync(DB_FILE);
 let db = JSON.parse(rawData);
 
-// Multer setup
+// ---- Multer ----
 const uploadProduct = multer({ dest: "./products" });
 
-// Cloudinary config
+// ---- Cloudinary ----
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Helper to save DB
+// ---- Save DB ----
 const saveDB = () => {
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
 };
+
+// ---- Routes ----
 
 // GET all products
 app.get("/products", (req, res) => {
@@ -38,48 +151,60 @@ app.get("/products", (req, res) => {
 
 // GET single product
 app.get("/products/:id", (req, res) => {
-  const product = db.products.find(p => p.id === req.params.id);
+  const product = db.products.find((p) => p.id === req.params.id);
   if (!product) return res.status(404).json({ message: "Product not found" });
   res.json(product);
 });
 
 // POST new product
-app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
-  try {
-    const { productDescription, productCategory, productPrice, color, size } = req.body;
-    let productImageUrl = "";
+app.post(
+  "/products",
+  uploadProduct.single("productImage"),
+  async (req, res) => {
+    try {
+      const {
+        productDescription,
+        productCategory,
+        productPrice,
+        color,
+        size,
+      } = req.body;
 
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "my_website_products",
-      });
-      productImageUrl = result.secure_url;
-      fs.unlinkSync(req.file.path);
+      let productImageUrl = "";
+
+      if (req.file) {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "my_website_products",
+        });
+        productImageUrl = result.secure_url;
+        fs.unlinkSync(req.file.path);
+      }
+
+      const newProduct = {
+        id: `${Date.now()}`,
+        productDescription,
+        productCategory,
+        productPrice,
+        color,
+        size,
+        productImage: productImageUrl,
+      };
+
+      db.products.push(newProduct);
+      saveDB();
+
+      res.status(201).json(newProduct);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-
-    const newProduct = {
-      id: `${Date.now()}`, // simple unique id
-      productDescription,
-      productCategory,
-      productPrice,
-      color,
-      size,
-      productImage: productImageUrl,
-    };
-
-    db.products.push(newProduct);
-    saveDB();
-
-    res.status(201).json(newProduct);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
   }
-});
+);
 
-// PUT (update) product
+// PUT update product
 app.put("/products/:id", (req, res) => {
-  const index = db.products.findIndex(p => p.id === req.params.id);
-  if (index === -1) return res.status(404).json({ message: "Product not found" });
+  const index = db.products.findIndex((p) => p.id === req.params.id);
+  if (index === -1)
+    return res.status(404).json({ message: "Product not found" });
 
   db.products[index] = { ...db.products[index], ...req.body };
   saveDB();
@@ -88,9 +213,7 @@ app.put("/products/:id", (req, res) => {
 
 // DELETE product
 app.delete("/products/:id", (req, res) => {
-  db.products = db.products.filter(p => p.id !== req.params.id);
+  db.products = db.products.filter((p) => p.id !== req.params.id);
   saveDB();
   res.json({ message: "Product deleted" });
 });
-
-app.listen(4000, () => console.log("Server running on port 4000"));
