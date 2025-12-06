@@ -114,11 +114,11 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server);
 
-io.on("connection", (socket) => {
-  socket.on("sendNotification", (data) => {
-    io.emit("receiveNotification", data);
-  });
-});
+// io.on("connection", (socket) => {
+//   socket.on("Hello", (data) => {
+//     io.emit("receiveNotification", "welcome to Amanusky fashion world");
+//   });
+// });
 
 server.listen(4000, () => console.log("Server running on port 4000"));
 
@@ -217,3 +217,10 @@ app.delete("/products/:id", (req, res) => {
   saveDB();
   res.json({ message: "Product deleted" });
 });
+
+// verify user login 
+app.post("/users", (req, res) => {
+  const data = req.body
+  console.log(data)´
+   res.json({ message: "OK" });
+})

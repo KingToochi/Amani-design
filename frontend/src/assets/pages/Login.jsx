@@ -2,14 +2,25 @@ import { useForm } from "react-hook-form";
 import logo from "../images/mainLogo.jpg";
 import Registration from "./DesignersRegistration";
 import { useState } from "react";
+import { BASE_URL } from "../Url";
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
+    const url = BASE_URL
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
-    const handleLogin = () => SetShowLoginModal(true);
     const handlRegistration = () => SetShowRegistrationModal(true);
-    const onSubmit = (data) => {
-    console.log(data);
+    const onSubmit = async(data) => {
+        try {
+            let response = await fetch(`${url}/users`, {
+                method: "POST",
+                headers : {
+                    "content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            let data = await response.json()
+            console.log(data)
+        } catch(error) {}
     }
 
     const displayShowRegistrationModal = () => {
