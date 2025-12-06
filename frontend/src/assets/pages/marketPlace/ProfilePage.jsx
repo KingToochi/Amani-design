@@ -16,10 +16,13 @@ const ProfilePage = () => {
 
 
     useEffect(()  =>{
-        if (!isLoggedIn) {
+        const token = localStorage.getItem("token");
+        if (!token) {
         navigate("/login")
+    } else{
+         console.log("User logged in:", token);
     }
-    })
+    }, [])
 
     return(
         <div>

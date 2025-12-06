@@ -104,12 +104,15 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
-import { error } from "console";
+import jwt from "jsonwebtoken"
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// temporary secret key
+const SECRET_KEY = "amaniskysecrecy19962025"
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
@@ -231,11 +234,12 @@ app.post("/users", (req, res) => {
     return res.status(401).json({ success: false, error: "incorrect password" })
   }
 
+  const token = jwt.sign({ email: user.email, status: user.status }, SECRET_KEY, { expiresIn: "1h" });
   let reply;
   if (user.status === "designer") {
-    reply  = { success: true, redirect: "/designer/products" };
+    reply  = { success: true, redirect: "/designer/products", token };
   } else {
-    reply = { success: true, redirect: "/" };
+    reply = { success: true, redirect: "/", token};
   }
   res.json(reply)
 })

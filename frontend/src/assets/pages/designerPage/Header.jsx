@@ -9,7 +9,7 @@ import logo from "../../images/mainLogo.jpg"
 import { FiSearch } from "react-icons/fi";
 import { FaPalette } from "react-icons/fa6";
 import { BsTag } from "react-icons/bs";
-
+import { FaStore } from "react-icons/fa6";
 
 const Header = () => {
     const [userData, setUserData] = useState([])
@@ -114,6 +114,19 @@ const Header = () => {
                                     >
                                         <FcSalesPerformance/>
                                         <h2>Analytics</h2>
+                                    </Link>
+                                </li>
+
+                                <li>
+                                    <Link to="/"
+                                    onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <FaStore />
+                                        <h2>MarketPlace</h2>
                                     </Link>
                                 </li>
                                 <li>

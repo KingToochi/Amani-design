@@ -22,7 +22,10 @@ const Login = () => {
             })
             let result = await response.json()
             if (result.success) {
-                navigate(result.redirect)
+                localStorage.setItem("token", result.token); 
+                navigate(result.redirect) 
+            } else {
+                throw new Error(result.error)
             }
         } catch(error) {
             console.log(error)
