@@ -221,6 +221,6 @@ app.delete("/products/:id", (req, res) => {
 // verify user login 
 app.post("/users", (req, res) => {
   const data = req.body
-  console.log(data)´
-   res.json({ message: "OK" });
+  console.log(data)
+   res.json({ message: "OK" })
 })

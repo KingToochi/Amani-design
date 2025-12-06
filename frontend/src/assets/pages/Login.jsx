@@ -18,8 +18,8 @@ const Login = () => {
                 },
                 body: JSON.stringify(data)
             })
-            let data = await response.json()
-            console.log(data)
+            let serverData = await response.json()
+            console.log(serverData)
         } catch(error) {}
     }
 
