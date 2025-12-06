@@ -224,3 +224,8 @@ app.post("/users", (req, res) => {
   console.log(data)
    res.json({ message: "OK" })
 })
+
+
+app.get("/users", (req, res) => {
+  res.json({ message: "POST /users is ready!" });
+});
