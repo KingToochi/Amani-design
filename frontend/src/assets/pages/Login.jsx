@@ -3,9 +3,11 @@ import logo from "../images/mainLogo.jpg";
 import Registration from "./DesignersRegistration";
 import { useState } from "react";
 import { BASE_URL } from "../Url";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
+    const navigate = useNavigate()
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
@@ -14,13 +16,17 @@ const Login = () => {
             let response = await fetch(`${url}/users`, {
                 method: "POST",
                 headers : {
-                    "content-Type": "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data)
             })
-            let serverData = await response.json()
-            console.log(serverData)
-        } catch(error) {}
+            let result = await response.json()
+            if (result.success) {
+                navigate(result.redirect)
+            }
+        } catch(error) {
+            console.log(error)
+        }
     }
 
     const displayShowRegistrationModal = () => {

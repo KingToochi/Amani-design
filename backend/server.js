@@ -43,7 +43,7 @@
 //   res.json(product);
 // });
 
-// // POST new product
+// // POST new Eroduct
 // app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
 //   try {
 //     const { productDescription, productCategory, productPrice, color, size } = req.body;
@@ -104,6 +104,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
+import { error } from "console";
 
 dotenv.config();
 const app = express();
@@ -112,7 +113,7 @@ app.use(express.json());
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Eerver(server);
 
 // io.on("connection", (socket) => {
 //   socket.on("Hello", (data) => {
@@ -156,7 +157,7 @@ app.get("/products/:id", (req, res) => {
   res.json(product);
 });
 
-// POST new product
+// POST new Eroduct
 app.post(
   "/products",
   uploadProduct.single("productImage"),
@@ -221,11 +222,20 @@ app.delete("/products/:id", (req, res) => {
 // verify user login 
 app.post("/users", (req, res) => {
   const data = req.body
-  console.log(data)
-   res.json({ message: "OK" })
+  const user = db.users.find(user => user.email === data.email)
+  if(!user) {
+    return res.status(404).json({ success: false, error: "User not found" })
+  }
+
+  if (user.password !== data.password) {
+    return res.status(401).json({ success: false, error: "incorrect password" })
+  }
+
+  let reply;
+  if (user.status === "designer") {
+    reply  = { success: true, redirect: "/designer/products" };
+  } else {
+    reply = { success: true, redirect: "/" };
+  }
+  res.json(reply)
 })
-
-
-app.get("/users", (req, res) => {
-  res.json({ message: "POST /users is ready!" });
-});
