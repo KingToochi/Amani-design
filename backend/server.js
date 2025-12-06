@@ -113,7 +113,7 @@ app.use(express.json());
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
-const io = new Eerver(server);
+const io = new Server(server);
 
 // io.on("connection", (socket) => {
 //   socket.on("Hello", (data) => {
@@ -222,7 +222,7 @@ app.delete("/products/:id", (req, res) => {
 // verify user login 
 app.post("/users", (req, res) => {
   const data = req.body
-  const user = db.users.find(user => user.email === data.email)
+  const user = db.users.find(user => user.email == data.email)
   if(!user) {
     return res.status(404).json({ success: false, error: "User not found" })
   }
