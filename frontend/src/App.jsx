@@ -15,6 +15,7 @@ import Cart from "./assets/pages/marketPlace/Cart";
 import WishList from "./assets/pages/marketPlace/WishList";
 import ProfilePage from "./assets/pages/marketPlace/ProfilePage";
 import Login from "./assets/pages/Login";
+import UserRegistration from "./assets/pages/UserRegistration"
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="cart" element={<Cart/>} />
           <Route path="wishlist" element={<WishList />} />
           <Route path="profile" element={<ProfilePage/>} />
+          <Route path="login/registration" element={<UserRegistration/>}/>
         </Route>
         <Route path="/designer" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />

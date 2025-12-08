@@ -3,7 +3,7 @@ import logo from "../images/mainLogo.jpg";
 import Registration from "./DesignersRegistration";
 import { useState } from "react";
 import { BASE_URL } from "../Url";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
@@ -148,8 +148,11 @@ const Login = () => {
                 className="text-base text-gray-600 font-bold"
                 >No Account?</h2>
                 <button 
-                className="w-auto px-2 text-center text-base  text-blue-600 font-bold cursor-pointer"
-                to="">Sign up</button>
+                className="w-auto px-2 text-center text-base  text-blue-600 font-bold cursor-pointer">
+                    <Link to="registration">
+                    Sign up
+                    </Link>
+                </button>
             </div>
             <div
             className="flex gap-1 justify-center  w-full"

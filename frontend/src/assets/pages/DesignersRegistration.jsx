@@ -2,9 +2,11 @@ import { BasicInformation, DetailsVerification, CreateUser } from "../components
 import { useState } from "react";
 import logo from "../images/mainLogo.jpg";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../Url";
 
 
 const Registration = () => {
+    const url = BASE_URL
     const navigate = useNavigate()
     const [meansOfIdentification, setMeansOfIdentification] = useState("");
     const [showDetailsVerification, setShowDetailsVerification] = useState(false);
@@ -47,7 +49,7 @@ const handleFinalSubmit = async (data) => {
 
 
     try {
-        const upLoadImage = await fetch("http://localhost:4000/upload", {
+        const upLoadImage = await fetch(`${url}/users`, {
             method: "POST",
             body: imageData
         })
@@ -61,7 +63,7 @@ const handleFinalSubmit = async (data) => {
             profilePictureUrl: profilePictureUrl,
             };
         try {
-        const uploadFormData = await fetch("http://localhost:3000/users", {
+        const uploadFormData = await fetch(`${url}/users`, {
             method: "POST",
             body: JSON.stringify(finalUserData)
         })

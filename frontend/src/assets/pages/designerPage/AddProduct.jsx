@@ -2,20 +2,6 @@ import { FaNairaSign } from "react-icons/fa6";
 import { useState } from "react";
 const AddProduct = () => {
     const [fileName, setFileName] = useState("")
-    // const [formData, setFormData] = useState({})
-    // const submitProduct = async(productData) => {
-    //     try {
-    //         let response = await fetch("http://localhost:3000/products", {
-    //             method : "post",
-    //             body:JSON.stringify( productData),
-
-    //         })
-    //         if(!response.ok) throw new Error("unable to post")
-            
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
     const handleChange =(e) => {
         const file = e.target.files[0];
         if (file) {
