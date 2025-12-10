@@ -164,8 +164,9 @@ app.post("/users/registration", (req, res) => {
 app.post("/users/username", (req, res) => {
   try {
     const data = req.body
-    const user = db.users.find(user => user.username.toLowerCase() === data.username.toLowerCase())
-    if (!user) {
+    console.log(data)
+    const users = db.users.find(user => user.username.toLowerCase() === data.username.toLowerCase())
+    if (!users) {
       res.send({status: "free", message:"username Available"})
     }else{
       res.send({ status: "exists", message: "Username already taken" });
