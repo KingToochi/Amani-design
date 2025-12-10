@@ -7,6 +7,7 @@ import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken"
+import path from "path";
 
 dotenv.config();
 const app = express();
@@ -156,5 +157,22 @@ app.post("/users/registration", (req, res) => {
     db.users.push(data)
     const token = jwt.sign({ email: data.email, status: data.status }, SECRET_KEY, { expiresIn: "1h" });
     res.status(201).json({message: "user registered successfully" , user : data,  token})
+  }
+})
+
+// verify username
+app.post("/users/username", (req, res) => {
+  const data = req.body 
+  const dbPath = path.join(__dirname, "db.json")
+  const dbData = JSON.parse(fs.readFileSync(dbPath, "utf-8"))
+   const users = dbData.users;
+
+  // Check if username exists
+  const exists = users.some(user => user.username.toLowerCase() === data.username.toLowerCase());
+
+  if (exists) {
+    res.send({ status: "exists", message: "Username already taken" });
+  } else {
+    res.send({ status: "free", message: "Username is available" });
   }
 })

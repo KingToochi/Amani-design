@@ -9,6 +9,8 @@ const UserRegistration = () => {
     const [showCPassword, setShowCPassword] = useState(false)
     const [isSubmiting, setISsubmitting] = useState(false)
     const [passwordStrength, setPasswordStrength] = useState("")
+    const [usernameVerificationMessage, setUsernameVerificationMessage] = useState("")
+    const [showUSernameVerificationMessage, setShowUsernameVerificationMessage] = useState(false)
     const [showMessage, setShowMessage] = useState({
         fname: false,
         lname: false,
@@ -101,6 +103,26 @@ const UserRegistration = () => {
         }
         }
 };
+
+const validateUsername = async(event) => {
+    const {id, value} = event.target
+   
+    if (id === "username") {
+            try {
+                let response = await fetch (`${url}/users/username`, {
+                    method: "POST",
+                    body: JSON.stringify({username: value})
+                }) 
+                let data = await response.json()
+                console.log(data)
+                setUsernameVerificationMessage(true)
+                setShowUsernameVerificationMessage(data.message)
+
+            }catch(error) {
+
+            }
+        }
+}
 
     const handleSubmit = async(event) => {
         event.preventDefault()
@@ -200,6 +222,9 @@ const UserRegistration = () => {
                     <h1
                     className="text-red-300"
                     >{error.username}</h1>
+                }
+                {showUSernameVerificationMessage &&
+                <h1 className={`${usernameVerificationMessage === "Username already taken" ? "text-red-300" : "text-green-400"}`}>{usernameVerificationMessage}</h1>
                 }
             </div>
 
