@@ -163,19 +163,13 @@ app.post("/users/registration", (req, res) => {
 // verify username
 app.post("/users/username", (req, res) => {
   try {
-    const data = req.body 
-  const dbPath = path.join(__dirname, "db.json")
-  const dbData = JSON.parse(fs.readFileSync(dbPath, "utf-8"))
-   const users = dbData.users;
-
-  // Check if username exists
-  const exists = users.some(user => user.username.toLowerCase() === data.username.toLowerCase());
-
-  if (exists) {
-    res.send({ status: "exists", message: "Username already taken" });
-  } else {
-    res.send({ status: "free", message: "Username is available" });
-  }
+    const data = req.body
+    const user = db.users.find(user => user.username.toLowerCase() === data.username.toLowerCase())
+    if (!user) {
+      res.send({status: "free", message:"username Available"})
+    }else{
+      res.send({ status: "exists", message: "Username already taken" });
+    }
   }catch (err) {
     console.error("Error in /users/username:", err);
     res.status(500).send({ status: "error", message: "Server error" });
