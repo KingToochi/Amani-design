@@ -110,7 +110,9 @@ const validateUsername = async(event) => {
     const {id, value} = event.target
    
     if (id === "username") {
-            try {
+           if (value.length >= 5) {
+             if (isNaN(value)){
+                try {
                 let response = await fetch (`${url}/users/username`, {
                     method: "POST",
                     headers : { "Content-Type": "application/json" },
@@ -118,12 +120,20 @@ const validateUsername = async(event) => {
                 }) 
                 let data = await response.json()
                 console.log(data)
-                setUsernameVerificationMessage(true)
-                setShowUsernameVerificationMessage(data.message)
+                setUsernameVerificationMessage(data.message)
+                setShowUsernameVerificationMessage(true)
 
             }catch(error) {
 
             }
+           } else{
+            setShowUsernameVerificationMessage(true)
+            setUsernameVerificationMessage("Username must be text, not a number")
+           }
+           } else {
+            setShowUsernameVerificationMessage(true);
+            setUsernameVerificationMessage("Username too short (min 5 characters)")
+        }
         }
 }
 
