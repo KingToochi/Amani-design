@@ -52,6 +52,8 @@ const UserRegistration = () => {
             return newErr;
             });
         }
+
+        validateUsername(event)
         // validate the email address
         if (id === "email") {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

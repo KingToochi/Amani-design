@@ -162,7 +162,8 @@ app.post("/users/registration", (req, res) => {
 
 // verify username
 app.post("/users/username", (req, res) => {
-  const data = req.body 
+  try {
+    const data = req.body 
   const dbPath = path.join(__dirname, "db.json")
   const dbData = JSON.parse(fs.readFileSync(dbPath, "utf-8"))
    const users = dbData.users;
@@ -174,5 +175,9 @@ app.post("/users/username", (req, res) => {
     res.send({ status: "exists", message: "Username already taken" });
   } else {
     res.send({ status: "free", message: "Username is available" });
+  }
+  }catch (err) {
+    console.error("Error in /users/username:", err);
+    res.status(500).send({ status: "error", message: "Server error" });
   }
 })
