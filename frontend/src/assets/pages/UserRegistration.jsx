@@ -7,6 +7,7 @@ const UserRegistration = () => {
     const url = BASE_URL
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
+    const [isSubmiting, setISsubmitting] = useState(false)
     const [passwordStrength, setPasswordStrength] = useState("")
     const [showMessage, setShowMessage] = useState({
         fname: false,
@@ -27,7 +28,7 @@ const UserRegistration = () => {
         password: "",
     })
 
-    const validateForm = (event) => {
+    const validateFormInput = (event) => {
         // extract the id and value of each form input 
         const {id, value, name} = event.target
         // update the formdata with the values and id of the form input
@@ -101,24 +102,29 @@ const UserRegistration = () => {
         }
 };
 
-    const handleSubmit = async(e) => {
-        e.preventDefault()
-        
-        for (let key in formData) {
-           console.log(key)
-           if (formData[key] === "") {
-            setError({...error, [key]: "field required"})
-            setShowMessage(prev => ({...prev, [key] : true}))
+    const handleSubmit = async(event) => {
+        event.preventDefault()
+        let hasError = false
+
+        const validateForm = () => {
+            for (let id in formData) {
+                const formValue = formData[id]
+                if (formValue.length === 0) {
+                    hasError = true
+                    setError(prev => ({...prev, [id]:"field required"}))
+                    setShowMessage(prev => ({...prev, [id] : true}))
+                }
+            }
             console.log(error)
-            console.log(showMessage)
-                
-           }
-            
+            console.log(hasError)
+            return hasError
         }
 
-        if (Object.keys(error).length === 0) {
+        validateForm()
+
+        if (Object.keys(error).length === 0 || !hasError) {
             try {
-                let response = await fetch(`${url}/user`, {
+                let response = await fetch(`${url}/users`, {
                     method: "POST",
                     body : JSON.stringify(formData)
                 })
@@ -134,9 +140,9 @@ const UserRegistration = () => {
 
     return(
         <div 
-        className="w-full flex flex-col px-4 py-4 min-h-screen font-[abril] text-lg gap-4
-        sm:text-xl
+        className="w-full flex flex-col px-4 py-4 min-h-screen font-[abril] text-lg gap-4 pb-[75px] 
         md:text-2xl
+        md:w-[50%] md:mx-auto
         "
         >
             <div
@@ -156,12 +162,14 @@ const UserRegistration = () => {
             className="flex flex-col w-full"
             >
                 <label htmlFor="fname">First Name</label>
-                <input type="text" name="first name" id="fname" value={formData.fname} placeholder="first name" onChange={validateForm} onBlur={validateForm}
+                <input type="text" name="first name" id="fname" value={formData.fname} placeholder="first name" onChange={validateFormInput} onBlur={validateFormInput}
                 className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
                 />
                 {
                     showMessage.fname && 
-                    <h1>{error.fname}</h1>
+                    <h1
+                    className="text-red-300"
+                    >{error.fname}</h1>
                 }
             </div>
             
@@ -169,12 +177,14 @@ const UserRegistration = () => {
             className="flex flex-col w-full"
             >
                 <label htmlFor="lname">Last Name</label>
-                <input type="text" name="last name" id="lname" value={formData.lname} placeholder="last name" onChange={validateForm} onBlur={validateForm}
+                <input type="text" name="last name" id="lname" value={formData.lname} placeholder="last name" onChange={validateFormInput} onBlur={validateFormInput}
                 className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
                 />
                 {
                     showMessage.lname && 
-                    <h1>{error.lname}</h1>
+                    <h1
+                    className="text-red-300"
+                    >{error.lname}</h1>
                 }
             </div>
 
@@ -182,12 +192,14 @@ const UserRegistration = () => {
             
             className="flex flex-col w-full">
                 <label htmlFor="username">Username</label>
-                <input type="text" name="username" id="username" value={formData.username} placeholder="username" onChange={validateForm} onBlur={validateForm}
+                <input type="text" name="username" id="username" value={formData.username} placeholder="username" onChange={validateFormInput} onBlur={validateFormInput}
                 className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
                 />
                 {
                     showMessage.username && 
-                    <h1>{error.username}</h1>
+                    <h1
+                    className="text-red-300"
+                    >{error.username}</h1>
                 }
             </div>
 
@@ -195,16 +207,18 @@ const UserRegistration = () => {
             className="flex flex-col w-full"
             >
                 <label htmlFor="email">Email Address</label>
-                <input type="email" name="email" id="email" value={formData.email} placeholder="email" onChange={validateForm} onBlur={validateForm}
+                <input type="email" name="email" id="email" value={formData.email} placeholder="email" onChange={validateFormInput} onBlur={validateFormInput}
                 className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
                 />
                 {
                     showMessage.email && 
-                    <h1>{error.email}</h1>
+                    <h1
+                    className="text-red-300"
+                    >{error.email}</h1>
                 }
             </div>
             <div>
-            <select name="status" id="status" onChange={validateForm} onBlur={validateForm}
+            <select name="status" id="status" onChange={validateFormInput} onBlur={validateFormInput}
             className="w-full "
             >
                 <option value="" hidden>Are you a designer?</option>
@@ -213,46 +227,67 @@ const UserRegistration = () => {
             </select>
                 {
                     showMessage.email && 
-                    <h1>{error.status}</h1>
+                    <h1
+                    className="text-red-300"
+                    >{error.status}</h1>
                 }
             </div>
 
             <div>
                 <label htmlFor="password">Password</label>
-                <input type={showPassword ? "text" : "password"} name="password" id="password" value={formData.password} placeholder="create password" onChange={validateForm} onBlur={validateForm}
-                 className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
-                />
-                {showPassword ? 
-                <FaEyeSlash onClick={() => setShowPassword(prev => !prev)}/>
-                 : 
-                 <FaEye  onClick={() => setShowPassword(prev => !prev)}/>}
-                {`${passwordStrength}`}
+                <div
+                className="flex items-center gap-2"
+                >
+                    <input type={showPassword ? "text" : "password"} name="password" id="password" value={formData.password} placeholder="create password" onChange={validateFormInput} onBlur={validateFormInput}
+                    className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
+                    />
+                    {showPassword ? 
+                    <FaEyeSlash onClick={() => setShowPassword(prev => !prev)}/>
+                    : 
+                    <FaEye  onClick={() => setShowPassword(prev => !prev)}/>}
+                </div>
+                <h1
+                className={`${passwordStrength === "weak" ? "text-red-300 ": passwordStrength === "moderate" ? "text-yellow-300" : "text-green-400"}`}
+                >
+                    {`${passwordStrength}`}
+                </h1>
                 {
                     showMessage.password && 
-                    <h1>{error.password}</h1>
+                    <h1
+                    className="text-red-300"
+                    >{error.password}</h1>
                 }
             </div>
 
             <div>
                 <label htmlFor="cpassword">Confirm Password</label>
-                <input type={showCPassword ? "text" : "password"} name="confirm password" id="cpassword" placeholder="confirm password" onBlur={validateForm} 
-                className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
-                />
-                {showCPassword ? 
-                <FaEyeSlash onClick={() => setShowCPassword(prev => !prev)}/>
-                 : 
-                 <FaEye  onClick={() => setShowCPassword(prev => !prev)}/>}
+                <div
+                className="flex items-center gap-2"
+                >
+                    <input type={showCPassword ? "text" : "password"} name="confirm password" id="cpassword" placeholder="confirm password" onBlur={validateFormInput} 
+                    className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
+                    />
+                    {showCPassword ? 
+                    <FaEyeSlash onClick={() => setShowCPassword(prev => !prev)}/>
+                    : 
+                    <FaEye  onClick={() => setShowCPassword(prev => !prev)}/>}
+                 </div>
                 {
                     showMessage.cpassword && 
-                    <h1>{error.cpassword}</h1>
+                    <h1
+                    className="text-red-300"
+                    >{error.cpassword}</h1>
                 }
             </div>
             <div
             className=" mx-auto"
             >
                 <button
-                className="border-1 rounded-lg px-2 bg-gray-700 text-gray-50 cursor-pointer"
-                >submit</button>
+                disabled = {isSubmiting}
+                className={`border-1 rounded-lg px-2 bg-gray-700 text-gray-50 cursor-pointer`}
+                >
+                {isSubmiting ? "submitting..." : "submit"}
+                </button>
             </div>
         </form>
         </div>
