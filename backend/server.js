@@ -163,9 +163,9 @@ app.post("/users/registration", (req, res) => {
 // verify username
 app.post("/users/username", (req, res) => {
   try {
-    const data = req.body
-    console.log(data)
-    const users = db.users.find(user => user.username.toLowerCase() === data.username.toLowerCase())
+    const {username} = req.body
+    console.log(username)
+    const users = db.users.find(user => user.username.toLowerCase() === username.toLowerCase())
     if (!users) {
       res.send({status: "free", message:"username Available"})
     }else{
