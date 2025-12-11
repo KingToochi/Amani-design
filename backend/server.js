@@ -185,9 +185,9 @@ app.post("/users/email", (req,res) => {
   try {
     const users = db.users.find(user => user.email.toLowerCase() === email.toLowerCase())
     if(users) {
-      res.send({status: "exist", message: "this email has been used"})
+      return res.json({status: "exist", message: "this email has been used"})
     }else {
-      res.send({status: "free", mrssage: "verification is successful"})
+      return res.json({status: "free", message: "verification is successful"})
     }
   }catch(error){
     console.error("Error in /users/username:", error);

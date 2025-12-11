@@ -32,7 +32,7 @@ const UserRegistration = () => {
         password: "",
     })
 
-    const validateFormInput = (event) => {
+    const validateFormInput = async(event) => {
         // extract the id and value of each form input 
         const {id, value, name} = event.target
         // update the formdata with the values and id of the form input
@@ -72,14 +72,14 @@ const UserRegistration = () => {
                 });
             }
             if (emailRegex.test(value) ) {
-                    let response = fetch (`${url}/users/email`, {
+                    let response = await fetch(`${url}/users/email`, {
                         method: "POST",
                         headers : {
                             "Content-Type": "application/json"
                         },
                         body : JSON.stringify({email:value})
                     })
-                    let data = response.json()
+                    let data = await response.json()
                     setError(prev => ({...prev, [id]: data.message}))
                     setShowMessage(prev => ({...prev, [id]: true}))
                 }
