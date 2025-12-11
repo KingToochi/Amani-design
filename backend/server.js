@@ -8,6 +8,7 @@ import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken"
 import path from "path";
+import { verify } from "crypto";
 
 dotenv.config();
 const app = express();
@@ -173,6 +174,23 @@ app.post("/users/username", (req, res) => {
     }
   }catch (err) {
     console.error("Error in /users/username:", err);
+    res.status(500).send({ status: "error", message: "Server error" });
+  }
+})
+
+// verify email address
+
+app.post("/users/email", (req,res) => {
+  const {email} = req.body 
+  try {
+    const users = db.users.find(user => user.email.toLowerCase() === email.toLowerCase())
+    if(users) {
+      res.send({status: "exist", message: "this email has been used"})
+    }else {
+      res.send({status: "free", mrssage: "verification is successful"})
+    }
+  }catch(error){
+    console.error("Error in /users/username:", error);
     res.status(500).send({ status: "error", message: "Server error" });
   }
 })

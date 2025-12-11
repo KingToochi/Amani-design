@@ -11,6 +11,8 @@ const UserRegistration = () => {
     const [passwordStrength, setPasswordStrength] = useState("")
     const [usernameVerificationMessage, setUsernameVerificationMessage] = useState("")
     const [showUSernameVerificationMessage, setShowUsernameVerificationMessage] = useState(false)
+    const [emailVerificationMessage,  setEmailVerificationMessage] = useState("")
+
     const [showMessage, setShowMessage] = useState({
         fname: false,
         lname: false,
@@ -68,7 +70,20 @@ const UserRegistration = () => {
                     delete newErr.email;
                     return newErr;
                 });
-        }
+            }
+            if (emailRegex.test(value) ) {
+                    let response = fetch (`${url}/users/email`, {
+                        method: "POST",
+                        headers : {
+                            "Content-Type": "application/json"
+                        },
+                        body : JSON.stringify({email:value})
+                    })
+                    let data = response.json()
+                    setError(prev => ({...prev, [id]: data.message}))
+                    setShowMessage(prev => ({...prev, [id]: true}))
+                }
+
         }
 
         // validate password
@@ -157,13 +172,16 @@ const validateUsername = async(event) => {
 
         validateForm()
 
-        if (Object.keys(error).length === 0 || !hasError) {
+        if (Object.keys(error).length === 0 && !hasError) {
             try {
                 let response = await fetch(`${url}/users`, {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body : JSON.stringify(formData)
                 })
-                let data = response.json()
+                let data = await response.json()
                 console.log(data)
             } catch(error){
 
