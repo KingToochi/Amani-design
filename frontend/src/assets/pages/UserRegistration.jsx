@@ -3,8 +3,10 @@ import { BASE_URL } from "../Url"
 import logo from "../images/mainLogo.jpg"
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 const UserRegistration = () => {
     const url = BASE_URL
+    const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
     const [isSubmiting, setISsubmitting] = useState(false)
@@ -80,8 +82,19 @@ const UserRegistration = () => {
                         body : JSON.stringify({email:value})
                     })
                     let data = await response.json()
-                    setError(prev => ({...prev, [id]: data.message}))
-                    setShowMessage(prev => ({...prev, [id]: true}))
+
+                    if (response.status === "exist") {
+                        setError(prev => ({...prev, [id]: data.message}))
+                        setShowMessage(prev => ({...prev, [id]: true}))
+                    } else {
+                        setError(prev => {
+                        const newErr = { ...prev };
+                        delete newErr.email;
+                        return newErr;
+                    });
+                        setShowMessage(prev => ({...prev, [id]: true}))
+                    }
+                    
                 }
 
         }
@@ -174,7 +187,7 @@ const validateUsername = async(event) => {
 
         if (Object.keys(error).length === 0 && !hasError) {
             try {
-                let response = await fetch(`${url}/users`, {
+                let response = await fetch(`${url}/users/registration`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -183,6 +196,9 @@ const validateUsername = async(event) => {
                 })
                 let data = await response.json()
                 console.log(data)
+                if (response.success) {
+                    navigate("/")
+                }
             } catch(error){
 
                          }

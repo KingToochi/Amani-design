@@ -157,7 +157,7 @@ app.post("/users/registration", (req, res) => {
   } else {
     db.users.push(data)
     const token = jwt.sign({ email: data.email, status: data.status }, SECRET_KEY, { expiresIn: "1h" });
-    res.status(201).json({message: "user registered successfully" , user : data,  token})
+    res.status(201).json({success: true, message: "user registered successfully" , user : data,  token})
   }
 })
 
