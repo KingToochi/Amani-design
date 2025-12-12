@@ -7,8 +7,7 @@ import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken"
-import path from "path";
-import { verify } from "crypto";
+import db from "./db.json"
 
 dotenv.config();
 const app = express();
@@ -156,6 +155,7 @@ app.post("/users/registration", (req, res) => {
     return res.status(400).json({message: "All fields are required"})
   } else {
     db.users.push(data)
+    fs.writeFileSync("db.json", JSON.stringify(db, null, 2));
     const token = jwt.sign({ email: data.email, status: data.status }, SECRET_KEY, { expiresIn: "1h" });
     res.status(201).json({success: true, redirect:"/", message: "user registered successfully" , user : data,  token})
   }
