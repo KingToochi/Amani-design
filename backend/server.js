@@ -7,6 +7,7 @@ import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken"
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 const app = express();
@@ -153,10 +154,12 @@ app.post("/users/registration", (req, res) => {
   if (!data.fname || !data.lname || !data.username || !data.email ) {
     return res.status(400).json({message: "All fields are required"})
   } else {
-    db.users.push(data)
+    const userId = uuidv4()
+    const newUser = {...data, userId}
+    db.users.push(newUser)
     saveDB();
-    const token = jwt.sign({ email: data.email, status: data.status }, SECRET_KEY, { expiresIn: "1h" });
-    res.status(201).json({success: true, redirect:"/", message: "user registered successfully" , user : data,  token})
+    const token = jwt.sign({ email: newUser.email, status: newUser.status }, SECRET_KEY, { expiresIn: "1h" });
+    res.status(201).json({success: true, redirect:"/", message: "user registered successfully" , user : newUser,  token})
   }
 })
 
