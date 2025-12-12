@@ -155,7 +155,7 @@ app.post("/users/registration", (req, res) => {
   if (!data.fname || !data.lname || !data.username || !data.email ) {
     return res.status(400).json({message: "All fields are required"})
   } else {
-    db.users.shift(data)
+    db.users.push(data)
     const token = jwt.sign({ email: data.email, status: data.status }, SECRET_KEY, { expiresIn: "1h" });
     res.status(201).json({success: true, redirect:"/", message: "user registered successfully" , user : data,  token})
   }

@@ -202,7 +202,10 @@ const UserRegistration = () => {
                 let data = await response.json()
                 console.log(data.message)
                 if (data.success) {
+                    localStorage.setItem("token", data.token)
                     navigate(data.redirect)
+                } else {
+                    alert(data.message)
                 }
             } catch(error){
 
