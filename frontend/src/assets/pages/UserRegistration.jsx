@@ -200,10 +200,10 @@ const UserRegistration = () => {
                     body : JSON.stringify(formData)
                 })
                 let data = await response.json()
-                console.log(data.message)
+                console.log(data)
                 if (data.success) {
                     localStorage.setItem("token", data.token)
-                    navigate(data.redirect)
+                    // navigate(data.redirect)
                 } else {
                     alert(data.message)
                 }

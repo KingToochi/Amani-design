@@ -156,7 +156,7 @@ app.post("/users/registration", (req, res) => {
   } else {
     const userId = uuidv4()
     const newUser = {...data, userId}
-    db.users.push(newUser)
+    db.users.unshift(newUser)
     saveDB();
     const token = jwt.sign({ email: newUser.email, status: newUser.status }, SECRET_KEY, { expiresIn: "1h" });
     res.status(201).json({success: true, redirect:"/", message: "user registered successfully" , user : newUser,  token})
