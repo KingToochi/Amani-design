@@ -56,8 +56,42 @@ const UserRegistration = () => {
             return newErr;
             });
         }
+        // verify username
+        if (id === "username") {
+            if (value.length < 5) {
+                setError(prev => ({...prev, [id]: "username too short (min 5 characters)"}))
+                setShowMessage(prev => ({...prev, [id]: true}))
+            }else if (!/^[A-Za-z][A-Za-z0-9]*$/.test(value)) {
+                setError(prev => ({...prev, [id]: "username must start with a letter and contain only letters or numbers"}))
+                setShowMessage(prev => ({...prev, [id]: true}))
+            } else {
 
-        validateUsername(event)
+                try {
+                    let response = await fetch (`${url}/users/username`, {
+                        method : "POST",
+                        headers : {"Content-Type" : "application/json"},
+                        body: JSON.stringify({username:value})
+                    })
+                    let data = await response.json()
+                    console.log(data)
+
+                    if (data.status === "exists") {
+                        setError(prev => ({...prev, [id]: data.message}))
+                        setShowMessage(prev => ({...prev, [id]: true}))
+                    } else {
+                        setError(prev => {
+                            let newErr = {...prev}
+                            delete newErr.username
+                            return newErr
+                        })
+                        console.log(error)
+                    }
+                    
+                }catch(error){
+                    console.log(error)
+                }
+            }
+        }
         // validate the email address
         if (id === "email") {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -83,7 +117,7 @@ const UserRegistration = () => {
                     })
                     let data = await response.json()
 
-                    if (response.status === "exist") {
+                    if (data.status === "exist") {
                         setError(prev => ({...prev, [id]: data.message}))
                         setShowMessage(prev => ({...prev, [id]: true}))
                     } else {
@@ -134,36 +168,7 @@ const UserRegistration = () => {
         }
 };
 
-const validateUsername = async(event) => {
-    const {id, value} = event.target
-   
-    if (id === "username") {
-           if (value.length >= 5) {
-             if (isNaN(value)){
-                try {
-                let response = await fetch (`${url}/users/username`, {
-                    method: "POST",
-                    headers : { "Content-Type": "application/json" },
-                    body: JSON.stringify({username: value})
-                }) 
-                let data = await response.json()
-                console.log(data)
-                setUsernameVerificationMessage(data.message)
-                setShowUsernameVerificationMessage(true)
 
-            }catch(error) {
-
-            }
-           } else{
-            setShowUsernameVerificationMessage(true)
-            setUsernameVerificationMessage("Username must be text, not a number")
-           }
-           } else {
-            setShowUsernameVerificationMessage(true);
-            setUsernameVerificationMessage("Username too short (min 5 characters)")
-        }
-        }
-}
 
     const handleSubmit = async(event) => {
         event.preventDefault()
@@ -195,9 +200,9 @@ const validateUsername = async(event) => {
                     body : JSON.stringify(formData)
                 })
                 let data = await response.json()
-                console.log(data)
-                if (response.success) {
-                    navigate("/")
+                console.log(data.message)
+                if (data.success) {
+                    navigate(data.redirect)
                 }
             } catch(error){
 
@@ -270,9 +275,7 @@ const validateUsername = async(event) => {
                     className="text-red-300"
                     >{error.username}</h1>
                 }
-                {showUSernameVerificationMessage &&
-                <h1 className={`${usernameVerificationMessage === "Username already taken" ? "text-red-300" : "text-green-400"}`}>{usernameVerificationMessage}</h1>
-                }
+
             </div>
 
             <div
