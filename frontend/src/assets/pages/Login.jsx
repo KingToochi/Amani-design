@@ -4,16 +4,21 @@ import Registration from "./DesignersRegistration";
 import { useState } from "react";
 import { BASE_URL } from "../Url";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { Authcontext } from "./marketPlace/hooks/AuthProvider";
+import { jwtDecode } from "jwt-decode";
+
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
+    const {setAuth} = useContext(Authcontext)
     const navigate = useNavigate()
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
     const onSubmit = async(data) => {
         try {
-            let response = await fetch(`${url}/users`, {
+            let response = await fetch(`${url}/users/login`, {
                 method: "POST",
                 headers : {
                     "Content-Type": "application/json"
@@ -21,8 +26,19 @@ const Login = () => {
                 body: JSON.stringify(data)
             })
             let result = await response.json()
+            console.log(result)
             if (result.success) {
-                localStorage.setItem("token", result.token); 
+                localStorage.setItem("token", result.token);
+                const decoded = jwtDecode(result.token)
+                setAuth({
+                    id : decoded.id,
+                    email: decoded.email,
+                    username: decoded.username,
+                    status: decoded.status,
+                    exp: decoded.exp,
+                    iat: decoded.iat
+
+                }) 
                 navigate(result.redirect) 
             } else {
                 throw new Error(result.error)

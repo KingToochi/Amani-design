@@ -21,11 +21,7 @@ const SECRET_KEY = "amaniskysecrecy19962025"
 const server = http.createServer(app);
 const io = new Server(server);
 
-// io.on("connection", (socket) => {
-//   socket.on("Hello", (data) => {
-//     io.emit("receiveNotification", "welcome to Amanusky fashion world");
-//   });
-// });
+
 
 server.listen(4000, () => console.log("Server running on port 4000"));
 
@@ -137,7 +133,7 @@ app.post("/users/login", (req, res) => {
     return res.status(401).json({ success: false, error: "incorrect password" })
   }
 
-  const token = jwt.sign({ email: user.email, status: user.status }, SECRET_KEY, { expiresIn: "1h" });
+  const token = jwt.sign({id: user.id, email: user.email, username: user.username, status: user.status }, SECRET_KEY, { expiresIn: "1h" });
   let reply;
   if (user.status === "designer") {
     reply  = { success: true, redirect: "/designer/products", token };
@@ -154,11 +150,11 @@ app.post("/users/registration", (req, res) => {
   if (!data.fname || !data.lname || !data.username || !data.email ) {
     return res.status(400).json({message: "All fields are required"})
   } else {
-    const userId = uuidv4()
-    const newUser = {...data, userId}
+    const id = uuidv4()
+    const newUser = {id, joinedAt: new Date().toISOString(), ...data}
     db.users.unshift(newUser)
     saveDB();
-    const token = jwt.sign({ email: newUser.email, status: newUser.status }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({id: newUser.id,  email: newUser.email, username: newUser.username, status: newUser.status }, SECRET_KEY, { expiresIn: "1h" });
     res.status(201).json({success: true, redirect:"/", message: "user registered successfully" , user : newUser,  token})
   }
 })

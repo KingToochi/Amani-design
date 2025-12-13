@@ -16,6 +16,9 @@ import WishList from "./assets/pages/marketPlace/WishList";
 import ProfilePage from "./assets/pages/marketPlace/ProfilePage";
 import Login from "./assets/pages/Login";
 import UserRegistration from "./assets/pages/UserRegistration"
+import ProtectedRoute from "./assets/pages/marketPlace/hooks/ProtectedRoute";
+import Page404 from "./assets/pages/404";
+import Unauthorized from "./assets/pages/Unauthorized"
 
 function App() {
   return (
@@ -31,12 +34,16 @@ function App() {
           <Route path="profile" element={<ProfilePage/>} />
           <Route path="login/registration" element={<UserRegistration/>}/>
         </Route>
+        <Route element={<ProtectedRoute allowedStatus={designer}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />
         </Route> 
-      
+        </Route>
+
+         <Route path="Unauthorized" element={<Unauthorized />} />
+        <Route path="*" element={<Page404 />} />
       </Routes>
     </div>
   );

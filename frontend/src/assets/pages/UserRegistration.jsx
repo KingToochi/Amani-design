@@ -203,7 +203,16 @@ const UserRegistration = () => {
                 console.log(data)
                 if (data.success) {
                     localStorage.setItem("token", data.token)
-                    // navigate(data.redirect)
+                    const decoded = jwtDecode(data.token)
+                                    setAuth({
+                                        id : decoded.id,
+                                        email: decoded.email,
+                                        username: decoded.username,
+                                        status: decoded.status,
+                                        exp: decoded.exp,
+                                        iat: decoded.iat
+                                    }) 
+                    navigate(data.redirect)
                 } else {
                     alert(data.message)
                 }
