@@ -20,6 +20,7 @@ const ProfilePage = () => {
 
     useEffect(()  =>{
         const token = localStorage.getItem("token");
+        console.log("TOKEN:", token)
         const decoded = jwtDecode(token)
         console.log(decoded)
         setAuth({
@@ -30,7 +31,7 @@ const ProfilePage = () => {
                     exp: decoded.exp,
                     iat: decoded.iat
         })
-        if (!decoded.id) {
+        if (!decoded.id || token === "undefined") {
         navigate("/login")
     } else{
          console.log("User logged in:", token);
@@ -39,6 +40,7 @@ const ProfilePage = () => {
 
     return(
         <div>
+            Welcome
         </div>
     )
 }
