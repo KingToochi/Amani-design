@@ -1,9 +1,9 @@
 import { useLocation, Navigate, Outlet} from "react-router-dom";
 import { useContext } from "react";
-import { Authcontext } from "./AuthProvider";
+import { AuthContext } from "./AuthProvider";
 
 const ProtectedRoute = ({allowedStatus}) => {
-    const {auth} = useContext(Authcontext)
+    const {auth} = useContext(AuthContext)
     const location = useLocation()
 
     if (auth?.status?.includes(allowedStatus)) {

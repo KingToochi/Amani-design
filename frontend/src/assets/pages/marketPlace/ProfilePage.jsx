@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import {AuthContext} from "./hooks/AuthProvider"
 const ProfilePage = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const {auth, setAuth} = useContext(AuthContext)
+
     const navigate = useNavigate()
 
     const fetchUserData = async() => {
@@ -20,7 +22,15 @@ const ProfilePage = () => {
         const token = localStorage.getItem("token");
         const decoded = jwtDecode(token)
         console.log(decoded)
-        if (!token) {
+        setAuth({
+                    id : decoded.id,
+                    email: decoded.email,
+                    username: decoded.username,
+                    status: decoded.status,
+                    exp: decoded.exp,
+                    iat: decoded.iat
+        })
+        if (!decoded.id) {
         navigate("/login")
     } else{
          console.log("User logged in:", token);

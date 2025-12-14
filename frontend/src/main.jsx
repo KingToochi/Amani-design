@@ -6,10 +6,12 @@ import { BrowserRouter } from 'react-router-dom'
 import MyCart from './assets/pages/marketPlace/hooks/CartContext.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import MyWishList from './assets/pages/marketPlace/hooks/WishListContext.jsx'
+import AuthProvider from './assets/pages/marketPlace/hooks/AuthProvider.jsx'
 
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
+  <AuthProvider>
   <MyCart>
     <MyWishList>
     <StrictMode>
@@ -19,5 +21,6 @@ createRoot(document.getElementById('root')).render(
     </StrictMode>
     </MyWishList>
   </MyCart>
+  </AuthProvider>
   </BrowserRouter>
 )

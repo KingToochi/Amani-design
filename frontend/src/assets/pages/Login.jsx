@@ -5,13 +5,13 @@ import { useState } from "react";
 import { BASE_URL } from "../Url";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { Authcontext } from "./marketPlace/hooks/AuthProvider";
+import { AuthContext } from "./marketPlace/hooks/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
-    const {setAuth} = useContext(Authcontext)
+    const {setAuth} = useContext(AuthContext)
     const navigate = useNavigate()
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);

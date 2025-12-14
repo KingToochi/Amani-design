@@ -34,7 +34,7 @@ function App() {
           <Route path="profile" element={<ProfilePage/>} />
           <Route path="login/registration" element={<UserRegistration/>}/>
         </Route>
-        <Route element={<ProtectedRoute allowedStatus={designer}/>}>
+        <Route element={<ProtectedRoute allowedStatus={"designer"}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>
           <Route path="products" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
