@@ -18,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 connectDB();
 
+
 const SECRET_KEY = process.env.SECRET_KEY || "amaniskysecrecy19962025";
 
 // ---- Socket.IO Setup ----
