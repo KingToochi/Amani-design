@@ -112,6 +112,7 @@ app.delete("/products/:id", async (req, res) => {
 
 // User registration
 app.post("/users/registration", async (req, res) => {
+   console.log("Registration request body:", req.body);
   try {
     const { fname, lname, username, email, password, status } = req.body;
     if (!fname || !lname || !username || !email || !password) {
@@ -142,6 +143,7 @@ app.post("/users/registration", async (req, res) => {
 
     res.status(201).json({ success: true, message: "User registered successfully", user: newUser, token });
   } catch (err) {
+    console.error("User registration error:", err); // <-- Add this if not alrea
     res.status(500).json({ message: "Server error" });
   }
 });
