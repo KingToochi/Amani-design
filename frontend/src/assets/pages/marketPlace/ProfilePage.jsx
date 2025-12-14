@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import {AuthContext} from "./hooks/AuthProvider"
 const ProfilePage = () => {
-    const {auth, setAuth} = useContext(AuthContext)
+    const {setAuth} = useContext(AuthContext)
 
     const navigate = useNavigate()
 
@@ -21,21 +21,39 @@ const ProfilePage = () => {
     useEffect(()  =>{
         const token = localStorage.getItem("token");
         console.log("TOKEN:", token)
-        const decoded = jwtDecode(token)
-        console.log(decoded)
-        setAuth({
+
+        if(!token) {
+            navigate("/login")
+            return
+        }
+    
+        try {
+            const decoded = jwtDecode(token)
+            console.log(decoded)
+            const currentTime = Date.now() / 1000
+            if (decoded.exp < currentTime) {
+                alert("Token has expired") 
+                localStorage.removeItem("token")
+                navigate("/login")
+                return
+            } if (!decoded.id) {
+                navigate("/login")
+                return
+            } else {
+                setAuth({
                     id : decoded.id,
                     email: decoded.email,
                     username: decoded.username,
                     status: decoded.status,
                     exp: decoded.exp,
                     iat: decoded.iat
-        })
-        if (!decoded.id || token === "undefined") {
-        navigate("/login")
-    } else{
-         console.log("User logged in:", token);
-    }
+                })
+            }
+        } catch(error) {
+            console.error("Invalid token:", error)
+            localStorage.removeItem("token")
+            navigate("/login")
+        }
     }, [])
 
     return(
