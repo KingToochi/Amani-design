@@ -41,6 +41,7 @@ const handleSubmit = async(event) => {
                 body : formData
             })
             let response = await uploadData.json()
+            console.log(response.message)
         }catch(error){
             console.log(error)
         }
