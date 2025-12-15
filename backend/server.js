@@ -208,5 +208,10 @@ app.post("/users/email", async (req, res) => {
   }
 });
 
+// generate token 
+const generateToken = (user) => {
+  
+}
+
 // ---- Start Server ----
 server.listen(4000, () => console.log("Server running on port 4000"));
