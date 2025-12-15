@@ -52,33 +52,43 @@ app.get("/products/:id", async (req, res) => {
 
 // POST new product
 app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
-  try {
-    const { productDescription, productCategory, productPrice, color, size, productImage } = req.body;
 
-    let productImageUrl = "";
+const authHeader = req.headers.authorization
+if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  return res.status(401).json({message: "unauthorized"})
+}
+
+const token = authHeader.split(" ")[1]
+try {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET)
+  if (!decoded) {
+    return res.status(401).json({ message: "Unauthorized: Invalid token" })
+  } else {
+    const {productDescription, productCategory, productPrice, color, size } = req.body
+    let productImageUrl = ""
+
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
+      // send image to cloudinary 
+      const cloudRes = await cloudinary.uploader.upload(req.file.path, {
         folder: "my_website_products",
-      });
-      productImageUrl = result.secure_url;
-      fs.unlinkSync(req.file.path);
+        });
+        productImageUrl = cloudRes.secure_url;
+        fs.unlinkSync(req.file.path);
     }
+       const newProduct = new Product ({
+        productDescription,
+        productCategory,
+        productPrice,
+        color,
+        size,
+        productImage: productImageUrl,
+       })
 
-    const newProduct = new Product({
-      id: `${Date.now()}`,
-      productDescription,
-      productCategory,
-      productPrice,
-      color,
-      size,
-      productImage,
-    });
-
-    await newProduct.save();
-    res.status(201).json(newProduct);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+       await newProduct.save()
+       res.status(201).json(newProduct);
   }
+}catch (error){res.status(500).json({ error: error.message });}
+
 });
 
 // PUT update product

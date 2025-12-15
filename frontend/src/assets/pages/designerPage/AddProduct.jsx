@@ -1,7 +1,11 @@
 import { FaNairaSign } from "react-icons/fa6";
-import { useState } from "react";
+import { useState, useContext} from "react";
+import { BASE_URL } from "../../Url";
+import { AuthContext } from "../marketPlace/hooks/AuthProvider";
 const AddProduct = () => {
     const [fileName, setFileName] = useState("")
+    const url = BASE_URL
+    const {auth} = useContext(AuthContext)
     const handleChange =(e) => {
         const file = e.target.files[0];
         if (file) {
@@ -11,76 +15,101 @@ const AddProduct = () => {
             setFileName("")
         }
     }
-    const handleSubmit = async(event) => {
-        event.preventDefault()
-        const form = event.target;
-        const formData = new FormData(form)
-        // extract the productImage
-        const productImageFile = formData.get("productImage");
-        let productImageUrl = "";
+//     const handleSubmit = async(event) => {
+//         event.preventDefault()
+//         const form = event.target;
+//         const formData = new FormData(form)
+//         // extract the productImage
+//         const productImageFile = formData.get("productImage");
+//         let productImageUrl = "";
 
-        // upload image to cloudinary 
-        if (productImageFile && productImageFile.size > 0) {
-            const imageData = new FormData()
-            imageData.append("productImage", productImageFile);
-            imageData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // from Cloudinary settings
+//         // upload image to cloudinary 
+//         if (productImageFile && productImageFile.size > 0) {
+//             const imageData = new FormData()
+//             imageData.append("productImage", productImageFile);
+//             imageData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // from Cloudinary settings
 
-            try {
-                const cloudRes = await fetch("https://amani-design-backend.onrender.com/products", {
-                method: "POST",
-                body: imageData
+//             try {
+//                 const cloudRes = await fetch("https://amani-design-backend.onrender.com/products", {
+//                 method: "POST",
+//                 body: imageData
+//             })
+
+//             const cloudData = await cloudRes.json();
+//             productImageUrl = cloudData.productImage; // URL of uploaded image
+//             console.log(cloudData)
+//             console.log(cloudData.productImage)
+//             console.log(productImageUrl)
+//             }
+//             catch (err) {
+//             console.error("Error uploading image:", err);
+//             }
+
+//         }
+
+
+
+//          // 3️⃣ Collect rest of the product data
+//     const productData = {
+//         productDescription: formData.get("productDescription"),
+//         productCategory: formData.get("productCategory"),
+//         productPrice: formData.get("productPrice"),
+//         color: formData.get("color"),
+//         size: formData.get("size"),
+//         productImage: productImageUrl, // add the Cloudinary URL here
+//     };
+
+//   // 4️⃣ Send product data (JSON) to your backend
+//   try {
+//     console.log(productImageUrl)
+//     console.log(productData.productImage)
+//     const res = await fetch("https://amani-design-backend.onrender.com/products", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(productData),
+//     });
+
+//     if (!res.ok) throw new Error("Failed to submit product");
+//     console.log("Product submitted successfully");
+//   } catch (err) {
+//     console.error(err);
+//   }
+
+//   // Reset form
+//   form.reset();
+//   setFileName("");
+// };
+
+const handleSubmit = async(event) => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    let hasError = false
+
+    // validate form
+    for (let [key, value] of formData.entries()) {
+        if (!value || (value instanceof File && value.size === 0)) {
+            console.log(`${key} is required`)
+            hasError = true
+            break
+    } 
+}
+    if (hasError) return 
+
+    if (!hasError) {
+        try {
+            let uploadData = await fetch(`${url}/products`, {
+                method  : "POST",
+                headers : {Authorization : `Bearer ${auth}` },
+                body : formData
             })
-
-            const cloudData = await cloudRes.json();
-            productImageUrl = cloudData.productImage; // URL of uploaded image
-            console.log(cloudData)
-            console.log(cloudData.productImage)
-            console.log(productImageUrl)
-            }
-            catch (err) {
-            console.error("Error uploading image:", err);
-            }
-
+            let response = await uploadData.json()
+        }catch(error){
+            console.log(error)
         }
+    }
 
-
-
-         // 3️⃣ Collect rest of the product data
-    const productData = {
-        productDescription: formData.get("productDescription"),
-        productCategory: formData.get("productCategory"),
-        productPrice: formData.get("productPrice"),
-        color: formData.get("color"),
-        size: formData.get("size"),
-        productImage: productImageUrl, // add the Cloudinary URL here
-    };
-
-  // 4️⃣ Send product data (JSON) to your backend
-  try {
-    console.log(productImageUrl)
-    console.log(productData.productImage)
-    const res = await fetch("https://amani-design-backend.onrender.com/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(productData),
-    });
-
-    if (!res.ok) throw new Error("Failed to submit product");
-    console.log("Product submitted successfully");
-  } catch (err) {
-    console.error(err);
-  }
-
-  // Reset form
-  form.reset();
-  setFileName("");
-};
-
-
-        // const productData = Object.fromEntries(formData.entries())
-        // submitProduct(productData)
-        // event.target.reset()
-        // setFileName("")
+}
     
 
     return(
