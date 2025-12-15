@@ -52,8 +52,10 @@ app.get("/products/:id", async (req, res) => {
 
 // POST new product
 app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
+  console.log(req.body)
 
 const authHeader = req.headers.authorization
+console.log(authHeader)
 if (!authHeader || !authHeader.startsWith("Bearer ")) {
   return res.status(401).json({message: "unauthorized"})
 }
@@ -210,7 +212,7 @@ app.post("/users/email", async (req, res) => {
 
 // generate token 
 const generateToken = (user) => {
-  
+
 }
 
 // ---- Start Server ----
