@@ -51,52 +51,126 @@ app.get("/products/:id", async (req, res) => {
 });
 
 // POST new product
-app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
-  console.log(req.body)
+// app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
+//   console.log(req.body)
 
-const authHeader = req.headers.authorization
-console.log(authHeader)
-if (!authHeader || !authHeader.startsWith("Bearer ")) {
-  return res.status(401).json({message: "unauthorized"})
-}
+// const authHeader = req.headers.authorization
+// console.log(authHeader)
+// if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//   return res.status(401).json({message: "unauthorized"})
+// }
 
-const token = authHeader.split(" ")[1]
-try {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET)
-  console.log(decoded)
-  if (!decoded) {
-    console.log("error in decoding the token")
-    return res.status(401).json({ message: "Unauthorized: Invalid token" })
-  } else {
-    const DesignerId = decoded.id
-    const {productDescription, productCategory, productPrice, color, size } = req.body
-    let productImageUrl = ""
+// const token = authHeader.split(" ")[1]
+// try {
+//   const decoded = jwt.verify(token, process.env.JWT_SECRET)
+//   console.log(decoded)
+//   if (!decoded) {
+//     console.log("error in decoding the token")
+//     return res.status(401).json({ message: "Unauthorized: Invalid token" })
+//   } else {
+//     const DesignerId = decoded.id
+//     const {productDescription, productCategory, productPrice, color, size } = req.body
+//     let productImageUrl = ""
 
-    if (req.file) {
-      // send image to cloudinary 
-      const cloudRes = await cloudinary.uploader.upload(req.file.path, {
-        folder: "my_website_products",
-        });
-        productImageUrl = cloudRes.secure_url;
-        fs.unlinkSync(req.file.path);
-        console.log(productImageUrl)
-    }
-       const newProduct = new Product ({
-        DesignerId,
+//     if (req.file) {
+//       // send image to cloudinary 
+//       const cloudRes = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "my_website_products",
+//         });
+//         productImageUrl = cloudRes.secure_url;
+//         fs.unlinkSync(req.file.path);
+//         console.log(productImageUrl)
+//     }
+//        const newProduct = new Product ({
+//         DesignerId,
+//         productDescription,
+//         productCategory,
+//         productPrice,
+//         color,
+//         size,
+//         productImage: productImageUrl,
+//        })
+
+//        await newProduct.save()
+//        res.status(201).json(newProduct);
+//   }
+// }catch (error){res.status(500).json({ error: error.message });}
+
+// });
+
+app.post(
+  "/products",
+  uploadProduct.single("productImage"),
+  async (req, res) => {
+    try {
+      console.log(req.body);
+
+      // 1️⃣ Authorization check
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // 2️⃣ Verify token
+      const token = authHeader.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const DesignerId = decoded.id;
+
+      // 3️⃣ Extract & validate fields
+      const {
         productDescription,
         productCategory,
         productPrice,
         color,
         size,
+      } = req.body;
+
+      if (!productDescription || !productCategory || !productPrice) {
+        return res.status(400).json({
+          message: "productDescription, productCategory and productPrice are required",
+        });
+      }
+
+      // 4️⃣ Upload image (if exists)
+      let productImageUrl = "";
+
+      if (req.file) {
+        const cloudRes = await cloudinary.uploader.upload(req.file.path, {
+          folder: "my_website_products",
+        });
+
+        productImageUrl = cloudRes.secure_url;
+
+        // remove temp file
+        fs.unlink(req.file.path, () => {});
+      }
+
+      // 5️⃣ Save product
+      const newProduct = new Product({
+        DesignerId,
+        productDescription,
+        productCategory,
+        productPrice: Number(productPrice),
+        color,
+        size,
         productImage: productImageUrl,
-       })
+      });
 
-       await newProduct.save()
-       res.status(201).json(newProduct);
+      await newProduct.save();
+
+      res.status(201).json({
+        message: "Product created successfully",
+        product: newProduct,
+      });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
   }
-}catch (error){res.status(500).json({ error: error.message });}
+);
 
-});
 
 // PUT update product
 app.put("/products/:id", async (req, res) => {
