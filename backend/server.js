@@ -65,6 +65,7 @@ try {
   const decoded = jwt.verify(token, process.env.JWT_SECRET)
   console.log(decoded)
   if (!decoded) {
+    console.log(error)
     return res.status(401).json({ message: "Unauthorized: Invalid token" })
   } else {
     const DesignerId = decoded.id

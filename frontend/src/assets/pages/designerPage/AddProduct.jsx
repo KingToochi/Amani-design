@@ -33,10 +33,11 @@ const handleSubmit = async(event) => {
     if (hasError) return 
 
     if (!hasError) {
+        const token = localStorage.getItem("token"); 
         try {
             let uploadData = await fetch(`${url}/products`, {
                 method  : "POST",
-                headers : {Authorization : `Bearer ${auth}` },
+                headers : {Authorization : `Bearer ${token}` },
                 body : formData
             })
             let response = await uploadData.json()
