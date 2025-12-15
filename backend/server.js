@@ -71,7 +71,7 @@ app.post("/products", uploadProduct.single("productImage"), async (req, res) => 
       productPrice,
       color,
       size,
-      productImage: productImageUrl,
+      productImage,
     });
 
     await newProduct.save();

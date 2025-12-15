@@ -32,8 +32,10 @@ const AddProduct = () => {
             })
 
             const cloudData = await cloudRes.json();
-            productImageUrl = cloudData.productImageUrl; // URL of uploaded image
+            productImageUrl = cloudData.productImage; // URL of uploaded image
             console.log(cloudData)
+            console.log(cloudData.productImage)
+            console.log(productImageUrl)
             }
             catch (err) {
             console.error("Error uploading image:", err);
@@ -55,6 +57,8 @@ const AddProduct = () => {
 
   // 4️⃣ Send product data (JSON) to your backend
   try {
+    console.log(productImageUrl)
+    console.log(productData.productImage)
     const res = await fetch("https://amani-design-backend.onrender.com/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
