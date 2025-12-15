@@ -64,6 +64,7 @@ try {
   if (!decoded) {
     return res.status(401).json({ message: "Unauthorized: Invalid token" })
   } else {
+    const id = decoded.id
     const {productDescription, productCategory, productPrice, color, size } = req.body
     let productImageUrl = ""
 
@@ -76,6 +77,7 @@ try {
         fs.unlinkSync(req.file.path);
     }
        const newProduct = new Product ({
+        id,
         productDescription,
         productCategory,
         productPrice,
