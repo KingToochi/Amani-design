@@ -53,7 +53,7 @@ app.get("/products/:id", async (req, res) => {
 // POST new product
 app.post("/products", uploadProduct.single("productImage"), async (req, res) => {
   try {
-    const { productDescription, productCategory, productPrice, color, size } = req.body;
+    const { productDescription, productCategory, productPrice, color, size, productImage } = req.body;
 
     let productImageUrl = "";
     if (req.file) {
