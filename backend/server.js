@@ -185,7 +185,13 @@ app.post("/users/registration", async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const exists = await User.findOne({ $or: [{ email }, { username }] });
+    const exists = await User.findOne({
+  $or: [
+    { email: new RegExp(`^${email}$`, "i") },
+    { username: new RegExp(`^${username}$`, "i") },
+  ],
+});
+
     if (exists) return res.status(400).json({ message: "Email or username already exists" });
 
     const newUser = new User({
