@@ -14,7 +14,7 @@ const Products = () => {
     const fetchProduct = async () => {
         const token = localStorage.getItem("token")
         try{
-            let response = await fetch (`${url}/designer`, {
+            let response = await fetch (`${url}/products/designer`, {
                 method : "GET",
                 headers : {Authorization : `Bearer ${token}`}
             })
