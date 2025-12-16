@@ -2,8 +2,9 @@ import { FaNairaSign } from "react-icons/fa6";
 import { useState, useContext} from "react";
 import { BASE_URL } from "../../Url";
 import { AuthContext } from "../marketPlace/hooks/AuthProvider";
-const AddProduct = () => {
+const AddProduct = ({setHideModal, fetchProduct}) => {
     const [fileName, setFileName] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const url = BASE_URL
     const {auth} = useContext(AuthContext)
     const handleChange =(e) => {
@@ -18,6 +19,7 @@ const AddProduct = () => {
 
 const handleSubmit = async(event) => {
     event.preventDefault()
+    setIsSubmitting(true)
     const form = event.currentTarget
     const formData = new FormData(form)
     let hasError = false
@@ -27,6 +29,7 @@ const handleSubmit = async(event) => {
         if (!value || (value instanceof File && value.size === 0)) {
             console.log(`${key} is required`)
             hasError = true
+            setIsSubmitting(false)
             break
     } 
 }
@@ -42,6 +45,12 @@ const handleSubmit = async(event) => {
             })
             let response = await uploadData.json()
             console.log(response.message)
+            if (response.message === "Product created successfully") {
+                setIsSubmitting(false)
+                fetchProduct()
+                setHideModal(false)
+
+            }
         }catch(error){
             console.log(error)
         }
@@ -116,11 +125,12 @@ const handleSubmit = async(event) => {
             className="w-full flex items-center justify-center"
             >
                 <button
+                disabled={isSubmitting}
                 className="w-auto border-2 border-gray-700 rounded-lg px-2 py-2 bg-blue-400 cursor-pointer"
                 >
                     <h1
                     className="text-gray-500 font-[abril] font-bold text-2xl"
-                    >Submit</h1>
+                    >{isSubmitting ? "submitting ..." : "Submit"}</h1>
                 </button>
             </div>
         </form>

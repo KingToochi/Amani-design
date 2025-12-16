@@ -43,6 +43,24 @@ app.get("/products", async (req, res) => {
   res.json(products);
 });
 
+// get products by designer id 
+
+app.get("/products/designer", async (req, res) => {
+  try{
+    const authHeader = req.headers.Authorization
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const token = authHeader.split(" ")[1]
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const products = await Product.find({DesignerId: decoded.id})
+    return res.status(200).json(products);
+  }catch(error){
+     return res.status(401).json({ message: "Invalid or expired token" });
+  }
+})
+
 // GET single product
 app.get("/products/:id", async (req, res) => {
   const product = await Product.findOne({ id: req.params.id });

@@ -4,14 +4,20 @@ import AddProduct from "./AddProduct";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { FaNairaSign } from "react-icons/fa6";
+import { BASE_URL } from "../../Url";
 
 const Products = () => {
     const [productList, setProductList] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [editProductById, setEditProductById] = useState(null)
+    const url = BASE_URL
     const fetchProduct = async () => {
+        const token = localStorage.getItem("token")
         try{
-            let response = await fetch ("https://amani-design-backend.onrender.com/products")
+            let response = await fetch (`${url}/designer`, {
+                method : "GET",
+                headers : {Authorization : `Bearer ${token}`}
+            })
             const products = await response.json()
             setProductList(products)
             console.log(products)
@@ -44,7 +50,7 @@ const Products = () => {
 
         const handleDelete = async (id) => {
             try {
-                    await fetch(`https://amani-design-backend.onrender.com/products/${id}`, {
+                    await fetch(`${url}/${id}`, {
                     method: "DELETE",
                 });
                 setProductList(prev => prev.filter(product => product.id !== id));
@@ -59,7 +65,7 @@ const Products = () => {
             const productToUpdate = productList.find(product => product.id === id)
             if (!productToUpdate) return;
                 try {
-                    let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`, {
+                    let response = await fetch(`${url}/${id}`, {
                         method: "PUT",
                         body:JSON.stringify( productToUpdate),
 
@@ -99,7 +105,7 @@ const Products = () => {
                                 >X</h1>
                             </button>
                         </div>
-                        <AddProduct />
+                        <AddProduct  setHideModal = {setShowModal} fetchProduct = {fetchProduct}/>
                     </div>
                 )
             }
