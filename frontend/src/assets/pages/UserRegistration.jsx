@@ -202,6 +202,7 @@ const UserRegistration = () => {
         validateForm()
 
         if (Object.keys(error).length === 0 && !hasError) {
+            setISsubmitting(false)
             try {
                 let response = await fetch(`${url}/users/registration`, {
                     method: "POST",
