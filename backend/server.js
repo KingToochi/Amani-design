@@ -54,7 +54,11 @@ app.get("/products/designer", async (req, res) => {
 
     const token = authHeader.split(" ")[1]
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    console.log(decoded.id)
     const products = await Product.find({DesignerId: decoded.id})
+    if(products) {
+      console.log("products found")
+    }
     return res.status(200).json(products);
   }catch(error){
      return res.status(401).json({ message: "Invalid or expired token" });
