@@ -14,6 +14,7 @@ const UserRegistration = () => {
     const [usernameVerificationMessage, setUsernameVerificationMessage] = useState("")
     const [showUSernameVerificationMessage, setShowUsernameVerificationMessage] = useState(false)
     const [emailVerificationMessage,  setEmailVerificationMessage] = useState("")
+    const [isSubmitting, setISsubmitting] = useState(false)
 
     const [showMessage, setShowMessage] = useState({
         fname: false,
@@ -172,6 +173,7 @@ const UserRegistration = () => {
 
     const handleSubmit = async(event) => {
         event.preventDefault()
+        isSubmiting(true)
         let hasError = false
 
         const validateForm = () => {
@@ -185,6 +187,7 @@ const UserRegistration = () => {
             }
             console.log(error)
             console.log(hasError)
+            isSubmiting(false)
             return hasError
         }
 
@@ -212,15 +215,20 @@ const UserRegistration = () => {
                                         exp: decoded.exp,
                                         iat: decoded.iat
                                     }) 
-                    navigate(data.redirect)
+                    setISsubmitting(false)
+                    if(decoded.status === "designer") {
+                        navigate("/designer")
+                    } navigate("/")
                 } else {
                     alert(data.message)
+                    setISsubmitting(false)
                 }
             } catch(error){
 
                          }
         }else {
             console.log("Form has errors:", error);
+            setISsubmitting(false)
         }
     }
 
