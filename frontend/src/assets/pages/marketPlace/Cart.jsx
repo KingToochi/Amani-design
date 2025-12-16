@@ -11,10 +11,10 @@ const Cart = ()=> {
     const [freeDelivery, setFreeDelivery] = useState(true)
     const [pricePerItem, setPricePerItem] = useState(0)
     
-const handleMinus = (id) => {
+const handleMinus = (_id) => {
   setCart(prevCart =>
     prevCart.map(item =>
-      item.id === id
+      item._id === _id
         ? { 
             ...item, 
             quantity: item.quantity > 1 ? item.quantity - 1 : 1 
@@ -25,21 +25,21 @@ const handleMinus = (id) => {
 };
 
 
-const handlePlus = (id) => {
+const handlePlus = (_id) => {
     setCart(
         prevCart => prevCart.map(
             item => 
-                item.id === id ?
+                item._id === _id ?
                  {...item, quantity : item.quantity + 1 }
                  : item
         )
     )
 }
 
-const handleDelete = (id) => {
+const handleDelete = (_id) => {
     setCart(
         prevCart => prevCart.filter(
-            item => item.id !== id
+            item => item._id !== _id
         )
         )
 }
@@ -98,7 +98,7 @@ const subTotal = cart.reduce((sum, cart) => sum + (cart.productPrice * cart.quan
                                 <div 
                                 className="flex flex-col w-[30%] h-full justify-between py-6"
                                 >
-                                    <button onClick={() => handleDelete(cartItems.id)}
+                                    <button onClick={() => handleDelete(cartItems._id)}
                                     className="self-end cursor-pointer"
                                     >
                                         <MdDelete />
@@ -106,13 +106,13 @@ const subTotal = cart.reduce((sum, cart) => sum + (cart.productPrice * cart.quan
                                     <div
                                     className="flex self-end gap-4 "
                                     >
-                                        <button onClick={() => {handleMinus(cartItems.id)}}
+                                        <button onClick={() => {handleMinus(cartItems._id)}}
                                             className=" border-1 rounded-lg border-gray-300 px-1 cursor-pointer"
                                             >
                                             <FaMinus/>
                                         </button>
                                         {cartItems.quantity}
-                                        <button onClick={() => {handlePlus(cartItems.id)}}
+                                        <button onClick={() => {handlePlus(cartItems._id)}}
                                             className=" border-1 rounded-lg border-gray-300 px-1 cursor-pointer"
                                         >
                                             <FaPlus/>
