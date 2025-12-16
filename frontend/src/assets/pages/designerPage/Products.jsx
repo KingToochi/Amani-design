@@ -115,7 +115,7 @@ const Products = () => {
     return(
         <>
         {
-            (productList.length < 1) 
+            (productList?.length < 1) 
             ?
             <div className="w-full min-h-screen flex flex-col items-center mt-6 gap-6">
                 <h1
@@ -158,12 +158,12 @@ const Products = () => {
                 className="columns-2 md:columns-3 lg:columns-4 gap-2 px-4 py-2 
                 "
                 >
-                {productList.map(
+                {productList?.map(
                     product => (
-                        <div key={product.id}
+                        <div key={product._id}
                         className="break-inside-avoid overflow-hidden rounded-lg mb-2 "
                         >
-                            <Link to={`/productdetails/${product.id}`} className="cursor-pointer">
+                            <Link to={`/productdetails/${product._id}`} className="cursor-pointer">
                                 <img src={product.productImage} 
                                 className="w-full object-cover rounded-xl
                                 " 

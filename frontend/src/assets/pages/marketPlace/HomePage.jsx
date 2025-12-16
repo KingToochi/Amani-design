@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext} from "react";
-import { FiHeart } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { WishiListContext } from "./hooks/WishListContext";
 import { BASE_URL} from "../../Url";  
@@ -31,9 +31,9 @@ const Homepage = () => {
         setWishList(
             prevWishList =>{
                 const exist = prevWishList.some(
-                    item => item.id === design.id)
+                    item => item._id === design._id)
                 return exist ?  
-                prevWishList.filter(item => item.id !== design.id)
+                prevWishList.filter(item => item._id !== design._id)
                 : [...prevWishList, design]
             }
                 )
@@ -103,19 +103,19 @@ const Homepage = () => {
             "
             >
             {designs.map(design =>(
-                <div key={design.id}
+                <div key={design._id}
                 className="w-full flex relative"
                 >
-                    <Link key={design.id} to={`/product-details/${design.id}`}
+                    <Link key={design._id} to={`/product-details/${design._id}`}
                     >
                         <img 
                         className="rounded-lg break-inside-avoid mb-2"
                         src={design.productImage} alt="images"/>
                     </Link>
                     <button onClick={() => addToWishList(design)}
-                     className={`${wishList.some(item => item.id === design.id) ? "text-red-300 bg-red-300" : "text-gray-50"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full absolute  right-0 cursor-pointer`}
+                     className={`${wishList.some(item => item._id === design._id) ? "text-red-500" : "text-gray-50"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full absolute  right-0 cursor-pointer`}
                     >
-                        <FiHeart
+                        <FaHeart
                         className="text-xl mx-auto"
                         />
                     </button>

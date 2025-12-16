@@ -1,5 +1,6 @@
 import { IoHome } from "react-icons/io5";
 import { FiHeart, FiSearch } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa6";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { GiShoppingCart } from "react-icons/gi";
 import { FaUser } from "react-icons/fa6";
@@ -38,7 +39,7 @@ const Navigation = ()=> {
                     <Link to="/wishlist"
                     className="flex flex-col gap-2 items-center"
                     >
-                        <FiHeart className="text-red-400" />
+                        <FaHeart className="text-red-500" />
                         <h1
                         className="hidden 
                         sm:flex

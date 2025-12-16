@@ -4,17 +4,20 @@ import { FiArrowLeft } from "react-icons/fi"
 import { FaNairaSign } from "react-icons/fa6"
 import { TbCurrencyNaira } from "react-icons/tb"
 import { CartContext } from "./hooks/CartContext"
+import { BASE_URL } from "../../Url"
 
 const PDetails = () => {
-    const {id} = useParams()
+    const url = BASE_URL
+    const {_id} = useParams()
     const [productDetails, setProductDetails] = useState([])
     const [cart, setCart] = useContext(CartContext);
     const [quantity, setQuantity] = useState(1)
 
 
     const  fetchProduct = async() => {
+        console.log(_id)
         try {
-            let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`)
+            let response = await fetch(`${url}/products/${_id}`)
             let data = await response.json()
             setProductDetails(data)
         

@@ -66,8 +66,8 @@ app.get("/products/designer", async (req, res) => {
 })
 
 // GET single product
-app.get("/products/:id", async (req, res) => {
-  const product = await Product.findOne({ id: req.params.id });
+app.get("/products/:_id", async (req, res) => {
+  const product = await Product.findOne({ _id: req.params._id });
   if (!product) return res.status(404).json({ message: "Product not found" });
   res.json(product);
 });

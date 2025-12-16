@@ -1,4 +1,4 @@
-import { FiHeart } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa6";
 import { WishiListContext } from "./hooks/WishListContext";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 const  WishList = () => {
 const [wishList, setWishList] = useContext(WishiListContext)
 
-const removeFromWishList = (id) => {
+const removeFromWishList = (_id) => {
     setWishList(prevWishList =>
-        prevWishList.filter(wish => (wish.id !== id) )
+        prevWishList.filter(wish => (wish._id !== _id) )
     )
 }
 
@@ -27,16 +27,16 @@ return(
     >
         {
             wishList.map(wish => (
-                <div key={wish.id}
+                <div key={wish._id}
 
                 className="relative"
                 >
-                    <button onClick={()=> removeFromWishList(wish.id)}
+                    <button onClick={()=> removeFromWishList(wish._id)}
                     className="absolute right-0 bg-zinc-500 w-[40px] h-[40px] mx-1 mt-1 rounded-full"     
                     >
-                        <FiHeart className="text-red-300 text-xl mx-auto" />
+                        <FaHeart className="text-red-500 text-xl mx-auto" />
                     </button>
-                    <Link to={`/product-details/${wish.id}`}>
+                    <Link to={`/product-details/${wish._id}`}>
                         <img src={wish.productImage}
                         className="rounded-lg break-inside-avoid mb-2"
                         />
