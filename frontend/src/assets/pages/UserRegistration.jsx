@@ -173,7 +173,7 @@ const UserRegistration = () => {
 
     const handleSubmit = async(event) => {
         event.preventDefault()
-        isSubmiting(true)
+        setISsubmitting(true)
         let hasError = false
 
         const validateForm = () => {
@@ -183,12 +183,20 @@ const UserRegistration = () => {
                     hasError = true
                     setError(prev => ({...prev, [id]:"field required"}))
                     setShowMessage(prev => ({...prev, [id] : true}))
+                } else {
+                    setError(prev => {
+                        const newErr = {...prev}
+                        delete newErr[id]
+                        return newErr
+                    })
                 }
             }
-            console.log(error)
-            console.log(hasError)
-            isSubmiting(false)
             return hasError
+        }
+
+        if (hasError) {
+            setISsubmitting(false)
+            return
         }
 
         validateForm()
