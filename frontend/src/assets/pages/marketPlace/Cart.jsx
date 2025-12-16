@@ -68,7 +68,7 @@ const subTotal = cart.reduce((sum, cart) => sum + (cart.productPrice * cart.quan
                 >
                     {
                         cart.map(cartItems => (
-                            <div>
+                            <div key ={cartItems._id}>
                             <div
                             className="w-full flex  gap-2 mb-4 h-[200px] items-center px-2 border-b-1 
                             sm:gap-4 
