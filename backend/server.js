@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
+import Likes from "./models/Likes.js";
 
 dotenv.config();
 const app = express();
@@ -268,10 +269,36 @@ app.post("/users/email", async (req, res) => {
   }
 });
 
-// generate token 
-const generateToken = (user) => {
-
-}
+app.post("/like", async(req, res) => {
+  try {
+  const authHeader = req.headers.authorization
+  const productId = req.body.productId
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+  const auth = authHeader.split(" ")[1]
+  const id = auth.id
+  const user = await User.findOne({_id: id}) 
+  if (user) {
+  const exist = await Likes.findOne({userId: id, productId: productId })
+  if (exist) {
+    await Likes.deleteOne({userId: id, productId: productId  }) 
+    res.json({status: "success", message: "product deleted "})
+    return
+  } else {
+    const newLike = new Likes ({
+      userId : id,
+      productId: productId
+    })
+     await newLike.save()
+    return res.json({status: "success", message: "product Liked"})
+  }
+  }
+}catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+})
 
 // ---- Start Server ----
 server.listen(4000, () => console.log("Server running on port 4000"));

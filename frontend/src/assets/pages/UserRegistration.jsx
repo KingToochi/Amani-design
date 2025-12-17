@@ -1,20 +1,20 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { BASE_URL } from "../Url"
 import logo from "../images/mainLogo.jpg"
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "./marketPlace/hooks/AuthProvider";
+
 const UserRegistration = () => {
     const url = BASE_URL
     const navigate = useNavigate()
+    const {setAuth} = useContext(AuthContext)
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
-    const [isSubmiting, setISsubmitting] = useState(false)
+    const [isSubmiting, setIsSubmitting] = useState(false)
     const [passwordStrength, setPasswordStrength] = useState("")
-    const [usernameVerificationMessage, setUsernameVerificationMessage] = useState("")
-    const [showUSernameVerificationMessage, setShowUsernameVerificationMessage] = useState(false)
-    const [emailVerificationMessage,  setEmailVerificationMessage] = useState("")
-    const [isSubmitting, setISsubmitting] = useState(false)
 
     const [showMessage, setShowMessage] = useState({
         fname: false,
@@ -173,7 +173,7 @@ const UserRegistration = () => {
 
     const handleSubmit = async(event) => {
         event.preventDefault()
-        setISsubmitting(true)
+        setIsSubmitting(true)
         let hasError = false
 
         const validateForm = () => {
@@ -183,6 +183,7 @@ const UserRegistration = () => {
                     hasError = true
                     setError(prev => ({...prev, [id]:"field required"}))
                     setShowMessage(prev => ({...prev, [id] : true}))
+                    setIsSubmitting(false)
                 } else {
                     setError(prev => {
                         const newErr = {...prev}
@@ -194,15 +195,11 @@ const UserRegistration = () => {
             return hasError
         }
 
-        if (hasError) {
-            setISsubmitting(false)
-            return
-        }
 
         validateForm()
 
         if (Object.keys(error).length === 0 && !hasError) {
-            setISsubmitting(false)
+            setIsSubmitting(true)
             try {
                 let response = await fetch(`${url}/users/registration`, {
                     method: "POST",
@@ -216,28 +213,19 @@ const UserRegistration = () => {
                 if (data.success) {
                     localStorage.setItem("token", data.token)
                     const decoded = jwtDecode(data.token)
-                                    setAuth({
-                                        id : decoded.id,
-                                        email: decoded.email,
-                                        username: decoded.username,
-                                        status: decoded.status,
-                                        exp: decoded.exp,
-                                        iat: decoded.iat
-                                    }) 
-                    setISsubmitting(false)
                     if(decoded.status === "designer") {
                         navigate("/designer")
                     } navigate("/")
                 } else {
                     alert(data.message)
-                    setISsubmitting(false)
+                    setIsSubmitting(false)
                 }
             } catch(error){
-
+                console.log(error)
                          }
         }else {
             console.log("Form has errors:", error);
-            setISsubmitting(false)
+            setIsSubmitting(false)
         }
     }
 

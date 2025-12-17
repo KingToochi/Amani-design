@@ -1,8 +1,12 @@
 import { useState, useEffect, useContext} from "react";
-import { FaHeart } from "react-icons/fa6";
+import { FaHeart, FaMessage } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { WishiListContext } from "./hooks/WishListContext";
 import { BASE_URL} from "../../Url";  
+import { BiSolidLike } from "react-icons/bi";
+import { LikeContext } from "./hooks/Like";
+import {AuthContext} from "./hooks/AuthProvider"
+
 
 
 
@@ -10,6 +14,8 @@ const Homepage = () => {
     const url = BASE_URL;
     const [designs, setDesigns] = useState([])
     const [wishList, setWishList] = useContext(WishiListContext)
+    const [like, setLike] = useContext(LikeContext)
+    const {auth} = useContext(AuthContext) 
 
     const fetchDesigns = async () => {
         try {
@@ -38,6 +44,31 @@ const Homepage = () => {
             }
                 )
     }
+
+    const likeProduct = async (design) => {
+        console.log(auth)
+       setLike(prev => {
+        const exist = prev.includes(design._id)
+        return exist ?
+        prev.filter(id => id !== design._id) :
+        [...prev, design._id]
+       })
+
+       try {
+            let response = await fetch(`${url}/likes`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${auth}`
+                },
+                body: JSON.stringify({productId: design._id})
+            })
+            let data = await response.json()
+       } catch(error) {
+        console.log(error)
+       }
+}
+
 
     return (
         <div 
@@ -112,13 +143,25 @@ const Homepage = () => {
                         className="rounded-lg break-inside-avoid mb-2"
                         src={design.productImage} alt="images"/>
                     </Link>
-                    <button onClick={() => addToWishList(design)}
-                     className={`${wishList.some(item => item._id === design._id) ? "text-red-500" : "text-gray-50"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full absolute  right-0 cursor-pointer`}
+                    <div
+                    className="flex flex-col absolute  right-0 gap-4"
                     >
-                        <FaHeart
-                        className="text-xl mx-auto"
-                        />
-                    </button>
+                        <button onClick={() => addToWishList(design)}
+                        className={`${wishList.some(item => item._id === design._id) ? "text-red-500" : "text-gray-50"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
+                        >
+                            <FaHeart
+                            className="text-xl mx-auto"
+                            />
+                        </button>
+
+                        <button  onClick={() => likeProduct(design)}
+                        className={`${like.some(id=> id === design._id) ? "text-blue-500" : "text-gray-50"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
+                        >
+                            <BiSolidLike
+                            className="text-xl mx-auto" />                  
+                        </button>
+                    </div>
+                    
                 </div>
             ))}
            </div>
@@ -126,5 +169,6 @@ const Homepage = () => {
     )
 
 }
+
 
 export default Homepage;
