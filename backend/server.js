@@ -11,6 +11,7 @@ import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
 import Likes from "./models/Likes.js";
+import { json } from "stream/consumers";
 
 dotenv.config();
 const app = express();
@@ -263,8 +264,6 @@ app.post("/like", async(req, res) => {
   try {
   const authHeader = req.headers.authorization
   const productId = req.body.productId
-  console.log(authHeader)
-  console.log(productId)
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     console.log("not auth header")
       return res.status(401).json({ message: "Unauthorized" });
@@ -297,6 +296,22 @@ app.post("/like", async(req, res) => {
   }
 })
 
+app.get("/likes", verifyToken, async(req, res) => {
+  const auth = req.user
+  
+  try {
+    const user = await User.findOne({_id : auth._id})
+
+  if (!user) {
+    return res.json({success:false, message:"user do not exist"})
+  }
+    const likedProducts = await Likes.find({userId : auth._id})
+    return res.json({success: true, likedProducts})
+  } catch(error){
+    console.log(error)
+  }
+})
+
 const generateToken = async (email) => {
   const user = await User.findOne({email: email})
    if (!user) {
@@ -314,6 +329,23 @@ const generateToken = async (email) => {
   )
 
   return token
+}
+
+const verifyToken = async(req, res, next) => {
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Unauthorized" })
+  }
+  const token = authHeader.split(" ")[1]
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+  req.user = decoded
+
+  next()
+  }  catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token" })
+  }
 }
 
 // ---- Start Server ----

@@ -15,7 +15,10 @@ const Homepage = () => {
     const [designs, setDesigns] = useState([])
     const [wishList, setWishList] = useContext(WishiListContext)
     const [like, setLike] = useContext(LikeContext)
-    const {auth} = useContext(AuthContext) 
+    const {isLoggedIn} = useContext(AuthContext)
+    const token = localStorage.getItem("token") 
+    
+
 
     const fetchDesigns = async () => {
         try {
@@ -29,8 +32,27 @@ const Homepage = () => {
         
     }
 
+    const fetchLikes =  async() => {
+        try {
+            let response = await fetch (`${url}/likes`, {
+                method: "GET",
+                headers: {
+                    "Authorization" : `Bearer ${token}`
+                }
+            })
+            let data = await response.json()
+            if (data.success) {
+                setLike(prev => [...prev, ...data.likedProducts])
+            }
+            console.log(data)
+        } catch(error){
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         fetchDesigns()
+        fetchLikes()
     }, [])
 
     const addToWishList = (design) => {
@@ -46,8 +68,6 @@ const Homepage = () => {
     }
 
     const likeProduct = async (design) => {
-        const token = localStorage.getItem("token")
-        console.log(token)
        setLike(prev => {
         const exist = prev.includes(design._id)
         return exist ?
@@ -66,9 +86,6 @@ const Homepage = () => {
             })
             let data = await response.json()
             console.log(data)
-            if (response.status === "success"){
-                console.log("liked")
-            }else {console.log("failed")}
        } catch(error) {
         console.log(error)
        }
@@ -160,7 +177,7 @@ const Homepage = () => {
                         </button>
 
                         <button  onClick={() => likeProduct(design)}
-                        className={`${like.some(id=> id === design._id) ? "text-blue-500" : "text-gray-50"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
+                        className={`${like.some(id=> id === design._id) ? "text-blue-500" : "text-gray-50"} ${isLoggedIn ? "block" : "hidden"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
                         >
                             <BiSolidLike
                             className="text-xl mx-auto" />                  
