@@ -273,7 +273,7 @@ app.post("/like", async(req, res) => {
   try {
   const authHeader = req.headers.authorization
   const productId = req.body.productId
-  console.log(autHeader)
+  console.log(authHeader)
   console.log(productId)
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     console.log("not auth header")
