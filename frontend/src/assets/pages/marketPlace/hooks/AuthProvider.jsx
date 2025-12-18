@@ -28,7 +28,7 @@ const AuthProvider = ({ children }) => {
       }
 
       setAuth({
-        id: decoded.id,
+        id: decoded._id,
         email: decoded.email,
         username: decoded.username,
         status: decoded.status,
