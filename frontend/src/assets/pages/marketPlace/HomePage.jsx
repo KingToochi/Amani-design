@@ -15,7 +15,7 @@ const Homepage = () => {
     const [designs, setDesigns] = useState([])
     const [wishList, setWishList] = useContext(WishiListContext)
     const [like, setLike] = useContext(LikeContext)
-    const {isLoggedIn} = useContext(AuthContext)
+    const {auth, isLoggedIn} = useContext(AuthContext)
     const token = localStorage.getItem("token") 
     
 
@@ -43,6 +43,7 @@ const Homepage = () => {
             let data = await response.json()
             if (data.success) {
                 setLike(prev => [...prev, ...data.likedProducts])
+
             }
             console.log(data)
         } catch(error){
@@ -52,8 +53,12 @@ const Homepage = () => {
 
     useEffect(() => {
         fetchDesigns()
-        fetchLikes()
     }, [])
+    useEffect(() => {
+        if (isLoggedIn) {
+            fetchLikes()
+        }
+}, [isLoggedIn])
 
     const addToWishList = (design) => {
         setWishList(
@@ -68,12 +73,12 @@ const Homepage = () => {
     }
 
     const likeProduct = async (design) => {
-       setLike(prev => {
-        const exist = prev.includes(design._id)
-        return exist ?
-        prev.filter(id => id !== design._id) :
-        [...prev, design._id]
-       })
+        const exist = like.some(item => item.productId === design._id)
+        if (exist) {
+            setLike(prev => prev.filter(item => item.productId !== design._id))
+        }else {
+            setLike(prev => [...prev, {productId: design._id, userId: auth.id}])
+        }
 
        try {
             let response = await fetch(`${url}/like`, {
@@ -177,7 +182,7 @@ const Homepage = () => {
                         </button>
 
                         <button  onClick={() => likeProduct(design)}
-                        className={`${like.some(id=> id === design._id) ? "text-blue-500" : "text-gray-50"} ${isLoggedIn ? "block" : "hidden"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
+                        className={`${like.some(product => product.productId === design._id) ? "text-blue-500" : "text-gray-50"} ${isLoggedIn ? "block" : "hidden"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
                         >
                             <BiSolidLike
                             className="text-xl mx-auto" />                  
