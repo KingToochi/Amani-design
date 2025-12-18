@@ -8,11 +8,13 @@ import logo from "../../images/mainLogo.jpg"
 import { Link } from "react-router-dom";
 import { useState, useContext} from "react";
 import { CartContext } from "./hooks/CartContext";
+import {AuthContext} from "./hooks/AuthProvider"
 
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
     const [cart]= useContext(CartContext)
     const onClickSearchIcon = () => setShowSearchBar((prev) => !prev)
+    const {isLoggedIn, auth} = useContext(AuthContext)
 
     return (
         <>
@@ -62,7 +64,9 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    <Link
+                    {isLoggedIn && auth.status === "designer" 
+                    ? 
+                    <Link to="/designer"
                     className="flex items-center"
                     >
                         <img src={logo} alt="AmaniSky logo" 
@@ -71,6 +75,17 @@ const Navigation = ()=> {
                         "
                         />
                     </Link>
+                    :
+                    <div 
+                    className="flex items-center"
+                    >
+                        <img src={logo} alt="AmaniSky logo" 
+                        className="w-[40px] h-[40px] rounded-full mx-auto my-4
+                        sm:w-[50px] sm:h-[50px]
+                        "
+                        />
+                    </div>
+                    }
                 </li>
 
                  <li>
