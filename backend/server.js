@@ -280,7 +280,7 @@ app.post("/like", async(req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
   const token = authHeader.split(" ")[1]
-  const auth = wt.verify(token, process.env.JWT_SECRET)
+  const auth = jwt.verify(token, process.env.JWT_SECRET)
   console.log(auth)
   const id = auth.id
   console.log(auth)
