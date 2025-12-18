@@ -7,7 +7,6 @@ import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
 import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
@@ -24,7 +23,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "amaniskysecrecy19962025";
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
-const io = new Server(server);
+
 
 // ---- Multer ----
 const uploadProduct = multer({ dest: "./products" });
@@ -196,7 +195,6 @@ app.post("/users/registration", async (req, res) => {
     if (exists) return res.status(400).json({ message: "Email or username already exists" });
 
     const newUser = new User({
-      id: uuidv4(),
       joinedAt: new Date().toISOString(),
       fname,
       lname,
@@ -208,13 +206,9 @@ app.post("/users/registration", async (req, res) => {
 
     await newUser.save();
 
-    const token = jwt.sign(
-      { id: newUser.id, email: newUser.email, username: newUser.username, status: newUser.status },
-      SECRET_KEY,
-      { expiresIn: "1h" }
-    );
+    const token = await generateToken(email)
 
-    res.status(201).json({ success: true, message: "User registered successfully", user: newUser, token });
+    res.status(201).json({ success: true, message: "User registered successfully",  token });
   } catch (err) {
     console.error("User registration error:", err); // <-- Add this if not alrea
     res.status(500).json({ message: "Server error" });
@@ -229,11 +223,7 @@ app.post("/users/login", async (req, res) => {
     if (!user) return res.status(404).json({ success: false, error: "User not found" });
     if (user.password !== password) return res.status(401).json({ success: false, error: "Incorrect password" });
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, username: user.username, status: user.status },
-      SECRET_KEY,
-      { expiresIn: "1h" }
-    );
+    const token = await generateToken(email)
 
     const reply = user.status === "designer"
       ? { success: true, redirect: "/designer/products", token }
@@ -282,7 +272,7 @@ app.post("/like", async(req, res) => {
   const token = authHeader.split(" ")[1]
   const auth = jwt.verify(token, process.env.JWT_SECRET)
   console.log(auth)
-  const id = auth.id
+  const id = auth._id
   console.log(auth)
   console.log(id)
   const user = await User.findOne({_id: id}) 
@@ -306,6 +296,25 @@ app.post("/like", async(req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 })
+
+const generateToken = async (email) => {
+  const user = await User.findOne({email: email})
+   if (!user) {
+    throw new Error("User not found")
+  }
+  const token = jwt.sign(
+    {
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      status: user.status
+    },
+    SECRET_KEY,
+    { expiresIn: "1h" }
+  )
+
+  return token
+}
 
 // ---- Start Server ----
 server.listen(4000, () => console.log("Server running on port 4000"));
