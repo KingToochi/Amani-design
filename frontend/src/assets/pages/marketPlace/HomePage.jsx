@@ -111,45 +111,45 @@ const Homepage = () => {
             md:h-[70px]
             "
             >
-                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer  ">
+                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer  ">
                     <Link>Men's Clothing</Link>
                 </li>
 
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Men's Footwears</Link>
                 </li>
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Women's Footwears</Link>
                 </li>
-                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Women's Clothing</Link>
                 </li>
 
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Men's handBag/purse</Link>
                 </li>
 
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Women's handBag/purse</Link>
                 </li>
 
-                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Men's Clothing Accessories</Link>
                 </li>
 
-                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Women's Clothing Accessories</Link>
                 </li>
 
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Kid's Clothing</Link>
                 </li>
 
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Kid's Footwear</Link>
                 </li>
 
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-gray-500 cursor-pointer">
+                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-pink-700 cursor-pointer">
                     <Link>Kid's Clothing Accessories</Link>
                 </li>
                 
