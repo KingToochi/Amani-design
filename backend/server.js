@@ -279,7 +279,9 @@ app.post("/like", async(req, res) => {
     console.log("not auth header")
       return res.status(401).json({ message: "Unauthorized" });
     }
-  const auth = authHeader.split(" ")[1]
+  const token = authHeader.split(" ")[1]
+  const auth = wt.verify(token, process.env.JWT_SECRET)
+  console.log(auth)
   const id = auth.id
   console.log(auth)
   console.log(id)

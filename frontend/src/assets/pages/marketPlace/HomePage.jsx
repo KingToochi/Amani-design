@@ -46,7 +46,8 @@ const Homepage = () => {
     }
 
     const likeProduct = async (design) => {
-        console.log(auth)
+        const token = localStorage.getItem("token")
+        console.log(token)
        setLike(prev => {
         const exist = prev.includes(design._id)
         return exist ?
@@ -59,7 +60,7 @@ const Homepage = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${auth}`
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({productId: design._id})
             })
