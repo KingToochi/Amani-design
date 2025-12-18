@@ -55,7 +55,7 @@ const Homepage = () => {
        })
 
        try {
-            let response = await fetch(`${url}/likes`, {
+            let response = await fetch(`${url}/like`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -64,6 +64,10 @@ const Homepage = () => {
                 body: JSON.stringify({productId: design._id})
             })
             let data = await response.json()
+            console.log(data)
+            if (response.status === "success"){
+                console.log("liked")
+            }else {console.log("failed")}
        } catch(error) {
         console.log(error)
        }

@@ -273,11 +273,16 @@ app.post("/like", async(req, res) => {
   try {
   const authHeader = req.headers.authorization
   const productId = req.body.productId
+  console.log(autHeader)
+  console.log(productId)
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    console.log("not auth header")
       return res.status(401).json({ message: "Unauthorized" });
     }
   const auth = authHeader.split(" ")[1]
   const id = auth.id
+  console.log(auth)
+  console.log(id)
   const user = await User.findOne({_id: id}) 
   if (user) {
   const exist = await Likes.findOne({userId: id, productId: productId })
