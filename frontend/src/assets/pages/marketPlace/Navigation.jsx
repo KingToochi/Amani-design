@@ -19,8 +19,9 @@ const Navigation = ()=> {
     const url = BASE_URL
 
     const searchItem = async(event) => {
-         event.preventDefault() 
+         event.preventDefault()
          const form = event.target.value
+         console.log(form)
         let response = await fetch (`${url}/search?q=${encodeURIComponent(form)}`)
         let data = await response.json()
         console.log(data)

@@ -351,10 +351,12 @@ const generateToken = async (email) => {
 app.get("/search", async (req, res) => {
   try {
     const { q } = req.query
+    console.log(q)
     if (!q || !q.trim()) return res.json({ message: "empty field", products: [] })
 
     // Split input into words
     const inputValue = q.trim().split(/\s+/)
+    console.log(inputValue)
 
     // Build MongoDB query: each word should match at least one field
     const mongoQuery = {
@@ -370,7 +372,6 @@ app.get("/search", async (req, res) => {
 
     // Query MongoDB
     const products = await Product.find(mongoQuery)
-
     // Send results
     res.json({ products })
   } catch (error) {
