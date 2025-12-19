@@ -9,12 +9,22 @@ import { Link } from "react-router-dom";
 import { useState, useContext} from "react";
 import { CartContext } from "./hooks/CartContext";
 import {AuthContext} from "./hooks/AuthProvider"
+import { BASE_URL } from "../../Url";
 
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
     const [cart]= useContext(CartContext)
     const onClickSearchIcon = () => setShowSearchBar((prev) => !prev)
     const {isLoggedIn, auth} = useContext(AuthContext)
+    const url = BASE_URL
+
+    const searchItem = async(event) => {
+         event.preventDefault() 
+         const form = event.target.value
+        let response = await fetch (`${url}/search?q=${encodeURIComponent(form)}`)
+        let data = await response.json()
+        console.log(data)
+    }
 
     return (
         <>
@@ -140,7 +150,7 @@ const Navigation = ()=> {
         </nav>
         {
                 showSearchBar && 
-                <form 
+                <form onSubmit={(event) => searchItem(event)}
                 className="min-w-screen absolute right-0 left-0 top-0 flex flex-col px-2 py-2  bg-white gap-2"
                 >
                     <h1

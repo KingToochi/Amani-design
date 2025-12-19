@@ -348,6 +348,37 @@ const generateToken = async (email) => {
   return token
 }
 
+app.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query
+    if (!q || !q.trim()) return res.json({ message: "empty field", products: [] })
+
+    // Split input into words
+    const inputValue = q.trim().split(/\s+/)
+
+    // Build MongoDB query: each word should match at least one field
+    const mongoQuery = {
+      $and: inputValue.map(word => ({
+        $or: [
+          { productCategory: { $regex: word, $options: "i" } },
+          { productDescription: { $regex: word, $options: "i" } },
+          { productName: { $regex: word, $options: "i" } }
+        ]
+      }))
+    }
+
+    // Query MongoDB
+    const products = await Product.find(mongoQuery)
+
+    // Send results
+    res.json({ products })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+
 
 
 // ---- Start Server ----
