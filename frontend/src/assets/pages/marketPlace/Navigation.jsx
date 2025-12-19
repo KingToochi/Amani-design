@@ -17,12 +17,13 @@ const Navigation = ()=> {
     const onClickSearchIcon = () => setShowSearchBar((prev) => !prev)
     const {isLoggedIn, auth} = useContext(AuthContext)
     const url = BASE_URL
+    const [query, setQuery] = useState("")
 
     const searchItem = async(event) => {
          event.preventDefault()
-         const form = event.target.value
-         console.log(form)
-        let response = await fetch (`${url}/search?q=${encodeURIComponent(form)}`)
+         if (!query.trim()) return
+         console.log(query)
+        let response = await fetch (`${url}/search?q=${encodeURIComponent(query)}`)
         let data = await response.json()
         console.log(data)
     }
@@ -159,6 +160,8 @@ const Navigation = ()=> {
                     className="flex justify-end text-2xl font-bold text-red-600 px-2"
                     >X</h1>
                     <input type="search" placeholder="search"
+                    value={query} 
+                    onChange={(e) => setQuery(e.target.value)}
                     className="w-[90%] h-[30px] border-2 border-gray-900 rounded-lg px-2 mx-auto text-2xl font-medium font-[abril] focus:outline-none
                     md:h-[50px]
                     "
