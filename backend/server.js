@@ -363,7 +363,7 @@ app.get("/search", async (req, res) => {
           { productCategory: { $regex: word, $options: "i" } },
           { productDescription: { $regex: word, $options: "i" } },
           {color: { $regex: word, $options: "i" }},
-          {size: {$regex: word, $option: "i"}}
+          {size: {$regex: word, $options: "i"}}
         ]
       }))
     }
