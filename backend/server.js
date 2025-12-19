@@ -362,7 +362,8 @@ app.get("/search", async (req, res) => {
         $or: [
           { productCategory: { $regex: word, $options: "i" } },
           { productDescription: { $regex: word, $options: "i" } },
-          { productName: { $regex: word, $options: "i" } }
+          {color: { $regex: word, $options: "i" }},
+          {size: {$regex: word, $option: "i"}}
         ]
       }))
     }
