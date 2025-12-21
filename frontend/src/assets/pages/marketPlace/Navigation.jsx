@@ -10,6 +10,7 @@ import { useState, useContext} from "react";
 import { CartContext } from "./hooks/CartContext";
 import {AuthContext} from "./hooks/AuthProvider"
 import { BASE_URL } from "../../Url";
+import Search from "./SearchPage";
 
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
@@ -18,6 +19,8 @@ const Navigation = ()=> {
     const {isLoggedIn, auth} = useContext(AuthContext)
     const url = BASE_URL
     const [query, setQuery] = useState("")
+    const [searchedProduct, setSearchedProduct] = useState([])
+    const [showSearchedProduct, setShowSearchedProduct] = useState(false)
 
     const searchItem = async(event) => {
          event.preventDefault()
@@ -25,8 +28,17 @@ const Navigation = ()=> {
          console.log(query)
         let response = await fetch (`${url}/search?q=${encodeURIComponent(query)}`)
         let data = await response.json()
+        
+        setSearchedProduct(data.products)
+        console.log("showSearchedProduct:", showSearchedProduct)
+        setShowSearchedProduct(true)
         console.log(data)
+        
     }
+
+    
+
+
 
     return (
         <>
@@ -167,6 +179,14 @@ const Navigation = ()=> {
                     "
                     />
                 </form>
+            }
+            {showSearchedProduct &&
+                <div className="w-full h-auto z-[60] fixed top-0 right-0 left-0 backdrop-blur text-gray-700 text-lg
+                sm-text-xl
+                md:text-2xl
+                ">
+                    <Search searchedProduct = {searchedProduct}/>
+                </div>
             }
         </>
     )

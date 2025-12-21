@@ -373,7 +373,7 @@ app.get("/search", async (req, res) => {
     // Query MongoDB
     const products = await Product.find(mongoQuery)
     // Send results
-    res.json({ products })
+    res.json({success:true, products })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: "Server error" })
