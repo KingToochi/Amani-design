@@ -181,7 +181,7 @@ const Navigation = ()=> {
                 </form>
             }
             {showSearchedProduct &&
-                <div className="w-full h-auto z-[60] fixed top-0 right-0 left-0 backdrop-blur text-gray-700 text-lg
+                <div className="w-full h-auto z-[60] absolute top-20 right-0 left-0 backdrop-blur text-gray-700 text-lg
                 sm-text-xl
                 md:text-2xl
                 ">
