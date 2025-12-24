@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom"
-const Search = ({ searchedProduct }) => {
+const Search = ({ searchedProduct, setShowSearchedProduct, setShowSearchBar}) => {
+
+    const viewProduct = () => {
+      setShowSearchedProduct(false)
+      setShowSearchBar(false)
+    }
     if (searchedProduct.length === 0) {
         return(
             <h1 className="text-center">No item found</h1>
@@ -7,9 +12,10 @@ const Search = ({ searchedProduct }) => {
     }
   return (
     <div className="w-full flex flex-col gap-2 items-center justify-center">
-      {searchedProduct.map(items => (
+      {searchedProduct?.map(items => (
         <div key={items._id} className="flex flex-col items-center">
           <Link 
+          onClick={viewProduct}
           className="cursor-pointer"
           to={`/product-details/${items._id}`}>
             <img

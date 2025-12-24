@@ -15,12 +15,16 @@ import Search from "./SearchPage";
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
     const [cart]= useContext(CartContext)
-    const onClickSearchIcon = () => setShowSearchBar((prev) => !prev)
     const {isLoggedIn, auth} = useContext(AuthContext)
     const url = BASE_URL
     const [query, setQuery] = useState("")
     const [searchedProduct, setSearchedProduct] = useState([])
     const [showSearchedProduct, setShowSearchedProduct] = useState(false)
+
+    const onClickSearchIcon = () => {
+        setShowSearchBar((prev) => !prev)
+        setShowSearchedProduct(false)
+    }
 
     const searchItem = async(event) => {
          event.preventDefault()
@@ -165,11 +169,16 @@ const Navigation = ()=> {
         {
                 showSearchBar && 
                 <form onSubmit={(event) => searchItem(event)}
-                className="min-w-screen absolute right-0 left-0 top-0 flex flex-col px-2 py-2  bg-white gap-2"
+                className="min-w-screen absolute right-0 left-0 top-0 flex flex-col px-2 py-2  bg-white gap-2
+                
+                "
                 >
                     <h1
                     onClick={onClickSearchIcon}
-                    className="flex justify-end text-2xl font-bold text-red-600 px-2"
+                    className="flex justify-end text-lg font-bold text-red-600 px-2 
+                    sm:text-xl
+                    md:text-2xl
+                    "
                     >X</h1>
                     <input type="search" placeholder="search"
                     value={query} 
@@ -181,11 +190,11 @@ const Navigation = ()=> {
                 </form>
             }
             {showSearchedProduct &&
-                <div className="w-full h-auto z-[60] absolute top-20 right-0 left-0 backdrop-blur text-gray-700 text-lg
+                <div className="w-full h-auto z-[60] absolute top-[0] right-0 left-0 backdrop-blur text-gray-700 text-lg mt-[75px]
                 sm-text-xl
                 md:text-2xl
                 ">
-                    <Search searchedProduct = {searchedProduct}/>
+                    <Search searchedProduct = {searchedProduct} setShowSearchedProduct = {setShowSearchedProduct} setShowSearchBar = {setShowSearchBar}/>
                 </div>
             }
         </>
