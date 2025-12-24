@@ -218,6 +218,9 @@ app.post("/users/registration", async (req, res) => {
       lname,
       username,
       email,
+      profilePicture: "",
+      proofOfAddress: "",
+      MeansOfIdentification: "",
       password,
       status,
     });
