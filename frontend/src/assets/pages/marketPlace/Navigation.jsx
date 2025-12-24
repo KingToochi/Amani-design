@@ -1,5 +1,5 @@
-import { IoHome } from "react-icons/io5";
-import { FiHeart, FiSearch } from "react-icons/fi";
+import { FaHome } from "react-icons/fa";
+import { FiSearch } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa6";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { GiShoppingCart } from "react-icons/gi";
@@ -47,7 +47,7 @@ const Navigation = ()=> {
     return (
         <>
         <nav
-        className="w-full h-[70px] text-gray-50 font-normal font-[abril] text-xl fixed bottom-0 z-50 backdrop-blur bg-sky-300"
+        className="w-full h-[70px] text-gray-700 font-normal font-[abril] text-xl fixed bottom-0 z-50 backdrop-blur bg-gray-50 border-t-2 border-stone-500 "
         >
             <ul
             className="flex items-center gap-2 justify-between px-2"
@@ -56,7 +56,7 @@ const Navigation = ()=> {
                     <Link to="/"
                     className="flex flex-col gap-2 items-center"
                     >
-                        <IoHome />
+                        <FaHome/>
                         <h1
                         className="hidden 
                         sm:flex
