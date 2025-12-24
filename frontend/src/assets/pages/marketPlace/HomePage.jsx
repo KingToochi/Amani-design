@@ -100,7 +100,7 @@ const Homepage = () => {
 
     return (
         <div 
-        className="flex flex-col text-gray-700 text-lg font-[abril] px-2 gap-4
+        className="flex flex-col text-gray-50 text-lg font-[abril] px-2 gap-4
         sm:text-xl
         md-text-2xl 
         
