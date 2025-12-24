@@ -47,7 +47,7 @@ const Navigation = ()=> {
     return (
         <>
         <nav
-        className="w-full h-[70px] text-gray-700 font-normal font-[abril] text-xl fixed bottom-0 z-50 backdrop-blur bg-stone-500 "
+        className="w-full h-[70px] text-gray-700 font-normal font-[abril] text-xl fixed bottom-0 z-50 backdrop-blur bg-stone-300 "
         >
             <ul
             className="flex items-center gap-2 justify-between px-2"
