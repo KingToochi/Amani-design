@@ -390,12 +390,15 @@ app.get("/search", async (req, res) => {
 
 app.get("/users", verifyToken, async(req, res) => {
     const auth = req.user
+    console.log(auth)
 
     try {
       const user = await User.findOne({_id : auth._id})
       if (user) {
+        console.log("i found the user")
         return res.status(200).json({success:true, message: "user details found", user})
   } else {
+    console.log("i didnt found the user")
     return res.status(404).json({success:false, message:"user details not found"})
   }
     } catch (error) {

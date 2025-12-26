@@ -19,6 +19,7 @@ const ProfilePage = () => {
                 }
             })
             let data = await response.json()
+            console.log(data)
             setUserDetails(data)
 
         } catch (error) {
@@ -28,8 +29,6 @@ const ProfilePage = () => {
 
 
     useEffect(()  =>{
-       
-
         if(!token) {
             navigate("/login")
             return
@@ -44,7 +43,7 @@ const ProfilePage = () => {
                 localStorage.removeItem("token")
                 navigate("/login")
                 return
-            } if (!decoded.id) {
+            } if (!decoded._id) {
                 navigate("/login")
                 return
             } else {
@@ -58,7 +57,7 @@ const ProfilePage = () => {
                 })
             }
 
-             fetchUserData()
+            fetchUserData()
         } catch(error) {
             console.error("Invalid token:", error)
             localStorage.removeItem("token")
