@@ -219,8 +219,13 @@ app.post("/users/registration", async (req, res) => {
       username,
       email,
       profilePicture: "",
+      address: "",
+      city: "",
+      state: "",
+      shippingAddress: "",
       proofOfAddress: "",
       MeansOfIdentification: "",
+      identificationNumber: "",
       password,
       status,
     });
@@ -383,6 +388,21 @@ app.get("/search", async (req, res) => {
   }
 })
 
+app.get("/users", verifyToken, async(req, res) => {
+    const auth = req.user
+
+    try {
+      const user = await User.findOne({_id : auth._id})
+      if (user) {
+        return res.status(200).json({success:true, message: "user details found", user})
+  } else {
+    return res.status(404).json({success:false, message:"user details not found"})
+  }
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+})
 
 
 

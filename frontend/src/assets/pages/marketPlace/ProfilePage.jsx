@@ -2,15 +2,24 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import {AuthContext} from "./hooks/AuthProvider"
+import { CiEdit } from "react-icons/ci";
 const ProfilePage = () => {
     const {setAuth} = useContext(AuthContext)
+    const [userDetails, setUserDetails] = useState({})
+    const  token = localStorage.getItem("token");
 
     const navigate = useNavigate()
 
     const fetchUserData = async() => {
         try{
-            let response = await fetch("https://amani-design-backend.onrender.com/users")
+            let response = await fetch("https://amani-design-backend.onrender.com/users", {
+                method: "GET",
+                headers: {
+                    "Authorization" : `Bearer ${token}`
+                }
+            })
             let data = await response.json()
+            setUserDetails(data)
 
         } catch (error) {
             
@@ -19,8 +28,7 @@ const ProfilePage = () => {
 
 
     useEffect(()  =>{
-        const token = localStorage.getItem("token");
-        console.log("TOKEN:", token)
+       
 
         if(!token) {
             navigate("/login")
@@ -49,6 +57,8 @@ const ProfilePage = () => {
                     iat: decoded.iat
                 })
             }
+
+             fetchUserData()
         } catch(error) {
             console.error("Invalid token:", error)
             localStorage.removeItem("token")
@@ -56,9 +66,45 @@ const ProfilePage = () => {
         }
     }, [])
 
+
     return(
         <div>
-            Welcome
+           <div>
+                <img src={userDetails?.profilePicture} alt="profile Picture" />
+                <h1>{userDetails?.username}</h1>
+           </div>
+           <div>
+                <div>
+                    <h1>First Name: {userDetails?.fname}</h1>
+                    <CiEdit />
+                </div>
+                <div>
+                    <h1>Last Name: {userDetails?.lname}</h1>
+                    <CiEdit />
+                </div>
+                <div>
+                    <h1>Username: {userDetails?.username}</h1>
+                    <CiEdit />
+                </div>
+                <div>
+                    <h1>Email Address: {userDetails?.email}</h1>
+                    <CiEdit />
+                </div>
+                <div>
+                    <h1>Status: {userDetails?.status}</h1>
+                    <CiEdit />
+                </div>
+                <div>
+                    <h1>{userDetails?.meansOfIdentification}: {userDetails?.identificationNumber}</h1>
+                    <CiEdit />
+                </div>
+                {userDetails?.shippingAddress && 
+                    (<div>
+                        <h1>Shipping Address: {userDetails.shippingAddress}</h1>
+                        <CiEdit />
+                    </div>)
+                }
+           </div>
         </div>
     )
 }
