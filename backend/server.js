@@ -285,8 +285,8 @@ if (req.files.proofOfAddress) {
         proofOfAddress: proofOfAddressUrl,
         city: "",
         state: "",
-        shippingAddress: "";
-        status: "designer"
+        shippingAddress: "",
+        status: "designer",
       });
 
       await newUser.save();
