@@ -290,8 +290,8 @@ if (req.files.proofOfAddress) {
       });
 
       await newUser.save();
-
-      res.status(201).json({ success: true, user: newUser });
+      const token = await generateToken(email)
+      res.status(201).json({ success: true,  message: "User registered successfully", token });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: error.message });

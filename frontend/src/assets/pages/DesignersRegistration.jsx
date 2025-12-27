@@ -64,6 +64,8 @@ const handleFinalSubmit = async (data) => {
         console.log("Submission successful:", result);
 
         if (result.success) {
+            localStorage.setItem("token", data.token)
+            const decoded = jwtDecode(data.token)
             navigate("/designer") 
         } else {
             setIsubmitting(false)
