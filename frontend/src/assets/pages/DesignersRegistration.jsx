@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../Url";
 
 
+
 const Registration = () => {
     const url = BASE_URL
     const navigate = useNavigate()
     const [meansOfIdentification, setMeansOfIdentification] = useState("");
     const [showDetailsVerification, setShowDetailsVerification] = useState(false);
     const [showCreateUser, setShowCreateUser] = useState(false);
+    const [isSubmitting, setIsubmitting] = useState(false)
      // Store all form data in one object
     const [userData, setUserData] = useState({});
     const onClick = (data) => {
@@ -37,6 +39,7 @@ const handleFinalSubmit = async (data) => {
     // Merge existing userData state with the latest form data
     const formData = { ...userData, ...data };
     console.log(formData)
+    setIsubmitting(true)
 
     // Create a FormData instance
     const body = new FormData();
@@ -53,18 +56,21 @@ const handleFinalSubmit = async (data) => {
     });
 
     try {
-        const response = await fetch(`${url}/registration/designers`, {
+        const response = await fetch(`${url}/users/registration/designers`, {
             method: "POST",
             body : body
         });
-
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
         const result = await response.json();
         console.log("Submission successful:", result);
 
+        if (result.success) {
+            navigate("/designer") 
+        } else {
+            setIsubmitting(false)
+        }
+
     } catch (error) {
-        console.error("Submission failed:", error);
+
     }
 };
 
