@@ -34,53 +34,39 @@ const Registration = () => {
 
     // Async function that handles the final form submission
 const handleFinalSubmit = async (data) => {
-    
-    // Merge existing userData state with the latest form data submitted
+    // Merge existing userData state with the latest form data
     const formData = { ...userData, ...data };
-    const imageData = new FormData()
-   
-    if (formData.profilePicture?.[0]) {
-        imageData.append("profilePicture", formData.profilePicture[0]);
-    }
+    console.log(formData)
 
-    if (formData.proofOfAddress?.[0]) {
-        imageData.append("proofOfAddress", formData.proofOfAddress[0]);
-    }
+    // Create a FormData instance
+    const body = new FormData();
 
+    // Append all form fields to FormData
+    Object.keys(formData).forEach((key) => {
+        const value = formData[key];
+        // If the value is a FileList (from input type="file"), append the first file
+        if (value instanceof FileList) {
+            if (value.length > 0) body.append(key, value[0]);
+        } else {
+            body.append(key, value);
+        }
+    });
 
     try {
-        const upLoadImage = await fetch(`${url}/users`, {
+        const response = await fetch(`${url}/registration/designers`, {
             method: "POST",
-            body: imageData
-        })
+            body : body
+        });
 
-        if (!upLoadImage.ok) throw new Error("unable to upload data")
-        const uploadResult = await upLoadImage.json();
-        const { ProofOfAddressUrl, profilePictureUrl } = uploadResult;
-        const finalUserData = {
-            ...formData,
-            proofOfAddressUrl: ProofOfAddressUrl,
-            profilePictureUrl: profilePictureUrl,
-            };
-        try {
-        const uploadFormData = await fetch(`${url}/users`, {
-            method: "POST",
-            body: JSON.stringify(finalUserData)
-        })
-        if (!uploadFormData.ok) throw new Error("User save failed");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-        const savedUser = await uploadFormData.json();
-        console.log("User saved:", savedUser);
+        const result = await response.json();
+        console.log("Submission successful:", result);
 
-        navigate("/products");
+    } catch (error) {
+        console.error("Submission failed:", error);
     }
-        catch(error) {
-        console.log(error)}
-    } catch(error) {
-        console.log(error)}
-
 };
-
 
     const displayDetailsVerification = () => {
         return (

@@ -1,11 +1,38 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-
+import { BASE_URL } from "../Url";
 // this component contains all the required form components for the registration page
 
 export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
-    const {register, handleSubmit, formState : { errors }} = useForm()
+    const {register, handleSubmit, setError, clearErrors, formState : { errors }} = useForm()
+    const url = BASE_URL
+
+    const verifyEmail = async(event) => {
+        const {value} = event.target
+        try {
+            let response = await fetch(`${url}/users/email`, {
+                method: "POST",
+                headers : {"Content-Type" : "application/json"},
+                body: JSON.stringify({email: value})
+            })
+            let data = await response.json()
+
+            if(data.status === "exists") {
+                 // Set error for the email field
+                setError("email", {
+                    type: "manual",
+                    message: "This email is already registered"
+                });
+            }else {
+                // Clear email error if it exists
+                clearErrors("email");
+            }
+            
+        } catch(error) {
+            console.log(error)
+        }
+    }
     
     const onSubmit = (data) => {
         setMeansOfIdentification(data.meansOfIdentification);
@@ -40,7 +67,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
             <div
             className="w-full flex flex-col items-start gap-2 "
             >
-                <input type="email" placeholder="Email Address" 
+                <input type="email" placeholder="Email Address" onBlur={(event)=>verifyEmail(event)} onChange={() => clearErrors("email")}
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("email", {required: "Email Address is required"})} />
                 {errors.email && <p className="text-red-300 text-sm font-[abril] ">{errors.email.message}</p>}
@@ -69,18 +96,10 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
             >
                 <input type="text" placeholder="Home Address" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("homeaddress", {required: "Home address is required"})} />
-                {errors.homeaddress && <p className="text-red-300 text-sm font-[abril] ">{errors.homeaddress.message}</p>}
+                {...register("address", {required: "Address is required"})} />
+                {errors.address && <p className="text-red-300 text-sm font-[abril] ">{errors.address.message}</p>}
             </div>
 
-            <div
-            className="w-full flex flex-col items-start gap-2 "
-            >
-                <input type="text" placeholder="Office Address" 
-                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("officeaddress", {required: "Office address is required"})} />
-                {errors.officeaddress && <p className="text-red-300 text-sm font-[abril] ">{errors.officeaddress.message}</p>}
-            </div>
 
             <div
             className="w-full flex flex-col items-start gap-2 "
@@ -128,7 +147,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 <label className="text-gray-900 font-semibold text-base font-[abril]">
                     Upload Proof of Address
                 </label>
-                <input type="file" accept="image/*" capture="environment"  
+                <input type="file" accept="image/*" 
                 className="cursor-pointer w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("proofOfAddress", {required: "proof of address required!"})}
                 />
@@ -141,8 +160,8 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 >
                     <input type="text" placeholder="NIN Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                    {...register("ninNumber", {required: "NIN Number is required"})} />
-                    {errors.ninNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.ninNumber.message}</p>}
+                    {...register("identificationNumber", {required: "NIN Number is required"})} />
+                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
                 </div>
             )} 
             {meansOfIdentification === "vin" && (
@@ -151,8 +170,8 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 >
                     <input type="text" placeholder="Voter's Card Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                    {...register("vinNumber", {required: "Voter's Card Number is required"})} />
-                    {errors.vinNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.vinNumber.message}</p>}
+                    {...register("identificationNumber", {required: "Voter's Card Number is required"})} />
+                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
                 </div>
             )}
             {meansOfIdentification === "passport" && (
@@ -161,8 +180,8 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 >
                     <input type="text" placeholder="Passport Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                    {...register("passportNumber", {required: "Passport Number is required"})} />
-                    {errors.passportNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.passportNumber.message}</p>}
+                    {...register("identificationNumber", {required: "Passport Number is required"})} />
+                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
                 </div>
             )}
             {meansOfIdentification === "driversLicense" && (
@@ -171,8 +190,8 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 >
                     <input type="text" placeholder="Driver's License Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                    {...register("driversLicenseNumber", {required: "Driver's License Number is required"})} />
-                    {errors.driversLicenseNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.driversLicenseNumber.message}</p>}
+                    {...register("identificationNumber", {required: "Driver's License Number is required"})} />
+                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
                 </div>
             )}
 
@@ -202,6 +221,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
 
 export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
     const {register, handleSubmit, watch, formState : { errors, isSubmitting }} = useForm();
+    const url = BASE_URL
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");
     const password = watch("password");
@@ -227,6 +247,32 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
         setPasswordStrength(strength);
     };
 
+    const verifyUsername = async(event) => {
+        const {value} = event.target
+        try {
+            let response = await fetch(`${url}/users/username`, {
+                method: "POST",
+                headers : {"Content-Type" : "application/json"},
+                body: JSON.stringify({username: value})
+            })
+            let data = await response.json()
+
+            if(data.status === "exists") {
+                 // Set error for the username field
+                setError("username", {
+                    type: "manual",
+                    message: "This username is already used"
+                });
+            }else {
+                // Clear username error if it exists
+                clearErrors("username");
+            }
+            
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
     const onSubmit = (data) => {
         console.log(data)
         handleFinalSubmit(data); // Pass final data to Firebase
@@ -241,15 +287,16 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
             className="w-full flex flex-col items-start gap-2 "
             >
                 <label  className="text-gray-900 font-semibold text-base font-[abril]">Add Profile Picture</label>
-                <input type="file" capture="user" accept="image/*"
+                <input type="file"  accept="image/*"
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"
-                {...register("profilePicture")}
+                {...register("profilePicture", {required: "This field is required"})}
                 />
+                {errors.profilePicture && <p className="text-red-300 text-sm font-[abril] ">{errors.profilePicture.message}</p>}
             </div>
             <div
             className="w-full flex flex-col items-start gap-2 "
             >
-                <input type="text" placeholder="Create Username" 
+                <input type="text" placeholder="Create Username" onBlur={(event)=>verifyUsername(event)} onChange={() => clearErrors("username")}
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("userName", {required: "This field is required"})} />
                 {errors.userName && <p className="text-red-300 text-sm font-[abril] ">{errors.userName.message}</p>}

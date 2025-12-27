@@ -45,6 +45,7 @@ const verifyToken = async(req, res, next) => {
 
 // ---- Multer ----
 const uploadProduct = multer({ dest: "./products" });
+const uploadImage = multer({dest: "./images"})
 
 // ---- Cloudinary ----
 cloudinary.config({
@@ -218,6 +219,8 @@ app.post("/users/registration", async (req, res) => {
       lname,
       username,
       email,
+      phoneNumber: "",
+      dob: "",
       profilePicture: "",
       address: "",
       city: "",
@@ -240,6 +243,64 @@ app.post("/users/registration", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+app.post("/users/registration/designers",uploadImage.fields([
+  {name: "profilePicture", maxCount: 1},
+  {name: "proofOfAddress", maxCount: 1}
+]), async (req, res) => {
+  console.log(req.body)
+  try {
+    const {fname, lname, email, phoneNumber, dob, address, meansOfIdentification, identificationNumber} = req.body
+  if (!fname || !lname || !email || !phoneNumber || !dob || !address || !meansOfIdentification || !identificationNumber ) {
+  return res.json({message: "All fields required"})
+}
+
+let profilePictureUrl = ""
+let proofOfAddressUrl = ""
+
+if (req.files.profilePicture) {
+  const cloudRes = await cloudinary.uploader.upload(req.files.profilePicture[0].path, {
+    folder: "my_website_users"
+  })
+  profilePictureUrl = cloudRes.secure_url;
+  fs.unlink(req.files.profilePicture[0].path, () => {});
+}
+if (req.files.proofOfAddress) {
+        const cloudRes = await cloudinary.uploader.upload(req.files.proofOfAddress[0].path, {
+          folder: "my_website_users",
+        });
+        proofOfAddressUrl = cloudRes.secure_url;
+        fs.unlink(req.files.proofOfAddress[0].path, () => {});
+      }
+       const newUser = new User({
+        fname,
+        lname,
+        email,
+        phoneNumber,
+        dob,
+        address,
+        meansOfIdentification,
+        identificationNumber,
+        profilePicture: profilePictureUrl,
+        proofOfAddress: proofOfAddressUrl,
+        city: "",
+        state: "",
+        shippingAddress: "";
+        status: "designer"
+      });
+
+      await newUser.save();
+
+      res.status(201).json({ success: true, user: newUser });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+      
+})
+
+
+
 
 // User login
 app.post("/users/login", async (req, res) => {

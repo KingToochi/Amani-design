@@ -20,10 +20,10 @@ const ProfilePage = () => {
             })
             let data = await response.json()
             console.log(data)
-            setUserDetails(data)
+            setUserDetails(data.user)
 
         } catch (error) {
-            
+            console.lg(error)
         }
     }
 
@@ -67,38 +67,63 @@ const ProfilePage = () => {
 
 
     return(
-        <div>
-           <div>
-                <img src={userDetails?.profilePicture} alt="profile Picture" />
-                <h1>{userDetails?.username}</h1>
-           </div>
-           <div>
-                <div>
+        <div className="w-full flex flex-col gap-10 text-gray-700 font-[abril] text-lg
+        sm:text-xl
+        md:text-2xl
+        ">
+           {userDetails.ProfilePicture && (
+                <div
+                className="w-full bg-gray-900 text-gray-50 items-center"
+                >
+                    <img src={userDetails?.profilePicture} alt="profile Picture" />
+                    <h1>{userDetails?.username}</h1>
+                </div>
+           )}
+           <div
+           className="w-[95%] flex flex-col gap-6 mx-auto"
+           >
+                <div
+                className="flex items-center justify-between"
+                >
                     <h1>First Name: {userDetails?.fname}</h1>
                     <CiEdit />
                 </div>
-                <div>
+                <div
+                className="flex items-center justify-between"
+                >
                     <h1>Last Name: {userDetails?.lname}</h1>
                     <CiEdit />
                 </div>
-                <div>
+                <div
+                className="flex items-center justify-between"
+                >
                     <h1>Username: {userDetails?.username}</h1>
                     <CiEdit />
                 </div>
-                <div>
+                <div
+                className="flex items-center justify-between"
+                >
                     <h1>Email Address: {userDetails?.email}</h1>
                     <CiEdit />
                 </div>
-                <div>
+                <div
+                className="flex items-center justify-between"
+                >
                     <h1>Status: {userDetails?.status}</h1>
                     <CiEdit />
                 </div>
-                <div>
-                    <h1>{userDetails?.meansOfIdentification}: {userDetails?.identificationNumber}</h1>
-                    <CiEdit />
-                </div>
+                {userDetails.meansOfIdentification && (
+                    <div
+                    className="flex items-center justify-between"
+                    >
+                        <h1>{userDetails?.meansOfIdentification}: {userDetails?.identificationNumber}</h1>
+                        <CiEdit />
+                    </div>
+                )}
                 {userDetails?.shippingAddress && 
-                    (<div>
+                    (<div
+                    className="flex items-center justify-between"
+                    >
                         <h1>Shipping Address: {userDetails.shippingAddress}</h1>
                         <CiEdit />
                     </div>)
