@@ -249,6 +249,8 @@ app.post("/users/registration/designers",uploadImage.fields([
   {name: "proofOfAddress", maxCount: 1}
 ]), async (req, res) => {
   console.log(req.body)
+  console.log("FILES:", req.files)
+
   try {
     const {fname, lname, email, phoneNumber, dob, address, meansOfIdentification, identificationNumber, city, state} = req.body
   if (!fname || !lname || !email || !phoneNumber || !dob || !address || !meansOfIdentification || !identificationNumber || !city || !state ) {

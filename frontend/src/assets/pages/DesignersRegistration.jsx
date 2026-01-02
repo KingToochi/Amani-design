@@ -28,6 +28,35 @@ const DesignerREgistration = () => {
     const formInputValidation = async(event) => {
         const {name, id, value, files} = event.target
         const file = files?.[0]
+        if (id === "profilePicture" || id === "proofOfAddress") {
+            if (!file) {
+                setError(prev=> ({...prev, [id] : `not an image`}))
+                return
+            }
+
+            const validTypes =["image/png", "image/jpeg", "image/jpg"]
+            if (!validTypes.includes(file.type)) {
+                setError(prev=> ({...prev, [id]:"invalid type. only jpeg, png,jpg are allowed" }))
+                value = null
+                return
+            }
+
+            const maxSize = 2 * 1024 * 1024
+            if (file.size > maxSize) {
+                setError(prev=> ({...prev, [id]:"file size exceeds the limit (2mb)" }))
+                return
+            }else{
+                setformData(prev => ({
+            ...prev, [id]: file
+            }))
+                setError(prev => {
+                const newErr = {...prev}
+                delete newErr[id]
+                return newErr
+            })
+            }
+            return
+        }
          setformData(prev => ({
             ...prev, [id]: value
         }))
@@ -110,31 +139,7 @@ const DesignerREgistration = () => {
             }
         }
 
-        if (id === "profilePicture" || id === "proofOfAddress") {
-            if (!file) {
-                setError(prev=> ({...prev, [id] : `not an image`}))
-                return
-            }
-
-            const validTypes =["image/png", "image/jpeg", "image/jpg"]
-            if (!validTypes.includes(file.type)) {
-                setError(prev=> ({...prev, [id]:"invalid type. only jpeg, png,jpg are allowed" }))
-                value = null
-                return
-            }
-
-            const maxSize = 2 * 1024 * 1024
-            if (file.size > maxSize) {
-                setError(prev=> ({...prev, [id]:"file size exceeds the limit (2mb)" }))
-                return
-            }else{
-                setError(prev => {
-                const newErr = {...prev}
-                delete newErr[id]
-                return newErr
-            })
-            }
-        }
+        
 
         // validate password
         //  Password strength validation
@@ -174,17 +179,17 @@ const DesignerREgistration = () => {
             event.preventDefault()
             setIsSubmitting(true)
             let hasError = false
-            const form = new FormData
+            const form = new FormData()
     
             const validateForm = () => {
                 for (let id in formData) {
-                    form.append(id, formData[id])
                     const formValue = formData[id]
-                    if (formValue.length === 0) {
+                    if (!formValue) {
                         hasError = true
                         setError(prev => ({...prev, [id]:"field required"}))
                         setIsSubmitting(false)
                     } else {
+                        form.append(id, formData[id])
                         setError(prev => {
                             const newErr = {...prev}
                             delete newErr[id]
@@ -197,7 +202,6 @@ const DesignerREgistration = () => {
     
     
             validateForm()
-            console.log(form)
             
     
             if (Object.keys(error).length === 0 && !hasError) {
@@ -343,7 +347,7 @@ const DesignerREgistration = () => {
                     <label htmlFor="proofOfAddress"
                     className="w-full font-semibold"
                     >Proof Of Address</label>
-                    <input type="file" accept="image/*" id="proofOfAddress"  placeholder="proof of address" onBlur={formInputValidation} onChange={formInputValidation}
+                    <input type="file" accept="image/*" id="proofOfAddress"  placeholder="proof of address"name="proofOfAddress" onChange={formInputValidation}
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
                     />
                     <h1 className="text-red-300">{error?.proofOfAddress}</h1>
@@ -354,7 +358,7 @@ const DesignerREgistration = () => {
                     <label htmlFor="profilePicture"
                     className="w-full font-semibold"
                     >Profile Picture</label>
-                    <input type="file" accept="image/*" id="profilePicture"  placeholder="profile picture" onBlur={formInputValidation} onChange={formInputValidation}
+                    <input type="file" accept="image/*" id="profilePicture"  placeholder="profile picture" name="profilePicture" onChange={formInputValidation}
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
                     />
                     <h1 className="text-red-300">{error?.profilePicture}</h1>
