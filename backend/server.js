@@ -330,9 +330,11 @@ app.post("/users/login", async (req, res) => {
 app.post("/users/username", async (req, res) => {
   try {
     const { username } = req.body;
+    console.log(req.body)
     const user = await User.findOne({ username: username.toLowerCase() });
     if (!user) return res.json({ status: "free", message: "Username available" });
     res.json({ status: "exists", message: "Username already taken" });
+    console.log(res)
   } catch (err) {
     res.status(500).json({ status: "error", message: "Server error" });
   }

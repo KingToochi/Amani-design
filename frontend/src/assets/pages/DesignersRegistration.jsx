@@ -1,8 +1,11 @@
-import { useState } from "react"
+import { useState, useNavigate } from "react"
 import { BASE_URL } from "../Url"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { jwtDecode } from "jwt-decode"
+
 const DesignerREgistration = () => {
     const url = BASE_URL
+    const navigate = useNavigate
     const [passwordStrength, setPasswordStrength] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
