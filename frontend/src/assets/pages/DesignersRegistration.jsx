@@ -86,7 +86,7 @@ const DesignerREgistration = () => {
                     let response = await fetch(`${url}/users/username`, {
                         method: "POST",
                         headers:{"Content-Type": "application/json"},
-                        body: JSON.stringify({id:value})
+                        body: JSON.stringify({username:value})
                     })
                     let data = await response.json()
                     if (data.status === "exists") {
