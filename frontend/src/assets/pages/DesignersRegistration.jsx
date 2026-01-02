@@ -90,6 +90,7 @@ const DesignerREgistration = () => {
                     })
                     let data = await response.json()
                     if (data.status === "exists") {
+                        console.log(data.message)
                         setError(prev => ({...prev, [id]: data.message}))
                     }else {
                         setError(prev => {
@@ -97,7 +98,6 @@ const DesignerREgistration = () => {
                             delete newErr.username
                             return newErr
                         })
-                        console.log(error)
                     }
                 }catch(error){
                     console.log(error)
