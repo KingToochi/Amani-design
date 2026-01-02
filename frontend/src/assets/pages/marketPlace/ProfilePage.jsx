@@ -6,6 +6,8 @@ import { CiEdit } from "react-icons/ci";
 const ProfilePage = () => {
     const {setAuth} = useContext(AuthContext)
     const [userDetails, setUserDetails] = useState({})
+    const [editProfile, setEditProfile] = useState(false)
+    const [updateDetails, setUpdateDetails] = useState({})
     const  token = localStorage.getItem("token");
 
     const navigate = useNavigate()
@@ -58,11 +60,10 @@ const ProfilePage = () => {
             }
 
             fetchUserData()
-        } catch(error) {
-            console.error("Invalid token:", error)
-            localStorage.removeItem("token")
-            navigate("/login")
-        }
+            } catch(error) {
+                console.error("Invalid token:", error)
+                localStorage.removeItem("token")
+                na}
     }, [])
 
 
@@ -86,38 +87,38 @@ const ProfilePage = () => {
                 className="flex items-center justify-between"
                 >
                     <h1>First Name: {userDetails?.fname}</h1>
-                    <CiEdit />
+                    <CiEdit className={`${editProfile ? "inline" : "hidden"}`}/>
                 </div>
                 <div
                 className="flex items-center justify-between"
                 >
                     <h1>Last Name: {userDetails?.lname}</h1>
-                    <CiEdit />
+                    <CiEdit className={`${editProfile ? "inline" : "hidden"}`}/>
                 </div>
                 <div
                 className="flex items-center justify-between"
                 >
                     <h1>Username: {userDetails?.username}</h1>
-                    <CiEdit />
+                    <CiEdit className={`${editProfile ? "inline" : "hidden"}`}/>
                 </div>
                 <div
                 className="flex items-center justify-between"
                 >
                     <h1>Email Address: {userDetails?.email}</h1>
-                    <CiEdit />
+                    <CiEdit className={`${editProfile ? "inline" : "hidden"}`}/>
                 </div>
                 <div
                 className="flex items-center justify-between"
                 >
                     <h1>Status: {userDetails?.status}</h1>
-                    <CiEdit />
+                    <CiEdit className={`${editProfile ? "inline" : "hidden"}`}/>
                 </div>
                 {userDetails.meansOfIdentification && (
                     <div
                     className="flex items-center justify-between"
                     >
                         <h1>{userDetails?.meansOfIdentification}: {userDetails?.identificationNumber}</h1>
-                        <CiEdit />
+                        <CiEdit className={`${editProfile ? "inline" : "hidden"}`}/>
                     </div>
                 )}
                 {userDetails?.shippingAddress && 
@@ -125,7 +126,7 @@ const ProfilePage = () => {
                     className="flex items-center justify-between"
                     >
                         <h1>Shipping Address: {userDetails.shippingAddress}</h1>
-                        <CiEdit />
+                        <CiEdit className={`${editProfile ? "inline" : "hidden"}`}/>
                     </div>)
                 }
            </div>
