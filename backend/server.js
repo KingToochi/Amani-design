@@ -264,6 +264,7 @@ if (req.files.profilePicture) {
   })
   profilePictureUrl = cloudRes.secure_url;
   fs.unlink(req.files.profilePicture[0].path, () => {});
+  console.log(profilePictureUrl)
 }
 if (req.files.proofOfAddress) {
         const cloudRes = await cloudinary.uploader.upload(req.files.proofOfAddress[0].path, {
@@ -271,6 +272,7 @@ if (req.files.proofOfAddress) {
         });
         proofOfAddressUrl = cloudRes.secure_url;
         fs.unlink(req.files.proofOfAddress[0].path, () => {});
+        console.log(proofOfAddressUrl)
       }
        const newUser = new User({
         fname,
