@@ -337,6 +337,7 @@ app.post("/users/username", async (req, res) => {
     console.log("exists")
   } catch (err) {
     res.status(500).json({ status: "error", message: "Server error" });
+    console.log(err)
   }
 });
 
