@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   shippingAddress: String,
   proofOfAddress: String,
   profilePicture: String,
-  MeansOfIdentification: String,
+  meansOfIdentification: String,
   identificationNumber: String,
   password: String,
   status: String,

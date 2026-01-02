@@ -250,8 +250,8 @@ app.post("/users/registration/designers",uploadImage.fields([
 ]), async (req, res) => {
   console.log(req.body)
   try {
-    const {fname, lname, email, phoneNumber, dob, address, meansOfIdentification, identificationNumber} = req.body
-  if (!fname || !lname || !email || !phoneNumber || !dob || !address || !meansOfIdentification || !identificationNumber ) {
+    const {fname, lname, email, phoneNumber, dob, address, meansOfIdentification, identificationNumber, city, state} = req.body
+  if (!fname || !lname || !email || !phoneNumber || !dob || !address || !meansOfIdentification || !identificationNumber || !city || !state ) {
   return res.json({message: "All fields required"})
 }
 
@@ -283,8 +283,8 @@ if (req.files.proofOfAddress) {
         identificationNumber,
         profilePicture: profilePictureUrl,
         proofOfAddress: proofOfAddressUrl,
-        city: "",
-        state: "",
+        city,
+        state,
         shippingAddress: "",
         status: "designer",
       });

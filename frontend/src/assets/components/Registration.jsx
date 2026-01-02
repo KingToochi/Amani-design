@@ -5,11 +5,18 @@ import { BASE_URL } from "../Url";
 // this component contains all the required form components for the registration page
 
 export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
-    const {register, handleSubmit, setError, clearErrors, formState : { errors }} = useForm()
+    const fromData = {}
+    const [error, setError] = useState({})
     const url = BASE_URL
+
+
+    const validateFormInput = (event) => {
+        const {name, id, value} = event.target
+    }
 
     const verifyEmail = async(event) => {
         const {value} = event.target
+        if (!value) return
         try {
             let response = await fetch(`${url}/users/email`, {
                 method: "POST",
@@ -17,17 +24,6 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
                 body: JSON.stringify({email: value})
             })
             let data = await response.json()
-
-            if(data.status === "exists") {
-                 // Set error for the email field
-                setError("email", {
-                    type: "manual",
-                    message: "This email is already registered"
-                });
-            }else {
-                // Clear email error if it exists
-                clearErrors("email");
-            }
             
         } catch(error) {
             console.log(error)
@@ -52,7 +48,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
                 <input type="text" placeholder="First Name" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("fname", {required: "First name is required"})} />
-                {errors.fname && <p className="text-red-300 text-sm font-[abril] ">{errors.fname.message}</p>}
+                {error.fname && <p className="text-red-300 text-sm font-[abril] ">{error.fname.message}</p>}
             </div>
 
             <div
@@ -60,17 +56,23 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
             >
                 <input type="text" placeholder="last Name" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("lname", {required: "Last name is required"})} />
-                {errors.lname && <p className="text-red-300 text-sm font-[abril] ">{errors.lname.message}</p>}
+                {...register("lname", {required: "Last name is required",
+                })} />
+                {error.lname && <p className="text-red-300 text-sm font-[abril] ">{error.lname.message}</p>}
             </div>
 
             <div
             className="w-full flex flex-col items-start gap-2 "
             >
-                <input type="email" placeholder="Email Address" onBlur={(event)=>verifyEmail(event)} onChange={() => clearErrors("email")}
+                <input type="email" placeholder="Email Address" onBlur={(event)=>verifyEmail(event)}
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("email", {required: "Email Address is required"})} />
-                {errors.email && <p className="text-red-300 text-sm font-[abril] ">{errors.email.message}</p>}
+                {...register("email", {required: "Email Address is required", 
+                    pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: "Invalid email format",
+                    },
+                })} />
+                {error.email && <p className="text-red-300 text-sm font-[abril] ">{error.email.message}</p>}
             </div>
 
             <div
@@ -79,7 +81,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
                 <input type="text" placeholder="Phone Number" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("phoneNumber", {required: "Phone Number is required"})} />
-                {errors.phoneNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.phoneNumber.message}</p>}
+                {error.phoneNumber && <p className="text-red-300 text-sm font-[abril] ">{error.phoneNumber.message}</p>}
             </div>
 
             <div
@@ -88,7 +90,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
                 <input type="date" placeholder="Date of Birth" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("dob", {required: "Date of Birth is required"})} />
-                {errors.dob && <p className="text-red-300 text-sm font-[abril] ">{errors.dob.message}</p>}
+                {error.dob && <p className="text-red-300 text-sm font-[abril] ">{error.dob.message}</p>}
             </div>
 
             <div
@@ -97,7 +99,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
                 <input type="text" placeholder="Home Address" 
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("address", {required: "Address is required"})} />
-                {errors.address && <p className="text-red-300 text-sm font-[abril] ">{errors.address.message}</p>}
+                {error.address && <p className="text-red-300 text-sm font-[abril] ">{error.address.message}</p>}
             </div>
 
 
@@ -113,7 +115,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
                     <option value="passport">International Passport</option>
                     <option value="driversLicense">Driver's License</option>
                 </select>
-                {errors.meansOfIdentification && <p className="text-red-300 text-sm font-[abril] ">{errors.meansOfIdentification.message}</p>}
+                {error.meansOfIdentification && <p className="text-red-300 text-sm font-[abril] ">{error.meansOfIdentification.message}</p>}
             </div>
 
             <button
@@ -131,7 +133,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
 }
 
 export const DetailsVerification = ({meansOfIdentification, onClickNext, onClickPrev}) => {
-    const {register, handleSubmit, formState : { errors }} = useForm()
+    const {register, handleSubmit, formState : { error }} = useForm()
     const onSubmit = (data) => {
         onClickNext(data)
     }
@@ -151,7 +153,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 className="cursor-pointer w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                 {...register("proofOfAddress", {required: "proof of address required!"})}
                 />
-                {errors.proofOfAddress && <p className="text-red-300 text-sm font-[abril] ">{errors.proofOfAddress.message}</p>}
+                {error.proofOfAddress && <p className="text-red-300 text-sm font-[abril] ">{error.proofOfAddress.message}</p>}
             </div>
 
             {meansOfIdentification === "nin" && (
@@ -161,7 +163,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                     <input type="text" placeholder="NIN Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                     {...register("identificationNumber", {required: "NIN Number is required"})} />
-                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
                 </div>
             )} 
             {meansOfIdentification === "vin" && (
@@ -171,7 +173,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                     <input type="text" placeholder="Voter's Card Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                     {...register("identificationNumber", {required: "Voter's Card Number is required"})} />
-                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
                 </div>
             )}
             {meansOfIdentification === "passport" && (
@@ -181,7 +183,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                     <input type="text" placeholder="Passport Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                     {...register("identificationNumber", {required: "Passport Number is required"})} />
-                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
                 </div>
             )}
             {meansOfIdentification === "driversLicense" && (
@@ -191,7 +193,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                     <input type="text" placeholder="Driver's License Number" 
                     className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
                     {...register("identificationNumber", {required: "Driver's License Number is required"})} />
-                    {errors.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{errors.identificationNumber.message}</p>}
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
                 </div>
             )}
 
@@ -219,8 +221,8 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
     )
 }
 
-export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
-    const {register, handleSubmit, watch, formState : { errors, isSubmitting }} = useForm();
+export const CreateUser = ({onClickBack, handleFinalSubmit, isSubmitting}) => {
+    const {register, handleSubmit, watch,setError, clearErrors, formState : { error}} = useForm();
     const url = BASE_URL
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");
@@ -291,15 +293,15 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"
                 {...register("profilePicture", {required: "This field is required"})}
                 />
-                {errors.profilePicture && <p className="text-red-300 text-sm font-[abril] ">{errors.profilePicture.message}</p>}
+                {error.profilePicture && <p className="text-red-300 text-sm font-[abril] ">{error.profilePicture.message}</p>}
             </div>
             <div
             className="w-full flex flex-col items-start gap-2 "
             >
-                <input type="text" placeholder="Create Username" onBlur={(event)=>verifyUsername(event)} onChange={() => clearErrors("username")}
+                <input type="text" placeholder="Create Username" onBlur={(event)=>verifyUsername(event)}
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
-                {...register("userName", {required: "This field is required"})} />
-                {errors.userName && <p className="text-red-300 text-sm font-[abril] ">{errors.userName.message}</p>}
+                {...register("username", {required: "This field is required"})} />
+                {error.username && <p className="text-red-300 text-sm font-[abril] ">{error.username.message}</p>}
             </div>
 
             <div
@@ -326,7 +328,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                                     /[^A-Za-z0-9]/.test(value) || "At least one special character required",
                             },
                             onChange: handlePasswordChange,})} />
-                        {errors.password && <p className="text-red-300 text-sm font-[abril] ">{errors.password.message}</p>}
+                        {error.password && <p className="text-red-300 text-sm font-[abril] ">{error.password.message}</p>}
             </div>
             {password && (
                 <div className="text-sm">
@@ -352,7 +354,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                 {...register("confirmPassword", {required: "This field is required",
                     validate: (value) => value === password || "Passwords do not match",
                 })} />
-                {errors.confirmPassword && <p className="text-red-300 text-sm font-[abril] ">{errors.confirmPassword.message}</p>}
+                {error.confirmPassword && <p className="text-red-300 text-sm font-[abril] ">{error.confirmPassword.message}</p>}
             </div>
             <div
               className="w-full flex flex-col items-start gap-2"
@@ -367,7 +369,7 @@ export const CreateUser = ({onClickBack, handleFinalSubmit}) => {
                      className="text-gray-900 font-semibold text-base font-[abril]"
                     >I accept the terms and conditions</label>
                 </div>
-                {errors.termsAndConditions && <p className="text-red-300 text-sm font-[abril] ">{errors.termsAndConditions.message}</p>}
+                {error.termsAndConditions && <p className="text-red-300 text-sm font-[abril] ">{error.termsAndConditions.message}</p>}
             </div>
 
             <div
