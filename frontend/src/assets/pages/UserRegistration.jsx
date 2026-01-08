@@ -31,7 +31,6 @@ const UserRegistration = () => {
         lname: "",
         username: "",
         email: "",
-        status: "",
         password: "",
     })
 
@@ -212,10 +211,7 @@ const UserRegistration = () => {
                 console.log(data)
                 if (data.success) {
                     localStorage.setItem("token", data.token)
-                    const decoded = jwtDecode(data.token)
-                    if(decoded.status === "designer") {
-                        navigate("/designer")
-                    } navigate("/")
+                    navigate("/")
                 } else {
                     alert(data.message)
                     setIsSubmitting(false)
@@ -309,21 +305,7 @@ const UserRegistration = () => {
                     >{error.email}</h1>
                 }
             </div>
-            <div>
-            <select name="status" id="status" onChange={validateFormInput} onBlur={validateFormInput}
-            className="w-full "
-            >
-                <option value="" hidden>Are you a designer?</option>
-                <option value="designer">Yes</option>
-                <option value="non_designer">No</option>
-            </select>
-                {
-                    showMessage.email && 
-                    <h1
-                    className="text-red-300"
-                    >{error.status}</h1>
-                }
-            </div>
+           
 
             <div>
                 <label htmlFor="password">Password</label>

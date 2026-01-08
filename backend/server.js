@@ -199,7 +199,7 @@ app.delete("/products/:id", async (req, res) => {
 app.post("/users/registration", async (req, res) => {
    console.log("Registration request body:", req.body);
   try {
-    const { fname, lname, username, email, password, status } = req.body;
+    const { fname, lname, username, email, password} = req.body;
     if (!fname || !lname || !username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -230,7 +230,7 @@ app.post("/users/registration", async (req, res) => {
       MeansOfIdentification: "",
       identificationNumber: "",
       password,
-      status,
+      status: "non_designer",
     });
 
     await newUser.save();
