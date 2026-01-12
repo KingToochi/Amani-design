@@ -1,12 +1,14 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { BASE_URL } from "../Url"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "./marketPlace/hooks/AuthProvider";
 
 const DesignerREgistration = () => {
     const url = BASE_URL
     const navigate = useNavigate()
+    const {setAuth} = useContext(AuthContext)
     const [passwordStrength, setPasswordStrength] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
@@ -220,6 +222,14 @@ const DesignerREgistration = () => {
                     if (data.success) {
                         localStorage.setItem("token", data.token)
                         const decoded = jwtDecode(data.token)
+                        setAuth({
+                            id: decoded._id,
+                            email: decoded.email,
+                            username: decoded.username,
+                            status: decoded.status,
+                            exp: decoded.exp,
+                            iat: decoded.iat,
+                            });
                         navigate("/designer")
                     } else {
                         alert(data.message)

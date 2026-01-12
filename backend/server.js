@@ -252,7 +252,7 @@ app.post("/users/registration/designers",uploadImage.fields([
   console.log("FILES:", req.files)
 
   try {
-    const {fname, lname, email, phoneNumber, dob, password, address, meansOfIdentification, identificationNumber, city, state} = req.body
+    const {fname, lname, email, phoneNumber, username, dob, password, address, meansOfIdentification, identificationNumber, city, state} = req.body
   if (!fname || !lname || !email || !phoneNumber || !dob || !address || !meansOfIdentification || !identificationNumber || !city || !state ) {
   return res.json({message: "All fields required"})
 }
@@ -280,6 +280,7 @@ if (req.files.proofOfAddress) {
         fname,
         lname,
         email,
+        username,
         phoneNumber,
         dob,
         password, 
