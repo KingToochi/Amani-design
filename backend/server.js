@@ -114,13 +114,14 @@ app.post(
       // 3️⃣ Extract & validate fields
       const {
         productDescription,
+        productName,
         productCategory,
         productPrice,
         color,
         size,
       } = req.body;
 
-      if (!productDescription || !productCategory || !productPrice) {
+      if (!productDescription || !productName || !productCategory || !productPrice) {
         return res.status(400).json({
           message: "productDescription, productCategory and productPrice are required",
         });
@@ -144,6 +145,7 @@ app.post(
       const newProduct = new Product({
         DesignerId,
         productDescription,
+        productName, 
         productCategory,
         productPrice: Number(productPrice),
         color,

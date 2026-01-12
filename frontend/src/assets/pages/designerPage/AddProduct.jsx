@@ -76,10 +76,11 @@ const handleSubmit = async(event) => {
             <textarea rows="10" cols="50" maxLength="150" name="productDescription" id="productDescription" placeholder="Description ......"
             className="w-full border-2 rounded-lg py-2 px-2 border-gray-700 focus:outline-none font-[abril] text-xl "
             ></textarea>
+            <input type="text" id="productName" name="productName" placeholder="name of your design"/>
             <select id="productCategory" name="productCategory"
             className="w-auto flex flex-col justify-center font-[abril]"
             >
-                <option value=""  hidden>Product Category</option>
+                <option value=""  hidden>Category</option>
                 <option value="men clothing">Men's Clothing</option>
                 <option value="men footWear">Men's Footwear</option>
                 <option value="men handBag">Men's handBag/purse</option>  
