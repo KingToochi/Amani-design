@@ -10,7 +10,7 @@ import {AuthContext} from "./hooks/AuthProvider"
 
 
 
-const Homepage = () => {
+const Products = () => {
     
     const url = BASE_URL;
     const [designs, setDesigns] = useState([])
@@ -199,4 +199,4 @@ const Homepage = () => {
 }
 
 
-export default Homepage;
+export default Products;

@@ -11,6 +11,7 @@ import { CartContext } from "./hooks/CartContext";
 import {AuthContext} from "./hooks/AuthProvider"
 import { BASE_URL } from "../../Url";
 import Search from "./SearchPage";
+import { TbLayoutGridAdd } from "react-icons/tb";
 
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
@@ -62,6 +63,19 @@ const Navigation = ()=> {
                         sm:flex
                         "
                         >Home</h1>
+                    </Link>
+                </li>
+
+                <li>
+                    <Link to="/products"
+                    className="flex flex-col gap-2 items-center"
+                    >
+                        <TbLayoutGridAdd />
+                        <h1
+                        className="hidden 
+                        sm:flex
+                        "
+                        >Designs</h1>
                     </Link>
                 </li>
 
