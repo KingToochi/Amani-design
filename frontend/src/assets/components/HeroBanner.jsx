@@ -4,8 +4,8 @@ import image from '../images/hero-banner.jpg';
 const HeroBanner = () => {
     return(
         <div
-        className='absolute top-20 left-0 w-full h-[500px] bg-contain bg-center bg-no-repeat'
-         style={{ backgroundImage: `url(${image})` }}
+        className='absolute top-20 left-0 w-full h-[600px]
+        sm:h-[500px]'
         >
         {/* Darker overlay for better text readability with vibrant African attire images */}
         <div className='absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center'>
