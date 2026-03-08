@@ -21,6 +21,8 @@ const Header = () => {
     }
     const handleClick = () => {
         setDropDown((prev) => !prev);
+        setShowSearchedProduct(false)
+        setShowSearchedProduct(false)
     }
     const searchItem = async(event) => {
          event.preventDefault()
@@ -37,6 +39,7 @@ const Header = () => {
     }
 
     return (
+        <>
         <div className="fixed z-50 top-0 w-full flex h-auto bg-gray-50 font-[abril] text-gray-900 items-center justify-between px-3 sm:px-4 py-2 gap-2 sm:gap-4">
             
             {/* Logo Section */}
@@ -91,12 +94,16 @@ const Header = () => {
                     />
                     {showSearchBar && 
                     <div className="absolute top-0 left-0 w-full bg-gray-50 p-4 z-[60] flex flex-col gap-2">
-                        <span onClick={()=>setShowSearchBar(false)} className="w-full text-right px-4 text-lg text-red-300">x</span>
+                        <span
+                         onClick={()=>{
+                            setShowSearchBar(false);
+                            setShowSearchedProduct(false)} }
+                         className="w-full text-right px-4 text-lg text-red-300 cursor-pointer">x</span>
                         <SearchBar
                         formClass="w-full relative h-auto"
                         inputClass="w-full h-[40px] rounded-full bg-white border border-gray-300 pl-4 pr-10 focus:outline-none focus:border-amber-500 text-sm"
                         buttonClass="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"
-                        query={query} handleChange={handleChange} onSubmit={searchItem}
+                        query={query} handleChange={handleChange} onSubmit={searchItem} onClick={searchItem}
                         />
                     </div>
                     }
@@ -124,7 +131,7 @@ const Header = () => {
                         <div className="absolute top-10 right-0 w-48 bg-white rounded-lg shadow-xl py-2 z-[60] border border-gray-200">
                             <ul className="flex flex-col">
                                 <li className="px-4 py-3 border-b border-gray-100">
-                                    <Link to="/" className="block w-full" onClick={() => setDropDown(false)}>All Designs</Link>
+                                    <Link to="/products" className="block w-full" onClick={() => setDropDown(false)}>All Designs</Link>
                                 </li>
                                 <li className="px-4 py-3 border-b border-gray-100">
                                     <Link to="/" className="block w-full" onClick={() => setDropDown(false)}>Women</Link>
@@ -143,15 +150,16 @@ const Header = () => {
                     )}
                 </div>
             </div>
-            {showSearchedProduct &&
-                <div className="w-full h-auto z-[60] absolute top-[0] right-0 left-0 backdrop-blur text-gray-700 text-lg mt-[100px]
+        </div>
+        {showSearchedProduct &&
+                <div className="w-full z-[60] absolute top-[0] right-0 left-0 backdrop-blur text-gray-700 text-lg mt-[100px]
                 sm-text-xl
                 md:text-2xl
                 ">
                     <Search searchedProduct = {searchedProduct} setShowSearchedProduct = {setShowSearchedProduct} setShowSearchBar = {setShowSearchBar}/>
                 </div>
             }
-        </div>
+        </>
     )
 }
 

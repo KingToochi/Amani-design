@@ -1,7 +1,7 @@
 import { FaSearch } from "react-icons/fa";
 import { useState } from "react";
 
-const SearchBar = ({inputClass, buttonClass, formClass, onSubmit, query, handleChange}) => {
+const SearchBar = ({inputClass, buttonClass, formClass, onSubmit, query, handleChange, onClick}) => {
     // this components create a search bar and a search icon with a prop called className 
     // which can be used to style it whenever its been imported
  
@@ -15,6 +15,7 @@ const SearchBar = ({inputClass, buttonClass, formClass, onSubmit, query, handleC
             type="text" placeholder="Search" name="searchBar" value={query} onChange={handleChange} />
             <button 
             className={buttonClass}
+            onClick={onClick}
             type="button">
                 <FaSearch />
             </button>

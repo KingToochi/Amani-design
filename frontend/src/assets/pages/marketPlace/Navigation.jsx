@@ -12,6 +12,7 @@ import {AuthContext} from "./hooks/AuthProvider"
 import { BASE_URL } from "../../Url";
 import Search from "./SearchPage";
 import { TbLayoutGridAdd } from "react-icons/tb";
+import SearchBar from "../../components/SearchBar";
 
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)
@@ -25,6 +26,9 @@ const Navigation = ()=> {
     const onClickSearchIcon = () => {
         setShowSearchBar((prev) => !prev)
         setShowSearchedProduct(false)
+    }
+     const handleChange = (e) => {
+        setQuery(e.target.value)
     }
 
     const searchItem = async(event) => {
@@ -180,31 +184,23 @@ const Navigation = ()=> {
                 </li>
             </ul>
         </nav>
-        {
-                showSearchBar && 
-                <form onSubmit={(event) => searchItem(event)}
-                className="min-w-screen absolute right-0 left-0 top-0 flex flex-col px-2 py-2  bg-white gap-2
-                
-                "
-                >
-                    <h1
-                    onClick={onClickSearchIcon}
-                    className="flex justify-end text-lg font-bold text-red-600 px-2 
-                    sm:text-xl
-                    md:text-2xl
-                    "
-                    >X</h1>
-                    <input type="search" placeholder="search"
-                    value={query} 
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="w-[90%] h-[30px] border-2 border-gray-900 rounded-lg px-2 mx-auto text-2xl font-medium font-[abril] focus:outline-none
-                    md:h-[50px]
-                    "
-                    />
-                </form>
-            }
+        {showSearchBar && 
+            <div className="absolute top-0 left-0 w-full bg-gray-50 p-4 z-[60] flex flex-col gap-2">
+                <span
+                onClick={()=>{
+                setShowSearchBar(false);
+                setShowSearchedProduct(false)} }
+                className="w-full text-right px-4 text-lg text-red-300 cursor-pointer">x</span>
+                <SearchBar
+                formClass="w-full relative h-auto"
+                inputClass="w-full h-[40px] rounded-full bg-white border border-gray-300 pl-4 pr-10 focus:outline-none focus:border-amber-500 text-sm"
+                buttonClass="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"
+                query={query} handleChange={handleChange} onSubmit={searchItem} onClick={searchItem}
+                />
+            </div>
+        }
             {showSearchedProduct &&
-                <div className="w-full h-auto z-[60] absolute top-[0] right-0 left-0 backdrop-blur text-gray-700 text-lg mt-[75px]
+                <div className="w-full h-auto z-[60] absolute top-[0] right-0 left-0 backdrop-blur text-gray-700 text-lg mt-[100px]
                 sm-text-xl
                 md:text-2xl
                 ">
