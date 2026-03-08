@@ -26,7 +26,7 @@ const Footer = () => {
   const paymentMethods = ["Visa", "Mastercard", "PayPal", "Apple Pay", "Google Pay"];
 
   return (
-    <footer className="bg-gray-900 text-gray-300 absolute w-full top-[3000px] sm:top-[3800px]
+    <footer className="bg-gray-900 text-gray-300 absolute w-full top-[2500px]
     md:top-[1900px] lg:top-[1400px] xl:top-[1500px]
     ">
       {/* Main Footer */}
