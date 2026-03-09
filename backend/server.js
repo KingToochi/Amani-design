@@ -405,6 +405,47 @@ app.get("/likes", verifyToken, async(req, res) => {
   }
 })
 
+app.get("/userInfo", verifyToken, async(req, res) => {
+  try {
+    // Check if user data exists from token
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid authentication" 
+      })
+    }
+
+    const user = await User.findOne({_id: req.user._id})
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false, 
+        message: "User does not exist"
+      })
+    }
+
+    // Explicitly define which fields to return
+    const userInfo = {
+      fname: user.fname,
+      lname: user.lname,
+      email: user.email,
+      shippingAddress: user.shippingAddress,
+      phoneNumber: user.phoneNumber,
+      city: user.city,
+      state: user.state,
+      // Add any other non-sensitive fields here
+    }
+    
+    return res.json({success: true, user: userInfo})
+    
+  } catch(error) {
+    console.error('Error in /userInfo:', error)
+    return res.status(500).json({ 
+      success: false, 
+      message: "An error occurred while fetching user information" 
+    })
+  } 
+})
 const generateToken = async (email) => {
   const user = await User.findOne({email: email})
    if (!user) {
