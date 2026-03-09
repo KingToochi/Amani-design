@@ -179,14 +179,14 @@ const CheckOut = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 mb-[75px]">
             {/* Header with Progress */}
             <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                             <ShoppingBag className="h-6 w-6" />
-                            <span className="font-semibold text-lg tracking-tight">FASHION</span>
+                            <h1 className="font-semibold text-lg text-center flex flex-col tracking-tight">AmaniSky <span>Fashion World</span></h1>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
                             {['Cart', 'Shipping', 'Payment'].map((step, index) => (
@@ -245,27 +245,11 @@ const CheckOut = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                                            {editMode ? (
-                                                <input 
-                                                    type="text" 
-                                                    defaultValue={userInfo.fname}
-                                                    className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
-                                                />
-                                            ) : (
-                                                <p className="text-gray-900 font-medium">{userInfo.fname}</p>
-                                            )}
+                                            <p className="text-gray-900 font-medium">{userInfo.fname}</p>
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                                            {editMode ? (
-                                                <input 
-                                                    type="text" 
-                                                    defaultValue={userInfo.lname}
-                                                    className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
-                                                />
-                                            ) : (
-                                                <p className="text-gray-900 font-medium">{userInfo.lname}</p>
-                                            )}
+                                            <p className="text-gray-900 font-medium">{userInfo.lname}</p>
                                         </div>
                                     </div>
 
@@ -273,15 +257,7 @@ const CheckOut = () => {
                                         <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                                             <Mail className="h-4 w-4 mr-1" /> Email
                                         </label>
-                                        {editMode ? (
-                                            <input 
-                                                type="email" 
-                                                defaultValue={userInfo.email}
-                                                className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
-                                            />
-                                        ) : (
-                                            <p className="text-gray-900">{userInfo.email}</p>
-                                        )}
+                                        <p className="text-gray-900">{userInfo.email}</p>
                                     </div>
 
                                     <div>
