@@ -61,7 +61,7 @@ const Header = () => {
                 {/* Desktop Navigation - Hidden on mobile/tablet */}
                 <ul className="hidden lg:flex w-[50%] xl:w-[60%] justify-between items-center gap-4 xl:gap-8 text-sm xl:text-base">
                     <li>
-                        <Link to="/products">All Designs</Link>
+                        <Link to="/products">Store</Link>
                     </li>
                     <li>
                         <Link to="/">Women</Link>
@@ -131,7 +131,7 @@ const Header = () => {
                         <div className="absolute top-10 right-0 w-48 bg-white rounded-lg shadow-xl py-2 z-[60] border border-gray-200">
                             <ul className="flex flex-col">
                                 <li className="px-4 py-3 border-b border-gray-100">
-                                    <Link to="/products" className="block w-full" onClick={() => setDropDown(false)}>All Designs</Link>
+                                    <Link to="/products" className="block w-full" onClick={() => setDropDown(false)}>Store</Link>
                                 </li>
                                 <li className="px-4 py-3 border-b border-gray-100">
                                     <Link to="/" className="block w-full" onClick={() => setDropDown(false)}>Women</Link>

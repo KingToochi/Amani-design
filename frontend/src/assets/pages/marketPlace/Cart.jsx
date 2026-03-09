@@ -3,6 +3,7 @@ import { CartContext } from "./hooks/CartContext";
 import { TbCurrencyNaira } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import { FaMinus, FaPlus } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 
 const Cart = ()=> {
@@ -167,6 +168,15 @@ const subTotal = cart.reduce((sum, cart) => sum + (cart.productPrice * cart.quan
                                                 }
                                             </span>
                                         </div>
+                            </div>
+                            {/* Checkout Link Added Here */}
+                            <div className="w-full flex justify-end px-2 py-4">
+                                <Link 
+                                    to="/checkout" 
+                                    className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg text-base sm:text-lg"
+                                >
+                                    Proceed to Checkout
+                                </Link>
                             </div>
                 </div>
             }

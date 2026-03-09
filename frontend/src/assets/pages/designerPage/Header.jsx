@@ -126,7 +126,7 @@ const Header = () => {
                                     "
                                     >
                                         <FaStore />
-                                        <h2>MarketPlace</h2>
+                                        <h2>Store</h2>
                                     </Link>
                                 </li>
                                 <li>

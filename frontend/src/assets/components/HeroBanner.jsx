@@ -1,4 +1,5 @@
-import image from '../images/hero-banner.jpg';
+
+import {Link} from "react-router-dom";
 
 
 const HeroBanner = () => {
@@ -39,11 +40,11 @@ const HeroBanner = () => {
                 {/* Call to Action Buttons */}
                 <div className='flex flex-col sm:flex-row gap-4 justify-center'>
                     <button className='bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg'>
-                        Shop The Collection
+                        <Link to="/products">Shop The Collection</Link>
                     </button>
                     
                     <button className='border-2 border-white hover:bg-white hover:text-gray-900 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-300'>
-                        Explore Styles
+                        <Link to="/products">Explore Styles</Link>
                     </button>
                 </div>
                 
