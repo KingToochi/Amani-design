@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { BASE_URL } from '../../Url';
 import { AuthContext } from './hooks/AuthProvider';
 import { CartContext } from './hooks/CartContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   ShoppingBag, 
   Truck, 
@@ -29,24 +29,20 @@ const CheckOut = () => {
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [cartLoading, setCartLoading] = useState(true);
     
-    // Safely get context values with defaults
-    const cartContextValue = useContext(CartContext);
-    const { user } = useContext(AuthContext) || {};
+    // ✅ Fix: Use array destructuring since context provides [cart, setCart]
+    const [cart, setCart] = useContext(CartContext);
     
-    // Safely access cart with fallback
-    const cart = cartContextValue?.cart || [];
+    // Safely get auth context
+    const authContext = useContext(AuthContext);
+    const user = authContext?.user;
     
     const url = BASE_URL;
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        // Set cart loading to false once we have cart data
-        if (cartContextValue !== undefined) {
-            setCartLoading(false);
-        }
-        
+        setCartLoading(false);
         fetchUserinfo();
-    }, [cartContextValue]);
+    }, []);
 
     const fetchUserinfo = async () => {
         if (!token) {
@@ -78,7 +74,7 @@ const CheckOut = () => {
         }
     };
 
-    // Safe calculation functions with fallbacks
+    // Safe calculation functions
     const calculateSubtotal = () => {
         if (!cart || cart.length === 0) return 0;
         return cart.reduce((sum, item) => {
@@ -94,7 +90,7 @@ const CheckOut = () => {
     };
 
     const calculateTax = () => {
-        return calculateSubtotal() * 0.08; // 8% tax
+        return calculateSubtotal() * 0.08;
     };
 
     const calculateTotal = () => {
@@ -102,12 +98,12 @@ const CheckOut = () => {
     };
 
     const handlePlaceOrder = () => {
-        // Add your order placement logic here
         setOrderPlaced(true);
-        // Redirect to success page or show success message
+        // Optional: Clear cart after order
+        // setCart([]);
     };
 
-    // Show loading while cart is initializing
+    // Show loading state
     if (cartLoading || loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -128,7 +124,7 @@ const CheckOut = () => {
                     <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
                     <p className="text-gray-600 mb-6">Add some items to your cart before checking out.</p>
                     <button 
-                        onClick={() => window.location.href = '/shop'}
+                        onClick={() => window.location.href = '/products'}
                         className="bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition font-medium"
                     >
                         Continue Shopping
@@ -444,11 +440,11 @@ const CheckOut = () => {
                         <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
                             <h2 className="text-lg font-semibold mb-6">Order Summary</h2>
                             
-                            {/* Cart Items */}
+                            {/* Cart Items - Now using 'cart' directly */}
                             <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                                 {cart.map((item, index) => (
                                     <motion.div 
-                                        key={index}
+                                        key={item._id || item.id || index}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: index * 0.1 }}
