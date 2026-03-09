@@ -11,6 +11,9 @@ const Cart = ()=> {
     const [cart, setCart] = useContext(CartContext)
     const [freeDelivery, setFreeDelivery] = useState(true)
     const [pricePerItem, setPricePerItem] = useState(0)
+    const deliveryFee = () => {
+        
+    }
     
 const handleMinus = (_id) => {
   setCart(prevCart =>
@@ -47,7 +50,7 @@ const handleDelete = (_id) => {
 
 const subTotal = cart.reduce((sum, cart) => sum + (cart.productPrice * cart.quantity), 0 )
 
-    
+console.log(cart)
 
 
     return (
