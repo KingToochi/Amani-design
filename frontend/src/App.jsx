@@ -20,7 +20,7 @@ import ProtectedRoute from "./assets/pages/marketPlace/hooks/ProtectedRoute";
 import Page404 from "./assets/pages/404";
 import Unauthorized from "./assets/pages/Unauthorized"
 import HomePage from "./assets/pages/public/HomePage";
-import CheckOut from "./assets/pages/marketPlace/CheckOutpage";
+import CheckOut from "./assets/pages/marketPlace/CheckOutPage";
 
 function App() {
   return (
