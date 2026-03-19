@@ -21,6 +21,8 @@ import Page404 from "./assets/pages/404";
 import Unauthorized from "./assets/pages/Unauthorized"
 import HomePage from "./assets/pages/public/HomePage";
 import CheckOut from "./assets/pages/marketPlace/CheckOutPage";
+import PaymentCallback from "./assets/components/PaymentCallback";
+
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
           <Route path="profile" element={<ProfilePage/>} />
           <Route path="login/registration" element={<UserRegistration/>}/> 
           <Route path="checkout" element={<CheckOut/>} />
+          <Route path="/payment-callback" element={<PaymentCallback />} />
         </Route>
         <Route element={<ProtectedRoute allowedStatus={"designer"}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>

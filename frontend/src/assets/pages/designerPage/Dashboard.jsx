@@ -1,5 +1,5 @@
 import Layout from "./Layout";
-const HomePage = () => {
+const Dashboard = () => {
     
 
 
@@ -12,4 +12,4 @@ return(
 
 
 
-export default HomePage;
+export default Dashboard;

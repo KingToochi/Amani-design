@@ -2,7 +2,9 @@ import { useState, useContext, useEffect } from 'react';
 import { BASE_URL } from '../../Url';
 import { AuthContext } from './hooks/AuthProvider';
 import { CartContext } from './hooks/CartContext';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import FlutterwavePayment from '../../components/FlutterwavePayment';
 import { 
   ShoppingBag, 
   Truck, 
@@ -28,6 +30,9 @@ const CheckOut = () => {
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [cartLoading, setCartLoading] = useState(true);
+    const [total, setTotal] = useState(0);
+    const navigate = useNavigate();
+
     
     // ✅ Fix: Use array destructuring since context provides [cart, setCart]
     const [cart, setCart] = useContext(CartContext);
@@ -95,10 +100,22 @@ const CheckOut = () => {
 
     const calculateTotal = () => {
         return calculateSubtotal() + calculateShipping() + calculateTax();
+       
     };
 
     const handlePlaceOrder = () => {
-        setOrderPlaced(true);
+
+        return(
+             <div>
+            <FlutterwavePayment 
+                userInfo={userInfo}
+                total={calculateTotal()}
+                paymentMethod={paymentMethod}
+            />
+        </div>
+        )
+        
+       
         // Optional: Clear cart after order
         // setCart([]);
     };
@@ -349,6 +366,46 @@ const CheckOut = () => {
                                         <span className="text-2xl">💳</span>
                                     </div>
                                 </label>
+
+                                <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition ${
+                                    paymentMethod === 'card' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'
+                                }`}>
+                                    <input 
+                                        type="radio" 
+                                        name="payment" 
+                                        value="mobilemoney"
+                                        checked={paymentMethod === 'mobilemoney'}
+                                        onChange={(e) => setPaymentMethod(e.target.value)}
+                                        className="mr-3"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="font-medium">Mobile Money</span>
+                                        <p className="text-sm text-gray-500">Pay securely with your mobile money</p>
+                                    </div>
+                                    <div className="flex space-x-2">
+                                        <span className="text-2xl">�</span>
+                                    </div>
+                                </label>
+
+                                <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition ${
+                                    paymentMethod === 'card' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'
+                                }`}>
+                                    <input 
+                                        type="radio" 
+                                        name="payment" 
+                                        value="ussd"
+                                        checked={paymentMethod === 'ussd'}
+                                        onChange={(e) => setPaymentMethod(e.target.value)}
+                                        className="mr-3"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="font-medium">USSD</span>
+                                        <p className="text-sm text-gray-500">Pay securely with your USSD</p>
+                                    </div>
+                                    <div className="flex space-x-2">
+                                        <span className="text-2xl">💳</span>
+                                    </div>
+                                </label>
                                 
                                 <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition ${
                                     paymentMethod === 'paypal' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'
@@ -370,7 +427,7 @@ const CheckOut = () => {
                                     </div>
                                 </label>
 
-                                {paymentMethod === 'card' && (
+                                {/* {paymentMethod === 'card' && (
                                     <motion.div 
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: 'auto' }}
@@ -394,7 +451,7 @@ const CheckOut = () => {
                                             />
                                         </div>
                                     </motion.div>
-                                )}
+                                )} */}
                             </div>
                         </motion.div>
 

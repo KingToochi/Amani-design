@@ -11,7 +11,7 @@ import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
 import Likes from "./models/Likes.js";
-import { json } from "stream/consumers";
+import verifyPayment from "./routes/verifyPayment.js"
 
 dotenv.config();
 const app = express();
@@ -515,6 +515,11 @@ app.get("/users", verifyToken, async(req, res) => {
       res.status(500).json({ success: false, message: "Server error" });
     }
 })
+
+// Routes
+app.post("/api/verify-payment", verifyPayment);
+
+
 
 
 
