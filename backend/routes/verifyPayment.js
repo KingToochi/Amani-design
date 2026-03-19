@@ -1,6 +1,6 @@
 // routes/verifyPayment.js
 import axios from "axios"
-import Order from "../models/Order";
+import Order from "../models/Order.js";
 
 const verifyPayment = async (req, res) => {
   try {
