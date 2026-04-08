@@ -3,7 +3,7 @@ import logo from "../images/mainLogo.jpg";
 import Registration from "./DesignersRegistration";
 import { useState } from "react";
 import { BASE_URL } from "../Url";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
 import { jwtDecode } from "jwt-decode";
@@ -13,6 +13,8 @@ const Login = () => {
     const url = BASE_URL
     const {setAuth} = useContext(AuthContext)
     const navigate = useNavigate()
+    const location = useLocation()
+    const from = location.state?.from?.pathname || "/"
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
@@ -39,7 +41,7 @@ const Login = () => {
                     iat: decoded.iat
 
                 }) 
-                navigate(result.redirect) 
+                navigate(from, {replace: true}) 
             } else {
                 throw new Error(result.error)
             }
