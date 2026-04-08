@@ -517,7 +517,8 @@ app.get("/users", verifyToken, async(req, res) => {
 })
 
 // Routes
-app.post("/api/verify-payment", verifyPayment);
+
+
 
 
 

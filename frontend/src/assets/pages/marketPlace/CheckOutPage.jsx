@@ -4,7 +4,7 @@ import { AuthContext } from './hooks/AuthProvider';
 import { CartContext } from './hooks/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import FlutterwavePayment from '../../components/FlutterwavePayment';
+import { useFlutterwave } from 'flutterwave-react-v3';
 import { 
   ShoppingBag, 
   Truck, 
@@ -20,6 +20,7 @@ import {
   AlertCircle,
   Loader
 } from 'lucide-react';
+import logo from "../../images/mainLogo.jpg"
 
 const CheckOut = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -30,7 +31,6 @@ const CheckOut = () => {
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [cartLoading, setCartLoading] = useState(true);
-    const [total, setTotal] = useState(0);
     const navigate = useNavigate();
 
     
@@ -90,35 +90,50 @@ const CheckOut = () => {
     };
 
     const calculateShipping = () => {
-        const subtotal = calculateSubtotal();
-        return subtotal > 100 ? 0 : 9.99;
+        // const subtotal = calculateSubtotal();
+        return 8000 > 10000 ? 0 : 9.99;
     };
 
     const calculateTax = () => {
         return calculateSubtotal() * 0.08;
     };
 
-    const calculateTotal = () => {
-        return calculateSubtotal() + calculateShipping() + calculateTax();
+    const calculateTotal = () => { 
+        const total = calculateSubtotal() + calculateShipping() + calculateTax()
+        return total
        
     };
 
     const handlePlaceOrder = () => {
 
-        return(
-             <div>
-            <FlutterwavePayment 
-                userInfo={userInfo}
-                total={calculateTotal()}
-                paymentMethod={paymentMethod}
-            />
-        </div>
-        )
-        
-       
-        // Optional: Clear cart after order
-        // setCart([]);
+        handleFlutterPayment({
+            callback: (response) => {
+               console.log(response);
+                closePaymentModal() // this will close the modal programmatically
+            },
+            onClose: () => {},
+          });
     };
+
+    const config = {
+    public_key: "FLWPUBK_TEST-83a22d70d3bcbefaddd2aafcb8e66f8b-X",
+    tx_ref: Date.now(),
+    amount: calculateTotal(),
+    currency: 'NGN',
+    payment_options: 'card,mobilemoney,ussd',
+    customer: {
+        email: userInfo?.email || '',
+      phone_number: userInfo?.phoneNumber || '',
+      name: `${userInfo?.fname || ''} ${userInfo?.lname || ''}`.trim()
+    },
+    customizations: {
+          title: "Amanisky Fashion World",
+          description: `Payment for ${cart?.length || 0} items`,
+          logo: logo,
+        },
+  };
+
+  const handleFlutterPayment = useFlutterwave(config);
 
     // Show loading state
     if (cartLoading || loading) {
@@ -335,132 +350,12 @@ const CheckOut = () => {
                             )}
                         </motion.div>
 
-                        {/* Payment Method Card */}
-                        <motion.div 
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="bg-white rounded-2xl shadow-sm p-6"
-                        >
-                            <h2 className="text-lg font-semibold flex items-center mb-4">
-                                <CreditCard className="h-5 w-5 mr-2" />
-                                Payment Method
-                            </h2>
-                            <div className="space-y-3">
-                                <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition ${
-                                    paymentMethod === 'card' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'
-                                }`}>
-                                    <input 
-                                        type="radio" 
-                                        name="payment" 
-                                        value="card"
-                                        checked={paymentMethod === 'card'}
-                                        onChange={(e) => setPaymentMethod(e.target.value)}
-                                        className="mr-3"
-                                    />
-                                    <div className="flex-1">
-                                        <span className="font-medium">Credit / Debit Card</span>
-                                        <p className="text-sm text-gray-500">Pay securely with your card</p>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                        <span className="text-2xl">💳</span>
-                                    </div>
-                                </label>
-
-                                <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition ${
-                                    paymentMethod === 'card' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'
-                                }`}>
-                                    <input 
-                                        type="radio" 
-                                        name="payment" 
-                                        value="mobilemoney"
-                                        checked={paymentMethod === 'mobilemoney'}
-                                        onChange={(e) => setPaymentMethod(e.target.value)}
-                                        className="mr-3"
-                                    />
-                                    <div className="flex-1">
-                                        <span className="font-medium">Mobile Money</span>
-                                        <p className="text-sm text-gray-500">Pay securely with your mobile money</p>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                        <span className="text-2xl">�</span>
-                                    </div>
-                                </label>
-
-                                <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition ${
-                                    paymentMethod === 'card' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'
-                                }`}>
-                                    <input 
-                                        type="radio" 
-                                        name="payment" 
-                                        value="ussd"
-                                        checked={paymentMethod === 'ussd'}
-                                        onChange={(e) => setPaymentMethod(e.target.value)}
-                                        className="mr-3"
-                                    />
-                                    <div className="flex-1">
-                                        <span className="font-medium">USSD</span>
-                                        <p className="text-sm text-gray-500">Pay securely with your USSD</p>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                        <span className="text-2xl">💳</span>
-                                    </div>
-                                </label>
-                                
-                                <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition ${
-                                    paymentMethod === 'paypal' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'
-                                }`}>
-                                    <input 
-                                        type="radio" 
-                                        name="payment" 
-                                        value="paypal"
-                                        checked={paymentMethod === 'paypal'}
-                                        onChange={(e) => setPaymentMethod(e.target.value)}
-                                        className="mr-3"
-                                    />
-                                    <div className="flex-1">
-                                        <span className="font-medium">PayPal</span>
-                                        <p className="text-sm text-gray-500">Fast and secure checkout</p>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                        <span className="text-2xl">🅿️</span>
-                                    </div>
-                                </label>
-
-                                {/* {paymentMethod === 'card' && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        className="space-y-3 mt-4 pt-4 border-t"
-                                    >
-                                        <input 
-                                            type="text" 
-                                            placeholder="Card number"
-                                            className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
-                                        />
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <input 
-                                                type="text" 
-                                                placeholder="MM/YY"
-                                                className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
-                                            />
-                                            <input 
-                                                type="text" 
-                                                placeholder="CVC"
-                                                className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
-                                            />
-                                        </div>
-                                    </motion.div>
-                                )} */}
-                            </div>
-                        </motion.div>
-
                         {/* Mobile Place Order Button */}
                         <button 
                             onClick={handlePlaceOrder}
                             className="lg:hidden w-full bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold shadow-lg"
                         >
-                            Place Order • ${calculateTotal().toFixed(2)}
+                            Pay Now • ${calculateTotal().toFixed(2)}
                         </button>
                     </div>
 
@@ -549,18 +444,13 @@ const CheckOut = () => {
                                 onClick={handlePlaceOrder}
                                 className="hidden lg:block w-full bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold"
                             >
-                                Place Order • ${calculateTotal().toFixed(2)}
+                                Pay Now • ${calculateTotal().toFixed(2)}
                             </button>
-
-                            {/* Security Badge */}
-                            <div className="mt-4 flex items-center justify-center text-xs text-gray-500">
-                                <Shield className="h-3 w-3 mr-1" />
-                                <span>Secure SSL Encrypted Checkout</span>
-                            </div>
                         </div>
                     </motion.div>
                 </div>
             </div>
+
         </div>
     );
 };
