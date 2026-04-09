@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { BASE_URL } from '../../Url';
 import { AuthContext } from './hooks/AuthProvider';
 import { CartContext } from './hooks/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useFlutterwave } from 'flutterwave-react-v3';
 import { 
@@ -32,6 +32,8 @@ const CheckOut = () => {
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [cartLoading, setCartLoading] = useState(true);
     const navigate = useNavigate();
+    const location = useLocation();
+    const pathName = location.pathname;
 
     
     // ✅ Fix: Use array destructuring since context provides [cart, setCart]
@@ -175,7 +177,7 @@ const CheckOut = () => {
                         <h2 className="text-xl font-semibold mb-2">Checkout Unavailable</h2>
                         <p className="text-gray-600 mb-6">{error}</p>
                         <button 
-                            onClick={() => window.location.href = '/login'}
+                            onClick={() => navigate('/login', { state: { from: pathName } })}
                             className="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition font-medium"
                         >
                             Sign In to Continue

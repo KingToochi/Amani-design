@@ -12,12 +12,15 @@ const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
     const {setAuth} = useContext(AuthContext)
+    const currentUrl = window.location.href
     const navigate = useNavigate()
     const location = useLocation()
     const from = location.state?.from?.pathname || "/"
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
+    console.log(from)
+    console.log(currentUrl)
     const onSubmit = async(data) => {
         try {
             let response = await fetch(`${url}/users/login`, {
@@ -41,7 +44,7 @@ const Login = () => {
                     iat: decoded.iat
 
                 }) 
-                navigate(from, {replace: true}) 
+                navigate(from) 
             } else {
                 throw new Error(result.error)
             }
