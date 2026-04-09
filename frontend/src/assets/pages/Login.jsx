@@ -15,7 +15,7 @@ const Login = () => {
     const currentUrl = window.location.href
     const navigate = useNavigate()
     const location = useLocation()
-    const from = location.state?.from?.pathname || "/"
+    const from = location.state?.from || '/';
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);

@@ -34,6 +34,7 @@ const CheckOut = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const pathName = location.pathname;
+    console.log(pathName)
 
     
     // ✅ Fix: Use array destructuring since context provides [cart, setCart]
