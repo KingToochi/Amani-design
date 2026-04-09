@@ -318,8 +318,8 @@ app.post("/users/login", async (req, res) => {
     const token = await generateToken(email)
 
     const reply = user.status === "designer"
-      ? { success: true, token }
-      : { success: true, token };
+      ? { success: true, redirect: "/designer/products", token }
+      : { success: true, redirect: "/", token };
 
     res.json(reply);
   } catch (err) {

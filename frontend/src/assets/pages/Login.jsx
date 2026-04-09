@@ -15,11 +15,10 @@ const Login = () => {
     const currentUrl = window.location.href
     const navigate = useNavigate()
     const location = useLocation()
-    const from = location.state?.from || '/';
+    const from = location.state?.from || '/products';
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
-    console.log(from)
     console.log(currentUrl)
     const onSubmit = async(data) => {
         try {
