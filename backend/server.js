@@ -11,7 +11,10 @@ import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
 import Likes from "./models/Likes.js";
-import verifyPayment from "./routes/verifyPayment.js"
+import Comments from "./models/Comment.js";
+import Sales from "./models/Sales.js";
+import Orders from "./models/Order.js"
+import { useTransition } from "react";
 
 dotenv.config();
 const app = express();
@@ -74,7 +77,7 @@ app.get("/products/designer", async (req, res) => {
     const token = authHeader.split(" ")[1]
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     console.log(decoded.id)
-    const products = await Product.find({DesignerId: decoded.id})
+    const products = await Product.find({designerId: decoded.id})
     if(products) {
       console.log("products found")
     }
@@ -109,7 +112,7 @@ app.post(
       const token = authHeader.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      const DesignerId = decoded.id;
+      const designerId = decoded.id;
 
       // 3️⃣ Extract & validate fields
       const {
@@ -143,7 +146,7 @@ app.post(
 
       // 5️⃣ Save product
       const newProduct = new Product({
-        DesignerId,
+        designerId,
         productDescription,
         productName, 
         productCategory,
@@ -514,6 +517,84 @@ app.get("/users", verifyToken, async(req, res) => {
       console.log(error)
       res.status(500).json({ success: false, message: "Server error" });
     }
+})
+
+app.get("/data", verifyToken, async(req, res) => {
+  const auth = req.user
+
+  try {
+    const users = await User.find().sort({lname: -1});
+    const sales = await Sales.find()
+    const orders = await Orders.find().sort({createdAt:-1})
+    const products = await Product.find()
+
+    const topSellers = await User.aggregate([
+      {
+        $match: {"status": "designer"}
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "designerId",
+          as: "designerProducts"
+        }
+      },
+      { $unwind: "$designerProducts" },
+      {
+          $lookup: {
+            from: "sales",
+            localField: "designerProducts._id",
+            foreignField: "productId",
+            as: "productSales"
+          }
+        },
+        {
+          $addFields: {
+            totalSalesCount: {$size: "$productSales"}
+          }
+        },
+        {
+    $group: {
+      _id: "$_id",
+      name: { $first: "$name" }, // adjust field
+      totalSalesCount: { $sum: "$totalSalesCount" },
+    },
+  },
+        {
+          $sort:{totalSalesCount: -1}
+        }
+    ])
+
+    const topBuyers = await User.aggregate([
+      {
+        $match: {"status": "non_designer"}
+      },
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "customerId",
+          as: "productOrdered"
+        }
+      },
+      {
+        $addFields: {totalSalesCount: {$size: "$productOrdered"}}
+      },
+      {
+        $sort:{totalSalesCount: -1}
+      }
+    ])
+
+    const pendingOrders = await Orders.find({orderStatus: "pending"}).sort({createdAt:-1})
+    const deliveredOrders = await Orders.find({orderStatus: "delivered"}).sort({createdAt:-1})
+
+    return res.json({success: true, users, sales, orders, products, topSellers, topBuyers, pendingOrders, deliveredOrders})
+
+  }catch(error){
+      return res.json({success: false, message: "error fetching data"})
+  }
+
 })
 
 // Routes
