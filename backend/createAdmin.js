@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import User from "./models/User.js";
 import dotenv from "dotenv";
+import connectDB from "./db.js"
 
 dotenv.config();    
+connectDB();
 const createAdmin = async () => {
-    await mongoose.connect("mongodb://localhost:27017/amani");
     const existingAdmin = await User.findOne({ email: process.env.ADMIN_EMAIL });
     if (existingAdmin) {
         console.log("Admin user already exists");

@@ -27,17 +27,14 @@ const AdminDashboard = () => {
             return;
         }
 
-<<<<<<< HEAD
-        // if (auth.status !== "admin") {
-        //     navigate("/unauthorized");
-        //     return;
-        // }
-=======
         if (auth.status !== "admin") {
             navigate("/unauthorized");
             return;
         }
->>>>>>> b9fa39b467ae7acab0c804df7791feddd7df7d43
+        if (auth.status !== "admin") {
+            navigate("/unauthorized");
+            return;
+        }
 
         try {
             let response = await fetch(`${url}/data`, {

@@ -22,24 +22,17 @@ import Unauthorized from "./assets/pages/Unauthorized"
 import HomePage from "./assets/pages/public/HomePage";
 import CheckOut from "./assets/pages/marketPlace/CheckOutPage";
 import PaymentCallback from "./assets/components/PaymentCallback";
-<<<<<<< HEAD
 import AdminDashboard from "./assets/pages/AdminPages/AdminDashboard";
 import AdminLAyout from "./assets/pages/adminPages/AdminLayout";
 import AdminLayout from "./assets/pages/adminPages/AdminLayout";
-=======
->>>>>>> b9fa39b467ae7acab0c804df7791feddd7df7d43
-
+import AdminLogin from "./assets/pages/adminPages/AdmniLogin";
 
 function App() {
   return (
     <div className="w-full overflow-x-hidden min-h-screen bg-gray-50
     ">
-<<<<<<< HEAD
-      {/* <Routes>
-=======
       <Routes>
->>>>>>> b9fa39b467ae7acab0c804df7791feddd7df7d43
-        <Route index element={<HomePage />} />
+        {/* <Route index element={<HomePage />} />    
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
           <Route path="products" element={<Products />} />
@@ -59,22 +52,16 @@ function App() {
         </Route> 
         </Route>
 
-<<<<<<< HEAD
-        <Route path="adminDashboard" element={<AdminDashboard />} />
+        <Route element={<ProtectedRoute allowedStatus={"admin"}/>}>
+          <Route path="/" element={<AdminLayout />} >
+            <Route index element={<AdminDashboard />} />
+        </Route>
+        </Route>
         
 
          <Route path="Unauthorized" element={<Unauthorized />} />
-        <Route path="*" element={<Page404 />} />
-      </Routes> */}
-
-      <Routes>
-        <Route path="/" element={<AdminLayout />} >
-          <Route index element={<AdminDashboard />} />
-        </Route>
-=======
-         <Route path="Unauthorized" element={<Unauthorized />} />
-        <Route path="*" element={<Page404 />} />
->>>>>>> b9fa39b467ae7acab0c804df7791feddd7df7d43
+        <Route path="*" element={<Page404 />} /> */}
+        <Route path="/" element={<AdminLogin />} />
       </Routes>
     </div>
   );

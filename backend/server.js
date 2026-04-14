@@ -330,6 +330,22 @@ app.post("/users/login", async (req, res) => {
   }
 });
 
+app.post("/users/login/admin", async (req, res) => {
+  try{
+    const { email, password } = req.body;
+
+    const user = await User.findOne({email: email});
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (user.password !== password) return res.status(401).json({ success: false, message: "Incorrect password" });
+    if (user.status !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
+
+    generateToken(email)
+    res.json({ success: true, message: "Admin login successful", token });
+  }catch(error){
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Verify username
 app.post("/users/username", async (req, res) => {
   try {
