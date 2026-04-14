@@ -14,6 +14,7 @@ import Likes from "./models/Likes.js";
 import Comments from "./models/Comment.js";
 import Sales from "./models/Sales.js";
 import Orders from "./models/Order.js"
+import bcrypt from "bcryptjs";
 
 
 dotenv.config();
@@ -336,10 +337,14 @@ app.post("/users/login/admin", async (req, res) => {
 
     const user = await User.findOne({email: email});
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
-    if (user.password !== password) return res.status(401).json({ success: false, message: "Incorrect password" });
+    const hashedPassword = user.password
+    console.log(hashedPassword)
+      console.log(password)
+    const ismatch = await bcrypt.compare(password, hashedPassword)
+    if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
     if (user.status !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
 
-    generateToken(email)
+    const token = await generateToken(email)
     res.json({ success: true, message: "Admin login successful", token });
   }catch(error){
     res.status(500).json({ message: "Server error" });

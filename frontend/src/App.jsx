@@ -32,7 +32,7 @@ function App() {
     <div className="w-full overflow-x-hidden min-h-screen bg-gray-50
     ">
       <Routes>
-        {/* <Route index element={<HomePage />} />    
+        <Route index element={<HomePage />} />    
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
           <Route path="products" element={<Products />} />
@@ -43,6 +43,7 @@ function App() {
           <Route path="login/registration" element={<UserRegistration/>}/> 
           <Route path="checkout" element={<CheckOut/>} />
           <Route path="/payment-callback" element={<PaymentCallback />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
         </Route>
         <Route element={<ProtectedRoute allowedStatus={"designer"}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>
@@ -60,8 +61,7 @@ function App() {
         
 
          <Route path="Unauthorized" element={<Unauthorized />} />
-        <Route path="*" element={<Page404 />} /> */}
-        <Route path="/" element={<AdminLogin />} />
+        <Route path="*" element={<Page404 />} />
       </Routes>
     </div>
   );
