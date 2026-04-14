@@ -582,6 +582,8 @@ app.get("/data", verifyToken, async(req, res) => {
     const orders = await Orders.find().sort({createdAt:-1})
     const products = await Product.find()
 
+    const pendingApprovals = await User.find({status: "pending_designer"})
+
     const topSellers = await User.aggregate([
       {
         $match: {"status": "designer"}
@@ -643,7 +645,7 @@ app.get("/data", verifyToken, async(req, res) => {
     const pendingOrders = await Orders.find({orderStatus: "pending"}).sort({createdAt:-1})
     const deliveredOrders = await Orders.find({orderStatus: "delivered"}).sort({createdAt:-1})
 
-    return res.json({success: true, users, sales, orders, products, topSellers, topBuyers, pendingOrders, deliveredOrders})
+    return res.json({success: true, users, sales, orders, products, topSellers, topBuyers, pendingApprovals pendingOrders, deliveredOrders})
 
   }catch(error){
       return res.json({success: false, message: "error fetching data"})

@@ -80,9 +80,22 @@ const NavBar = () => {
         setIsOpen(false);
     };
 
+    const getAge = (dob) => {
+        if (!dob) return null;
+        const birthDate = new Date(dob);
+        if (Number.isNaN(birthDate.getTime())) return null;
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age -= 1;
+        }
+        return age;
+    };
+
     useEffect(() => {
         fetchAdminDetails();
-    }, [auth]);     
+    }, [auth]);    
 
     return (
         <nav className="bg-white shadow-lg border-b border-gray-200">
@@ -122,6 +135,46 @@ const NavBar = () => {
                         >
                             <FontAwesomeIcon icon={isOpen ? faTimes : faBars} className="h-6 w-6" />
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Admin Details */}
+            <div className="bg-gray-50 border-t border-gray-200">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-2 py-4">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="h-20 w-20 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                                {adminDetails?.profilePicture ? (
+                                    <img
+                                        src={adminDetails.profilePicture}
+                                        alt={`${adminDetails.fname || "Admin"} ${adminDetails.lname || ""}`}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-gray-500 text-sm">No Image</span>
+                                )}
+                            </div>
+                            <div>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {`${adminDetails?.fname || ""} ${adminDetails?.lname || ""}`.trim() || "Admin User"}
+                                </p>
+                                <p className="text-sm text-gray-600">Admin profile details</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full md:w-auto">
+                            <div className="rounded-lg bg-white p-3 shadow-sm border border-gray-200">
+                                <p className="text-xs uppercase tracking-wide text-gray-500">Age</p>
+                                <p className="mt-1 text-sm text-gray-900">
+                                    {adminDetails?.dob ? `${getAge(adminDetails.dob)} years` : "Not set"}
+                                </p>
+                            </div>
+                            <div className="rounded-lg bg-white p-3 shadow-sm border border-gray-200">
+                                <p className="text-xs uppercase tracking-wide text-gray-500">Phone Number</p>
+                                <p className="mt-1 text-sm text-gray-900">{adminDetails?.phoneNumber || "Not set"}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
