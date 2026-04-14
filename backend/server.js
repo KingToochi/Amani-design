@@ -339,7 +339,8 @@ app.post("/users/login/admin", async (req, res) => {
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
     const hashedPassword = user.password
     console.log(hashedPassword)
-      console.log(password)
+    console.log(password)
+    console.log(user)
     const ismatch = await bcrypt.compare(password, hashedPassword)
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
     if (user.status !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
