@@ -54,7 +54,7 @@ function App() {
         </Route>
 
         <Route element={<ProtectedRoute allowedStatus={"admin"}/>}>
-          <Route path="/" element={<AdminLayout />} >
+          <Route path="/admin" element={<AdminLayout />} >
             <Route index element={<AdminDashboard />} />
         </Route>
         </Route>

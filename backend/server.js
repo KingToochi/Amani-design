@@ -522,6 +522,34 @@ app.get("/search", async (req, res) => {
   }
 })
 
+app.get("/admin/details", verifyToken, async(req, res) => {
+  const auth = req.user
+
+  try {
+    const admin = await User.findOne({_id: auth._id})
+
+    if (!admin || admin.status !== "admin") {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    const adminDetails = {
+      fname: admin.fname,
+      lname: admin.lname,
+      email: admin.email,
+      phoneNumber: admin.phoneNumber,
+      dob: admin.dob,
+      profilePicture: admin.profilePicture,
+      joinedAt: admin.joinedAt,
+    }
+
+    return res.json({ success: true, admin: adminDetails })
+
+  } catch(error){
+    console.error("Error fetching admin details:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+})
+
 app.get("/users", verifyToken, async(req, res) => {
     const auth = req.user
     console.log(auth)
@@ -545,6 +573,10 @@ app.get("/data", verifyToken, async(req, res) => {
   const auth = req.user
 
   try {
+    const admin = await User.findOne({_id: auth._id});
+    if (!admin || admin.status !== "admin") {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
     const users = await User.find().sort({lname: -1});
     const sales = await Sales.find()
     const orders = await Orders.find().sort({createdAt:-1})

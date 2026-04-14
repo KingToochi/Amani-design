@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate} from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Logo from "../../images/mainLogo.jpg";
+import {BASE_URL} from "../../Url";
+import { useEffect, useContext } from "react";
+import { AuthContext } from "../marketPlace/hooks/AuthProvider";
 import {
     faTachometerAlt,
     faUserTie,
@@ -21,7 +24,38 @@ import {
 
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [adminDetails, setAdminDetails] = useState({});
     const location = useLocation();
+    const { auth } = useContext(AuthContext);
+    const url = BASE_URL;
+    const token = localStorage.getItem("token");
+    const navigate = useNavigate();
+
+
+    const fetchAdminDetails = async () => {
+        if (!token) {
+            navigate("/admin-login");
+            return;
+        }
+
+        if (auth.status !== "admin") {
+            navigate("/admin-login");   
+            return;
+        }
+
+        try {
+            const response = await fetch(`${url}/admin/details`, {
+                method: "GET",
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            setAdminDetails(data.admin);
+        }catch(err){
+            console.error("Error fetching admin details:", err);
+        }
+    }
 
     const navItems = [
         { name: "Dashboard", path: "/admin/dashboard", icon: faTachometerAlt },
@@ -45,6 +79,10 @@ const NavBar = () => {
     const closeMenu = () => {
         setIsOpen(false);
     };
+
+    useEffect(() => {
+        fetchAdminDetails();
+    }, [auth]);     
 
     return (
         <nav className="bg-white shadow-lg border-b border-gray-200">

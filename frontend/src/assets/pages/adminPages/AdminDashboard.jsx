@@ -46,6 +46,7 @@ const AdminDashboard = () => {
             let data = await response.json();
 
             if (data.success) {
+                console.log(data)
                 setUsers(data.users || []);
                 setTopBuyers(data.topBuyers || []);
                 setTopSellers(data.topSellers || []);
@@ -139,7 +140,7 @@ const AdminDashboard = () => {
                             <div className="ml-4">
                                 <h3 className="text-lg font-semibold text-gray-700">Top Buyer</h3>
                                 <p className="text-lg font-bold text-gray-900">
-                                    {topBuyers.length > 0 ? `${topBuyers[0].name} (${topBuyers[0].totalSalesCount} orders)` : 'N/A'}
+                                    {topBuyers.length > 0 ? `${topBuyers[0].lname + " " + topBuyers[0].fname} (${topBuyers[0].totalSalesCount} orders)` : 'N/A'}
                                 </p>
                             </div>
                         </div>
