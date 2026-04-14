@@ -1,0 +1,395 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { BASE_URL } from "../Url";
+// this component contains all the required form components for the registration page
+
+export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
+    const fromData = {}
+    const [error, setError] = useState({})
+    const url = BASE_URL
+
+
+    const validateFormInput = (event) => {
+        const {name, id, value} = event.target
+    }
+
+    const verifyEmail = async(event) => {
+        const {value} = event.target
+        if (!value) return
+        try {
+            let response = await fetch(`${url}/users/email`, {
+                method: "POST",
+                headers : {"Content-Type" : "application/json"},
+                body: JSON.stringify({email: value})
+            })
+            let data = await response.json()
+            
+        } catch(error) {
+            console.log(error)
+        }
+    }
+    
+    const onSubmit = (data) => {
+        setMeansOfIdentification(data.meansOfIdentification);
+        onClick(data);
+    }
+    return (
+        <form
+        className="w-full flex flex-col  gap-6
+        lg:grid lg:grid-cols-2 lg:gap-3
+        "
+        onSubmit={handleSubmit(onSubmit)}
+        >
+            <h1 className="text-2xl font-bold font-[abril] text-gray-900 col-span-2">Basic Information</h1>
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="text" placeholder="First Name" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("fname", {required: "First name is required"})} />
+                {error.fname && <p className="text-red-300 text-sm font-[abril] ">{error.fname.message}</p>}
+            </div>
+
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="text" placeholder="last Name" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("lname", {required: "Last name is required",
+                })} />
+                {error.lname && <p className="text-red-300 text-sm font-[abril] ">{error.lname.message}</p>}
+            </div>
+
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="email" placeholder="Email Address" onBlur={(event)=>verifyEmail(event)}
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("email", {required: "Email Address is required", 
+                    pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: "Invalid email format",
+                    },
+                })} />
+                {error.email && <p className="text-red-300 text-sm font-[abril] ">{error.email.message}</p>}
+            </div>
+
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="text" placeholder="Phone Number" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("phoneNumber", {required: "Phone Number is required"})} />
+                {error.phoneNumber && <p className="text-red-300 text-sm font-[abril] ">{error.phoneNumber.message}</p>}
+            </div>
+
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="date" placeholder="Date of Birth" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("dob", {required: "Date of Birth is required"})} />
+                {error.dob && <p className="text-red-300 text-sm font-[abril] ">{error.dob.message}</p>}
+            </div>
+
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="text" placeholder="Home Address" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("address", {required: "Address is required"})} />
+                {error.address && <p className="text-red-300 text-sm font-[abril] ">{error.address.message}</p>}
+            </div>
+
+
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <select 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("meansOfIdentification", {required: "Means of Identification is required"})}>
+                    <option value="" hidden>Select Means of Identification</option>
+                    <option value="nin">National Identification Number</option>
+                    <option value="vin">Voter's Card</option>
+                    <option value="passport">International Passport</option>
+                    <option value="driversLicense">Driver's License</option>
+                </select>
+                {error.meansOfIdentification && <p className="text-red-300 text-sm font-[abril] ">{error.meansOfIdentification.message}</p>}
+            </div>
+
+            <button
+            className="w-auto px-3 py-1 flex-col items center gap-2 border-2 border-gray-900 rounded-lg
+            lg:col-span-2
+            "
+            type="submit"
+            >
+                <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                Next
+            </button>
+        </form>
+    )
+
+}
+
+export const DetailsVerification = ({meansOfIdentification, onClickNext, onClickPrev}) => {
+    const {register, handleSubmit, formState : { error }} = useForm()
+    const onSubmit = (data) => {
+        onClickNext(data)
+    }
+
+    return (
+        <form
+        className="w-full flex flex-col items-center gap-6"
+        onSubmit={handleSubmit(onSubmit)}
+        >
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <label className="text-gray-900 font-semibold text-base font-[abril]">
+                    Upload Proof of Address
+                </label>
+                <input type="file" accept="image/*" 
+                className="cursor-pointer w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("proofOfAddress", {required: "proof of address required!"})}
+                />
+                {error.proofOfAddress && <p className="text-red-300 text-sm font-[abril] ">{error.proofOfAddress.message}</p>}
+            </div>
+
+            {meansOfIdentification === "nin" && (
+                <div
+                className="w-full flex flex-col items-start gap-2 "
+                >
+                    <input type="text" placeholder="NIN Number" 
+                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                    {...register("identificationNumber", {required: "NIN Number is required"})} />
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
+                </div>
+            )} 
+            {meansOfIdentification === "vin" && (
+                <div
+                className="w-full flex flex-col items-start gap-2 "
+                >
+                    <input type="text" placeholder="Voter's Card Number" 
+                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                    {...register("identificationNumber", {required: "Voter's Card Number is required"})} />
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
+                </div>
+            )}
+            {meansOfIdentification === "passport" && (
+                <div
+                className="w-full flex flex-col items-start gap-2 "
+                >
+                    <input type="text" placeholder="Passport Number" 
+                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                    {...register("identificationNumber", {required: "Passport Number is required"})} />
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
+                </div>
+            )}
+            {meansOfIdentification === "driversLicense" && (
+                <div
+                className="w-full flex flex-col items-start gap-2 "
+                >
+                    <input type="text" placeholder="Driver's License Number" 
+                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                    {...register("identificationNumber", {required: "Driver's License Number is required"})} />
+                    {error.identificationNumber && <p className="text-red-300 text-sm font-[abril] ">{error.identificationNumber.message}</p>}
+                </div>
+            )}
+
+            <div
+            className="w-full flex justify-between items-center gap-4"
+            >
+                <button
+                className="w-auto px-3 py-1 flex-col items-center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
+                type="button"
+                onClick={onClickPrev}
+                >
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-left" />
+                    Prev
+                </button>
+
+                <button
+                className="w-auto px-3 py-1 flex-col items center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
+                type="submit"
+                >
+                    Next
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                </button>
+            </div>
+        </form>
+    )
+}
+
+export const CreateUser = ({onClickBack, handleFinalSubmit, isSubmitting}) => {
+    const {register, handleSubmit, watch,setError, clearErrors, formState : { error}} = useForm();
+    const url = BASE_URL
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState("");
+    const password = watch("password");
+    // const togglePassword = () => setShowPassword((prev) => !prev);
+
+    // Helper: Evaluate password strength
+    const checkPasswordStrength = (value) => {
+        let strength = 0;
+        if (value.length >= 8) strength++; /* check if password is upto 8*/
+        if (/[A-Z]/.test(value)) strength++;  /* if it contains uppercase*/
+        if (/[a-z]/.test(value)) strength++;  /* if it contains lowercase*/
+        if (/\d/.test(value)) strength++;  /* if it contains digit*/
+        if (/[^A-Za-z0-9]/.test(value)) strength++;  /* if it contains special character*/
+
+        if (strength <= 2) return "Weak";
+        if (strength === 3 || strength === 4) return "Moderate";
+        if (strength === 5) return "Strong";
+        return ""; 
+    }
+
+    const handlePasswordChange = (e) => {
+        const strength = checkPasswordStrength(e.target.value);
+        setPasswordStrength(strength);
+    };
+
+    const verifyUsername = async(event) => {
+        const {value} = event.target
+        try {
+            let response = await fetch(`${url}/users/username`, {
+                method: "POST",
+                headers : {"Content-Type" : "application/json"},
+                body: JSON.stringify({username: value})
+            })
+            let data = await response.json()
+
+            if(data.status === "exists") {
+                 // Set error for the username field
+                setError("username", {
+                    type: "manual",
+                    message: "This username is already used"
+                });
+            }else {
+                // Clear username error if it exists
+                clearErrors("username");
+            }
+            
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    const onSubmit = (data) => {
+        console.log(data)
+        handleFinalSubmit(data); // Pass final data to Firebase
+    } 
+
+
+    return (
+        <form 
+        className="w-full flex flex-col items-center gap-6"
+        onSubmit={handleSubmit(onSubmit)}>
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <label  className="text-gray-900 font-semibold text-base font-[abril]">Add Profile Picture</label>
+                <input type="file"  accept="image/*"
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"
+                {...register("profilePicture", {required: "This field is required"})}
+                />
+                {error.profilePicture && <p className="text-red-300 text-sm font-[abril] ">{error.profilePicture.message}</p>}
+            </div>
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="text" placeholder="Create Username" onBlur={(event)=>verifyUsername(event)}
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                {...register("username", {required: "This field is required"})} />
+                {error.username && <p className="text-red-300 text-sm font-[abril] ">{error.username.message}</p>}
+            </div>
+
+            <div
+             className="w-full flex flex-col items-start gap-2 "
+            >
+                <input 
+                className="w-full relative border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"
+                type={showPassword ? "text" : "password"}
+                placeholder="Create Password" 
+                {...register("password", {
+                            required: "Password is required",
+                            minLength: {
+                                value: 8,
+                                message: "Minimum 8 characters required",
+                            },
+                            validate: {
+                                hasUpperCase: (value) =>
+                                    /[A-Z]/.test(value) || "At least one uppercase letter required",
+                                hasLowerCase: (value) =>
+                                    /[a-z]/.test(value) || "At least one lowercase letter required",
+                                hasNumber: (value) =>
+                                    /\d/.test(value) || "At least one digit required",
+                                hasSpecialChar: (value) =>
+                                    /[^A-Za-z0-9]/.test(value) || "At least one special character required",
+                            },
+                            onChange: handlePasswordChange,})} />
+                        {error.password && <p className="text-red-300 text-sm font-[abril] ">{error.password.message}</p>}
+            </div>
+            {password && (
+                <div className="text-sm">
+                    <span>Password Strength: </span>
+                    <span
+                        className={
+                            passwordStrength === "Strong"
+                                ? "text-green-600"
+                                : passwordStrength === "Moderate"
+                                ? "text-yellow-600"
+                                : "text-red-600"
+                        }
+                    >
+                        {passwordStrength}
+                    </span>
+                </div>)}
+
+            <div
+            className="w-full flex flex-col items-start gap-2 "
+            >
+                <input type="password" placeholder="Confirm Password" 
+                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 cursor-pointer font-semibold text-base font-[abril]"             
+                {...register("confirmPassword", {required: "This field is required",
+                    validate: (value) => value === password || "Passwords do not match",
+                })} />
+                {error.confirmPassword && <p className="text-red-300 text-sm font-[abril] ">{error.confirmPassword.message}</p>}
+            </div>
+            <div
+              className="w-full flex flex-col items-start gap-2"
+            >
+                <div
+                className="w-full flex justify-start items-center gap-2"
+                >
+                    <input type="checkbox" 
+                    className="cursor-pointer"
+                    {...register("termsAndConditions", {required: "You must accept the terms and conditions"})} />
+                    <label
+                     className="text-gray-900 font-semibold text-base font-[abril]"
+                    >I accept the terms and conditions</label>
+                </div>
+                {error.termsAndConditions && <p className="text-red-300 text-sm font-[abril] ">{error.termsAndConditions.message}</p>}
+            </div>
+
+            <div
+            className="flex justify-between items-center gap-4 w-full"
+            >
+                <button 
+                onClick={onClickBack}
+                className="w-auto px-3 py-1 flex-col items-center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
+                 type="button">
+                    <FontAwesomeIcon icon="fa fa-arrow-left" />
+                    prev
+                </button>
+
+                <button
+                className="w-auto px-3 py-1 flex-col items-center gap-2 border-2 border-gray-900 rounded-lg cursor-pointer"
+                disabled = {isSubmitting}
+                type="submit">
+                    {isSubmitting ? "submitting" : "submit"}
+                </button>
+            </div>
+        </form>
+    )
+}
