@@ -8,7 +8,10 @@ const userSchema = new mongoose.Schema({
   email: String,
   phoneNumber: String,
   dob: String,
-  address: String,
+  bankName: string,
+  accountNumber: string,
+  houseNumber: String,
+  streetName: string,
   city: String,
   state: String,
   shippingAddress: String,
@@ -17,7 +20,16 @@ const userSchema = new mongoose.Schema({
   meansOfIdentification: String,
   identificationNumber: String,
   password: String,
-  status: String,
+  status: {
+    type: String,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin", "designer"],
+    default: "user",
+  },
   joinedAt: Date,
 });
 

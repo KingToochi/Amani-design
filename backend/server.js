@@ -228,15 +228,16 @@ app.post("/users/registration", async (req, res) => {
       phoneNumber: "",
       dob: "",
       profilePicture: "",
-      address: "",
+      houseNumber: "",
       city: "",
       state: "",
-      shippingAddress: "",
+      shippingAddress: {houseNumber, streetName, city, state},
       proofOfAddress: "",
       MeansOfIdentification: "",
       identificationNumber: "",
       password,
-      status: "non_designer",
+      status: "approved",
+      role: "user",
     });
 
     await newUser.save();
@@ -258,8 +259,8 @@ app.post("/users/registration/designers",uploadImage.fields([
   console.log("FILES:", req.files)
 
   try {
-    const {fname, lname, email, phoneNumber, username, dob, password, address, meansOfIdentification, identificationNumber, city, state} = req.body
-  if (!fname || !lname || !email || !phoneNumber || !dob || !address || !meansOfIdentification || !identificationNumber || !city || !state ) {
+    const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, bankName, accountNumber, identificationNumber, city, state} = req.body
+  if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !bankName || !accountNumber || !identificationNumber || !city || !state ) {
   return res.json({message: "All fields required"})
 }
 
@@ -290,17 +291,20 @@ if (req.files.proofOfAddress) {
         phoneNumber,
         dob,
         password, 
-        address,
+        houseNumber,
+        streetName,
+        bankName,
+        accountNumber,
         meansOfIdentification,
         identificationNumber,
         profilePicture: profilePictureUrl,
         proofOfAddress: proofOfAddressUrl,
         city,
         state,
-        shippingAddress: "",
-        status: "designer",
+        country: "Nigeria",
+        shippingAddress: {houseNumber, streetName, city, state },
+        role: "designer",
       });
-
       await newUser.save();
       const token = await generateToken(email)
       res.status(201).json({ success: true,  message: "User registered successfully", token });

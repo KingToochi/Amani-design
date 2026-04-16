@@ -13,6 +13,7 @@ const AdminDashboard = () => {
     const [deliveredOrders, setDeliveredOrders] = useState([]);
     const [totalSales, setTotalSales] = useState(0);
     const [sales, setSales] = useState([]);
+    const [pendingApprovals, setPendingApprovals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const url = BASE_URL;

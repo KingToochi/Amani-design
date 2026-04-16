@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
 
-const DesignerREgistration = () => {
+const DesignerRegistration = () => {
     const url = BASE_URL
     const navigate = useNavigate()
     const {setAuth} = useContext(AuthContext)
@@ -18,9 +18,12 @@ const DesignerREgistration = () => {
         username : "",
         email: "",
         dob: "",
-        address: "",
+        houseNumber: "",
+        streetName: "",
         city: "",
         state: "",
+        bankName: "",
+        accountNumber: "",
         phoneNumber: "",
         proofOfAddress: "",
         profilePicture: "",
@@ -304,7 +307,7 @@ const DesignerREgistration = () => {
                     <label htmlFor="phoneNumber"
                     className="w-full font-semibold"
                     >Phone Number</label>
-                    <input type="number" id="phoneNumber" value={formData.phoneNumber} placeholder="phone number" onBlur={formInputValidation} onChange={formInputValidation}
+                    <input type="text" id="phoneNumber" value={formData.phoneNumber} placeholder="phone number" onBlur={formInputValidation} onChange={formInputValidation}
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
                     />
                     <h1 className="text-red-300">{error?.phoneNumber}</h1>
@@ -323,13 +326,24 @@ const DesignerREgistration = () => {
                 <div
                 className="flex flex-col gap-2"
                 >
-                    <label htmlFor="address"
+                    <label htmlFor="houseNumber"
                     className="w-full font-semibold"
-                    >Address</label>
-                    <input type="text" id="address" value={formData.address} placeholder="your street address" onBlur={formInputValidation} onChange={formInputValidation}
+                    >House Number</label>
+                    <input type="text" id="houseNumber" value={formData.houseNumber} placeholder="your House Number" onBlur={formInputValidation} onChange={formInputValidation}
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
                     />
-                    <h1 className="text-red-300">{error?.address}</h1>
+                    <h1 className="text-red-300">{error?.houseNumber}</h1>
+                </div>
+                <div
+                className="flex flex-col gap-2"
+                >
+                    <label htmlFor="streetName"
+                    className="w-full font-semibold"
+                    >Street Name</label>
+                    <input type="text" id="streetName" value={formData.streetName} placeholder="your Street Name" onBlur={formInputValidation} onChange={formInputValidation}
+                    className="w-full border-2 border-gray-900 rounded-lg px-2"
+                    />
+                    <h1 className="text-red-300">{error?.streetName}</h1>
                 </div>
                 <div
                 className="flex flex-col gap-2"
@@ -359,7 +373,7 @@ const DesignerREgistration = () => {
                     <label htmlFor="proofOfAddress"
                     className="w-full font-semibold"
                     >Proof Of Address</label>
-                    <input type="file" accept="image/*" id="proofOfAddress"  placeholder="proof of address"name="proofOfAddress" onChange={formInputValidation}
+                    <input type="file" accept="image/*" id="proofOfAddress"  placeholder="proof of houseNumber"name="proofOfAddress" onChange={formInputValidation}
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
                     />
                     <h1 className="text-red-300">{error?.proofOfAddress}</h1>
@@ -438,6 +452,28 @@ const DesignerREgistration = () => {
                     <h1 className="text-red-300">{error?.identificationNumber}</h1>
                 </div>
             )}
+            <div
+                className="flex flex-col gap-2"
+                >
+                    <label htmlFor="bankName"
+                    className="w-full font-semibold"
+                    >Bank</label>
+                    <input type="text" id="bankName" value={formData.bankName} placeholder="Bank Name" onBlur={formInputValidation} onChange={formInputValidation}
+                    className="w-full border-2 border-gray-900 rounded-lg px-2"
+                    />
+                    <h1 className="text-red-300">{error?.bankName}</h1>
+            </div>
+            <div
+                className="flex flex-col gap-2"
+                >
+                    <label htmlFor="accountNumber"
+                    className="w-full font-semibold"
+                    >Account Number</label>
+                    <input type="text" id="accountNumber" value={formData.accountNumber} placeholder="Account Number" onBlur={formInputValidation} onChange={formInputValidation}
+                    className="w-full border-2 border-gray-900 rounded-lg px-2"
+                    />
+                    <h1 className="text-red-300">{error?.accountNumber}</h1>
+            </div>
             <div>
                             <label htmlFor="password">Password</label>
                             <div
@@ -462,15 +498,17 @@ const DesignerREgistration = () => {
                         <div>
                             <label htmlFor="cpassword">Confirm Password</label>
                             <div
-                            className="flex items-center gap-2"
+                            className="flex flex-col gap-2"
                             >
-                                <input type={showCPassword ? "text" : "password"} name="confirm password" id="cpassword" placeholder="confirm password" onBlur={formInputValidation} onChange={formInputValidation}
-                                className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
-                                />
-                                {showCPassword ? 
-                                <FaEyeSlash onClick={() => setShowCPassword(prev => !prev)}/>
-                                : 
-                                <FaEye  onClick={() => setShowCPassword(prev => !prev)}/>}
+                                <div className="flex items-center gap-2">
+                                    <input type={showCPassword ? "text" : "password"} name="confirm password" id="cpassword" placeholder="confirm password" onBlur={formInputValidation} onChange={formInputValidation}
+                                    className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
+                                    />
+                                    {showCPassword ? 
+                                    <FaEyeSlash onClick={() => setShowCPassword(prev => !prev)}/>
+                                    : 
+                                    <FaEye  onClick={() => setShowCPassword(prev => !prev)}/>}
+                                </div>
                                 <h1 className="text-red-300">{error?.cpassword}</h1>
                              </div>
                         </div>
@@ -479,7 +517,7 @@ const DesignerREgistration = () => {
             >
                 <button
                 disabled={isSubmitting}
-                className="border-2 border-gray-900 px-2 py-1 rounded-lg"
+                className="border-2 border-gray-900 px-2 py-1 rounded-lg cursor-pointer"
                 >
                     {isSubmitting ? "submitting" : "submit"}
                 </button>
@@ -489,4 +527,4 @@ const DesignerREgistration = () => {
     )
 }
 
-export default DesignerREgistration;
+export default DesignerRegistration;
