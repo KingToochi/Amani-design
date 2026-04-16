@@ -232,7 +232,7 @@ app.post("/users/registration", async (req, res) => {
       houseNumber: "",
       city: "",
       state: "",
-      shippingAddress: {houseNumber, streetName, city, state},
+      shippingAddress: `${houseNumber} ${streetName}, ${city}, ${state}`,
       proofOfAddress: "",
       MeansOfIdentification: "",
       identificationNumber: "",
@@ -304,7 +304,7 @@ if (req.files.proofOfAddress) {
         city,
         state,
         country: "Nigeria",
-        shippingAddress: {houseNumber, streetName, city, state },
+        shippingAddress: `${houseNumber} ${streetName}, ${city}, ${state}`,
         role: "designer",
       });
       await newUser.save();
