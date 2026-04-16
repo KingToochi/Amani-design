@@ -29,17 +29,8 @@ const commentSchema = new mongoose.Schema({
     required: [true, 'Author ID is required'],
     index: true
   },
-  authorName: {
-    type: String,
-    required: [true, 'Author name is required'],
-    trim: true
-  },
-  authorEmail: {
-    type: String,
-    lowercase: true,
-    trim: true
-  },
   
+
   // Comment content
   content: {
     type: String,

@@ -71,16 +71,16 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    <Link to="/products"
-                    className="flex flex-col gap-2 items-center"
-                    >
-                        <TbLayoutGridAdd />
-                        <h1
-                        className="hidden 
-                        sm:flex
-                        "
-                        >Designs</h1>
-                    </Link>
+                            <Link to="/products"
+                            className="flex flex-col gap-2 items-center"
+                            >
+                                <TbLayoutGridAdd />
+                                <h1
+                                className="hidden 
+                                sm:flex
+                                "
+                                >Products</h1>
+                            </Link>
                 </li>
 
                 <li>
@@ -110,13 +110,13 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    {isLoggedIn && auth.status === "designer" 
+                    {isLoggedIn && auth.role === "designer" 
                     ? 
                     <Link to="/designer"
                     className="flex items-center"
                     >
                         <img src={logo} alt="AmaniSky logo" 
-                        className="w-[40px] h-[40px] rounded-full mx-auto my-4
+                        className="w-[40px] h-[40px] rounded-full mx-auto my-4 
                         sm:w-[50px] sm:h-[50px]
                         "
                         />

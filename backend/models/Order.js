@@ -7,6 +7,15 @@ const orderSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  products: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product"
+      },
+      quantity: Number
+    }
+  ],
   transactionId: {
     type: String,
     required: true,
@@ -33,8 +42,14 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  customerName: String,
-  customerPhone: String,
+  customerName: {
+    type: String,
+    required: true,
+  },
+  customerPhone: {
+    type: String,
+    required: true,
+  },
   items: [{
     name: String,
     price: Number,

@@ -15,6 +15,7 @@ import Comments from "./models/Comment.js";
 import Sales from "./models/Sales.js";
 import Orders from "./models/Order.js"
 import bcrypt from "bcryptjs";
+import Rating from "./models/Rating.js";
 
 
 dotenv.config();
@@ -326,7 +327,7 @@ app.post("/users/login", async (req, res) => {
 
     const token = await generateToken(email)
 
-    const reply = user.status === "designer"
+    const reply = user.role === "designer"
       ? { success: true, redirect: "/designer/products", token }
       : { success: true, redirect: "/", token };
 
@@ -348,7 +349,7 @@ app.post("/users/login/admin", async (req, res) => {
     console.log(user)
     const ismatch = await bcrypt.compare(password, hashedPassword)
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
-    if (user.status !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
+    if (user.role !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
 
     const token = await generateToken(email)
     res.json({ success: true, message: "Admin login successful", token });
@@ -486,7 +487,7 @@ const generateToken = async (email) => {
       _id: user._id,
       email: user.email,
       username: user.username,
-      status: user.role,
+      role: user.role,
     },
     SECRET_KEY,
     { expiresIn: "1h" }
@@ -579,7 +580,7 @@ app.get("/data", verifyToken, async(req, res) => {
 
   try {
     const admin = await User.findOne({_id: auth._id});
-    if (!admin || admin.status !== "admin") {
+    if (!admin || admin.role !== "admin") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
     const users = await User.find().sort({lname: -1});
@@ -587,11 +588,11 @@ app.get("/data", verifyToken, async(req, res) => {
     const orders = await Orders.find().sort({createdAt:-1})
     const products = await Product.find()
 
-    const pendingApprovals = await User.find({status: "pending_designer"})
+    const pendingApprovals = await User.find({role: "pending_designer"})
 
     const topSellers = await User.aggregate([
       {
-        $match: {"status": "designer"}
+        $match: {"role": "designer"}
       },
       {
         $lookup: {
@@ -629,7 +630,7 @@ app.get("/data", verifyToken, async(req, res) => {
 
     const topBuyers = await User.aggregate([
       {
-        $match: {"status": "non_designer"}
+        $match: {"role": "customer"}
       },
       {
         $lookup: {
@@ -657,6 +658,121 @@ app.get("/data", verifyToken, async(req, res) => {
   }
 
 })
+
+app.get("/designer/productAnalytics", verifyToken, async(req, res) => {
+  const auth = req.user
+  try {
+    const user = await User.findOne({_id: auth._id})
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (user.role !== "designer") return res.status(403).json({ success: false, message: "Access denied" });
+
+    const  sales = await user.aggregate([
+      {
+        $match: {_id: user._id}
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "designerId",
+          as: "designerProducts"
+        }
+      },
+      { $unwind: "$designerProducts" },
+      {
+        $lookup: {
+          from: "sales",
+          localField: "designerProducts._id",
+          foreignField: "productId",
+          as: "productSales"
+        }
+      }
+    ])
+
+    const orders = await User.aggregate([
+      {
+        $match: {_id: user._id}
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "designerId",
+          as: "designerProducts"
+        }
+      },
+      {
+        $unwind: "$designerProducts"
+       },
+       {
+        $lookup: {
+          from: "orders",
+          localField: "designerProducts._id",
+          foreignField: "products.productId",
+          as: "productOrders"
+        }
+       },
+       
+    ])
+
+
+    const comments = await User.aggregate([
+      {
+        $match: {
+          _id: user._id
+        }
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "designerId",
+          as: "designerProducts"
+        }
+      },
+      {
+        $unwind: "$designerProducts"
+      },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "designerProducts._id",
+          foreignField: "targetId",
+          as: "productComments"
+        }
+      }
+    ])
+
+    const ratings = await User.aggregate([
+      {
+        $match: {_id: user._id} 
+      },
+      {
+        $lookup : {
+          from: "products",
+          localField: "_id",
+          foreignField: "designerId",
+          as: "designerProducts"    
+        }
+      },
+      {
+        $unwind: "$designerProducts"
+      },
+      {
+        $lookup: {
+          from: "ratings",
+          localField: "designerProducts._id",
+          foreignField: "productId",
+          as: "productRatings"
+        }
+      }
+    ])
+
+    res.json({success: true, sales, orders, comments, ratings})
+  } catch(error) {
+    return res.json({success: false, message: "error fetching products analytics"})
+  }
+}
 
 // Routes
 

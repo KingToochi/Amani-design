@@ -61,7 +61,7 @@ const Header = () => {
                 {/* Desktop Navigation - Hidden on mobile/tablet */}
                 <ul className="hidden lg:flex w-[50%] xl:w-[60%] justify-between items-center gap-4 xl:gap-8 text-sm xl:text-base">
                     <li>
-                        <Link to="/products">Store</Link>
+                        <Link to="/products">All Products</Link>
                     </li>
                     <li>
                         <Link to="/">Women</Link>
