@@ -772,7 +772,7 @@ app.get("/designer/productAnalytics", verifyToken, async(req, res) => {
   } catch(error) {
     return res.json({success: false, message: "error fetching products analytics"})
   }
-}
+})
 
 // Routes
 
