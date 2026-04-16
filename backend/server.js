@@ -218,7 +218,7 @@ app.post("/users/registration", async (req, res) => {
 });
 
     if (exists) return res.status(400).json({ message: "Email or username already exists" });
-
+    let hashedPassword = await bcrypt.hash(password, 10)
     const newUser = new User({
       joinedAt: new Date().toISOString(),
       fname,
@@ -235,7 +235,7 @@ app.post("/users/registration", async (req, res) => {
       proofOfAddress: "",
       MeansOfIdentification: "",
       identificationNumber: "",
-      password,
+      password: hashedPassword,
       status: "approved",
       role: "user",
     });
@@ -266,6 +266,7 @@ app.post("/users/registration/designers",uploadImage.fields([
 
 let profilePictureUrl = ""
 let proofOfAddressUrl = ""
+let hashedPassword = await bcrypt.hash(password, 10)
 
 if (req.files.profilePicture) {
   const cloudRes = await cloudinary.uploader.upload(req.files.profilePicture[0].path, {
@@ -290,7 +291,7 @@ if (req.files.proofOfAddress) {
         username,
         phoneNumber,
         dob,
-        password, 
+        password: hashedPassword,
         houseNumber,
         streetName,
         bankName,
@@ -485,7 +486,7 @@ const generateToken = async (email) => {
       _id: user._id,
       email: user.email,
       username: user.username,
-      status: user.status
+      status: user.role,
     },
     SECRET_KEY,
     { expiresIn: "1h" }
@@ -649,7 +650,7 @@ app.get("/data", verifyToken, async(req, res) => {
     const pendingOrders = await Orders.find({orderStatus: "pending"}).sort({createdAt:-1})
     const deliveredOrders = await Orders.find({orderStatus: "delivered"}).sort({createdAt:-1})
 
-    return res.json({success: true, users, sales, orders, products, topSellers, topBuyers, pendingApprovals pendingOrders, deliveredOrders})
+    return res.json({success: true, users, sales, orders, products, topSellers, topBuyers, pendingApprovals, pendingOrders, deliveredOrders})
 
   }catch(error){
       return res.json({success: false, message: "error fetching data"})

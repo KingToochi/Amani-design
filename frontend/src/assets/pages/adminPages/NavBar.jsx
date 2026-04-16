@@ -38,7 +38,7 @@ const NavBar = () => {
             return;
         }
 
-        if (auth.status !== "admin") {
+        if (auth.role !== "admin") {
             navigate("/admin-login");   
             return;
         }

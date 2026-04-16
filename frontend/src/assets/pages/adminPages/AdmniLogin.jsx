@@ -55,7 +55,7 @@ const handleSubmit = async (e) => {
                 id: decoded._id,
                 email: decoded.email,
                 username: decoded.username,
-                status: decoded.status,
+                role: decoded.role,
                 exp: decoded.exp,
                 iat: decoded.iat,
             });

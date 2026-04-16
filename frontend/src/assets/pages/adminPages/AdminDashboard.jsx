@@ -28,11 +28,11 @@ const AdminDashboard = () => {
             return;
         }
 
-        if (auth.status !== "admin") {
+        if (auth.role !== "admin") {
             navigate("/unauthorized");
             return;
         }
-        if (auth.status !== "admin") {
+        if (auth.role !== "admin") {
             navigate("/unauthorized");
             return;
         }

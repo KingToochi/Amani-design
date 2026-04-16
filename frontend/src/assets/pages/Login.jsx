@@ -38,7 +38,7 @@ const Login = () => {
                     id : decoded.id,
                     email: decoded.email,
                     username: decoded.username,
-                    status: decoded.status,
+                    role: decoded.role,
                     exp: decoded.exp,
                     iat: decoded.iat
 
