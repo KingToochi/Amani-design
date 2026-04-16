@@ -22,7 +22,7 @@ import Unauthorized from "./assets/pages/Unauthorized"
 import HomePage from "./assets/pages/public/HomePage";
 import CheckOut from "./assets/pages/marketPlace/CheckOutPage";
 import PaymentCallback from "./assets/components/PaymentCallback";
-// import AdminDashboard from "./assets/pages/AdminPages/AdminDashboard"
+import AdminDashboard from "./assets/pages/adminPages/AdminDashboard"
 import AdminLayout from "./assets/pages/adminPages/AdminLayout";
 import AdminLogin from "./assets/pages/adminPages/AdmniLogin";
 
@@ -54,7 +54,7 @@ function App() {
 
         <Route element={<ProtectedRoute allowedRole={"admin"}/>}>
           <Route path="/admin" element={<AdminLayout />} >
-            {/* <Route index element={<AdminDashboard />} /> */}
+            <Route index element={<AdminDashboard />} />
         </Route>
         </Route>
         
