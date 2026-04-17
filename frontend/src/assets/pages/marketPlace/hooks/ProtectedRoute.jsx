@@ -6,7 +6,7 @@ const ProtectedRoute = ({allowedRole}) => {
     const {auth} = useContext(AuthContext)
     const location = useLocation()
 
-    if (auth?.role?.includes(allowedRole)) {
+    if (auth?.role === allowedRole) {
         return <Outlet />
     } else if (auth?.id) {
         return <Navigate to="/" state={{from: location}} replace />
