@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin", "designer"],
     default: "user",
   },
-  isSubscribed: {
+  subscriber: {
     type: Boolean,
     default: false,
   },
