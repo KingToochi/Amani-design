@@ -1,16 +1,54 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import AddProduct from "./AddProduct";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { FaNairaSign } from "react-icons/fa6";
 import { BASE_URL } from "../../Url";
+import { AuthContext } from "../marketPlace/hooks/AuthProvider";
 
 const Products = () => {
     const [productList, setProductList] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [editProductById, setEditProductById] = useState(null)
     const url = BASE_URL
+    const {auth} = useContext(AuthContext)
+    const subscriber  = auth.subscriber
+    const status = auth.status
+    const postLimit = 0
+
+
+    if (auth.status === "pending") {
+
+
+        return(
+            <div>
+                <h1>
+                    Pending Approval
+                </h1>
+            </div>
+        )
+    }
+
+    const imageLimit = () => {
+        if (!auth.subscriber) {
+            postLimit = 5
+            return
+        }
+        if (auth.subscriptionPlan === "basic") {
+            postLimit = 20
+            return
+        }
+        if (auth.subscriptionPlan === "standard") {
+            postLimit = 50
+            return
+        }
+        if (auth.subscriptionPlan === "premium") {
+            postLimit = Infinity
+            return
+        }
+    }
+
     const fetchProduct = async () => {
         const token = localStorage.getItem("token")
         try{
@@ -32,7 +70,14 @@ const Products = () => {
         }, [])
 
         const handleAddProduct = () => {
+            imageLimit()
+            if (productList === postLimit)
+            return(
+                <h1>You have exceeded your limit, upgrade your subscription to be able to post more</h1>
+        ) 
+        else {
             setShowModal((prev) => (!prev))
+        }
         }
 
         const handleEdit = (id) => {
@@ -166,7 +211,7 @@ const Products = () => {
                             <Link to={`/productdetails/${product._id}`} className="cursor-pointer">
                                 <img src={product.productImage} 
                                 className="w-full object-cover rounded-xl
-                                " 
+                                 " 
                             />
                             </Link>
                         </div>
