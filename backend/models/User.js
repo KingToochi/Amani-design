@@ -30,6 +30,38 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin", "designer"],
     default: "user",
   },
+  isSubscribed: {
+    type: Boolean,
+    default: false,
+  },
+  subscribtionDetails: {
+    plan:{
+      type: String,
+      enum: ["basic", "standard", "premium"]
+
+    },
+    status: {
+      type: String,
+       enum: ["active", "past_due", "canceled", "trial"],
+       default: "trial",
+       required: true
+    },
+    startDate: {
+      type: Date,
+      default: Date.now,
+      required: true
+    },
+    expiryDate: {
+      type: Date,
+      default: Date.now,
+      required: true
+    },
+    interval: {
+      type: String,
+      enum: ["monthly", "yearly"],
+      required: true
+    }
+  },
   joinedAt: Date,
 });
 

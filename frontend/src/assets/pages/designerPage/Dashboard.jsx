@@ -11,7 +11,6 @@ const Dashboard = () => {
     const [comments, setComments] = useState({});
     const [ratings, setRatings] = useState({});
     const [loading, setLoading] = useState(true);
-
     const fetchData = async () => {
         try {
             if (!token) return;

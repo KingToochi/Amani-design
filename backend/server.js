@@ -488,6 +488,8 @@ const generateToken = async (email) => {
       email: user.email,
       username: user.username,
       role: user.role,
+      status: user.status,
+      isSubscribed: user.isSubscribed,
     },
     SECRET_KEY,
     { expiresIn: "1h" }
