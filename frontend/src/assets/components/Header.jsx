@@ -8,6 +8,8 @@ import { useState } from "react";
 import SearchBar from "./SearchBar";
 import Search from "../pages/marketPlace/SearchPage";
 import {BASE_URL} from "../Url";
+import { CartContext } from "../pages/marketPlace/hooks/CartContext";
+import { useContext } from "react";
 
 const Header = () => {
     const [dropDown, setDropDown] = useState(false);
@@ -15,6 +17,7 @@ const Header = () => {
     const [query, setQuery] = useState("")
     const [searchedProduct, setSearchedProduct] = useState([])
     const [showSearchedProduct, setShowSearchedProduct] = useState(false)
+    const [cart] = useContext(CartContext)
     const url = BASE_URL
      const handleChange = (e) => {
         setQuery(e.target.value)
@@ -115,7 +118,7 @@ const Header = () => {
                     <Link to="/profile"><FaRegUser className="text-base sm:text-lg cursor-pointer" /></Link>
                     <div className="relative">
                         <Link to="/cart"><MdOutlineShoppingBag className="text-base sm:text-lg cursor-pointer" /></Link>
-                        <span className="absolute -top-2 -right-2 bg-amber-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">0</span>
+                        <span className={`${cart.length == 0 && "hidden" } absolute -top-2 -right-2 bg-amber-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center`}>{cart.length}</span>
                     </div>
                 </div>
 

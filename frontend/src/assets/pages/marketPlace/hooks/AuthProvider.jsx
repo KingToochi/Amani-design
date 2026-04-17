@@ -32,6 +32,8 @@ const AuthProvider = ({ children }) => {
         email: decoded.email,
         username: decoded.username,
         role: decoded.role,
+        status: decoded.status,
+        subscriber: decoded.subscriber,
         exp: decoded.exp,
         iat: decoded.iat,
       });
