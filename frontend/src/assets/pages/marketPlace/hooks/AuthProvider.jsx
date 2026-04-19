@@ -34,6 +34,7 @@ const AuthProvider = ({ children }) => {
         role: decoded.role,
         status: decoded.status,
         subscriber: decoded.subscriber,
+        subScriptionPlan : decoded.subScriptionPlan,
         exp: decoded.exp,
         iat: decoded.iat,
       });
