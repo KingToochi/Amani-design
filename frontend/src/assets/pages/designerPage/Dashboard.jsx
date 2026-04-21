@@ -41,15 +41,43 @@ const Dashboard = () => {
         fetchData();
     }, [token]);
 
-    
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-lg">Loading dashboard...</div>
+            </div>
+        );
+    }
 
-
-return(
-    <div>
-        
-    </div>
-)
+    return (
+        <div className="p-6 bg-gray-100 min-h-screen">
+            <h1 className="text-3xl font-bold mb-6 text-center">Designer Dashboard</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold mb-2">Sales</h2>
+                    <p className="text-2xl font-bold text-green-600">{sales.total || 0}</p>
+                    <p className="text-sm text-gray-600">Total Sales</p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold mb-2">Orders</h2>
+                    <p className="text-2xl font-bold text-blue-600">{orders.total || 0}</p>
+                    <p className="text-sm text-gray-600">Total Orders</p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold mb-2">Comments</h2>
+                    <p className="text-2xl font-bold text-yellow-600">{comments.total || 0}</p>
+                    <p className="text-sm text-gray-600">Total Comments</p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold mb-2">Ratings</h2>
+                    <p className="text-2xl font-bold text-purple-600">{ratings.average || 0}</p>
+                    <p className="text-sm text-gray-600">Average Rating</p>
+                </div>
+            </div>
+        </div>
+    );
 }
+
 
 
 

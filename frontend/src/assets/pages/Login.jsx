@@ -36,14 +36,16 @@ const Login = () => {
                 localStorage.setItem("token", result.token);
                 const decoded = jwtDecode(result.token)
                 setAuth({
-                    id : decoded.id,
+                    id: decoded._id,
                     email: decoded.email,
                     username: decoded.username,
                     role: decoded.role,
+                    status: decoded.status,
+                    subscriber: decoded.subscriber,
+                    subScriptionPlan : decoded.subScriptionPlan,
                     exp: decoded.exp,
-                    iat: decoded.iat
-
-                }) 
+                    iat: decoded.iat,
+                });
                 navigate(from) 
             } else {
                 throw new Error(result.error)

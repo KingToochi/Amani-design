@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
+import ServerError from "../components/ServerError";
 
 const DesignerRegistration = () => {
     const url = BASE_URL
@@ -12,6 +13,7 @@ const DesignerRegistration = () => {
     const [passwordStrength, setPasswordStrength] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
+    const [serverError, setServerError] = useState(null)
     const [formData, setformData] = useState({
         fname : "",
         lname : "",
@@ -107,6 +109,10 @@ const DesignerRegistration = () => {
                     }
                 }catch(error){
                     console.log(error)
+                    setServerError(error)
+                    setTimeout(() => {
+                        setServerError(null)
+                    }, 5000)
                 }
             }
         }
@@ -126,6 +132,7 @@ const DesignerRegistration = () => {
                 });
             }
             if (emailRegex.test(value)) {
+                try {
                 let response = await fetch(`${url}/users/email`, {
                         method: "POST",
                         headers : {
@@ -144,6 +151,12 @@ const DesignerRegistration = () => {
                         return newErr;
                     });
                     }
+                } catch(error) {
+                    setServerError(error)
+                    setTimeout(() => {
+                        setServerError(null)
+                    }, 5000)
+                }
                     
             }
         }
@@ -230,9 +243,12 @@ const DesignerRegistration = () => {
                             email: decoded.email,
                             username: decoded.username,
                             role: decoded.role,
+                            status: decoded.status,
+                            subscriber: decoded.subscriber,
+                            subScriptionPlan : decoded.subScriptionPlan,
                             exp: decoded.exp,
                             iat: decoded.iat,
-                            });
+                        });;
                         navigate("/designer")
                     } else {
                         alert(data.message)
@@ -240,6 +256,7 @@ const DesignerRegistration = () => {
                     }
                 } catch(error){
                     console.log(error)
+                    setServerError(error)
                     setIsSubmitting(false)
                 }
             }else {
@@ -523,6 +540,7 @@ const DesignerRegistration = () => {
                 </button>
             </div>
             </form>
+            {serverError && <ServerError serverError = {serverError} />}
         </div>
     )
 }
