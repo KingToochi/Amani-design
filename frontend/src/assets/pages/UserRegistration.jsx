@@ -6,6 +6,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
+import ServerError from "../components/ServerError";
 
 const UserRegistration = () => {
     const url = BASE_URL
@@ -15,6 +16,7 @@ const UserRegistration = () => {
     const [showCPassword, setShowCPassword] = useState(false)
     const [isSubmiting, setIsSubmitting] = useState(false)
     const [passwordStrength, setPasswordStrength] = useState("")
+    const [serverError, setServerError] = useState(null)
 
     const [showMessage, setShowMessage] = useState({
         fname: false,
@@ -216,8 +218,13 @@ const UserRegistration = () => {
                     alert(data.message)
                     setIsSubmitting(false)
                 }
+                if(!data.success && data.message === "Server error") {
+                    setServerError({message: "Server error. Please try again later."})
+                    setIsSubmitting(false)
+                }     
             } catch(error){
                 console.log(error)
+                setServerError(error)
                          }
         }else {
             console.log("Form has errors:", error);

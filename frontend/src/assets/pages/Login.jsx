@@ -1,16 +1,17 @@
 import { useForm } from "react-hook-form";
 import logo from "../images/mainLogo.jpg";
 import Registration from "./DesignersRegistration";
-import { useState } from "react";
 import { BASE_URL } from "../Url";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
 import { jwtDecode } from "jwt-decode";
+import ServerError from "../components/ServerError"
 
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
+    const [serverError, setServerError] = useState(null)
     const {setAuth} = useContext(AuthContext)
     const currentUrl = window.location.href
     const navigate = useNavigate()
@@ -49,7 +50,10 @@ const Login = () => {
             }
         } catch(error) {
             console.log(error)
+            setServerError(error)
+             setTimeout(() => {setServerError(null)}, 5000)
         }
+        console.log(serverError)
     }
 
     const displayShowRegistrationModal = () => {
@@ -108,6 +112,7 @@ const Login = () => {
         md:text-2xl
         lg:gap-6
         ">
+            {serverError && <ServerError serverError={serverError} />}
             <button 
             className="w-full border-1 rounded-lg py-2 border-gray-100 cursor-pointer"
             >
@@ -156,7 +161,7 @@ const Login = () => {
                 <button
                 type="submit"
                 disabled= {isSubmitting}
-                className="w-full border-2px border-gray-600 rounded-lg bg-gray-600 text-gray-400 font-semibold py-2"
+                className="w-full border-2px border-gray-600 rounded-lg bg-gray-600 text-gray-400 font-semibold py-2 cursor-pointer"
                 >
                     {isSubmitting ? "login in ..." : "Log in" } 
                 </button>

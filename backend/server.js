@@ -218,7 +218,7 @@ app.post("/users/registration", async (req, res) => {
   ],
 });
 
-    if (exists) return res.status(400).json({ message: "Email or username already exists" });
+    if (exists) return res.status(400).json({success: false, message: "Email or username already exists" });
     let hashedPassword = await bcrypt.hash(password, 10)
     const newUser = new User({
       joinedAt: new Date().toISOString(),
@@ -248,7 +248,7 @@ app.post("/users/registration", async (req, res) => {
     res.status(201).json({ success: true, message: "User registered successfully",  token });
   } catch (err) {
     console.error("User registration error:", err); // <-- Add this if not alrea
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({success:false, message: "Server error" });
   }
 });
 
@@ -263,6 +263,17 @@ app.post("/users/registration/designers",uploadImage.fields([
     const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, bankName, accountNumber, identificationNumber, city, state} = req.body
   if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !bankName || !accountNumber || !identificationNumber || !city || !state ) {
   return res.json({message: "All fields required"})
+}
+
+const exists = await User.findOne({
+  $or: [
+    { email: new RegExp(`^${email}$`, "i") },
+    { username: new RegExp(`^${username}$`, "i") },
+  ],
+});
+
+if (exists) {
+  return res.json({success: false, message: "Email or username already exists"})
 }
 
 let profilePictureUrl = ""
@@ -321,7 +332,8 @@ if (req.files.proofOfAddress) {
 app.post("/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const isUsername = await User.findOne({ username: email });
+    const user = isUsername || await User.findOne({ email });
     if (!user) return res.status(404).json({ success: false, error: "User not found" });
     if (user.password !== password) return res.status(401).json({ success: false, error: "Incorrect password" });
 
