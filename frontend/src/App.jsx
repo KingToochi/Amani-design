@@ -25,6 +25,7 @@ import PaymentCallback from "./assets/components/PaymentCallback";
 import AdminDashboard from "./assets/pages/adminPages/AdminDashboard"
 import AdminLayout from "./assets/pages/adminPages/AdminLayout";
 import AdminLogin from "./assets/pages/adminPages/AdmniLogin";
+import Dashboard from "./assets/pages/designerPage/Dashboard";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         </Route> */}
 
         <Route path="/designer" element={<DesignerLayout/>}>
+          <Route index element={<Dashboard />} />
           <Route path="product" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />

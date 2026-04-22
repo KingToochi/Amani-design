@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import AuthProvider from "../marketPlace/hooks/AuthProvider";  
+import { AuthContext } from "../marketPlace/hooks/AuthProvider";  
 import {BASE_URL} from "../../Url";
 
 const Dashboard = () => {
     const url = BASE_URL;
-    const { auth } = useContext(AuthProvider);
+    const { auth } = useContext(AuthContext);
     const token = localStorage.getItem("token");
     const [sales, setSales] = useState({});
     const [orders, setOrders] = useState({});
