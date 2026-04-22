@@ -381,7 +381,7 @@ app.post("/users/username", async (req, res) => {
   try {
     const { username } = req.body;
     console.log(req.body)
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({ username: username.toLowerCase() });
     if (!user) return res.json({ status: "free", message: "Username available" });
     res.json({ status: "exists", message: "Username already taken" });
   } catch (err) {
@@ -507,11 +507,11 @@ const generateToken = async (email) => {
       username: user.username,
       role: user.role,
       status: user.status,
-      subscriber: user.subscribed,
-      subsriptionPlan : user.subscriptionDetails.plan,
-      subcriptionStatus : user.subscriptionDetails.status,
-      subscriptionStartDate: user.subscriptionDetails.startDate,
-      subscriptionExpiryDate: user.subscriptionDetails.expiryDate,
+      subscriber: user.subscriber,
+      subsriptionPlan : user?.subscriptionDetails.plan,
+      subcriptionStatus : user?.subscriptionDetails.status,
+      subscriptionStartDate: user?.subscriptionDetails.startDate,
+      subscriptionExpiryDate: user?.subscriptionDetails.expiryDate,
 
     },
     SECRET_KEY,

@@ -34,28 +34,30 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  subscribtionDetails: {
+  subscriptionDetails: {
     plan:{
       type: String,
-      enum: ["basic", "standard", "premium"]
+      enum: ["none", "basic", "standard", "premium"],
+      default: "none",
 
     },
     status: {
       type: String,
-       enum: ["active", "past_due", "canceled", "trial"],
-       default: "trial",
+       enum: ["active", "past_due", "canceled", "trial", "inactive"],
+       default: "inactive",
     },
     startDate: {
       type: Date,
-      default: Date.now,
+      default: null,
     },
     expiryDate: {
       type: Date,
-      default: Date.now,
+      default: null,
     },
     interval: {
       type: String,
-      enum: ["monthly", "yearly"],
+      enum: ["none", "monthly", "yearly"],
+      default: "none",
     }
   },
   joinedAt: Date,
