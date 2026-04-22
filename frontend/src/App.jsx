@@ -44,13 +44,19 @@ function App() {
           <Route path="/payment-callback" element={<PaymentCallback />} />
           <Route path="/admin-login" element={<AdminLogin />} />
         </Route>
-        <Route element={<ProtectedRoute allowedRole={"designer"}/>}>
+        {/* <Route element={<ProtectedRoute allowedRole={"designer"}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>
           <Route path="product" element={<Products/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />
         </Route> 
-        </Route>
+        </Route> */}
+
+        <Route path="/designer" element={<DesignerLayout/>}>
+          <Route path="product" element={<Products/>} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="productdetails/:id" element={<ProductDetails />} />
+        </Route> 
 
         <Route element={<ProtectedRoute allowedRole={"admin"}/>}>
           <Route path="/admin" element={<AdminLayout />} >
