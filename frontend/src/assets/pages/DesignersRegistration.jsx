@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
 import ServerError from "../components/ServerError";
 
+
 const DesignerRegistration = () => {
     const url = BASE_URL
     const navigate = useNavigate()
@@ -35,6 +36,7 @@ const DesignerRegistration = () => {
         cpassword: "",
     })
     const [error, setError] = useState({})
+    const [successMessage, setSuccessMessage] = useState({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const formInputValidation = async(event) => {
         const {name, id, value, files} = event.target
@@ -100,7 +102,13 @@ const DesignerRegistration = () => {
                     if (data.status === "exists") {
                         console.log(data.message)
                         setError(prev => ({...prev, [id]: data.message}))
+                        setSuccessMessage(prev => {
+                            let newMsg = {...prev}
+                            delete newMsg.username
+                            return newMsg
+                        })  
                     }else {
+                        setSuccessMessage(prev => ({...prev, [id]: data.message}))
                         setError(prev => {
                             let newErr = {...prev}
                             delete newErr.username
@@ -144,7 +152,13 @@ const DesignerRegistration = () => {
 
                     if (data.status === "exist") {
                         setError(prev => ({...prev, [id]: data.message}))
+                        setSuccessMessage(prev => {
+                            let newMsg = {...prev}
+                            delete newMsg.username
+                            return newMsg
+                        })  
                     } else {
+                        setSuccessMessage(prev => ({...prev, [id]: data.message}))
                         setError(prev => {
                         const newErr = { ...prev };
                         delete newErr.email;
@@ -320,6 +334,7 @@ const DesignerRegistration = () => {
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
                     />
                     <h1 className="text-red-300">{error?.email}</h1>
+                    <h1 className="text-green-500">{successMessage?.email}</h1>
                 </div>
                 <div
                 className="flex flex-col gap-2"
@@ -331,6 +346,7 @@ const DesignerRegistration = () => {
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
                     />
                     <h1 className="text-red-300">{error?.username}</h1>
+                    <h1 className="text-green-500">{successMessage?.username}</h1>
                 </div>
                 <div
                 className="flex flex-col gap-2"

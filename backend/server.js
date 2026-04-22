@@ -219,13 +219,15 @@ app.post("/users/registration", async (req, res) => {
 });
 
     if (exists) return res.status(400).json({success: false, message: "Email or username already exists" });
+    const mainUsername = username.toLowerCase()
+    const mainEmail = email.toLowerCase()
     let hashedPassword = await bcrypt.hash(password, 10)
     const newUser = new User({
       joinedAt: new Date().toISOString(),
       fname,
       lname,
-      username,
-      email,
+      username : mainUsername,
+      email : mainEmail,
       phoneNumber: "",
       dob: "",
       profilePicture: "",
@@ -275,6 +277,8 @@ const exists = await User.findOne({
 if (exists) {
   return res.json({success: false, message: "Email or username already exists"})
 }
+const mainUsername = username.toLowerCase()
+const mainEmail = email.toLowerCase()
 
 let profilePictureUrl = ""
 let proofOfAddressUrl = ""
@@ -299,8 +303,8 @@ if (req.files.proofOfAddress) {
        const newUser = new User({
         fname,
         lname,
-        email,
-        username,
+        email : mainEmail,
+        username : mainUsername,
         phoneNumber,
         dob,
         password: hashedPassword,
@@ -353,7 +357,9 @@ app.post("/users/login/admin", async (req, res) => {
   try{
     const { email, password } = req.body;
 
-    const user = await User.findOne({email: email});
+    const isUsername = await User.findOne({ username: email.toLowerCase() });
+
+    const user = await User.findOne({ email: email.toLowerCase() }) || isUsername;
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
     const hashedPassword = user.password
     console.log(hashedPassword)

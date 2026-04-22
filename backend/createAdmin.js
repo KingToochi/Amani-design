@@ -7,8 +7,9 @@ import connectDB from "./db.js"
 dotenv.config();    
 connectDB();
 const createAdmin = async () => {
-    const existingAdmin = await User.findOne({ email: process.env.ADMIN_EMAIL });
-    if (existingAdmin) {
+    const existingUsername = await User.findOne({ username: process.env.ADMIN_USERNAME.toLowerCase()});
+    const existingEmail = await User.findOne({ email: process.env.ADMIN_EMAIL.toLowerCase() });
+    if (existingUsername || existingEmail) {
         console.log("Admin user already exists");
         return;
     }
@@ -17,10 +18,10 @@ const createAdmin = async () => {
     const adminUser = new User({
         fname: "Toochukwu",
         lname: "Umoke",
-        username: "KingTheAdmin",
+        username: process.env.ADMIN_USERNAME.toLowerCase(),
         phoneNumber: "+2349031183272",
-        dob: new Date("1990-01-01"),
-        email: process.env.ADMIN_EMAIL,
+        dob: new Date("1996-05-22"),
+        email: process.env.ADMIN_EMAIL.toLowerCase(),
         password: hashedPassword,
         status: "admin",
         joinedAt: new Date(),
