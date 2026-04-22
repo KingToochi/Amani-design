@@ -375,7 +375,7 @@ app.post("/users/username", async (req, res) => {
   try {
     const { username } = req.body;
     console.log(req.body)
-    const user = await User.findOne({ username: username.toLowerCase() });
+    const user = await User.findOne({ username: username });
     if (!user) return res.json({ status: "free", message: "Username available" });
     res.json({ status: "exists", message: "Username already taken" });
   } catch (err) {

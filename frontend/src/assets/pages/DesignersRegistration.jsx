@@ -253,6 +253,10 @@ const DesignerRegistration = () => {
                     } else {
                         alert(data.message)
                         setIsSubmitting(false)
+                        setServerError(data.message)
+                        setTimeout(() => {
+                            setServerError(null)
+                        }, 5000)
                     }
                 } catch(error){
                     console.log(error)
@@ -263,7 +267,17 @@ const DesignerRegistration = () => {
                 console.log("Form has errors:", error);
                 setIsSubmitting(false)
                 console.log(error)
+                setServerError(error)
+                setTimeout(() => {
+                    setServerError(null)
+                }, 5000)
             }
+        }
+
+        if (serverError) {
+            return(
+                <ServerError serverError={serverError} />
+            )
         }
 
     return(
@@ -540,7 +554,6 @@ const DesignerRegistration = () => {
                 </button>
             </div>
             </form>
-            {serverError && <ServerError serverError = {serverError} />}
         </div>
     )
 }
