@@ -695,120 +695,120 @@ app.get("/data", verifyToken, async(req, res) => {
 
 })
 
-app.get("/designer/productAnalytics", verifyToken, async(req, res) => {
-  const auth = req.user
-  try {
-    const user = await User.findOne({_id: auth._id})
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
-    if (user.role !== "designer" || auth.role !== "designer") return res.status(403).json({ success: false, message: "Access denied" });
+// app.get("/designer/productAnalytics", verifyToken, async(req, res) => {
+//   const auth = req.user
+//   try {
+//     const user = await User.findOne({_id: auth._id})
+//     if (!user) return res.status(404).json({ success: false, message: "User not found" });
+//     if (user.role !== "vendor" && user.role !== "designer") return res.status(403).json({ success: false, message: "Access denied" });
 
-    const  sales = await user.aggregate([
-      {
-        $match: {_id: user._id}
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "designerId",
-          as: "designerProducts"
-        }
-      },
-      { $unwind: "$designerProducts" },
-      {
-        $lookup: {
-          from: "sales",
-          localField: "designerProducts._id",
-          foreignField: "productId",
-          as: "productSales"
-        }
-      }
-    ])
+//     const  sales = await User.aggregate([
+//       {
+//         $match: {_id: user._id}
+//       },
+//       {
+//         $lookup: {
+//           from: "products",
+//           localField: "_id",
+//           foreignField: "designerId",
+//           as: "designerProducts"
+//         }
+//       },
+//       { $unwind: "$designerProducts" },
+//       {
+//         $lookup: {
+//           from: "sales",
+//           localField: "designerProducts._id",
+//           foreignField: "productId",
+//           as: "productSales"
+//         }
+//       }
+//     ])
 
-    const orders = await User.aggregate([
-      {
-        $match: {_id: user._id}
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "designerId",
-          as: "designerProducts"
-        }
-      },
-      {
-        $unwind: "$designerProducts"
-       },
-       {
-        $lookup: {
-          from: "orders",
-          localField: "designerProducts._id",
-          foreignField: "products.productId",
-          as: "productOrders"
-        }
-       },
+//     const orders = await User.aggregate([
+//       {
+//         $match: {_id: user._id}
+//       },
+//       {
+//         $lookup: {
+//           from: "products",
+//           localField: "_id",
+//           foreignField: "designerId",
+//           as: "designerProducts"
+//         }
+//       },
+//       {
+//         $unwind: "$designerProducts"
+//        },
+//        {
+//         $lookup: {
+//           from: "orders",
+//           localField: "designerProducts._id",
+//           foreignField: "products.productId",
+//           as: "productOrders"
+//         }
+//        },
        
-    ])
+//     ])
 
 
-    const comments = await User.aggregate([
-      {
-        $match: {
-          _id: user._id
-        }
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "designerId",
-          as: "designerProducts"
-        }
-      },
-      {
-        $unwind: "$designerProducts"
-      },
-      {
-        $lookup: {
-          from: "comments",
-          localField: "designerProducts._id",
-          foreignField: "targetId",
-          as: "productComments"
-        }
-      }
-    ])
+//     const comments = await User.aggregate([
+//       {
+//         $match: {
+//           _id: user._id
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: "products",
+//           localField: "_id",
+//           foreignField: "designerId",
+//           as: "designerProducts"
+//         }
+//       },
+//       {
+//         $unwind: "$designerProducts"
+//       },
+//       {
+//         $lookup: {
+//           from: "comments",
+//           localField: "designerProducts._id",
+//           foreignField: "targetId",
+//           as: "productComments"
+//         }
+//       }
+//     ])
 
-    const ratings = await User.aggregate([
-      {
-        $match: {_id: user._id} 
-      },
-      {
-        $lookup : {
-          from: "products",
-          localField: "_id",
-          foreignField: "designerId",
-          as: "designerProducts"    
-        }
-      },
-      {
-        $unwind: "$designerProducts"
-      },
-      {
-        $lookup: {
-          from: "ratings",
-          localField: "designerProducts._id",
-          foreignField: "productId",
-          as: "productRatings"
-        }
-      }
-    ])
+//     const ratings = await User.aggregate([
+//       {
+//         $match: {_id: user._id} 
+//       },
+//       {
+//         $lookup : {
+//           from: "products",
+//           localField: "_id",
+//           foreignField: "designerId",
+//           as: "designerProducts"    
+//         }
+//       },
+//       {
+//         $unwind: "$designerProducts"
+//       },
+//       {
+//         $lookup: {
+//           from: "ratings",
+//           localField: "designerProducts._id",
+//           foreignField: "productId",
+//           as: "productRatings"
+//         }
+//       }
+//     ])
 
-    res.json({success: true, sales, orders, comments, ratings})
-  } catch(error) {
-    return res.json({success: false, message: "error fetching products analytics"})
-  }
-})
+//     res.json({success: true, sales, orders, comments, ratings})
+//   } catch(error) {
+//     return res.json({success: false, message: "error fetching products analytics"})
+//   }
+// })
 
 // Routes
 
@@ -819,4 +819,156 @@ app.get("/designer/productAnalytics", verifyToken, async(req, res) => {
 
 
 // ---- Start Server ----
+
+
+app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
+  try {
+    const auth = req.user;
+
+    const user = await User.findById(auth._id).select("_id role");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    if (user.role !== "vendor" && user.role !== "designer") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied"
+      });
+    }
+
+    // get all designer products
+    const products = await Product.find(
+      { designerId: user._id },
+      { _id: 1 }
+    );
+
+    const productIds = products.map(item => item._id);
+
+    if (productIds.length === 0) {
+      return res.json({
+        success: true,
+        sales: {
+          totalSales: 0,
+          totalRevenue: 0
+        },
+        orders: {
+          totalOrders: 0
+        },
+        comments: {
+          totalComments: 0
+        },
+        ratings: {
+          totalRatings: 0,
+          averageRating: 0
+        }
+      });
+    }
+
+    const [
+      salesData,
+      ordersData,
+      commentsData,
+      ratingsData
+    ] = await Promise.all([
+
+      // SALES
+      Sale.aggregate([
+        {
+          $match: {
+            productId: { $in: productIds }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalSales: { $sum: 1 },
+            totalRevenue: { $sum: "$amount" }
+          }
+        }
+      ]),
+
+      // ORDERS
+      Order.aggregate([
+        {
+          $match: {
+            "products.productId": { $in: productIds }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalOrders: { $sum: 1 }
+          }
+        }
+      ]),
+
+      // COMMENTS
+      Comment.aggregate([
+        {
+          $match: {
+            targetId: { $in: productIds }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalComments: { $sum: 1 }
+          }
+        }
+      ]),
+
+      // RATINGS
+      Rating.aggregate([
+        {
+          $match: {
+            productId: { $in: productIds }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalRatings: { $sum: 1 },
+            averageRating: { $avg: "$rating" }
+          }
+        }
+      ])
+    ]);
+
+    res.json({
+      success: true,
+
+      sales: salesData[0] || {
+        totalSales: 0,
+        totalRevenue: 0
+      },
+
+      orders: ordersData[0] || {
+        totalOrders: 0
+      },
+
+      comments: commentsData[0] || {
+        totalComments: 0
+      },
+
+      ratings: ratingsData[0] || {
+        totalRatings: 0,
+        averageRating: 0
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error fetching product analytics"
+    });
+  }
+});
+
 server.listen(4000, () => console.log("Server running on port 4000"));

@@ -99,7 +99,7 @@ const Header = ({userData}) => {
                                     className="font-[abril] font-normal text-base
                                     sm:text-xl
                                     "
-                                    >{userData.fname + " " + userData.lname}</h1>
+                                    >{userData?.fname + " " + userData?.lname}</h1>
                                     <h1
                                     className="font-[abril] font-light text-gray-400 text-lg
                                     sm:text-xl

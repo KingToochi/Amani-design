@@ -17,6 +17,7 @@ const Layout = () => {
                 }   
             });
             const data = await response.json();
+            console.log(data)
             setUserData(data.userData)
             console.log(data.userData)
         }catch(error){
