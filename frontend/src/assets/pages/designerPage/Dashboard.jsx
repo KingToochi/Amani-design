@@ -53,15 +53,15 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchData();
-    }, [token, auth]);
+    }, [token]);
 
-    // if (auth.status === "pending") {
-    //     return (
-    //         <div className="flex justify-center items-center h-screen">
-    //             <div className="text-lg">Your account is pending approval.</div>
-    //         </div>
-    //     );
-    // }
+    if (auth.status === "pending") {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-lg">Your account is pending approval.</div>
+            </div>
+        );
+    }
 
     if (auth.status === "rejected") {
         return (
@@ -80,9 +80,9 @@ const Dashboard = () => {
         );
     }
 
-    if (serverError) {
-        return <ServerError serverError={serverError} />;
-    }
+    // if (serverError) {
+    //     return <ServerError serverError={serverError} />;
+    // }
 
     return (
         <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">

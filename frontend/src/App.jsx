@@ -55,7 +55,7 @@ function App() {
 
         <Route path="/designer" element={<DesignerLayout/>}>
           <Route index element={<Dashboard />} />
-          <Route path="product" element={<Products/>} />
+          <Route path="products" element={<Product/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />
         </Route> 

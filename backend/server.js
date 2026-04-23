@@ -69,23 +69,20 @@ app.get("/products", async (req, res) => {
 
 // get products by designer id 
 
-app.get("/products/designer", async (req, res) => {
+app.get("/products/designer",verifyToken, async (req, res) => {
+  const auth = req.user
   try{
-    const authHeader = req.headers.authorization
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "Unauthorized" });
+    const user = await User.findOne({_id: auth._id})
+    if (!user) {
+      return res.status(404).json({success: false, message: "User not found" });
     }
-
-    const token = authHeader.split(" ")[1]
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    console.log(decoded.id)
-    const products = await Product.find({designerId: decoded.id})
-    if(products) {
-      console.log("products found")
+    if (user.role !== "vendor" && user.role !== "designer") {
+      return res.status(403).json({success: false, message: "Access denied. Only vendors and designers can view their products." });
     }
-    return res.status(200).json(products);
+    const products = await Product.find({designerId: auth._id})
+    return res.status(200).json({success: false, products: products});
   }catch(error){
-     return res.status(401).json({ message: "Invalid or expired token" });
+     return res.status(401).json({ success: false, message: "error fetching prodduct"});
   }
 })
 

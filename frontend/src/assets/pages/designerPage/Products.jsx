@@ -6,57 +6,29 @@ import { MdDeleteForever } from "react-icons/md";
 import { FaNairaSign } from "react-icons/fa6";
 import { BASE_URL } from "../../Url";
 import { AuthContext } from "../marketPlace/hooks/AuthProvider";
+import ServerError from "../../components/ServerError";
 
 const Products = () => {
     const [productList, setProductList] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [editProductById, setEditProductById] = useState(null)
+    const [serverError, setServerError] = useState  (null)
     const url = BASE_URL
     const {auth} = useContext(AuthContext)
     const subscriber  = auth.subscriber
     const status = auth.status
     const postLimit = 0
+    const token = localStorage.getItem("token")
 
-
-    if (auth.status === "pending") {
-
-
-        return(
-            <div>
-                <h1>
-                    Pending Approval
-                </h1>
-            </div>
-        )
-    }
-
-    const imageLimit = () => {
-        if (!auth.subscriber) {
-            postLimit = 5
-            return
-        }
-        if (auth.subscriptionPlan === "basic") {
-            postLimit = 20
-            return
-        }
-        if (auth.subscriptionPlan === "standard") {
-            postLimit = 50
-            return
-        }
-        if (auth.subscriptionPlan === "premium") {
-            postLimit = Infinity
-            return
-        }
-    }
 
     const fetchProduct = async () => {
-        const token = localStorage.getItem("token")
         try{
             let response = await fetch (`${url}/products/designer`, {
                 method : "GET",
                 headers : {Authorization : `Bearer ${token}`}
             })
             const products = await response.json()
+            
             setProductList(products)
             console.log(products)
         }catch(error) {
@@ -70,14 +42,8 @@ const Products = () => {
         }, [])
 
         const handleAddProduct = () => {
-            imageLimit()
-            if (productList === postLimit)
-            return(
-                <h1>You have exceeded your limit, upgrade your subscription to be able to post more</h1>
-        ) 
-        else {
+
             setShowModal((prev) => (!prev))
-        }
         }
 
         const handleEdit = (id) => {
@@ -126,8 +92,6 @@ const Products = () => {
                     console.log(error)
                 }
         }
-
-     
 
         const displayAddProductModal = () => {
             if (showModal) {

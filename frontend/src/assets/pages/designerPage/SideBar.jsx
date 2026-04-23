@@ -59,7 +59,7 @@ const SideBar = ({className, userData}) => {
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <FaPalette />
-                        <h1>My Designs</h1>
+                        <h1>My Products</h1>
                     </Link>
                 </li>
                 <li>

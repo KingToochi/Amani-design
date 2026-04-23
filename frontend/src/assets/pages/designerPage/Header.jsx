@@ -153,7 +153,7 @@ const Header = ({userData}) => {
                                     "
                                     >
                                         <FaPalette/>
-                                        <h2>My Designs</h2>
+                                        <h2>My Products</h2>
                                     </Link>
                                 </li>
                                 <li>
