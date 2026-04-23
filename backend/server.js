@@ -339,15 +339,12 @@ app.post("/users/login", async (req, res) => {
     const isUsername = await User.findOne({ username: email });
     const user = isUsername || await User.findOne({ email });
     if (!user) return res.status(404).json({ success: false, error: "User not found" });
-    if (user.password !== password) return res.status(401).json({ success: false, error: "Incorrect password" });
-
+    const hashedPassword = user.password
+    const ismatch = await bcrypt.compare(password, hashedPassword)
+    if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
     const token = await generateToken(email)
 
-    const reply = user.role === "designer"
-      ? { success: true, redirect: "/designer/products", token }
-      : { success: true, redirect: "/", token };
-
-    res.json(reply);
+    res.json({ success: true, message: "User login successful", token });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
