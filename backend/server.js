@@ -320,7 +320,7 @@ if (req.files.proofOfAddress) {
         state,
         country: "Nigeria",
         shippingAddress: `${houseNumber} ${streetName}, ${city}, ${state}`,
-        role: "designer",
+        role: "vendor",
       });
       await newUser.save();
       const token = await generateToken(email)
@@ -336,8 +336,8 @@ if (req.files.proofOfAddress) {
 app.post("/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const isUsername = await User.findOne({ username: email });
-    const user = isUsername || await User.findOne({ email });
+    const isUsername = await User.findOne({ username: email.toLowerCase() });
+    const user = isUsername || await User.findOne({ email: email.toLowerCase()  });
     if (!user) return res.status(404).json({ success: false, error: "User not found" });
     const hashedPassword = user.password
     const ismatch = await bcrypt.compare(password, hashedPassword)
@@ -585,8 +585,16 @@ app.get("/users", verifyToken, async(req, res) => {
     try {
       const user = await User.findOne({_id : auth._id})
       if (user) {
+       const userDetails = {
+          lname: user.lname,  
+          fname: user.fname,  
+          proilePicture: user.profilePicture,
+          username: user.username,
+          role: user.role,
+          typeOfRole: user.typeOfRole
+        }
         console.log("i found the user")
-        return res.status(200).json({success:true, message: "user details found", userData: user})
+        return res.status(200).json({success:true, message: "user details found", userData: userDetails})
   } else {
     console.log("i didnt found the user")
     return res.status(404).json({success:false, message:"user details not found"})
@@ -610,11 +618,16 @@ app.get("/data", verifyToken, async(req, res) => {
     const orders = await Orders.find().sort({createdAt:-1})
     const products = await Product.find()
 
-    const pendingApprovals = await User.find({role: "pending_designer"})
+    const pendingApprovals = await User.find(
+      {$and : [
+        {role: "vendor"},
+        {status: "pending"}
+      ]}
+    )
 
     const topSellers = await User.aggregate([
       {
-        $match: {"role": "designer"}
+        $match: {"role": "vendor"}
       },
       {
         $lookup: {
@@ -652,7 +665,7 @@ app.get("/data", verifyToken, async(req, res) => {
 
     const topBuyers = await User.aggregate([
       {
-        $match: {"role": "customer"}
+        $match: {"role": "user"}
       },
       {
         $lookup: {

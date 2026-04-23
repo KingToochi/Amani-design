@@ -27,8 +27,13 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin", "designer"],
+    enum: ["user", "admin", "vendor"],
     default: "user",
+  },
+  typeOfVendor: {
+    type: String,
+    enum : ["manufacturer", "wholesaler", "retailer"],
+    default: null,
   },
   subscriber: {
     type: Boolean,
