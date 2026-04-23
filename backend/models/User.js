@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum : ["manufacturer", "wholesaler", "retailer"],
     default: null,
+    required : true,
   },
   subscriber: {
     type: Boolean,

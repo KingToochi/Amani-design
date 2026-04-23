@@ -262,8 +262,8 @@ app.post("/users/registration/designers",uploadImage.fields([
   console.log("FILES:", req.files)
 
   try {
-    const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, bankName, accountNumber, identificationNumber, city, state} = req.body
-  if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !bankName || !accountNumber || !identificationNumber || !city || !state ) {
+    const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state} = req.body
+  if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !typeOfVendor || !bankName || !accountNumber || !identificationNumber || !city || !state ) {
   return res.json({message: "All fields required"})
 }
 
@@ -310,6 +310,7 @@ if (req.files.proofOfAddress) {
         password: hashedPassword,
         houseNumber,
         streetName,
+        typeOfVendor,
         bankName,
         accountNumber,
         meansOfIdentification,
@@ -588,7 +589,7 @@ app.get("/users", verifyToken, async(req, res) => {
        const userDetails = {
           lname: user.lname,  
           fname: user.fname,  
-          proilePicture: user.profilePicture,
+          profilePicture: user.profilePicture,
           username: user.username,
           role: user.role,
           typeOfRole: user.typeOfRole
@@ -699,7 +700,7 @@ app.get("/designer/productAnalytics", verifyToken, async(req, res) => {
   try {
     const user = await User.findOne({_id: auth._id})
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
-    if (user.role !== "designer") return res.status(403).json({ success: false, message: "Access denied" });
+    if (user.role !== "designer" || auth.role !== "designer") return res.status(403).json({ success: false, message: "Access denied" });
 
     const  sales = await user.aggregate([
       {

@@ -16,34 +16,34 @@ import ServerError from "../../components/ServerError";
 
 
 
-const Header = () => {
+const Header = ({userData}) => {
     
-    const [userData, setUserData] = useState([])
+    // const [userData, setUserData] = useState([])
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
     const [showMenu, setShowMenu] = useState(false)
     const [showSearchBar, setShowSearchBar] = useState(false)
     const [serverError, setServerError] = useState(null)
-    const url = BASE_URL
-    const token = localStorage.getItem("token")
-    const fetchUser = async () => {
-        try {
-            let response = await fetch(`${url}/users`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }   
-            });
-            const data = await response.json();
-            setUserData(data.userData)
-            console.log(data.userData)
-        }catch(error){
-            console.log(error)
-            setServerError(error)
+    // const url = BASE_URL
+    // const token = localStorage.getItem("token")
+    // const fetchUser = async () => {
+    //     try {
+    //         let response = await fetch(`${url}/users`, {
+    //             headers: {
+    //                 "Authorization": `Bearer ${token}`
+    //             }   
+    //         });
+    //         const data = await response.json();
+    //         setUserData(data.userData)
+    //         console.log(data.userData)
+    //     }catch(error){
+    //         console.log(error)
+    //         setServerError(error)
 
-        }
-    }
+    //     }
+    // }
 
     useEffect(() => {
-        fetchUser()
+        // fetchUser()
         const handleResize = () =>setIsMobile(window.innerWidth < 768)
         window.addEventListener("resize", handleResize)
 
@@ -88,9 +88,9 @@ const Header = () => {
                             <div
                             className="w-full flex flex-col items-center"
                             >
-                                <img src={logo} alt="amaniSky logo"
-                                className="w-[50px] h-[50px] rounded-[50%]
-                                sm:w-[100px] sm:h-[100px] rounded-[50%]"
+                                <img src={userData?.profilePicture} alt="Vendor Profile Picture"
+                                className="w-[40px] h-[40px] rounded-full
+                                sm:w-[80px] sm:h-[80px]"
                                 />
                                 <div
                                 className="flex flex-col items-center"
@@ -99,12 +99,12 @@ const Header = () => {
                                     className="font-[abril] font-normal text-base
                                     sm:text-xl
                                     "
-                                    >Toochi Umoke</h1>
+                                    >{userData.fname + " " + userData.lname}</h1>
                                     <h1
                                     className="font-[abril] font-light text-gray-400 text-lg
                                     sm:text-xl
                                     "
-                                    >Fashion Designer</h1>
+                                    >{userData?.typeOfRole}</h1>
                                 </div>
                             </div>
                             <ul
@@ -193,7 +193,12 @@ const Header = () => {
                         </div>
                     }
                 </div>
+                    <div className="w-[65%] flex gap-2 items-center">
+                        <img src={logo} alt="amaniSky logo"
+                        className="w-[50px] h-[50px] rounded-[50%]"
+                    />
                     <h1 className="text-lg font-semibold text-gray-50 sm:text-xl">{userData?.username}</h1>
+                    </div>
                 <div
                 className="w-[25%] flex gap-6 justify-around items-center"
                 >
@@ -221,16 +226,22 @@ const Header = () => {
             </div>
             :
             <div
-            className="w-full flex bg-stone-800 py-4 min-h-16 border-b border-stone-700"
+            className="w-full flex bg-stone-800 py-4 min-h-16 border-b border-stone-700 "
             >
                 <div
-                className="w-full flex items-center justify-between px-4"
+                className="w-[40%] flex items-center justify-start px-4 gap-4 
+                lg:w-[30%]
+                "
                 >
+                    <img src={logo} alt="amaniSky logo"
+                        className="w-[50px] h-[50px] rounded-[50%]
+                        "
+                    />
                     <h1 className="text-xl font-bold font-[abril] text-gray-50">{userData?.username}</h1>
-                    <div
-                    className="w-[35%] flex items-center justify-around px-2
-                    lg:w-[20%]
-                    "
+                </div>
+                <div
+                    className="w-[60%] flex items-center justify-center px-2 gap-4
+                    lg:w-[70%]"
                     >
                         <form onSubmit={onSubmit}
                         className="w-[90%] flex items-center pl-2 bg-gray-400/50 rounded-lg"
@@ -242,14 +253,13 @@ const Header = () => {
                                 />
                             </button>
                             <input type="search" placeholder="search"
-                            className="w-full h-[30px]  pl-2 text-2xl text-gray-100 font-medium font-[abril] focus:outline-none focus:text-gray-50"
+                            className="w-full h-[30px]  pl-2 px-2 py-4 text-2xl text-gray-100 font-medium font-[abril] focus:outline-none focus:text-gray-50"
                             />
                         </form>
                         <IoMdNotificationsOutline
                         className="text-xl text-gray-50"
                         />
                     </div>
-                </div>
             </div>
             }
         </header>

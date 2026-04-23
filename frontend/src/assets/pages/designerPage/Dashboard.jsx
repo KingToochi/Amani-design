@@ -14,7 +14,7 @@ const Dashboard = () => {
     const fetchData = async () => {
         try {
             if (!token) return;
-        if(auth.role !== "designer") return;
+        if(auth?.role !== "vendor" || auth?.role !== "designer") return;
 
         const productAnalytics = await fetch(`${url}/designer/productAnalytics`, {
             method: "GET",
@@ -28,12 +28,14 @@ const Dashboard = () => {
             setOrders(data.orders);
             setComments(data.comments);
             setRatings(data.ratings);
-             setLoading(false);
+            setLoading(false);
         }
         console.log(data);
 
         }catch(err){
 
+        }finally {
+            setLoading(false);
         }
     }
 

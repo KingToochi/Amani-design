@@ -9,7 +9,7 @@ import logo from "../../images/mainLogo.jpg"
 
 
 
-const SideBar = ({className}) => {
+const SideBar = ({className, userData}) => {
 
 
     return(
@@ -21,7 +21,7 @@ const SideBar = ({className}) => {
             <div
             className="w-full flex items-center gap-2"
             >
-                <img src={logo} alt="AmaniSky Logo"
+                <img src={userData?.proilePicture} alt="AmaniSky Logo"
                 className="w-[40px] h-[40px] rounded-[50%]"
                 />
                 <div
@@ -29,10 +29,10 @@ const SideBar = ({className}) => {
                 >
                     <h1
                     className="font-[abril] font-normal text-base"
-                    >Toochi Umoke</h1>
+                    >{userData?.fname + " " + userData?.lname}</h1>
                     <h1
                     className="font-[abril] font-light text-gray-400 text-lg"
-                    >Fashion Designer</h1>
+                    >{userData?.typeOfRole}</h1>
                 </div>
             </div>
             <ul 
