@@ -27,10 +27,12 @@ const Products = () => {
                 method : "GET",
                 headers : {Authorization : `Bearer ${token}`}
             })
-            const products = await response.json()
-            
-            setProductList(products)
-            console.log(products)
+            const data = await response.json()
+            if (!data.success) {
+                setServerError({ message: data.message });
+            }
+            setProductList(data.products)
+            console.log(data.products)
         }catch(error) {
             console.log(error)
         }
@@ -121,73 +123,73 @@ const Products = () => {
         }
 
 
-    return(
-        <>
-        {
-            (productList?.length < 1) 
-            ?
-            <div className="w-full min-h-screen flex flex-col items-center mt-6 gap-6">
-                <h1
-                className="text-lg font-semibold font-[abril] text-gray-700
-                sm:text-xl
-                "
-                >
-                    No product yet
-                </h1>
-                <button onClick={handleAddProduct}
-                className="w-auto border-2 border-gray-500 rounded-lg px-2 py-2 cursor-pointer"
-                >
-                    <Link 
-                    className="text-lg font-semibold font-[abril] text-gray-700
-                sm:text-2xl
-                "
-                    >
-                        Add Product
-                    </Link>
-                </button>
-            </div>
+    // return(
+    //     <>
+    //     {
+    //         (productList?.length < 1) 
+    //         ?
+    //         <div className="w-full min-h-screen flex flex-col items-center mt-6 gap-6">
+    //             <h1
+    //             className="text-lg font-semibold font-[abril] text-gray-700
+    //             sm:text-xl
+    //             "
+    //             >
+    //                 No product yet
+    //             </h1>
+    //             <button onClick={handleAddProduct}
+    //             className="w-auto border-2 border-gray-500 rounded-lg px-2 py-2 cursor-pointer"
+    //             >
+    //                 <Link 
+    //                 className="text-lg font-semibold font-[abril] text-gray-700
+    //             sm:text-2xl
+    //             "
+    //                 >
+    //                     Add Product
+    //                 </Link>
+    //             </button>
+    //         </div>
 
-            : 
-            <div
-            className="flex flex-col bg-gray-50 w-full py-4"
-            >
-                <div className="w-full flex justify-end ">
-                    <button
-                    onClick={handleAddProduct}
-                    className="mr-5 font-[abril] font-semibold w-auto px-2 py-2 rounded-lg border-2 cursor-pointer"
-                    >
-                        <h1
-                        className="text-lg
-                        sm:text-xl
-                        "
-                        >Add new Product</h1>
-                    </button>
-                </div>
-                <div
-                className="columns-2 md:columns-3 lg:columns-4 gap-2 px-4 py-2 
-                "
-                >
-                {productList?.map(
-                    product => (
-                        <div key={product._id}
-                        className="break-inside-avoid overflow-hidden rounded-lg mb-2 "
-                        >
-                            <Link to={`/productdetails/${product._id}`} className="cursor-pointer">
-                                <img src={product.productImage} 
-                                className="w-full object-cover rounded-xl
-                                 " 
-                            />
-                            </Link>
-                        </div>
-                    )
-               )}
-                </div>
-            </div>
-        }
+    //         : 
+    //         <div
+    //         className="flex flex-col bg-gray-50 w-full py-4"
+    //         >
+    //             <div className="w-full flex justify-end ">
+    //                 <button
+    //                 onClick={handleAddProduct}
+    //                 className="mr-5 font-[abril] font-semibold w-auto px-2 py-2 rounded-lg border-2 cursor-pointer"
+    //                 >
+    //                     <h1
+    //                     className="text-lg
+    //                     sm:text-xl
+    //                     "
+    //                     >Add new Product</h1>
+    //                 </button>
+    //             </div>
+    //             <div
+    //             className="columns-2 md:columns-3 lg:columns-4 gap-2 px-4 py-2 
+    //             "
+    //             >
+    //             {productList?.map(
+    //                 product => (
+    //                     <div key={product._id}
+    //                     className="break-inside-avoid overflow-hidden rounded-lg mb-2 "
+    //                     >
+    //                         <Link to={`/productdetails/${product._id}`} className="cursor-pointer">
+    //                             <img src={product.productImage} 
+    //                             className="w-full object-cover rounded-xl
+    //                              " 
+    //                         />
+    //                         </Link>
+    //                     </div>
+    //                 )
+    //            )}
+    //             </div>
+    //         </div>
+    //     }
 
-        {displayAddProductModal()}
-        </>
-    )
+    //     {displayAddProductModal()}
+    //     </>
+    // )
 }
 
 export default Products;

@@ -80,9 +80,9 @@ app.get("/products/designer",verifyToken, async (req, res) => {
       return res.status(403).json({success: false, message: "Access denied. Only vendors and designers can view their products." });
     }
     const products = await Product.find({designerId: auth._id})
-    return res.status(200).json({success: false, products: products});
+    return res.status(200).json({success: true, products: products});
   }catch(error){
-     return res.status(401).json({ success: false, message: "error fetching prodduct"});
+     return res.status(401).json({ success: false, message: "error fetching products"});
   }
 })
 
