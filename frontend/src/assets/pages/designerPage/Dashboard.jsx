@@ -58,7 +58,7 @@ const Dashboard = () => {
     if (auth.status === "pending") {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="text-lg">Your account is pending approval.</div>
+                <div className="text-lg">Your account is pending approval. Please wait for an admin to approve your account.</div>
             </div>
         );
     }

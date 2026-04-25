@@ -35,6 +35,9 @@ const AuthProvider = ({ children }) => {
         status: decoded.status,
         subscriber: decoded.subscriber,
         subScriptionPlan : decoded.subScriptionPlan,
+        subscriptionStatus : decoded.subscriptionStatus,
+        subscriptionStartDate : decoded.subscriptionStartDate,
+        subscriptionExpiryDate : decoded.subscriptionExpiryDate,
         exp: decoded.exp,
         iat: decoded.iat,
       });
