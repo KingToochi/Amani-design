@@ -16,6 +16,7 @@ const Products = () => {
     const [loading, setLoading] = useState(true)
     const [alertModal, setAlertModal] = useState(false)
     const [alert, setAlert] = useState(null)
+    const [imageLimits, setImageLimits] = useState(null)
     const url = BASE_URL
     const {auth} = useContext(AuthContext)
     const token = localStorage.getItem("token")
@@ -78,12 +79,13 @@ const Products = () => {
 
 
         const handleAddProduct = () => {
-            const imageLimits = imageLimit()
-                if (imageLimits.maxProducts === 0) {
+            const limit = imageLimit()
+            setImageLimits(limit)
+                if (limit.maxProducts === 0) {
                     setAlertModal(true)
                     if (isExpired || status === "past_due") return setAlert({message : "your subscription has expired, reactivate your subscription to add products"})
                     if (status === "inactive") return setAlert({message: "your subscription has been cancelled, activate your aubacription to add products"})
-                } else if (productList.length >= imageLimits.maxProducts) {
+                } else if (productList.length >= limit.maxProducts) {
                     setAlertModal(true) 
                     return setAlert({message : "upgrade your subscription to add more image"})
             } else {
@@ -113,7 +115,7 @@ const Products = () => {
                                 >X</h1>
                             </button>
                         </div>
-                        <AddProduct  setHideModal = {setShowModal} fetchProduct = {fetchProduct} productList = {productList} imageLimit = {imageLimit}/>
+                        <AddProduct  setHideModal = {setShowModal} fetchProduct = {fetchProduct} productList = {productList} imageLimits = {imageLimits}/>
                     </div>
                 )
             }

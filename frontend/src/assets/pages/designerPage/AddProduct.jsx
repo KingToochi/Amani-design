@@ -1,15 +1,8 @@
-import { FaNairaSign } from "react-icons/fa6";
-import { useState, useContext} from "react";
-import { BASE_URL } from "../../Url";
-import { AuthContext } from "../marketPlace/hooks/AuthProvider";
-const AddProduct = ({setHideModal, productList, fetchProduct, imageLimit}) => {
-    const [fileName, setFileName] = useState()
-    const [serverError, setServerError] = useState(null)
-    const [images, setImages] = useState([])
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [imageSources, setImageSources] = useState()
-    const [showVariant, setShowVariant] = useState(false)
+import { useState } from "react";
+const AddProduct = ({setHideModal, productList, fetchProduct, imageLimits}) => {
+    const [fileName, setFileName] = useState("")
     const [numberOfVariants, setNumberOfVariants] = useState(0)
+    const [exceedVariantOption, setExceedVariantOption] = useState(false)
     const [formField, setFormField] = useState([
         {element: "input", name : "productName", id: "productName", type: "text", value:"", placeholder:"name of your product", label: "Product Name"},
         {element: "select", id:"productCategory", name:"productCategory", type:"text", label: "Product Category", option:["clothing", "footwear", "handbag", "accessory"]},
@@ -20,32 +13,28 @@ const AddProduct = ({setHideModal, productList, fetchProduct, imageLimit}) => {
         {element: "input", type:"text", id:"color", name:"color", placeholder:" add product color", label: "Color"},
         {element: "input", type:"number", id:"Price", name:"productPrice", placeholder:"Price", label:"Price"},
     ])
-    const url = BASE_URL
-    const {auth} = useContext(AuthContext)
-    const subscriber = auth.subscriber
-    const plan = auth.subscriptionPlan
-    const status = auth.subscriptionStatus
-    const isExpired = new Date(auth.subscriptionExpiryDate).getTime() < new Date().getTime()
-    
     const addToFormField = () => {
-        if (showVariant) {
-            formField.push(
-                {element: "select", id:"VariantSize", name:"size", type:"text", label: "Size", option:["xs", "s", "m", "l", "xl", "xxl"]},
-                {element: "input", type:"text", id:"VariantColor", name:"color", placeholder:" add product color", label: "Color"},
-                {element: "input", type:"number", id:"VaraintPrice", name:"productPrice", placeholder:"Price", label:"Price"},
-            )
-        }
+          const imageLimit = imageLimits
+          const limits = imageLimit.maxProducts
+          if (numberOfVariants >= limits) {
+            setExceedVariantOption(true)
+            return
+          }
+          console.log(limits)
+          console.log(imageLimit)
+          const newCount = numberOfVariants + 1;
+          setNumberOfVariants(newCount)
+          const variantSizeId = "VariantSize" + newCount
+          const variantColorId = "VariantColor" + newCount
+          const variantPriceId = "VariantPrice" + newCount
+
+          setFormField((prev) => [...prev,
+              {element: "select", id:variantSizeId, name:`size${newCount}`, type:"text", label: `Variant${newCount} size`, option:["xs", "s", "m", "l", "xl", "xxl"]},
+              {element: "input", type:"text", id:variantColorId, name:`color${newCount}`, placeholder:" add product color", label: `variant${newCount} color`},
+              {element: "input", type:"number", id:variantPriceId, name:`price${newCount}`, placeholder:"Price", label:`Variant${newCount} price`},
+          ])
     }
 
-    const displayVariantOptions = (e) => {
-        e.preventDefault()
-        setShowVariant(true)
-        // if (plan === "standard") {
-        //     setNumberOfVariants(3)
-        // } else if (plan === "premium") {
-        //     setNumberOfVariants(10)
-        // }
-    }
 
 //     const handleChange =(e) => {
 //         const file = e.target.files[0];
@@ -98,240 +87,50 @@ const AddProduct = ({setHideModal, productList, fetchProduct, imageLimit}) => {
 
 // }
 
-
-
-    
-
-    // return(
-    //     <form onSubmit={handleSubmit}
-    //     className="w-full h-auto flex flex-col px-2 justify-center gap-6"
-    //     >
-    //         <div
-    //         className="w-full flex flex-col items-center"
-    //         >
-    //             <label htmlFor="productImage"
-    //             className="w-auto px-2 py-2 border-2 border-gray-700 rounded-lg cursor-pointer text-2xl font-[abril] font-semibold"
-    //             >
-    //                 {fileName ? fileName.name : "Add your product image"}
-    //             </label>
-    //             <input id="productImage" name="productImage" type="file" accept="image/*" capture="" className="hidden" onChange={handleChange}/>
-    //         </div>
-    //         <textarea rows="10" cols="50" maxLength="150" name="productDescription" id="productDescription" placeholder="Description ......"
-    //         className="w-full border-2 rounded-lg py-2 px-2 border-gray-700 focus:outline-none font-[abril] text-xl "
-    //         ></textarea>
-    //         <input type="text" id="productName" name="productName" placeholder="name of your design"/>
-    //         <select id="productCategory" name="productCategory"
-    //         className="w-auto flex flex-col justify-center font-[abril]"
-    //         >
-    //             <option value=""  hidden>Category</option>
-    //             <option value="men clothing">Men's Clothing</option>
-    //             <option value="men footWear">Men's Footwear</option>
-    //             <option value="men handBag">Men's handBag/purse</option>  
-    //             <option value="men clothingAccessory">Men's Clothing Accessories</option> 
-    //             <option value="women clothing">Women's Clothing</option>
-    //             <option value="women footWear">Women's Footwear</option>
-    //             <option value="women handBag">Women's handBag/purse</option>  
-    //             <option value="women clothingAccessory">Women's Clothing Accessories</option>
-    //             <option value="kid clothing">Kid's Clothing</option>
-    //             <option value="kid footWear">Kid's Footwear</option>  
-    //             <option value="kid clothingAccessory">Kid's Clothing Accessories</option>              
-    //         </select>
-    //         <div
-    //         className="w-full flex items-center gap-2"
-    //         >
-    //             <input type="text" name="color" placeholder="color" 
-    //             className="w-1/2 px-1"
-    //             />
-    //             <select id="size" name="size" className="w-1/2 flex flex-col justify-center items-center px-2">
-    //                 <option value="" hidden>select size</option>
-    //                 <option value="xs">XS</option>
-    //                 <option value="s">S</option>
-    //                 <option value="m">M</option>
-    //                 <option value="l">L</option>
-    //                 <option value="xl">XL</option>
-    //                 <option value="xxl">XXl</option>
-    //             </select>
-    //         </div>
-    //         <div
-    //         className="flex w-full items-center justify-center gap-2 sm:text-xl font-[abril]"
-    //         >
-    //             <label htmlFor="productPrice" className="font-[abril]">Price:</label>
-    //             <div
-    //             className="flex border-2 border-gray-700 rounded-lg w-auto px-2 py-2 items-center gap-2"
-    //             >
-    //                 <FaNairaSign />
-    //                 <input type="number" name="productPrice" id="productPrice" 
-    //                 className="focus:outline-none"
-    //                 />
-    //             </div>
-    //         </div>
-    //         <div
-    //         className="w-full flex items-center justify-center"
-    //         >
-    //             <button
-    //             disabled={isSubmitting}
-    //             className="w-auto border-2 border-gray-700 rounded-lg px-2 py-2 bg-blue-400 cursor-pointer"
-    //             >
-    //                 <h1
-    //                 className="text-gray-500 font-[abril] font-bold text-2xl"
-    //                 >{isSubmitting ? "submitting ..." : "Submit"}</h1>
-    //             </button>
-    //         </div>
-    //     </form>
-    // )
-
-
-    // return (
-    //     <div className="w-full h-auto flex flex-col px-2 justify-center gap-6">
-    //         <form>
-    //             {/* Form fields go here */}
-    //             <div>
-    //                 <label htmlFor="productName">Product Name:</label>
-    //                 <input type="text" id="productName" name="productName" placeholder="name of your product"/>
-    //             </div>
-                
-    //             <div>
-    //                 <label htmlFor="productImage">{(images.length === 0 ? "Add product Images" : `${images.length} image(s) selected`)}</label>
-    //                 {imageSources === "files"
-    //                  ? 
-    //                  <input type="file" id="productImage" name="productImage" accept="image/*" multiple capture="" />
-    //                  :
-    //                  <input type="file" id="productImage" name="productImage" accept="image/*" multiple capture="environment" />
-    //                 }
-    //             </div>
-
-    //             <div>
-    //                 <textarea rows="10" cols="50" maxLength="150" name="productDescription" id="productDescription" placeholder="Description ......"
-    //                 className="w-full border-2 rounded-lg py-2 px-2 border-gray-700 focus:outline-none font-[abril] text-xl "
-    //                 ></textarea>
-    //             </div>
-    //             <div>
-    //                 <label htmlFor="productName">Product Name:</label>
-    //                 <input type="text" id="productName" name="productName" placeholder="name of your product"/>
-    //             </div>
-    //             <div>
-    //                 <label htmlFor="productCategory">Category:</label>
-    //                 <select id="productCategory" name="productCategory"
-    //                 className="w-auto flex flex-col justify-center font-[abril]"
-    //                 >
-    //                     <option value=""  hidden>Category</option>
-    //                     <option value="clothing">Clothing</option>
-    //                     <option value="footWear">Footwear</option>
-    //                     <option value="handBag">handBag/purse</option>  
-    //                     <option value="accessory">Accessories</option> 
-    //                 </select>
-    //             </div>
-
-    //             <div>
-    //                 <label htmlFor="productSubCategory">Sub-Category:</label>
-    //                 <select id="productSubCategory" name="productSubCategory"
-    //                 className="w-auto flex flex-col justify-center font-[abril]"
-    //                 >
-    //                     <option value=""  hidden>Sub-Category</option>
-    //                     <option value="men clothing">Men's Clothing</option>
-    //                     <option >Men's Footwear</option>
-    //                     <option value="men handBag">Men's handBag/purse</option>  
-    //                     <option value="men clothingAccessory">Men's Clothing Accessories</option> 
-    //                     <option value="women clothing">Women's Clothing</option>
-    //                     <option value="women footWear">Women's Footwear</option>
-    //                     <option value="women handBag">Women's handBag/purse</option>  
-    //                     <option value="women clothingAccessory">Women's Clothing Accessories</option>
-    //                     <option value="kid clothing">Kid's Clothing</option>
-    //                     <option value="kid footWear">Kid's Footwear</option>  
-    //                     <option value="kid clothingAccessory">Kid's Clothing Accessories</option>
-    //                 </select>
-    //             </div>
-
-    //             <div>
-    //                 <label htmlFor="designerName">Brand/Desginer Name:</label>
-    //                 <input type="text" id="designerName" name="designerName" placeholder="name of your brand/designer"/>
-    //             </div>
-
-    //             <div>
-    //                 <label htmlFor="size">Size:</label>
-    //                 <select id="size" name="size" className="w-1/2 flex flex-col justify-center items-center px-2">
-    //                     <option value="" hidden>select size</option>
-    //                     <option value="xs">XS</option>
-    //                     <option value="s">S</option>
-    //                     <option value="m">M</option>
-    //                     <option value="l">L</option>
-    //                     <option value="xl">XL</option>
-    //                 </select>
-    //             </div>
-
-    //             <div>
-    //                 <label htmlFor="color">Color:</label>
-    //                 <input type="text" id="color" name="color" placeholder="color"/>
-    //             </div>
-
-    //             <div>
-    //                 <FaNairaSign />
-    //                     <input type="number" id="productPrice" name="productPrice" placeholder="Price"/>
-    //             </div>
-                
-    //             {showVariant && ({
-
-    //             })}
-
-                
-    //             <div>
-    //                 {(plan === "standard" || plan === "premium") && (
-    //                 <button onClick={displayVariantOptions}>Add size/color option</button>
-    //             )}
-    //                 <button type="submit">Submit</button>
-    //             </div>
-    //         </form>
-    //     </div>
-    // )
+    const handleFileInputChange = (event) => {
+        const file = event.target.files[0]
+        setFileName(file?.name || "")
+    }
 
     return (
-    <div>
-        <h1>Add a Product</h1>
+    <div className="max-w-3xl mx-auto p-8 bg-white rounded-[32px] shadow-[0_20px_80px_rgba(15,23,42,0.08)] border border-gray-200">
+        <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 mb-8">Add a Product</h1>
 
-        <form>
+        <form className="space-y-6">
         {formField.map((field, index) => {
         
             if (field.element === "input" && field.type === "file") {
             return (
-                <div key={index}>
-                    <label htmlFor={field.id}>{field.label}</label>
+                <div key={index} className="space-y-3">
+                    <label htmlFor={field.id} className="block text-sm font-medium text-slate-700">{field.label}</label>
 
-                    <button type="button">Upload a File</button>
+                    <input
+                      type="file"
+                      id={field.id}
+                      name={field.name}
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileInputChange}
+                      className="w-full rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:text-white file:font-semibold hover:file:bg-slate-800"
+                    />
 
-                {imageSources === "file" ? (
-                <input
-                  type="file"
-                  id={field.id}
-                  name={field.name}
-                  accept="image/*"
-                  multiple
-                />
-              ) : (
-                <input
-                  type="file"
-                  id={field.id}
-                  name={field.name}
-                  accept="image/*"
-                  multiple
-                  capture="environment"
-                />
-              )}
-            </div>
-          );
-        }
+                    <p className="text-sm text-slate-500">{fileName ? `Selected: ${fileName}` : "Choose an image to upload"}</p>
+                </div>
+              );
+            }
 
         else if (field.element === "select") {
           return (
-            <div key={index}>
-              <label htmlFor={field.id}>{field.label}</label>
+            <div key={index} className="space-y-2">
+              <label htmlFor={field.id} className="block text-sm font-medium text-slate-700">{field.label}</label>
 
-              <select id={field.id} name={field.name}>
+              <select id={field.id} name={field.name} className="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
                 <option value="" hidden>
                   Please Select
                 </option>
 
                 {field.option.map((option, i) => (
-                  <option key={i} value={option}>
+                  <option key={i} value={option} className="text-slate-800">
                     {option.charAt(0).toUpperCase() + option.slice(1)}
                   </option>
                 ))}
@@ -342,16 +141,16 @@ const AddProduct = ({setHideModal, productList, fetchProduct, imageLimit}) => {
 
         else if (field.element === "textarea") {
           return (
-            <div key={index}>
-              <label htmlFor={field.id}>{field.label}</label>
+            <div key={index} className="space-y-2">
+              <label htmlFor={field.id} className="block text-sm font-medium text-slate-700">{field.label}</label>
 
               <textarea
-                rows="10"
-                cols="50"
+                rows="7"
                 maxLength="150"
                 name={field.name}
                 id={field.id}
                 placeholder={field.placeholder}
+                className="w-full resize-none rounded-3xl border border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
             </div>
           );
@@ -359,25 +158,32 @@ const AddProduct = ({setHideModal, productList, fetchProduct, imageLimit}) => {
 
         else {
           return (
-            <div key={index}>
-              <label htmlFor={field.id}>{field.label}</label>
+            <div key={index} className="space-y-2">
+              <label htmlFor={field.id} className="block text-sm font-medium text-slate-700">{field.label}</label>
 
               <input
                 type={field.type}
                 id={field.id}
                 name={field.name}
                 placeholder={field.placeholder}
+                className="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
             </div>
           );
         }
 
       })}
-      {addToFormField()}
-      <div>
-        <button onClick={displayVariantOptions}>Add Variant Option</button>
-        <button>Submit</button>
+      {exceedVariantOption ? 
+      <div className="space-y-4">
+        <p className="text-sm text-red-600">You have reached the maximum number of variant options.</p>
+        <button type="submit" className="w-full rounded-3xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 sm:w-auto">Submit</button>
       </div>
+       :
+      <div className="grid gap-3 sm:flex sm:justify-end sm:items-center">
+        <button onClick={addToFormField} type="button" className="w-full rounded-3xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 sm:w-auto">Add Variant Option</button>
+        <button type="submit" className="w-full rounded-3xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto">Submit</button>
+      </div>
+      }
     </form>
   </div>
     );
