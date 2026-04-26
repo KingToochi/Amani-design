@@ -19,7 +19,7 @@ const Products = () => {
     const url = BASE_URL
     const {auth} = useContext(AuthContext)
     const token = localStorage.getItem("token")
-     const subscriber = auth.subscriber
+    const subscriber = auth.subscriber
     const plan = auth.subscriptionPlan
     const status = auth.subscriptionStatus
     const isExpired = new Date(auth.subscriptionExpiryDate).getTime() < new Date().getTime()  
