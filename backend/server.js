@@ -96,10 +96,11 @@ app.get("/products/:_id", async (req, res) => {
 // POST new product
 app.post(
   "/products",
-  uploadProduct.single("productImage"),
+  uploadProduct.array("productImage"), // Keep as array for multiple files
   async (req, res) => {
     try {
       console.log(req.body);
+      console.log("Files:", req.files);
 
       // 1️⃣ Authorization check
       const authHeader = req.headers.authorization;
@@ -110,49 +111,86 @@ app.post(
       // 2️⃣ Verify token
       const token = authHeader.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
       const designerId = decoded.id;
 
-      // 3️⃣ Extract & validate fields
+      // 3️⃣ Extract base fields (remove duplicate)
       const {
         productDescription,
         productName,
         productCategory,
-        productPrice,
-        color,
-        size,
+        productSubCategory,
+        productPrice,  // Base price
+        color,        // Base color
+        size,         // Base size
       } = req.body;
 
-      if (!productDescription || !productName || !productCategory || !productPrice) {
+      // Validate required base fields
+      if (!productDescription || !productName || !productCategory || !productSubCategory) {
         return res.status(400).json({
-          message: "productDescription, productCategory and productPrice are required",
+          message: "productDescription, productName, productCategory, and productSubCategory are required",
         });
       }
 
-      // 4️⃣ Upload image (if exists)
-      let productImageUrl = "";
-
-      if (req.file) {
-        const cloudRes = await cloudinary.uploader.upload(req.file.path, {
-          folder: "my_website_products",
+      // 4️⃣ Upload multiple images
+      let productImageUrls = [];
+      
+      if (req.files && req.files.length > 0) {
+        const uploadPromises = req.files.map(async (file) => {
+          const cloudRes = await cloudinary.uploader.upload(file.path, {
+            folder: "my_website_products",
+          });
+          // Remove temp file
+          fs.unlink(file.path, () => {});
+          return cloudRes.secure_url;
         });
-
-        productImageUrl = cloudRes.secure_url;
-
-        // remove temp file
-        fs.unlink(req.file.path, () => {});
+        
+        productImageUrls = await Promise.all(uploadPromises);
       }
 
-      // 5️⃣ Save product
+      // 5️⃣ Extract variants from form data
+      const variants = [];
+      const variantKeys = Object.keys(req.body).filter(key => 
+        key.match(/^(size|color|ProductPrice)\d+$/)
+      );
+      
+      // Group variants by index
+      const variantMap = new Map();
+      variantKeys.forEach(key => {
+        const match = key.match(/(size|color|ProductPrice)(\d+)/);
+        if (match) {
+          const [, type, index] = match;
+          if (!variantMap.has(index)) {
+            variantMap.set(index, {});
+          }
+          variantMap.get(index)[type] = req.body[key];
+        }
+      });
+      
+      // Convert map to array
+      variantMap.forEach((variant, index) => {
+        if (variant.size && variant.color && variant.ProductPrice) {
+          variants.push({
+            size: variant.size,
+            color: variant.color,
+            price: Number(variant.ProductPrice),
+            stock: variant.stock || 0
+          });
+        }
+      });
+
+      // 6️⃣ Save product with variants and multiple images
       const newProduct = new Product({
         designerId,
         productDescription,
-        productName, 
+        productName,
         productCategory,
-        productPrice: Number(productPrice),
-        color,
-        size,
-        productImage: productImageUrl,
+        productSubCategory,
+        basePrice: productPrice ? Number(productPrice) : null,
+        baseColor: color,
+        baseSize: size,
+        productImages: productImageUrls, // Store as array
+        variants: variants.length > 0 ? variants : [],
+        hasVariants: variants.length > 0
       });
 
       await newProduct.save();
@@ -164,6 +202,9 @@ app.post(
 
     } catch (error) {
       console.error(error);
+      if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({ message: "Invalid token" });
+      }
       res.status(500).json({ error: error.message });
     }
   }
