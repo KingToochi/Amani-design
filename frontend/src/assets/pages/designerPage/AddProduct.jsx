@@ -22,6 +22,7 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
         { element: "input", type: "text", id: "color", name: "color", placeholder: "add product color", value: "", label: "Color" },
         { element: "input", type: "number", id: "productPrice", value: "", name: "productPrice", placeholder: "Price", label: "Price" },
     ]);
+    
 
     
     const url = BASE_URL;

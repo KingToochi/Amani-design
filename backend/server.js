@@ -96,23 +96,25 @@ app.get("/products/:_id", async (req, res) => {
 // POST new product
 app.post(
   "/products",
+  verifyToken,
   uploadProduct.array("productImages"), // Match frontend field name
   async (req, res) => {
+    const auth = req.user
     try {
       console.log("Form Data Received:");
       console.log(req.body);
       console.log("Files:", req.files);
 
       // 1️⃣ Authorization check
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
+      // const authHeader = req.headers.authorization;
+      // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      //   return res.status(401).json({ message: "Unauthorized" });
+      // }
 
-      // 2️⃣ Verify token
-      const token = authHeader.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const designerId = decoded._id;
+      // // 2️⃣ Verify token
+      // const token = authHeader.split(" ")[1];
+      // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const designerId = auth._id;
 
       // 3️⃣ Extract base fields
       const {
