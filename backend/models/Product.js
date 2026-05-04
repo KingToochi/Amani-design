@@ -2,18 +2,20 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-  designerId: String,
-  productDescription: String,
-  productName: String,
-  productCategory: String,
-  productPrice: Number,
-  color: String,
-  size: String,
-  productImage: String,
+  designerId: { string, ref: "User", required: true },
+  productName: { type: String, required: true },
+  productDescription: { type: String, required: true },
+  productCategory: { type: String, required: true },
+  productSubCategory: { type: String, required: true },
+  basePrice: Number,
+  baseColor: String,
+  baseSize: String,
+  productImages: [String], // Array of URLs
   variants: [{
-    varianSizeId: {type: String, required: true},
-    VariantColorId:  {type: String, required: true},
-    VariantPriceId:  {type: Number, required: true},
+    size: String,
+    color: String,
+    price: Number,
+    stock: { type: Number, default: 0 }
   }],
   hasVariants: { type: Boolean, default: false }
 }, { timestamps: true });

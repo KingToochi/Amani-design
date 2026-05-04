@@ -503,7 +503,6 @@ const DesignerRegistration = () => {
             <div>
                 <select id="typeOfVendor" value={formData.typeOfVendor} onBlur={formInputValidation} onChange={formInputValidation}
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 font-[abril]">
-                >
                     <option value="" hidden>What type of Vendor are you</option>
                     <option value="manufacturer">Manufacturer</option>
                     <option value="wholeseller">Wholeseller</option>

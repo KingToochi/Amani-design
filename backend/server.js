@@ -96,9 +96,10 @@ app.get("/products/:_id", async (req, res) => {
 // POST new product
 app.post(
   "/products",
-  uploadProduct.array("productImage"), // Keep as array for multiple files
+  uploadProduct.array("productImages"), // Match frontend field name
   async (req, res) => {
     try {
+      console.log("Form Data Received:");
       console.log(req.body);
       console.log("Files:", req.files);
 
@@ -111,9 +112,9 @@ app.post(
       // 2️⃣ Verify token
       const token = authHeader.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const designerId = decoded.id;
+      const designerId = decoded._id;
 
-      // 3️⃣ Extract base fields (remove duplicate)
+      // 3️⃣ Extract base fields
       const {
         productDescription,
         productName,
@@ -150,13 +151,13 @@ app.post(
       // 5️⃣ Extract variants from form data
       const variants = [];
       const variantKeys = Object.keys(req.body).filter(key => 
-        key.match(/^(size|color|ProductPrice)\d+$/)
+        key.match(/^(size|color|price)\d+$/)
       );
       
       // Group variants by index
       const variantMap = new Map();
       variantKeys.forEach(key => {
-        const match = key.match(/(size|color|ProductPrice)(\d+)/);
+        const match = key.match(/(size|color|price)(\d+)/);
         if (match) {
           const [, type, index] = match;
           if (!variantMap.has(index)) {
@@ -168,15 +169,17 @@ app.post(
       
       // Convert map to array
       variantMap.forEach((variant, index) => {
-        if (variant.size && variant.color && variant.ProductPrice) {
+        if (variant.size && variant.color && variant.price) {
           variants.push({
             size: variant.size,
             color: variant.color,
-            price: Number(variant.ProductPrice),
-            stock: variant.stock || 0
+            price: Number(variant.price),
+            stock: 0
           });
         }
       });
+
+      console.log("Extracted Variants:", variants);
 
       // 6️⃣ Save product with variants and multiple images
       const newProduct = new Product({
