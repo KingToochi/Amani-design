@@ -465,13 +465,13 @@ app.post("/users/login", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       // secure: true,
-      // secure: process.env.NODE_ENV === "production",       // false in localhost
+      secure: process.env.NODE_ENV === "production",       // false in localhost
       sameSite: "none",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
 
-    res.json({ success: true, message: "User login successful" });
+    res.json({ success: true, message: "User login successful", accessToken, refreshToken });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
