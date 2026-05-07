@@ -26,6 +26,7 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
 
     
     const url = BASE_URL;
+    const token = localStorage.getItem("token")
 
     const addToFormField = () => {
         const limits = imageLimit.maxProducts;
@@ -210,6 +211,7 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
         try {
             const response = await fetch(`${url}/products`, {
                 method: "POST",
+                headers : {Authorization : `Bearer ${token}`},
                 body: formData
             });
             

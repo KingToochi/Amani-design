@@ -5,7 +5,6 @@ import { BASE_URL } from "../Url";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
-import { jwtDecode } from "jwt-decode";
 import ServerError from "../components/ServerError"
 
 const Login = () => {
@@ -21,6 +20,7 @@ const Login = () => {
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
     console.log(currentUrl)
+    const { verifyAndFetchAuth } = useContext(AuthContext);
     const onSubmit = async(data) => {
         try {
             let response = await fetch(`${url}/users/login`, {
@@ -28,24 +28,14 @@ const Login = () => {
                 headers : {
                     "Content-Type": "application/json"
                 },
+                credentials: "include",
                 body: JSON.stringify(data)
             })
             let result = await response.json()
             console.log(result)
             if (result.success) {
-                localStorage.setItem("token", result.token);
-                const decoded = jwtDecode(result.token)
-                setAuth({
-                    id: decoded._id,
-                    email: decoded.email,
-                    username: decoded.username,
-                    role: decoded.role,
-                    status: decoded.status,
-                    subscriber: decoded.subscriber,
-                    subScriptionPlan : decoded.subScriptionPlan,
-                    exp: decoded.exp,
-                    iat: decoded.iat,
-                });
+                // Fetch and set auth data from backend
+                await verifyAndFetchAuth();
                 navigate(from) 
             } else {
                 throw new Error(result.error)

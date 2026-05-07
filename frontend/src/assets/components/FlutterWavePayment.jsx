@@ -47,9 +47,8 @@ const FlutterwavePayment = ({
               method: "POST",
               headers: { 
                 "Content-Type": "application/json",
-                // Add auth token if needed
-                // "Authorization": `Bearer ${localStorage.getItem("token")}`
               },
+              credentials: "include",
               body: JSON.stringify({
                 transaction_id: response.transaction_id,
                 amount: amount, // Use amount prop, not totalAmount

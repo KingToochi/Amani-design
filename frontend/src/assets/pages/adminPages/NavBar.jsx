@@ -26,18 +26,12 @@ const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [adminDetails, setAdminDetails] = useState({});
     const location = useLocation();
-    const { auth } = useContext(AuthContext);
+    const { auth, logout } = useContext(AuthContext);
     const url = BASE_URL;
-    const token = localStorage.getItem("token");
     const navigate = useNavigate();
 
 
     const fetchAdminDetails = async () => {
-        if (!token) {
-            navigate("/admin-login");
-            return;
-        }
-
         if (auth.role !== "admin") {
             navigate("/admin-login");   
             return;
@@ -46,10 +40,9 @@ const NavBar = () => {
         try {
             const response = await fetch(`${url}/admin/details`, {
                 method: "GET",
-                headers: {
-                    authorization: `Bearer ${token}`
-                }
-            });
+                credentials: "include"
+            })
+        
             const data = await response.json();
             setAdminDetails(data.admin);
         }catch(err){

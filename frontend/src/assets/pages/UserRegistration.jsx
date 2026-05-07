@@ -207,12 +207,15 @@ const UserRegistration = () => {
                     headers: {
                         "Content-Type": "application/json"
                     },
+                    credentials: "include",
                     body : JSON.stringify(formData)
                 })
                 let data = await response.json()
                 console.log(data)
                 if (data.success) {
-                    localStorage.setItem("token", data.token)
+                    // Fetch and set auth data from backend
+                    const { verifyAndFetchAuth } = useContext(AuthContext);
+                    await verifyAndFetchAuth();
                     navigate("/")
                 } else {
                     alert(data.message)

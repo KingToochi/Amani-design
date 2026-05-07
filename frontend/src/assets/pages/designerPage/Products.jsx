@@ -7,6 +7,7 @@ import { FaNairaSign } from "react-icons/fa6";
 import { BASE_URL } from "../../Url";
 import { AuthContext } from "../marketPlace/hooks/AuthProvider";
 import ServerError from "../../components/ServerError";
+import Slide from "../../components/SlideShow";
 
 
 const Products = () => {
@@ -19,7 +20,6 @@ const Products = () => {
     const [imageLimits, setImageLimits] = useState(null)
     const url = BASE_URL
     const {auth} = useContext(AuthContext)
-    const token = localStorage.getItem("token")
     const subscriber = auth.subscriber
     const plan = auth.subscriptionPlan
     const status = auth.subscriptionStatus
@@ -29,7 +29,7 @@ const Products = () => {
         try{
             let response = await fetch (`${url}/products/designer`, {
                 method : "GET",
-                headers : {Authorization : `Bearer ${token}`}
+                credentials: "include"
             })
             const data = await response.json()
             if (!data.success) {
@@ -187,9 +187,10 @@ const Products = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {productList?.map((product) => (
                             <Link key={product._id} to={`/productdetails/${product._id}`}>
-                                <div className="border rounded p-4">
-                                    <h2 className="text-xl font-semibold">{product.name}</h2>
-                                    <p className="text-gray-600">{product.description}</p>
+                                <div className="rounded p-4">
+                                    <Slide imageArray={product.productImages} alt = {product.productName}/>
+                                    <h2 className="text-lg font-semibold mb-2">{product.productName}</h2>
+                                    
                                 </div>
                             </Link>
                         ))}

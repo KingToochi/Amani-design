@@ -1,17 +1,15 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import {AuthContext} from "./hooks/AuthProvider"
 import { CiEdit } from "react-icons/ci";
 import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 
 const ProfilePage = () => {
-    const {setAuth} = useContext(AuthContext)
+    const {setAuth, logout} = useContext(AuthContext)
     const [userDetails, setUserDetails] = useState({})
     const [editProfile, setEditProfile] = useState(false)
     const [updateDetails, setUpdateDetails] = useState({})
-    const  token = localStorage.getItem("token");
 
     const navigate = useNavigate()
 
@@ -19,9 +17,7 @@ const ProfilePage = () => {
         try{
             let response = await fetch("https://amani-design-backend.onrender.com/users", {
                 method: "GET",
-                headers: {
-                    "Authorization" : `Bearer ${token}`
-                }
+                credentials: "include"
             })
             let data = await response.json()
             console.log(data)
@@ -34,39 +30,31 @@ const ProfilePage = () => {
 
 
     useEffect(()  =>{
-        if(!token) {
-            navigate("/login")
-            return
-        }
-    
-        try {
-            const decoded = jwtDecode(token)
-            console.log(decoded)
-            const currentTime = Date.now() / 1000
-            if (decoded.exp < currentTime) {
-                alert("Token has expired") 
-                localStorage.removeItem("token")
-                navigate("/login")
-                return
-            } if (!decoded._id) {
-                navigate("/login")
-                return
-            } else {
-                setAuth({
-                    id : decoded.id,
-                    email: decoded.email,
-                    username: decoded.username,
-                    status: decoded.status,
-                    exp: decoded.exp,
-                    iat: decoded.iat
-                })
-            }
+        const checkAuth = async () => {
+            try {
+                const response = await fetch("https://amani-design-backend.onrender.com/userInfo", {
+                    method: "GET",
+                    credentials: "include"
+                });
 
-            fetchUserData()
+                if (!response.ok) {
+                    navigate("/login");
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    fetchUserData();
+                } else {
+                    navigate("/login");
+                }
             } catch(error) {
-                console.error("Invalid token:", error)
-                localStorage.removeItem("token")
-                na}
+                console.error("Auth check error:", error);
+                navigate("/login");
+            }
+        };
+
+        checkAuth();
     }, [])
 
 

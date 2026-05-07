@@ -18,20 +18,9 @@ const AdminDashboard = () => {
     const [error, setError] = useState(null);
     const url = BASE_URL;
     const { auth, isLoggedIn } = useContext(AuthContext);
-    const token = localStorage.getItem("token");
     const navigate = useNavigate();
 
     const fetchData = async () => {
-        if (!token) {
-            setError('Please log in to continue');
-            setLoading(false);
-            return;
-        }
-
-        if (auth.role !== "admin") {
-            navigate("/unauthorized");
-            return;
-        }
         if (auth.role !== "admin") {
             navigate("/unauthorized");
             return;
@@ -40,9 +29,7 @@ const AdminDashboard = () => {
         try {
             let response = await fetch(`${url}/data`, {
                 method: "GET",
-                headers: {
-                    "authorization": `Bearer ${token}`
-                }
+                credentials: "include"
             });
             let data = await response.json();
 

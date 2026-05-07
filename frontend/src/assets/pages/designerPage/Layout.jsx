@@ -6,15 +6,12 @@ import { BASE_URL } from "../../Url";
 const Layout = () => {
     
     const url = BASE_URL
-    const token = localStorage.getItem("token")
     const [userData, setUserData] = useState()
     const [serverError, setServerError] = useState(null)
     const fetchUser = async () => {
         try {
             let response = await fetch(`${url}/users`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }   
+                credentials: "include"
             });
             const data = await response.json();
             console.log(data)

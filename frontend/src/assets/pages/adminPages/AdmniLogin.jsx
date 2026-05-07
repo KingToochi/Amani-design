@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../marketPlace/hooks/AuthProvider';
-import { jwtDecode } from 'jwt-decode';
 import { BASE_URL } from '../../Url';
 
 const Login = () => {
@@ -26,6 +25,7 @@ const handleSubmit = async (e) => {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({ email, password }),
         });
 
@@ -46,19 +46,9 @@ const handleSubmit = async (e) => {
         }
 
         if (result.success) {
-            // Store token in localStorage
-            localStorage.setItem('token', result.token);
-
-            // Decode token and set auth context
-            const decoded = jwtDecode(result.token);
-            setAuth({
-                id: decoded._id,
-                email: decoded.email,
-                username: decoded.username,
-                role: decoded.role,
-                exp: decoded.exp,
-                iat: decoded.iat,
-            });
+            // Fetch and set auth data from backend
+            const { verifyAndFetchAuth } = useContext(AuthContext);
+            await verifyAndFetchAuth();
 
             // Redirect to admin dashboard
             navigate('/admin');

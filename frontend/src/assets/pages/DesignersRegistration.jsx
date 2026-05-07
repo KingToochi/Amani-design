@@ -1,7 +1,6 @@
 import { useContext, useState } from "react"
 import { BASE_URL } from "../Url"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
-import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./marketPlace/hooks/AuthProvider";
 import ServerError from "../components/ServerError";
@@ -246,24 +245,15 @@ const DesignerRegistration = () => {
                 try {
                     let response = await fetch(`${url}/users/registration/designers`, {
                         method: "POST",
+                        credentials: "include",
                         body : form
                     })
                     let data = await response.json()
                     console.log(data)
                     if (data.success) {
-                        localStorage.setItem("token", data.token)
-                        const decoded = jwtDecode(data.token)
-                        setAuth({
-                            id: decoded._id,
-                            email: decoded.email,
-                            username: decoded.username,
-                            role: decoded.role,
-                            status: decoded.status,
-                            subscriber: decoded.subscriber,
-                            subScriptionPlan : decoded.subScriptionPlan,
-                            exp: decoded.exp,
-                            iat: decoded.iat,
-                        });;
+                        // Fetch and set auth data from backend
+                        const { verifyAndFetchAuth } = useContext(AuthContext);
+                        await verifyAndFetchAuth();
                         navigate("/designer")
                     } else {
                         alert(data.message)

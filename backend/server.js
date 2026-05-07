@@ -16,36 +16,55 @@ import Sales from "./models/Sales.js";
 import Orders from "./models/Order.js"
 import bcrypt from "bcryptjs";
 import Rating from "./models/Rating.js";
+import cookieParser from "cookie-parser";
 
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// Configure CORS to accept credentials
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+app.use(cookieParser());
 connectDB();
 
 
-const SECRET_KEY = process.env.SECRET_KEY || "amaniskysecrecy19962025";
+const JWT_SECRET  = process.env.JWT_SECRET || "amaniskysecrecy19962025";
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
 
 const verifyToken = async(req, res, next) => {
-  const authHeader = req.headers.authorization
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" })
+  let token;
+  
+  // Try to get token from Authorization header first
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } 
+  // Fall back to cookie if header not present
+  else if (req.cookies.accessToken) {
+    token = req.cookies.accessToken;
   }
-  const token = authHeader.split(" ")[1]
+  
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-  req.user = decoded
-
-  next()
-  }  catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" })
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
-}
+};
 
 
 // ---- Multer ----
@@ -104,16 +123,6 @@ app.post(
       console.log("Form Data Received:");
       console.log(req.body);
       console.log("Files:", req.files);
-
-      // 1️⃣ Authorization check
-      // const authHeader = req.headers.authorization;
-      // if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      //   return res.status(401).json({ message: "Unauthorized" });
-      // }
-
-      // // 2️⃣ Verify token
-      // const token = authHeader.split(" ")[1];
-      // const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const designerId = auth._id;
 
       // 3️⃣ Extract base fields
@@ -216,6 +225,15 @@ app.post(
 );
 
 
+// app.post("/products", verifyToken,
+//    uploadProduct.array("productImages"), // Match frontend field name 
+//    async(req, res) => {
+//     const auth = req.user;
+
+
+//    })
+
+
 // PUT update product
 app.put("/products/:id", async (req, res) => {
   try {
@@ -288,9 +306,29 @@ app.post("/users/registration", async (req, res) => {
 
     await newUser.save();
 
-    const token = await generateToken(email)
+    const accessToken = await generateToken(email, { expiresIn: "15m" })
+    const refreshToken = await generateToken(email, { expiresIn: "7d" })
 
-    res.status(201).json({ success: true, message: "User registered successfully",  token });
+    // Set access token in HTTP-only cookie
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      // secure: true,
+      // secure: process.env.NODE_ENV === "production",       // false in localhost for development
+      sameSite: "Strict",
+      maxAge: 15 * 60 * 1000  // 15 minutes
+    });
+
+    // Set refresh token in HTTP-only cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      path: "/refresh",
+      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+    });
+
+    res.status(201).json({ success: true, message: "User registered successfully" });
   } catch (err) {
     console.error("User registration error:", err); // <-- Add this if not alrea
     res.status(500).json({success:false, message: "Server error" });
@@ -367,8 +405,29 @@ if (req.files.proofOfAddress) {
         role: "vendor",
       });
       await newUser.save();
-      const token = await generateToken(email)
-      res.status(201).json({ success: true,  message: "User registered successfully", token });
+      const accessToken = await generateToken(email, { expiresIn: "15m" })
+      const refreshToken = await generateToken(email, { expiresIn: "7d" })
+
+      // Set access token in HTTP-only cookie
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        // secure: true,
+        // secure: process.env.NODE_ENV === "production",       // false in localhost for development
+        sameSite: "Strict",
+        maxAge: 15 * 60 * 1000  // 15 minutes
+      });
+
+      // Set refresh token in HTTP-only cookie
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        // secure: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        path: "/refresh",
+        maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+      });
+
+      res.status(201).json({ success: true,  message: "User registered successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: error.message });
@@ -386,11 +445,80 @@ app.post("/users/login", async (req, res) => {
     const hashedPassword = user.password
     const ismatch = await bcrypt.compare(password, hashedPassword)
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
-    const token = await generateToken(email)
 
-    res.json({ success: true, message: "User login successful", token });
+    const accessToken = await generateToken(email, { expiresIn: "15m" })
+    const refreshToken = await generateToken(email, { expiresIn: "7d" })
+
+    // Set access token in HTTP-only cookie
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      secure: process.env.NODE_ENV === "production",       // false in localhost for development
+      secure: process.env.NODE_ENV === "production" ,
+      sameSite: "Strict",
+      maxAge: 15 * 60 * 1000  // 15 minutes
+    });
+
+    // Set refresh token in HTTP-only cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: true,
+      // secure: process.env.NODE_ENV === "production",       // false in localhost
+      sameSite: "Strict",
+      path: "/refresh",
+      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+    });
+
+    res.json({ success: true, message: "User login successful" });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Logout
+app.post("/logout", (req, res) => {
+  // Clear HTTP-only cookies
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    // secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict"
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    // secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    path: "/refresh"
+  });
+
+  res.json({ success: true, message: "Logged out successfully" });
+});
+
+app.post("/refresh", async (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) return res.status(401).json({ message: "No refresh token" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const newAccessToken = await generateToken(decoded.email, { expiresIn: "15m" });
+
+    // Set new access token in HTTP-only cookie
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      // secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 15 * 60 * 1000  // 15 minutes
+    });
+
+    res.json({ success: true, message: "Token refreshed" });
+
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid refresh token" });
   }
 });
 
@@ -410,8 +538,29 @@ app.post("/users/login/admin", async (req, res) => {
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
     if (user.role !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
 
-    const token = await generateToken(email)
-    res.json({ success: true, message: "Admin login successful", token });
+    const accessToken = await generateToken(email, { expiresIn: "15m" })
+    const refreshToken = await generateToken(email, { expiresIn: "7d" })
+
+    // Set access token in HTTP-only cookie
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      // secure: true,
+      // secure: process.env.NODE_ENV === "production",       // false in localhost for development
+      sameSite: "Strict",
+      maxAge: 15 * 60 * 1000  // 15 minutes
+    });
+
+    // Set refresh token in HTTP-only cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      path: "/refresh",
+      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+    });
+
+    res.json({ success: true, message: "Admin login successful" });
   }catch(error){
     res.status(500).json({ message: "Server error" });
   }
@@ -536,7 +685,7 @@ app.get("/userInfo", verifyToken, async(req, res) => {
     })
   } 
 })
-const generateToken = async (email) => {
+const generateToken = async (email,  options = { expiresIn: "1h" }) => {
   const user = await User.findOne({email: email})
    if (!user) {
     throw new Error("User not found")
@@ -555,8 +704,8 @@ const generateToken = async (email) => {
       subscriptionExpiryDate: user?.subscriptionDetails.expiryDate,
 
     },
-    SECRET_KEY,
-    { expiresIn: "1h" }
+    JWT_SECRET ,
+    options
   )
 
   return token
@@ -737,132 +886,6 @@ app.get("/data", verifyToken, async(req, res) => {
   }
 
 })
-
-// app.get("/designer/productAnalytics", verifyToken, async(req, res) => {
-//   const auth = req.user
-//   try {
-//     const user = await User.findOne({_id: auth._id})
-//     if (!user) return res.status(404).json({ success: false, message: "User not found" });
-//     if (user.role !== "vendor" && user.role !== "designer") return res.status(403).json({ success: false, message: "Access denied" });
-
-//     const  sales = await User.aggregate([
-//       {
-//         $match: {_id: user._id}
-//       },
-//       {
-//         $lookup: {
-//           from: "products",
-//           localField: "_id",
-//           foreignField: "designerId",
-//           as: "designerProducts"
-//         }
-//       },
-//       { $unwind: "$designerProducts" },
-//       {
-//         $lookup: {
-//           from: "sales",
-//           localField: "designerProducts._id",
-//           foreignField: "productId",
-//           as: "productSales"
-//         }
-//       }
-//     ])
-
-//     const orders = await User.aggregate([
-//       {
-//         $match: {_id: user._id}
-//       },
-//       {
-//         $lookup: {
-//           from: "products",
-//           localField: "_id",
-//           foreignField: "designerId",
-//           as: "designerProducts"
-//         }
-//       },
-//       {
-//         $unwind: "$designerProducts"
-//        },
-//        {
-//         $lookup: {
-//           from: "orders",
-//           localField: "designerProducts._id",
-//           foreignField: "products.productId",
-//           as: "productOrders"
-//         }
-//        },
-       
-//     ])
-
-
-//     const comments = await User.aggregate([
-//       {
-//         $match: {
-//           _id: user._id
-//         }
-//       },
-//       {
-//         $lookup: {
-//           from: "products",
-//           localField: "_id",
-//           foreignField: "designerId",
-//           as: "designerProducts"
-//         }
-//       },
-//       {
-//         $unwind: "$designerProducts"
-//       },
-//       {
-//         $lookup: {
-//           from: "comments",
-//           localField: "designerProducts._id",
-//           foreignField: "targetId",
-//           as: "productComments"
-//         }
-//       }
-//     ])
-
-//     const ratings = await User.aggregate([
-//       {
-//         $match: {_id: user._id} 
-//       },
-//       {
-//         $lookup : {
-//           from: "products",
-//           localField: "_id",
-//           foreignField: "designerId",
-//           as: "designerProducts"    
-//         }
-//       },
-//       {
-//         $unwind: "$designerProducts"
-//       },
-//       {
-//         $lookup: {
-//           from: "ratings",
-//           localField: "designerProducts._id",
-//           foreignField: "productId",
-//           as: "productRatings"
-//         }
-//       }
-//     ])
-
-//     res.json({success: true, sales, orders, comments, ratings})
-//   } catch(error) {
-//     return res.json({success: false, message: "error fetching products analytics"})
-//   }
-// })
-
-// Routes
-
-
-
-
-
-
-
-// ---- Start Server ----
-
 
 app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
   try {

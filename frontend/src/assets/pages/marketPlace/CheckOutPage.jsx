@@ -45,7 +45,6 @@ const CheckOut = () => {
     const user = authContext?.user;
     
     const url = BASE_URL;
-    const token = localStorage.getItem("token");
 
     useEffect(() => {
         setCartLoading(false);
@@ -53,20 +52,13 @@ const CheckOut = () => {
     }, []);
 
     const fetchUserinfo = async () => {
-        if (!token) {
-            setError('Please log in to continue checkout');
-            setLoading(false);
-            return;
-        }
-
         try {
             const response = await fetch(`${url}/userInfo`, {
                 method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                credentials: 'include',
+                'Content-Type': 'application/json'
                 }
-            });
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

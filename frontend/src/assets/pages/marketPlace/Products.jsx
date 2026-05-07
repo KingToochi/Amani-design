@@ -16,8 +16,7 @@ const Products = () => {
     const [designs, setDesigns] = useState([])
     const [wishList, setWishList] = useContext(WishiListContext)
     const [like, setLike] = useContext(LikeContext)
-    const {auth, isLoggedIn} = useContext(AuthContext)
-    const token = localStorage.getItem("token") 
+    const {auth, isLoggedIn} = useContext(AuthContext) 
     
 
 
@@ -37,9 +36,7 @@ const Products = () => {
         try {
             let response = await fetch (`${url}/likes`, {
                 method: "GET",
-                headers: {
-                    "Authorization" : `Bearer ${token}`
-                }
+                credentials: "include"
             })
             let data = await response.json()
             if (data.success) {
@@ -86,8 +83,8 @@ const Products = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
                 },
+                credentials: "include",
                 body: JSON.stringify({productId: design._id})
             })
             let data = await response.json()
