@@ -24,7 +24,10 @@ const app = express();
 
 // Configure CORS to accept credentials
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://amanisky-fashion.vercel.app"
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -314,7 +317,7 @@ app.post("/users/registration", async (req, res) => {
       httpOnly: true,
       // secure: true,
       // secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "Strict",
+      sameSite: "none",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
 
@@ -323,7 +326,7 @@ app.post("/users/registration", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "none",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
@@ -413,7 +416,7 @@ if (req.files.proofOfAddress) {
         httpOnly: true,
         // secure: true,
         // secure: process.env.NODE_ENV === "production",       // false in localhost for development
-        sameSite: "Strict",
+        sameSite: "none",
         maxAge: 15 * 60 * 1000  // 15 minutes
       });
 
@@ -422,7 +425,7 @@ if (req.files.proofOfAddress) {
         httpOnly: true,
         // secure: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        sameSite: "none",
         path: "/refresh",
         maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
       });
@@ -454,8 +457,7 @@ app.post("/users/login", async (req, res) => {
       httpOnly: true,
       secure: true,
       secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      secure: process.env.NODE_ENV === "production" ,
-      sameSite: "Strict",
+      sameSite: "none",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
 
@@ -464,7 +466,7 @@ app.post("/users/login", async (req, res) => {
       httpOnly: true,
       // secure: true,
       // secure: process.env.NODE_ENV === "production",       // false in localhost
-      sameSite: "Strict",
+      sameSite: "none",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
@@ -489,7 +491,7 @@ app.post("/logout", (req, res) => {
     httpOnly: true,
     // secure: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
+    sameSite: "none",
     path: "/refresh"
   });
 
@@ -511,7 +513,7 @@ app.post("/refresh", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "none",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
 
@@ -546,7 +548,7 @@ app.post("/users/login/admin", async (req, res) => {
       httpOnly: true,
       // secure: true,
       // secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "Strict",
+      sameSite: "none",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
 
@@ -555,7 +557,7 @@ app.post("/users/login/admin", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "none",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });

@@ -11,7 +11,7 @@ const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
     const [serverError, setServerError] = useState(null)
-    const {setAuth} = useContext(AuthContext)
+    const {auth, setAuth} = useContext(AuthContext)
     const currentUrl = window.location.href
     const navigate = useNavigate()
     const location = useLocation()
