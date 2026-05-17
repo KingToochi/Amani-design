@@ -30,7 +30,8 @@ app.use(cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  // allowedHeaders: ['Content-Type', 'Authorization']
+   allowedHeaders: ['Authorization']
 }));
 
 app.use(express.json());
@@ -38,7 +39,7 @@ app.use(cookieParser());
 connectDB();
 
 
-const JWT_SECRET  = process.env.JWT_SECRET || "amaniskysecrecy19962025";
+const JWT_SECRET  = process.env.JWT_SECRET;
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
@@ -449,16 +450,16 @@ app.post("/users/login", async (req, res) => {
     const ismatch = await bcrypt.compare(password, hashedPassword)
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
 
-    const accessToken = await generateToken(email, { expiresIn: "15m" })
+    const accessToken = await generateToken(email, { expiresIn: "30m" })
     const refreshToken = await generateToken(email, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: true,
+      // secure: true,
       secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "none",
-      maxAge: 15 * 60 * 1000  // 15 minutes
+      sameSite: "strict",
+      maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
     // Set refresh token in HTTP-only cookie
@@ -504,9 +505,9 @@ app.post("/refresh", async (req, res) => {
   if (!token) return res.status(401).json({ message: "No refresh token" });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.REFRESH_JWT_SECRET);
 
-    const newAccessToken = await generateToken(decoded.email, { expiresIn: "15m" });
+    const newAccessToken = await generateToken(decoded.email, { expiresIn: "30m" });
 
     // Set new access token in HTTP-only cookie
     res.cookie("accessToken", newAccessToken, {
@@ -514,7 +515,7 @@ app.post("/refresh", async (req, res) => {
       // secure: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
-      maxAge: 15 * 60 * 1000  // 15 minutes
+      maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
     res.json({ success: true, message: "Token refreshed" });
