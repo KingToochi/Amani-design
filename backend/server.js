@@ -458,7 +458,7 @@ app.post("/users/login", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
@@ -467,7 +467,7 @@ app.post("/users/login", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",       // false in localhost
-      sameSite: "none",
+      sameSite: "lax",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
