@@ -20,7 +20,7 @@ const Login = () => {
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
     console.log(currentUrl)
-    const { verifyAndFetchAuth } = useContext(AuthContext);
+    const { verifyAndFetchAuth } = useContext(AuthContext)
     const onSubmit = async(data) => {
         try {
             let response = await fetch(`${url}/users/login`, {
@@ -46,6 +46,7 @@ const Login = () => {
              setTimeout(() => {setServerError(null)}, 5000)
         }
         console.log(serverError)
+        console.log(auth)
     }
 
     const displayShowRegistrationModal = () => {

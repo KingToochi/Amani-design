@@ -4,18 +4,20 @@ import {AuthContext} from "./hooks/AuthProvider"
 import { CiEdit } from "react-icons/ci";
 import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
+import { BASE_URL } from "../../Url";
 
 const ProfilePage = () => {
     const {setAuth, logout} = useContext(AuthContext)
     const [userDetails, setUserDetails] = useState({})
     const [editProfile, setEditProfile] = useState(false)
     const [updateDetails, setUpdateDetails] = useState({})
+    const url = BASE_URL
 
     const navigate = useNavigate()
 
     const fetchUserData = async() => {
         try{
-            let response = await fetch("https://amani-design-backend.onrender.com/users", {
+            let response = await fetch(`${url}/users`, {
                 method: "GET",
                 credentials: "include"
             })
@@ -24,7 +26,7 @@ const ProfilePage = () => {
             setUserDetails(data.user)
 
         } catch (error) {
-            console.lg(error)
+            console.log(error)
         }
     }
 

@@ -318,7 +318,7 @@ app.post("/users/registration", async (req, res) => {
       httpOnly: true,
       // secure: true,
       // secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "none",
+      sameSite: "nonee",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
 
@@ -327,7 +327,7 @@ app.post("/users/registration", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: "nonee",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
@@ -417,7 +417,7 @@ if (req.files.proofOfAddress) {
         httpOnly: true,
         // secure: true,
         // secure: process.env.NODE_ENV === "production",       // false in localhost for development
-        sameSite: "none",
+        sameSite: "nonee",
         maxAge: 15 * 60 * 1000  // 15 minutes
       });
 
@@ -426,7 +426,7 @@ if (req.files.proofOfAddress) {
         httpOnly: true,
         // secure: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
+        sameSite: "nonee",
         path: "/refresh",
         maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
       });
@@ -458,7 +458,7 @@ app.post("/users/login", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
@@ -467,7 +467,7 @@ app.post("/users/login", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",       // false in localhost
-      sameSite: "lax",
+      sameSite: "none",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
@@ -485,14 +485,14 @@ app.post("/logout", (req, res) => {
     httpOnly: true,
     // secure: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict"
+    sameSite: "noneict"
   });
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
     // secure: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
+    sameSite: "nonee",
     path: "/refresh"
   });
 
@@ -514,11 +514,11 @@ app.post("/refresh", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: "nonee",
       maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
-    res.json({ success: true, message: "Token refreshed" });
+    res.json({ success: true, message: "Token refreshed", accessToken: newAccessToken });
 
   } catch (err) {
     return res.status(403).json({ message: "Invalid refresh token" });
@@ -549,7 +549,7 @@ app.post("/users/login/admin", async (req, res) => {
       httpOnly: true,
       // secure: true,
       // secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "none",
+      sameSite: "nonee",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
 
@@ -558,12 +558,12 @@ app.post("/users/login/admin", async (req, res) => {
       httpOnly: true,
       // secure: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: "nonee",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
 
-    res.json({ success: true, message: "Admin login successful" });
+    res.json({ success: true, message: "Admin login successful", accessToken, refreshToken  });
   }catch(error){
     res.status(500).json({ message: "Server error" });
   }
