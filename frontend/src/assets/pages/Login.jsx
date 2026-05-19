@@ -22,8 +22,8 @@ const Login = () => {
     console.log(currentUrl)
     const { verifyAndFetchAuth } = useContext(AuthContext)
     const onSubmit = async(data) => {
+        let authData;
         try {
-            let authData = null
             let response = await fetch(`${url}/users/login`, {
                 method: "POST",
                 headers : {

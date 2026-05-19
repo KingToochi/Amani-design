@@ -311,7 +311,7 @@ app.post("/users/registration", async (req, res) => {
 
     await newUser.save();
 
-    const accessToken = await generateToken(email, { expiresIn: "15m" })
+    const accessToken = await generateToken(email, { expiresIn: "30m" })
     const refreshToken = await generateToken(email, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
@@ -319,8 +319,8 @@ app.post("/users/registration", async (req, res) => {
       httpOnly: true,
       // secure: true,
       //secure: isProduction,       // false in localhost for development
-      sameSite: "nonee",
-      maxAge: 15 * 60 * 1000  // 15 minutes
+      sameSite: "none",
+      maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
     // Set refresh token in HTTP-only cookie
@@ -328,7 +328,7 @@ app.post("/users/registration", async (req, res) => {
       httpOnly: true,
       // secure: true,
      secure: isProduction,
-      sameSite: "nonee",
+      sameSite: "none",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
@@ -410,7 +410,7 @@ if (req.files.proofOfAddress) {
         role: "vendor",
       });
       await newUser.save();
-      const accessToken = await generateToken(email, { expiresIn: "15m" })
+      const accessToken = await generateToken(email, { expiresIn: "30m" })
       const refreshToken = await generateToken(email, { expiresIn: "7d" })
 
       // Set access token in HTTP-only cookie
@@ -419,7 +419,7 @@ if (req.files.proofOfAddress) {
         // secure: true,
         //secure: isProduction,       // false in localhost for development
         sameSite: isProduction ? "none" : "lax",
-        maxAge: 15 * 60 * 1000  // 15 minutes
+        maxAge: 30 * 60 * 1000  // 30 minutes
       });
 
       // Set refresh token in HTTP-only cookie
@@ -548,8 +548,8 @@ app.post("/users/login/admin", async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       // secure: true,
-      //secure: isProduction,       // false in localhost for development
-      sameSite: "nonee",
+      secure: isProduction,       // false in localhost for development
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
 
@@ -557,8 +557,8 @@ app.post("/users/login/admin", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       // secure: true,
-     secure: isProduction,
-      sameSite: "nonee",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
@@ -675,6 +675,15 @@ app.get("/userInfo", verifyToken, async(req, res) => {
       phoneNumber: user.phoneNumber,
       city: user.city,
       state: user.state,
+      profilePicture: user.profilePicture,
+      username: user.username,
+      role: user.role,
+      status: user.status,
+      subscriber: user.subscriber,
+      subsriptionPlan : user?.subscriptionDetails.plan,
+      subcriptionStatus : user?.subscriptionDetails.status,
+      subscriptionStartDate: user?.subscriptionDetails.startDate,
+      subscriptionExpiryDate: user?.subscriptionDetails.expiryDate,
       // Add any other non-sensitive fields here
     }
     
@@ -697,15 +706,6 @@ const generateToken = async (email,  options = { expiresIn: "1h" }) => {
     {
       _id: user._id,
       email: user.email,
-      username: user.username,
-      role: user.role,
-      status: user.status,
-      subscriber: user.subscriber,
-      subsriptionPlan : user?.subscriptionDetails.plan,
-      subcriptionStatus : user?.subscriptionDetails.status,
-      subscriptionStartDate: user?.subscriptionDetails.startDate,
-      subscriptionExpiryDate: user?.subscriptionDetails.expiryDate,
-
     },
     JWT_SECRET ,
     options
