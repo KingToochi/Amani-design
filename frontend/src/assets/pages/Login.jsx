@@ -23,6 +23,7 @@ const Login = () => {
     const { verifyAndFetchAuth } = useContext(AuthContext)
     const onSubmit = async(data) => {
         try {
+            let authData = null
             let response = await fetch(`${url}/users/login`, {
                 method: "POST",
                 headers : {
@@ -35,7 +36,7 @@ const Login = () => {
             console.log(result)
             if (result.success) {
                 // Fetch and set auth data from backend
-                await verifyAndFetchAuth();
+                authData = await verifyAndFetchAuth();
                 navigate(from) 
             } else {
                 throw new Error(result.error)
@@ -46,7 +47,8 @@ const Login = () => {
              setTimeout(() => {setServerError(null)}, 5000)
         }
         console.log(serverError)
-        console.log(auth)
+        console.log(authData)
+        
     }
 
     const displayShowRegistrationModal = () => {

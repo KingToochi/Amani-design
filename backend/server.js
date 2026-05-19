@@ -40,6 +40,7 @@ connectDB();
 
 
 const JWT_SECRET  = process.env.JWT_SECRET;
+const isProduction = process.env.NODE_ENV === "production";
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
@@ -317,7 +318,7 @@ app.post("/users/registration", async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       // secure: true,
-      // secure: process.env.NODE_ENV === "production",       // false in localhost for development
+      //secure: isProduction,       // false in localhost for development
       sameSite: "nonee",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
@@ -326,7 +327,7 @@ app.post("/users/registration", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       // secure: true,
-      secure: process.env.NODE_ENV === "production",
+     secure: isProduction,
       sameSite: "nonee",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
@@ -416,8 +417,8 @@ if (req.files.proofOfAddress) {
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         // secure: true,
-        // secure: process.env.NODE_ENV === "production",       // false in localhost for development
-        sameSite: "nonee",
+        //secure: isProduction,       // false in localhost for development
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 15 * 60 * 1000  // 15 minutes
       });
 
@@ -425,8 +426,8 @@ if (req.files.proofOfAddress) {
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         // secure: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "nonee",
+       secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         path: "/refresh",
         maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
       });
@@ -457,8 +458,8 @@ app.post("/users/login", async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       // secure: true,
-      secure: process.env.NODE_ENV === "production",       // false in localhost for development
-      sameSite: "none",
+     secure: isProduction,       // false in localhost for development
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
@@ -466,12 +467,11 @@ app.post("/users/login", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       // secure: true,
-      secure: process.env.NODE_ENV === "production",       // false in localhost
-      sameSite: "none",
+     secure: isProduction,       // false in localhost
+      sameSite: isProduction ? "none" : "lax",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
-
     res.json({ success: true, message: "User login successful", accessToken, refreshToken });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -484,15 +484,15 @@ app.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
     // secure: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "noneict"
+   secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
   });
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
     // secure: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "nonee",
+   secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     path: "/refresh"
   });
 
@@ -513,8 +513,8 @@ app.post("/refresh", async (req, res) => {
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       // secure: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "nonee",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 30 * 60 * 1000  // 30 minutes
     });
 
@@ -548,7 +548,7 @@ app.post("/users/login/admin", async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       // secure: true,
-      // secure: process.env.NODE_ENV === "production",       // false in localhost for development
+      //secure: isProduction,       // false in localhost for development
       sameSite: "nonee",
       maxAge: 15 * 60 * 1000  // 15 minutes
     });
@@ -557,7 +557,7 @@ app.post("/users/login/admin", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       // secure: true,
-      secure: process.env.NODE_ENV === "production",
+     secure: isProduction,
       sameSite: "nonee",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days

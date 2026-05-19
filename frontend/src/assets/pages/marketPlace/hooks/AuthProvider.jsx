@@ -57,7 +57,10 @@ const AuthProvider = ({ children }) => {
     
     setAuth({});
     setIsLoggedIn(false);
+    
   };
+
+ 
 
   return (
     <AuthContext.Provider 
