@@ -47,18 +47,12 @@ function App() {
         </Route>
         <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>
-          <Route path="product" element={<Products/>} />
+          <Route index element={<Dashboard />} />
+          <Route path="product" element={<Product/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />
         </Route> 
         </Route>
-
-        {/* <Route path="/designer" element={<DesignerLayout/>}>
-          <Route index element={<Dashboard />} />
-          <Route path="products" element={<Product/>} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="productdetails/:id" element={<ProductDetails />} />
-        </Route>  */}
 
         <Route element={<ProtectedRoute allowedRole={["admin"]}/>}>
           <Route path="/admin" element={<AdminLayout />} >

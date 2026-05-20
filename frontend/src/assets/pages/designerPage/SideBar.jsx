@@ -21,18 +21,18 @@ const SideBar = ({className, userData}) => {
             <div
             className="w-full flex items-center gap-2"
             >
-                <img src={userData?.proilePicture} alt="AmaniSky Logo"
+                <img src={userData?.profilePicture} alt="AmaniSky Logo"
                 className="w-[40px] h-[40px] rounded-[50%]"
                 />
                 <div
                 className="flex flex-col justify-center"
                 >
                     <h1
-                    className="font-[abril] font-normal text-base"
+                    className="font-[abril] font-normal text-base text-center"
                     >{userData?.fname + " " + userData?.lname}</h1>
                     <h1
                     className="font-[abril] font-light text-gray-400 text-lg"
-                    >{userData?.typeOfRole}</h1>
+                    >{userData?.typeOfVendor}</h1>
                 </div>
             </div>
             <ul 

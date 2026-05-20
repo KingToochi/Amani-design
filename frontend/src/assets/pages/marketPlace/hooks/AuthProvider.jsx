@@ -4,8 +4,11 @@ import { BASE_URL } from "../../../Url";
 export const AuthContext = createContext({});
 
 const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [auth, setAuth] = useState(JSON.parse(localStorage.getItem("user")) || {});
+   const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("user")
+  );
+
   const [loading, setLoading] = useState(true);
 
   // Fetch user info from backend to verify token and get user data
@@ -20,9 +23,11 @@ const AuthProvider = ({ children }) => {
         const data = await response.json();
         if (data.user) {
           setAuth(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
           setIsLoggedIn(true);
         } else {
           setAuth({});
+          localStorage.removeItem("user");
           setIsLoggedIn(false);
         }
       } else {
@@ -57,6 +62,7 @@ const AuthProvider = ({ children }) => {
     
     setAuth({});
     setIsLoggedIn(false);
+    localStorage.removeItem("user");
     
   };
 

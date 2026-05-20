@@ -6,7 +6,6 @@ import ServerError from "../../components/ServerError";
 const Dashboard = () => {
     const url = BASE_URL;
     const { auth } = useContext(AuthContext);
-    const token = localStorage.getItem("token");
     const [sales, setSales] = useState({});
     const [orders, setOrders] = useState({});
     const [comments, setComments] = useState({});
@@ -15,14 +14,15 @@ const Dashboard = () => {
     const [serverError, setServerError] = useState({});
     const fetchData = async () => {
         try {
-            if (!token) return;
-        if(auth?.role !== "vendor" && auth?.role !== "designer") return;
+        if(auth?.role !== "vendor" && auth?.role !== "designer") {
+            setServerError({message: "Unauthorized access. You do not have permission to view this page."});
+            setLoading(false);
+            return;
+        }
 
         const productAnalytics = await fetch(`${url}/designer/productAnalytics`, {
             method: "GET",
-            headers: {
-                authorization : `Bearer ${token}`
-            }
+            credentials: "include"
         })
         let data = await productAnalytics.json();
         if (data.success) {
@@ -44,7 +44,11 @@ const Dashboard = () => {
     
 
         }catch(err){
-            
+            console.error(err);
+
+            setServerError({
+            message: "Something went wrong"
+    });
 
         }finally {
             setLoading(false);
@@ -52,24 +56,26 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-        fetchData();
-    }, [token]);
+        if (auth?.role) {
+            fetchData();
+        }
+    }, [auth]);
 
-    if (auth.status === "pending") {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="text-lg">Your account is pending approval. Please wait for an admin to approve your account.</div>
-            </div>
-        );
-    }
+    // if (auth.status === "pending") {
+    //     return (
+    //         <div className="flex justify-center items-center h-screen">
+    //             <div className="text-lg">Your account is pending approval. Please wait for an admin to approve your account.</div>
+    //         </div>
+    //     );
+    // }
 
-    if (auth.status === "rejected") {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="text-lg">Your account has been rejected.</div>
-            </div>
-        );
-    }   
+    // if (auth.status === "rejected") {
+    //     return (
+    //         <div className="flex justify-center items-center h-screen">
+    //             <div className="text-lg">Your account has been rejected.</div>
+    //         </div>
+    //     );
+    // }   
 
 
     if (loading) {
@@ -80,9 +86,9 @@ const Dashboard = () => {
         );
     }
 
-    // if (serverError) {
-    //     return <ServerError serverError={serverError} />;
-    // }
+    if (serverError) {
+        return <ServerError serverError={serverError} />;
+    }
 
     return (
         <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
