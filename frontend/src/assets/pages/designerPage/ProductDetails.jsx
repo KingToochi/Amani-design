@@ -7,6 +7,7 @@ import { IoHandLeft } from "react-icons/io5";
 import { GoPlus} from "react-icons/go";
 import { FiMinus } from "react-icons/fi";
 import { FaArrowLeft } from "react-icons/fa";
+import { BASE_URL } from "../../Url";
 
 const ProductDetails = () => {
     const [editPrice, setEditPrice] = useState(false)
@@ -16,13 +17,15 @@ const ProductDetails = () => {
     const [productList, setProductList] = useState({})
     const {id} = useParams()
     const Navigate = useNavigate()
+    const url = `${BASE_URL}/products/${id}`
 
 
     const fetchProductDetail = async(id) => {
         
         try {
-            let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`)
+            let response = await fetch(url)
             let data = await response.json()
+            console.log(data)
             setProductDetails(data)
         } catch(error) {
             console.log(error)
@@ -59,7 +62,7 @@ const ProductDetails = () => {
   const handleUpdate = async(productDetails, e) => {
     e.preventDefault()
     try {
-        let response = await fetch (`https://amani-design-backend.onrender.com/products/${id}`, {
+        let response = await fetch (url, {
             "method" : "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(productDetails)
@@ -76,14 +79,14 @@ const ProductDetails = () => {
 
   const handleDelete = async() => {
     try {
-        let response = await fetch (`https://amani-design-backend.onrender.com/products/`, {
+        let response = await fetch (url, {
             "method": "GET",
         })
-        let data = response.JSON
+        let data = await response.json()
         setProductList(data)
         if (response.ok){
             try {
-                let response = await fetch(`https://amani-design-backend.onrender.com/products/${id}`, {
+                let response = await fetch(url, {
                 "method": "DELETE",
                 })
                 setProductList(prev => prev.filter(product => product.id !== id))
@@ -100,21 +103,20 @@ const ProductDetails = () => {
     }
   }
 
-  const handleGoBack = () => Navigate("/products")
+  const handleGoBack = () => Navigate("/designer/products")
 
     return(
-               <div className="w-full flex flex-col gap-10 pt-4">
+               <div className="w-full flex flex-col gap-10 pt-4 text-gray-900">
                <div
-                    className="w-full text-gray-50 px-4 text-2xl"
+                    className="w-full px-4 text-2xl"
                     >
                         <button 
                         onClick={handleGoBack}
-                        className="flex items-center gap-4 cursor-pointer">
+                        className="flex items-center gap-4 cursor-pointer ">
                             <FaArrowLeft />
-                            <h1>back</h1>
                         </button>
                 </div>
-                <div className="w-[90%] mx-auto min-h -screen flex flex-col text-gray-50 font-[abril] text-xl px-4 gap-4
+                <div className="w-[90%] mx-auto min-h -screen flex flex-col  font-[abril] text-xl px-4 gap-4
                 sm:text-2xl
                 md:flex-row
                 ">
@@ -123,7 +125,7 @@ const ProductDetails = () => {
                     md:w-[50%] md:h-auto 
                     "
                     >
-                        <img src={productDetails.productImage} className="w-full h-full rounded-lg "/>
+                        <img src={productDetails?.productImages} className="w-full h-full rounded-lg "/>
                     </div>
                     <div
                     className="w-full flex flex-col gap-5 px-4
@@ -140,12 +142,12 @@ const ProductDetails = () => {
                         lg:w-1/2
                         ">
                             <FiMinus />
-                            <input type="number" value={productDetails.productPrice} onChange={(e) => setProductDetails({...productDetails, [e.target.name]: e.currentTarget.value})} name="productPrice" className="w-[70%]   focus:outline-none"/>
+                            <input type="number" value={productDetails.basePrice} onChange={(e) => setProductDetails({...productDetails, [e.target.name]: e.currentTarget.value})} name="basePrice" className="w-[70%]   focus:outline-none"/>
                             <GoPlus/>
                         </form> 
                         :
                         <div className="w-full flex items-center justify-between gap-2 pt-2">
-                            <h1 className="flex items-center font-semibold"><TbCurrencyNaira />{productDetails.productPrice}</h1>
+                            <h1 className="flex items-center font-semibold"><TbCurrencyNaira />{productDetails.basePrice}</h1>
                             <button onClick={handleEditPrice} className="cursor-pointer">
                                 <CiEdit  className="font-normal"/>
                             </button>
@@ -166,7 +168,7 @@ const ProductDetails = () => {
                             <div
                             className="w-full flex items-center justify-between gap-2 pt-2"
                             >
-                                <h1>{productDetails.productDescription}</h1>
+                                <h1>{productDetails?.productDescription}</h1>
                                 <button onClick={handleEditDescription} className="cursor-pointer">
                                     <CiEdit  className="font-normal"/>
                                 </button>

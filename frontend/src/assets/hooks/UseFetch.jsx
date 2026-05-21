@@ -13,6 +13,8 @@ const CustomFetch = async(url, options = {}) => {
                 credentials: "include"
             })
 
+            console.log(refreshTokenResponse)
+
             if (refreshTokenResponse.ok) {
                 response =  await fetch(url, {
                     ...options,

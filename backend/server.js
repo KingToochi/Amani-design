@@ -243,7 +243,7 @@ app.post(
 app.put("/products/:id", async (req, res) => {
   try {
     const updatedProduct = await Product.findOneAndUpdate(
-      { id: req.params.id },
+      { id: req.params._id },
       { $set: req.body },
       { new: true }
     );
