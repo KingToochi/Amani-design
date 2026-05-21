@@ -258,7 +258,7 @@ app.put("/products/:id", async (req, res) => {
 // DELETE product
 app.delete("/products/:id", async (req, res) => {
   try {
-    const deleted = await Product.findOneAndDelete({ id: req.params.id });
+    const deleted = await Product.findOneAndDelete({ id: req.params._id });
     if (!deleted) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product deleted" });
   } catch (err) {
