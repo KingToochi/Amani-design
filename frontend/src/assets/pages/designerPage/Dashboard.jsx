@@ -1,48 +1,43 @@
 import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../marketPlace/hooks/AuthProvider";  
+import { AuthContext } from "../../hooks/AuthProvider";  
 import {BASE_URL} from "../../Url";
 import ServerError from "../../components/ServerError";
+import CustomFetch from "../../hooks/UseFetch";
 
 const Dashboard = () => {
-    const url = BASE_URL;
+    const url = `${BASE_URL}/designer/productAnalytics`;
     const { auth } = useContext(AuthContext);
     const [sales, setSales] = useState({});
     const [orders, setOrders] = useState({});
     const [comments, setComments] = useState({});
     const [ratings, setRatings] = useState({});
     const [loading, setLoading] = useState(true);
-    const [serverError, setServerError] = useState({});
+    const [serverError, setServerError] = useState(null);
     const fetchData = async () => {
         try {
         if(auth?.role !== "vendor" && auth?.role !== "designer") {
             setServerError({message: "Unauthorized access. You do not have permission to view this page."});
             setLoading(false);
+            window.location.href = "/Unauthorized";
             return;
         }
 
-        const productAnalytics = await fetch(`${url}/designer/productAnalytics`, {
+        const productAnalytics = await CustomFetch(url, {
             method: "GET",
-            credentials: "include"
-        })
+        }); 
+        if (!productAnalytics) return;
         let data = await productAnalytics.json();
         if (data.success) {
             setSales(data.sales);
             setOrders(data.orders);
             setComments(data.comments);
             setRatings(data.ratings);
-            setLoading(false);
             console.log(data)
         }else {
             setServerError({message: data.message});
-            setTimeout(() => {
-                setServerError(null);
-            },5000)
         }
         console.log(data);
         console.log(data.sales)
-
-    
-
         }catch(err){
             console.error(err);
 
@@ -56,26 +51,38 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-        if (auth?.role) {
-            fetchData();
-        }
+        fetchData();
     }, [auth]);
+    
+    useEffect(() => {
 
-    // if (auth.status === "pending") {
-    //     return (
-    //         <div className="flex justify-center items-center h-screen">
-    //             <div className="text-lg">Your account is pending approval. Please wait for an admin to approve your account.</div>
-    //         </div>
-    //     );
-    // }
+        if(serverError){
 
-    // if (auth.status === "rejected") {
-    //     return (
-    //         <div className="flex justify-center items-center h-screen">
-    //             <div className="text-lg">Your account has been rejected.</div>
-    //         </div>
-    //     );
-    // }   
+            const timer = setTimeout(() => {
+                setServerError(null);
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+
+    }, [serverError]);
+
+    if (auth.status === "pending") {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-lg">Your account is pending approval. Please wait for an admin to approve your account.</div>
+            </div>
+        );
+    }
+
+    if (auth.status === "rejected") {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-lg">Your account has been rejected.</div>
+            </div>
+        );
+    }   
+    
 
 
     if (loading) {

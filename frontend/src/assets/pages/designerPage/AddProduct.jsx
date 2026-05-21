@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BASE_URL } from "../../Url";
+import CustomFetch from "../../hooks/UseFetch";
 
 const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) => {
     const [fileName, setFileName] = useState("");
@@ -15,18 +16,26 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
     const [formField, setFormField] = useState([
         { element: "input", name: "productName", id: "productName", type: "text", value: "", placeholder: "name of your product", label: "Product Name" },
         { element: "select", id: "productCategory", name: "productCategory", type: "text", value: "", label: "Product Category", option: ["clothing", "footwear", "handbag", "accessory"] },
-        { element: "select", id: "productSubCategory", name: "productSubCategory", type: "text", value: "", label: "Sub-Category", option: ["men clothing", "men footwear", "men handbag", "men clothingaccessory", "women clothing", "women footWear", "women handbag", "women clothingaccessory", "kid clothing", "kid footWear", "kid clothing accessory"] },
+        { element: "select", id: "productSubCategory", name: "productSubCategory", type: "text", value: "", label: "Sub-Category", option: ["men clothing", "men footwear", "men handbag", "men clothing accessory", "women clothing", "women footWear", "women handbag", "women clothing accessory", "kid clothing", "kid footWear", "kid clothing accessory"] },
         { element: "input", type: "file", id: "productImage", name: "productImage", accept: "image/*", value: [], label: "Image Product" },
         { element: "textarea", name: "productDescription", type: "text", id: "productDescription", placeholder: "Description ......", value: "", label: "Product Description" },
-        { element: "select", id: "size", name: "size", type: "text", label: "Size", value: "", option: ["xs", "s", "m", "l", "xl", "xxl"] },
+        { element: "select", id: "size", name: "size", type: "text", label: "Size", value: "", option: {
+            clothing: ["xs", "s", "m", "l", "xl", "xxl"],
+            footwear: ["10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", 
+                "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", 
+                "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", 
+                "54", "55", "56", "57", "58", "59", "60"],
+            handbag: ["small", "medium", "large"],
+            accessory: ["extra small", "small", "medium", "large", "one size", "adjustable"]
+        } },
         { element: "input", type: "text", id: "color", name: "color", placeholder: "add product color", value: "", label: "Color" },
         { element: "input", type: "number", id: "productPrice", value: "", name: "productPrice", placeholder: "Price", label: "Price" },
     ]);
     
 
     
-    const url = BASE_URL;
-    const token = localStorage.getItem("token")
+    const url = `${BASE_URL}/products`;
+
 
     const addToFormField = () => {
         const limits = imageLimit.maxProducts;
@@ -52,7 +61,15 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
                     name: `size${newCount}`,
                     label: `Variant ${newCount} size`,
                     value: "",
-                    option: ["xs", "s", "m", "l", "xl", "xxl"]
+                    option: {
+                        clothing: ["xs", "s", "m", "l", "xl", "xxl"],
+                        footwear: ["10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", 
+                            "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", 
+                            "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", 
+                            "54", "55", "56", "57", "58", "59", "60"],
+                        handbag: ["small", "medium", "large"],
+                        accessory: ["extra small", "small", "medium", "large", "one size", "adjustable"]
+                    }
                 },
                 {
                     element: "input",
@@ -209,9 +226,8 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
         }
         
         try {
-            const response = await fetch(`${url}/products`, {
+            let response = await CustomFetch(url, {
                 method: "POST",
-                headers : {Authorization : `Bearer ${token}`},
                 body: formData
             });
             
@@ -255,6 +271,48 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
                             </div>
                         );
                     } else if (field.element === "select") {
+
+                        if (field.id === "size") {
+                            let fieldOption;
+                            const categoryField = formField.find(f => f.id === "productCategory");
+                            if (categoryField.value === "clothing") {
+                                fieldOption = field.option.clothing;
+                            }else if (categoryField.value === "footwear") {
+                                fieldOption = field.option.footwear;
+                            } else if (categoryField.value === "handbag") {
+                                fieldOption = field.option.handbag;
+                            } else if (categoryField.value === "accessory") {
+                                fieldOption = field.option.accessory;
+                            } else {
+                                fieldOption = [];
+                                return (
+                                    <div key={field.id} className="space-y-2">
+                                        <label htmlFor={field.id} className="block text-sm font-medium text-slate-700">{field.label}</label>
+                                        <p className="text-sm text-gray-500">Please select a product category to see size options.</p>
+                                    </div>
+                                )
+                            }
+                            return (
+                                    <div key={field.id} className="space-y-2">
+                                        <label htmlFor={field.id} className="block text-sm font-medium text-slate-700">{field.label}</label>
+                                        <select
+                                            id={field.id}
+                                            name={field.name}
+                                            value={field.value}
+                                            onChange={handleChange}
+                                            className="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        >
+                                            <option value="" hidden>Please Select</option>
+                                            {fieldOption.map((option, i) => (
+                                                <option key={i} value={option}>
+                                                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {error[field.id] && <p className="text-sm text-red-600">{error[field.id]}</p>}
+                                    </div>
+                        );
+                        }
                         return (
                             <div key={field.id} className="space-y-2">
                                 <label htmlFor={field.id} className="block text-sm font-medium text-slate-700">{field.label}</label>
@@ -317,6 +375,47 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
                         <h3 className="text-lg font-semibold text-slate-900 mb-4">Variant {variantIndex + 1}</h3>
                         {variantGroup.map((variantField, fieldIndex) => {
                             if (variantField.element === "select") {
+                                if (variantField.id.startsWith("VariantSize")) {
+                                    let fieldOption;
+                                    const categoryField = formField.find(f => f.id === "productCategory");
+                                    if (categoryField.value === "clothing") {
+                                        fieldOption = variantField.option.clothing;
+                                    } else if (categoryField.value === "footwear") {
+                                        fieldOption = variantField.option.footwear;
+                                    } else if (categoryField.value === "handbag") { 
+                                        fieldOption = variantField.option.handbag;
+                                    } else if (categoryField.value === "accessory") {
+                                        fieldOption = variantField.option.accessory;
+                                    } else {
+                                        fieldOption = [];
+                                        return (
+                                            <div key={variantField.id} className="space-y-2">
+                                                <label htmlFor={variantField.id} className="block text-sm font-medium text-slate-700">{variantField.label}</label>
+                                                <p className="text-sm text-gray-500">Please select a product category to see size options.</p>
+                                            </div>
+                                        )
+                                    }
+
+                                    return (
+                                    <div key={variantField.id} className="space-y-2 mb-4">
+                                        <label className="block text-sm font-medium text-slate-700">{variantField.label}</label>
+                                        <select
+                                            value={variantField.value}
+                                            onChange={(e) => handleVariantChange(variantIndex, fieldIndex, e)}
+                                            className="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        >
+                                            <option value="" hidden>Please Select</option>
+                                            {fieldOption.map((option, i) => (
+                                                <option key={i} value={option}>
+                                                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                );
+
+                                } 
+
                                 return (
                                     <div key={variantField.id} className="space-y-2 mb-4">
                                         <label className="block text-sm font-medium text-slate-700">{variantField.label}</label>

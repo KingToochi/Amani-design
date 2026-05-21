@@ -3,11 +3,11 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
-import MyCart from './assets/pages/marketPlace/hooks/CartContext.jsx'
+import MyCart from './assets/hooks/CartContext.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import MyWishList from './assets/pages/marketPlace/hooks/WishListContext.jsx'
-import AuthProvider from './assets/pages/marketPlace/hooks/AuthProvider.jsx'
-import LikeProduct from './assets/pages/marketPlace/hooks/Like.jsx'
+import MyWishList from './assets/hooks/WishListContext.jsx'
+import AuthProvider from './assets/hooks/AuthProvider.jsx'
+import LikeProduct from './assets/hooks/Like.jsx'
 
 
 createRoot(document.getElementById('root')).render(

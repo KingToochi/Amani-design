@@ -4,7 +4,7 @@ import Registration from "./DesignersRegistration";
 import { BASE_URL } from "../Url";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
-import { AuthContext } from "./marketPlace/hooks/AuthProvider";
+import { AuthContext } from "../hooks/AuthProvider";
 import ServerError from "../components/ServerError"
 
 const Login = () => {

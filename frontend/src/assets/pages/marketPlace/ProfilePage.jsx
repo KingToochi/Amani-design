@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import {AuthContext} from "./hooks/AuthProvider"
+import {AuthContext} from "../../hooks/AuthProvider"
 import { CiEdit } from "react-icons/ci";
 import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";

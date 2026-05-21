@@ -2,7 +2,7 @@ import { useContext, useState } from "react"
 import { BASE_URL } from "../Url"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "./marketPlace/hooks/AuthProvider";
+import { AuthContext } from "../hooks/AuthProvider";
 import ServerError from "../components/ServerError";
 
 

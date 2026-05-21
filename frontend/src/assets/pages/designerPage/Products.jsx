@@ -5,9 +5,10 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { FaNairaSign } from "react-icons/fa6";
 import { BASE_URL } from "../../Url";
-import { AuthContext } from "../marketPlace/hooks/AuthProvider";
+import { AuthContext } from "../../hooks/AuthProvider";
 import ServerError from "../../components/ServerError";
 import Slide from "../../components/SlideShow";
+import CustomFetch from "../../hooks/UseFetch";
 
 
 const Products = () => {
@@ -18,7 +19,7 @@ const Products = () => {
     const [alertModal, setAlertModal] = useState(false)
     const [alert, setAlert] = useState(null)
     const [imageLimits, setImageLimits] = useState(null)
-    const url = BASE_URL
+    const url = `${BASE_URL}/products/designer`
     const {auth} = useContext(AuthContext)
     const subscriber = auth.subscriber
     const plan = auth.subscriptionPlan
@@ -27,9 +28,8 @@ const Products = () => {
 
     const fetchProduct = async () => {
         try{
-            let response = await fetch (`${url}/products/designer`, {
-                method : "GET",
-                credentials: "include"
+            let response = await CustomFetch(url, {
+                method: "GET",
             })
             const data = await response.json()
             if (!data.success) {

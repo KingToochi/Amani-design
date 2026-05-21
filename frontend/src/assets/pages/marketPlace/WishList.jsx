@@ -1,5 +1,5 @@
 import { FaHeart } from "react-icons/fa6";
-import { WishiListContext } from "./hooks/WishListContext";
+import { WishiListContext } from "../../hooks/WishListContext";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 

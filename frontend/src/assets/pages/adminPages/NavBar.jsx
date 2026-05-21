@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Logo from "../../images/mainLogo.jpg";
 import {BASE_URL} from "../../Url";
 import { useEffect, useContext } from "react";
-import { AuthContext } from "../marketPlace/hooks/AuthProvider";
+import { AuthContext } from "../../hooks/AuthProvider";
 import {
     faTachometerAlt,
     faUserTie,

@@ -7,8 +7,8 @@ import { FaUser } from "react-icons/fa6";
 import logo from "../../images/mainLogo.jpg"
 import { Link } from "react-router-dom";
 import { useState, useContext} from "react";
-import { CartContext } from "./hooks/CartContext";
-import {AuthContext} from "./hooks/AuthProvider"
+import { CartContext } from "../../hooks/CartContext";
+import {AuthContext} from "../../hooks/AuthProvider"
 import { BASE_URL } from "../../Url";
 import Search from "./SearchPage";
 import { TbLayoutGridAdd } from "react-icons/tb";

@@ -3,24 +3,20 @@ import { Outlet } from "react-router-dom";
 import SideBar from "./SideBar";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../../Url";
+import CustomFetch from "../../hooks/UseFetch";
 const Layout = () => {
     
-    const url = BASE_URL
+    const url = `${BASE_URL}/users`
     const [userData, setUserData] = useState()
-    const [serverError, setServerError] = useState(null)
-    const fetchUser = async () => {
-        try {
-            let response = await fetch(`${url}/users`, {
-                credentials: "include"
-            });
-            const data = await response.json();
-            console.log(data)
-            setUserData(data.userData)
-            console.log(data.userData)
-        }catch(error){
-            console.log(error)
-            setServerError(error)
 
+
+    const fetchUser = async() => {
+        try {
+            let user = await CustomFetch(url)
+            const data = await user.json();
+            setUserData(data.userData)
+        } catch (error){
+            console.log(error)
         }
     }
 

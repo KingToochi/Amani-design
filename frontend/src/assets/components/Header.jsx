@@ -8,7 +8,7 @@ import { useState } from "react";
 import SearchBar from "./SearchBar";
 import Search from "../pages/marketPlace/SearchPage";
 import {BASE_URL} from "../Url";
-import { CartContext } from "../pages/marketPlace/hooks/CartContext";
+import { CartContext } from "../hooks/CartContext";
 import { useContext } from "react";
 
 const Header = () => {

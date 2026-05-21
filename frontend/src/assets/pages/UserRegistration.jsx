@@ -5,7 +5,7 @@ import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { AuthContext } from "./marketPlace/hooks/AuthProvider";
+import { AuthContext } from "../hooks/AuthProvider";
 import ServerError from "../components/ServerError";
 
 const UserRegistration = () => {

@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from "react"
 import { FiArrowLeft } from "react-icons/fi"
 import { FaNairaSign } from "react-icons/fa6"
 import { TbCurrencyNaira } from "react-icons/tb"
-import { CartContext } from "./hooks/CartContext"
+import { CartContext } from "../../hooks/CartContext"
 import { BASE_URL } from "../../Url"
 
 const PDetails = () => {

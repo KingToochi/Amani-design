@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { BASE_URL } from '../../Url';
-import { AuthContext } from './hooks/AuthProvider';
-import { CartContext } from './hooks/CartContext';
+import { AuthContext } from '../../hooks/AuthProvider';
+import { CartContext } from '../../hooks/CartContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useFlutterwave } from 'flutterwave-react-v3';

@@ -16,7 +16,7 @@ import WishList from "./assets/pages/marketPlace/WishList";
 import ProfilePage from "./assets/pages/marketPlace/ProfilePage";
 import Login from "./assets/pages/Login";
 import UserRegistration from "./assets/pages/UserRegistration"
-import ProtectedRoute from "./assets/pages/marketPlace/hooks/ProtectedRoute";
+import ProtectedRoute from "./assets/hooks/ProtectedRoute";
 import Page404 from "./assets/pages/404";
 import Unauthorized from "./assets/pages/Unauthorized"
 import HomePage from "./assets/pages/public/HomePage";
@@ -48,7 +48,7 @@ function App() {
         <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>
           <Route index element={<Dashboard />} />
-          <Route path="product" element={<Product/>} />
+          <Route path="products" element={<Product/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />
         </Route> 

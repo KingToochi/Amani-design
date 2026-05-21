@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { CartContext } from "./hooks/CartContext";
+import { CartContext } from "../../hooks/CartContext";
 import { TbCurrencyNaira } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import { FaMinus, FaPlus } from "react-icons/fa6";

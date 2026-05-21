@@ -2,7 +2,7 @@ import logo from '../../../assets/images/mainLogo.jpg';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
-import { AuthContext } from '../marketPlace/hooks/AuthProvider';
+import { AuthContext } from '../../hooks/AuthProvider';
 import { BASE_URL } from '../../Url';
 
 const Login = () => {

@@ -17,33 +17,13 @@ import ServerError from "../../components/ServerError";
 
 
 const Header = ({userData}) => {
-    
-    // const [userData, setUserData] = useState([])
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
     const [showMenu, setShowMenu] = useState(false)
     const [showSearchBar, setShowSearchBar] = useState(false)
     const [serverError, setServerError] = useState(null)
-    // const url = BASE_URL
-    // const token = localStorage.getItem("token")
-    // const fetchUser = async () => {
-    //     try {
-    //         let response = await fetch(`${url}/users`, {
-    //             headers: {
-    //                 "Authorization": `Bearer ${token}`
-    //             }   
-    //         });
-    //         const data = await response.json();
-    //         setUserData(data.userData)
-    //         console.log(data.userData)
-    //     }catch(error){
-    //         console.log(error)
-    //         setServerError(error)
 
-    //     }
-    // }
 
     useEffect(() => {
-        // fetchUser()
         const handleResize = () =>setIsMobile(window.innerWidth < 768)
         window.addEventListener("resize", handleResize)
 
