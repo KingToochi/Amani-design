@@ -233,7 +233,7 @@ app.post(
 app.put("/products/:id", async (req, res) => {
   try {
     const updatedProduct = await Product.findOneAndUpdate(
-      { _id: req.params._id },
+      { _id: req.params.id },
       { $set: req.body },
       { new: true }
     );
@@ -248,7 +248,7 @@ app.put("/products/:id", async (req, res) => {
 // DELETE product
 app.delete("/products/:id", async (req, res) => {
   try {
-    const deleted = await Product.findOneAndDelete({ _id: req.params._id });
+    const deleted = await Product.findOneAndDelete({ _id: req.params.id });
     if (!deleted) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product deleted" });
   } catch (err) {
