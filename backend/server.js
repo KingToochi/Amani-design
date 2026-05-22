@@ -645,7 +645,7 @@ app.put("/user/update", verifyToken, async(req, res) => {
     return res.status(400).json({ success: false, message: "No data provided for update" })
   }
 
-  if (Object.keys(updates).includes("role") || Object.keys(updates).includes("status") || Object.keys(updates).includes("password") || Object.keys(updates).includes("subscription") || Object.keys(updates).includes("typeOfVendor") || Object.keys(updates).includes("subscriber") || Object.keys(updates).includes("subscriptionDetails")) {
+  if (Object.keys(updates).includes("role") || Object.keys(updates).includes("status") || Object.keys(updates).includes("password") || Object.keys(updates).includes("subscription") || Object.keys(updates).includes("subscriber") || Object.keys(updates).includes("subscriptionDetails")) {
     return res.status(403).json({ success: false, message: "Unauthorized to update certain fields" })
   }
 

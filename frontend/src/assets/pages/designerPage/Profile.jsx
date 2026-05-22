@@ -182,7 +182,7 @@ const Profile = () => {
                                     <div>
                                         <label className="text-sm text-gray-600">Role</label>
                                         <select name="typeOfVendor" value={form.typeOfVendor} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
-                                            <option value="null hidden">Select Role</option>
+                                            <option value="" hidden>Select Role</option>
                                             <option value="manufacturer">Manufacturer</option>
                                             <option value="wholesaler">Wholesaler</option>
                                             <option value="retailer">Retailer</option>

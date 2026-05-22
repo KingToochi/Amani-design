@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
   },
   typeOfVendor: {
     type: String,
-    enum : ["null", "manufacturer", "wholesaler", "retailer"],
+    enum : [null, "manufacturer", "wholesaler", "retailer"],
     default: null,
     required : true,
   },
