@@ -667,7 +667,7 @@ app.put("/user/update", verifyToken, async(req, res) => {
     return res.json({ success: true, message: "User information updated successfully", user})
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ success: false, message: "An error occurred while updating user information" })
+    return res.status(500).json({ success: false, message: "An error occurred while updating user information", error })
   }
 })
 

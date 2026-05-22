@@ -85,6 +85,7 @@ const Profile = () => {
             })
             const result = await res.json()
             if (res.ok) {
+                console.log("Profile updated successfully")
                 setUserData(result.user)
                 setEditProfile(false)
             } else {
@@ -92,6 +93,7 @@ const Profile = () => {
             }
         } catch (error) {
             setServerError(error)
+            console.log("Error updating profile:", error)
         } finally {
             setSaving(false)
         }
