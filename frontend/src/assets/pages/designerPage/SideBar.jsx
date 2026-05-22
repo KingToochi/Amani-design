@@ -21,9 +21,11 @@ const SideBar = ({className, userData}) => {
             <div
             className="w-full flex items-center gap-2"
             >
-                <img src={userData?.profilePicture} alt="AmaniSky Logo"
-                className="w-[40px] h-[40px] rounded-[50%]"
-                />
+                <Link to="/designer/profile">
+                    <img src={userData?.profilePicture} alt="AmaniSky Logo"
+                    className="w-[40px] h-[40px] rounded-[50%]"
+                    />
+                </Link>
                 <div
                 className="flex flex-col justify-center"
                 >

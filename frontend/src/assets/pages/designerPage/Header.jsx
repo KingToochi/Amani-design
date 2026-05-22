@@ -68,10 +68,14 @@ const Header = ({userData}) => {
                             <div
                             className="w-full flex flex-col items-center"
                             >
-                                <img src={userData?.profilePicture} alt="Vendor Profile Picture"
-                                className="w-[40px] h-[40px] rounded-full
-                                sm:w-[80px] sm:h-[80px]"
-                                />
+                                <Link to="/designer/profile" onClick={onClickMenuBar}
+                                className="flex flex-col items-center gap-2"
+                                >
+                                    <img src={userData?.profilePicture} alt="Vendor Profile Picture"
+                                    className="w-[40px] h-[40px] rounded-full
+                                    sm:w-[80px] sm:h-[80px]"
+                                    />
+                                </Link>
                                 <div
                                 className="flex flex-col items-center"
                                 >

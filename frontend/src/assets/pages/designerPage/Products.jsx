@@ -61,13 +61,13 @@ const Products = () => {
         );
     }
 
-    // if (auth.status === "pending") {
-    //     return (
-    //         <div className="flex justify-center items-center h-screen">
-    //             <p>Your account is pending approval. Please wait for an admin to approve your account.</p>
-    //         </div>
-    //     );
-    // }
+    if (auth.status === "pending") {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p>Your account is pending approval. Please wait for an admin to approve your account.</p>
+            </div>
+        );
+    }
 
     if (auth.status === "rejected") {
         return (

@@ -637,6 +637,31 @@ app.get("/likes", verifyToken, async(req, res) => {
   }
 })
 
+app.put("/user/update", verifyToken, async(req, res) => {
+  const auth = req.user
+  const updates = req.body
+
+  try {
+    const user = await User.findOne({_id : auth._id})
+    if (!user) {
+      return res.status(404).json({success: false, message: "User not found" })
+    }
+
+    // Update user fields
+    Object.keys(updates).forEach(key => {
+      if (key !== "_id") {
+        user[key] = updates[key]
+      }
+    })
+
+    await user.save()
+    return res.json({ success: true, message: "User information updated successfully" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ success: false, message: "An error occurred while updating user information" })
+  }
+})
+
 app.get("/userInfo", verifyToken, async(req, res) => {
   try {
     // Check if user data exists from token
@@ -663,6 +688,7 @@ app.get("/userInfo", verifyToken, async(req, res) => {
       email: user.email,
       shippingAddress: user.shippingAddress,
       phoneNumber: user.phoneNumber,
+      dob: user.dob,
       city: user.city,
       state: user.state,
       profilePicture: user.profilePicture,
