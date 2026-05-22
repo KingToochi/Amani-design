@@ -14,7 +14,7 @@ const SubscriptionCard = ({ subscription }) => {
     const plan = subscription?.plan ?? "Free"
     const status = subscription?.status ?? "inactive"
     const start = subscription?.startDate
-    const expiry = subscription?.expiryDate
+    const expiry = subscription?.expiryDat
 
     return (
         <div className="bg-white shadow rounded-lg p-4 w-full">
