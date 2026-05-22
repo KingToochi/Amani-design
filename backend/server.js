@@ -641,11 +641,20 @@ app.put("/user/update", verifyToken, async(req, res) => {
   const auth = req.user
   const updates = req.body
 
+  if (!updates || Object.keys(updates).length === 0) {
+    return res.status(400).json({ success: false, message: "No data provided for update" })
+  }
+
+  if (Object.keys(updates).includes("role") || Object.keys(updates).includes("status") || Object.keys(updates).includes("password") || Object.keys(updates).includes("subscription") || Object.keys(updates).includes("typeOfVendor") || Object.keys(updates).includes("subscriber") || Object.keys(updates).includes("subscriptionDetails")) {
+    return res.status(403).json({ success: false, message: "Unauthorized to update certain fields" })
+  }
+
   try {
     const user = await User.findOne({_id : auth._id})
     if (!user) {
       return res.status(404).json({success: false, message: "User not found" })
     }
+
 
     // Update user fields
     Object.keys(updates).forEach(key => {
@@ -655,7 +664,7 @@ app.put("/user/update", verifyToken, async(req, res) => {
     })
 
     await user.save()
-    return res.json({ success: true, message: "User information updated successfully" })
+    return res.json({ success: true, message: "User information updated successfully", user})
   } catch (error) {
     console.error(error)
     return res.status(500).json({ success: false, message: "An error occurred while updating user information" })

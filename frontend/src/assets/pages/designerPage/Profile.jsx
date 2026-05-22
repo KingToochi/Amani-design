@@ -79,7 +79,7 @@ const Profile = () => {
         setSaving(true)
         try {
             const res = await CustomFetch(updateUrl, {
-                method: 'PATCH',
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(form)
             })
@@ -90,8 +90,8 @@ const Profile = () => {
             } else {
                 setServerError({ message: result.message || 'Failed to update' })
             }
-        } catch (err) {
-            setServerError({ message: 'Failed to update profile' })
+        } catch (error) {
+            setServerError(error)
         } finally {
             setSaving(false)
         }
@@ -194,7 +194,7 @@ const Profile = () => {
                                         <input name="state" value={form.state} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-200 shadow-sm" />
                                     </div>
 
-                                    <div className="sm:col-span-2 flex items-center gap-3 mt-2">
+                                    <div className="sm:col-span-2 flex items-center gap-3 mt-2 cursor-pointer">
                                         <button type="submit" disabled={saving} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                                             {saving ? 'Saving…' : 'Save changes'}
                                         </button>
