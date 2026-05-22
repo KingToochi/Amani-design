@@ -703,6 +703,7 @@ app.get("/userInfo", verifyToken, async(req, res) => {
       profilePicture: user.profilePicture,
       username: user.username,
       role: user.role,
+      typeOfVendor: user.typeOfVendor,
       status: user.status,
       subscriber: user.subscriber,
       subsriptionPlan : user?.subscriptionDetails.plan,

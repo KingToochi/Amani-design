@@ -61,6 +61,7 @@ const Profile = () => {
                 city: data.user?.city || "",
                 state: data.user?.state || "",
                 username: data.user?.username || "",
+                typeOfVendor: data.user?.typeOfVendor || null
             })
             setLoading(false)
         } catch (error) {
@@ -142,7 +143,7 @@ const Profile = () => {
                                 <div className={`px-3 py-1 rounded-full text-sm ${userData?.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'}`}>
                                     {userData?.status}
                                 </div>
-                                <div className="text-sm text-gray-500">Role: {userData?.role}</div>
+                                <div className="text-sm text-gray-500">Role: {userData?.typeOfVendor}</div>
                             </div>
                         </div>
                     </div>
@@ -177,6 +178,17 @@ const Profile = () => {
                                         <label className="text-sm text-gray-600">Email</label>
                                         <input name="email" value={form.email} onChange={handleChange} type="email" className="mt-1 block w-full rounded-md border-gray-200 shadow-sm" />
                                     </div>
+
+                                    <div>
+                                        <label className="text-sm text-gray-600">Role</label>
+                                        <select name="typeOfVendor" value={form.typeOfVendor} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
+                                            <option value="null hidden">Select Role</option>
+                                            <option value="manufacturer">Manufacturer</option>
+                                            <option value="wholesaler">Wholesaler</option>
+                                            <option value="retailer">Retailer</option>
+                                        </select>
+                                    </div>
+
                                     <div>
                                         <label className="text-sm text-gray-600">Phone</label>
                                         <input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-200 shadow-sm" />
