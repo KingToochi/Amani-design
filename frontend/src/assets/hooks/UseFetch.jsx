@@ -21,6 +21,7 @@ const CustomFetch = async(url, options = {}) => {
                     credentials: "include"
                 })
             } else {
+                console.log("cant refresh token")
                 localStorage.clear()
                 window.location.href = "/login"
                 return 

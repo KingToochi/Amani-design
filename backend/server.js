@@ -229,21 +229,11 @@ app.post(
   }
 );
 
-
-// app.post("/products", verifyToken,
-//    uploadProduct.array("productImages"), // Match frontend field name 
-//    async(req, res) => {
-//     const auth = req.user;
-
-
-//    })
-
-
 // PUT update product
-app.put("/products/:id", async (req, res) => {
+app.put("/products/:id",verifyToken, async (req, res) => {
   try {
     const updatedProduct = await Product.findOneAndUpdate(
-      { id: req.params._id },
+      { _id: req.params._id },
       { $set: req.body },
       { new: true }
     );
@@ -256,9 +246,9 @@ app.put("/products/:id", async (req, res) => {
 });
 
 // DELETE product
-app.delete("/products/:id", async (req, res) => {
+app.delete("/products/:id", verifyToken, async (req, res) => {
   try {
-    const deleted = await Product.findOneAndDelete({ id: req.params._id });
+    const deleted = await Product.findOneAndDelete({ _id: req.params._id });
     if (!deleted) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product deleted" });
   } catch (err) {

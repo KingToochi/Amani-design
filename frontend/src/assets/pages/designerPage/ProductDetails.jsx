@@ -90,9 +90,9 @@ const ProductDetails = () => {
                 "method": "DELETE",
                 })
                 setProductList(prev => prev.filter(product => product.id !== id))
-
                 if (response.ok) {
-                    Navigate("/products")
+                    
+                    Navigate("/designer/products")
                 }
             }catch(error){
                 console.log(error)
