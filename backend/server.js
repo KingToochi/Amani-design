@@ -230,7 +230,7 @@ app.post(
 );
 
 // PUT update product
-app.put("/products/:id",verifyToken, async (req, res) => {
+app.put("/products/:id", async (req, res) => {
   try {
     const updatedProduct = await Product.findOneAndUpdate(
       { _id: req.params._id },
@@ -246,7 +246,7 @@ app.put("/products/:id",verifyToken, async (req, res) => {
 });
 
 // DELETE product
-app.delete("/products/:id", verifyToken, async (req, res) => {
+app.delete("/products/:id", async (req, res) => {
   try {
     const deleted = await Product.findOneAndDelete({ _id: req.params._id });
     if (!deleted) return res.status(404).json({ message: "Product not found" });
