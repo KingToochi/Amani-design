@@ -106,7 +106,7 @@ const Header = ({userData}) => {
                                         <h2>Dashboard</h2>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <Link to="/designer/analytics" 
                                     onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
@@ -117,7 +117,7 @@ const Header = ({userData}) => {
                                         <FcSalesPerformance/>
                                         <h2>Analytics</h2>
                                     </Link>
-                                </li>
+                                </li> */}
 
                                 <li>
                                     <Link to="/designer/store" 
@@ -143,6 +143,18 @@ const Header = ({userData}) => {
                                     </Link>
                                 </li>
                                 <li>
+                                    <Link to="orders" 
+                                    onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <FcSalesPerformance/>
+                                        <h2>Orders</h2>
+                                    </Link>
+                                </li>
+                                <li>
                                     <Link to="/designer/sales" onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
@@ -164,7 +176,7 @@ const Header = ({userData}) => {
                                         <h2>Message</h2>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <Link to="/designer/profile" onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
@@ -174,7 +186,7 @@ const Header = ({userData}) => {
                                         <IoSettingsOutline/>
                                         <h2>Settings</h2>
                                     </Link>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                     }

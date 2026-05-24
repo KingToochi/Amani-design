@@ -26,6 +26,8 @@ import AdminDashboard from "./assets/pages/adminPages/AdminDashboard"
 import AdminLayout from "./assets/pages/adminPages/AdminLayout";
 import AdminLogin from "./assets/pages/adminPages/AdmniLogin";
 import Dashboard from "./assets/pages/designerPage/Dashboard";
+import Orders from "./assets/pages/designerPage/Orders";
+import Sales from "./assets/pages/designerPage/Sales";
 
 function App() {
   return (
@@ -51,6 +53,8 @@ function App() {
           <Route path="products" element={<Product/>} />
           <Route path="profile" element={<Profile />} />
           <Route path="productdetails/:id" element={<ProductDetails />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="sales" element={<Sales />} />
         </Route> 
         </Route>
 

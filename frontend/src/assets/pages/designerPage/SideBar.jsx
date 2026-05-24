@@ -65,7 +65,7 @@ const SideBar = ({className, userData}) => {
                     </Link>
                 </li>
                 <li>
-                    <Link
+                    <Link to="orders"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <FcSalesPerformance />
@@ -73,7 +73,7 @@ const SideBar = ({className, userData}) => {
                     </Link>
                 </li>
                 <li>
-                    <Link
+                    <Link to="/designer/sales"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal  focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <BsTag />
