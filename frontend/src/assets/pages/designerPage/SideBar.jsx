@@ -48,20 +48,28 @@ const SideBar = ({className, userData}) => {
                         <h1>Dashboard</h1>
                     </Link>
                 </li>
-                <li>
+                {/* <li>
                     <Link
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <FcSalesPerformance />
                         <h1>Analytics</h1>
                     </Link>
-                </li>
+                </li> */}
                 <li>
                     <Link to="products"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <FaPalette />
                         <h1>My Products</h1>
+                    </Link>
+                </li>
+                <li>
+                    <Link
+                    className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                    >
+                        <FcSalesPerformance />
+                        <h1>Orders</h1>
                     </Link>
                 </li>
                 <li>
@@ -80,14 +88,14 @@ const SideBar = ({className, userData}) => {
                         <h1>Message</h1>
                     </Link>
                 </li>
-                <li>
+                {/* <li>
                     <Link to="profile"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <IoSettingsOutline />
                         <h1>Settings</h1>
                     </Link>
-                </li>
+                </li> */}
             </ul>
         </div>
     )

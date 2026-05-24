@@ -17,6 +17,7 @@ import Orders from "./models/Order.js"
 import bcrypt from "bcryptjs";
 import Rating from "./models/Rating.js";
 import cookieParser from "cookie-parser";
+import Order from "./models/Order.js";
 
 
 dotenv.config();
@@ -103,7 +104,7 @@ app.get("/products/designer",verifyToken, async (req, res) => {
     if (user.role !== "vendor" && user.role !== "designer") {
       return res.status(403).json({success: false, message: "Access denied. Only vendors and designers can view their products." });
     }
-    const products = await Product.find({designerId: auth._id})
+    const products = await Product.find({vendorId: auth._id})
     return res.status(200).json({success: true, products: products});
   }catch(error){
      return res.status(401).json({ success: false, message: "error fetching products"});
@@ -128,7 +129,7 @@ app.post(
       console.log("Form Data Received:");
       console.log(req.body);
       console.log("Files:", req.files);
-      const designerId = auth._id;
+      const vendorId = auth._id;
 
       // 3️⃣ Extract base fields
       const {
@@ -199,7 +200,7 @@ app.post(
 
       // 6️⃣ Save product with variants and multiple images
       const newProduct = new Product({
-        designerId,
+        vendorId,
         productDescription,
         productName,
         productCategory,
@@ -854,7 +855,7 @@ app.get("/data", verifyToken, async(req, res) => {
         $lookup: {
           from: "products",
           localField: "_id",
-          foreignField: "designerId",
+          foreignField: "vendorId",
           as: "designerProducts"
         }
       },
@@ -915,6 +916,180 @@ app.get("/data", verifyToken, async(req, res) => {
 
 })
 
+app.get("/orders", verifyToken, async(req, res) => {
+  const auth = req.user;
+  try {
+    const user = await User.findById({_id : auth._id}).select("_id role")
+
+    //  check if the user exist
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+    
+    // check if the user is a vendor
+    if (user.role !== "vendor") {
+      return res.status(403).json({
+         success: false,
+        message: "Access denied"
+      })
+    }
+
+    // get the orders of product link to the user
+    const products = await Product.find({vendorId : user._id})
+
+    // get the product Id
+
+    const productIds = products.map((items) => items._id)
+    let totalOrder;
+
+    if (productIds.length === 0) {
+        return res.json({
+          success: true,
+          message: "No products found for this vendor",
+          totalOrder: [],
+        });
+      }
+
+    // get the list of orders of each product
+    totalOrder = await Order.aggregate([
+      {
+        $match :{ 
+          "products.productId" : {$in : productIds}}
+      },
+
+      {
+        $project :{
+          products: {
+            $filter: {
+              input: "$products",
+              as: "product",
+              cond: {
+              $in: ["$$product.productId", productIds]
+              }
+            }
+          },
+          amount: 1,
+          orderStatus: 1,
+          createdAt: 1,
+          paymentStatus: 1,
+          currency: 1,
+          items: 1
+        }
+      },
+
+      {
+    $group: {
+      _id: "$orderStatus",
+      count: { $sum: 1 },
+      orders: { $push: "$$ROOT" }
+    }
+  }
+    ])
+
+    return res.json({
+        success: true,
+        totalOrder
+      });
+
+  }catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+})
+
+app.get("/sales", verifyToken, async(req, res) => {
+  const auth = req.user;
+  try {
+    const user = await User.findById({_id : auth._id}).select("_id role")
+
+    //  check if the user exist
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+    
+    // check if the user is a vendor
+    if (user.role !== "vendor") {
+      return res.status(403).json({
+         success: false,
+        message: "Access denied"
+      })
+    }
+
+    // get the orders of product link to the user
+    const products = await Product.find({vendorId : user._Id})
+
+    // get the product Id
+
+    const productIds = products.map((items) => items._id)
+    let  totalSales;
+
+    if (productIds.length === 0) {
+        return res.json({
+          success: true,
+          message: "No products found for this vendor",
+          totalSales: [],
+        });
+      }
+
+    // get the list of orders of each product
+    totalSales = await Sales.aggregate([
+      {
+        $match :{ 
+          productId : {$in : productIds}}
+      },
+
+      {
+        $project :{
+          productId :1,
+          productName: 1,
+          quantity: 1,
+          totalAmount: 1,
+          tax: 1,
+          finalAmount: 1,
+          createdAt: 1,
+          currency: 1,
+        }
+      },
+
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $group: {
+          _id: "$productId",
+          totalSales: { $sum: "$quantity" },
+          totalRevenue: { $sum: "$finalAmount" },
+        }
+      }
+    ])
+
+    return res.json({
+        success: true,
+        totalSales
+      });
+
+  }catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+})
+
 app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
   try {
     const auth = req.user;
@@ -935,9 +1110,9 @@ app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
       });
     }
 
-    // get all designer products
+    // get all vendor products
     const products = await Product.find(
-      { designerId: user._id },
+      { vendorId: user._id },
       { _id: 1 }
     );
 
@@ -1064,5 +1239,122 @@ app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
     });
   }
 });
+
+app.get(
+  "/designer/vendorProductAnalytics",
+  verifyToken,
+  async (req, res) => {
+    const auth = req.user;
+
+    try {
+      // check user
+      const user = await User.findById(auth._id).select("_id role");
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // check role
+      if (user.role !== "vendor") {
+        return res.status(403).json({
+          success: false,
+          message: "Access denied",
+        });
+      }
+
+      // vendor products
+      const vendorProducts = await Product.find({
+        vendorId: auth._id,
+      }).sort({ createdAt: -1 });
+
+      const productIds = vendorProducts.map(
+        (item) => item._id
+      );
+
+      // no products
+      if (productIds.length === 0) {
+        return res.json({
+          success: true,
+          message: "No products found for this vendor",
+          data: [],
+        });
+      }
+
+      // analytics
+      const [
+        sales,
+        orders,
+        comments,
+        ratings,
+        likes,
+      ] = await Promise.all([
+        Sale.aggregate([
+          {
+            $match: {
+              productId: { $in: productIds },
+            },
+          },
+        ]),
+
+        Order.aggregate([
+          {
+            $match: {
+              "products.productId": {
+                $in: productIds,
+              },
+            },
+          },
+        ]),
+
+        Comment.aggregate([
+          {
+            $match: {
+              targetId: { $in: productIds },
+            },
+          },
+        ]),
+
+        Rating.aggregate([
+          {
+            $match: {
+              productId: { $in: productIds },
+            },
+          },
+        ]),
+
+        Like.aggregate([
+          {
+            $match: {
+              productId: { $in: productIds },
+            },
+          },
+        ]),
+      ]);
+
+      return res.json({
+        success: true,
+        analytics: {
+          sales,
+          orders,
+          comments,
+          ratings,
+          likes,
+        },
+      });
+
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  }
+);
+
 
 server.listen(4000, () => console.log("Server running on port 4000"));

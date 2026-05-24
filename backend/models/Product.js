@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-  designerId: { type: mongoose.Schema.Types.ObjectId, ref: "Vendor", required: true },
+  vendorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   productName: { type: String, required: true },
   productDescription: { type: String, required: true },
   productCategory: { type: String, required: true },
@@ -10,6 +10,7 @@ const productSchema = new mongoose.Schema({
   basePrice: Number,
   baseColor: String,
   baseSize: String,
+  createdAt: { type: Date, default: Date.now },
   productImages: [String], // Array of URLs
   variants: [{
     size: String,
@@ -19,6 +20,7 @@ const productSchema = new mongoose.Schema({
   }],
   hasVariants: { type: Boolean, default: false }
 }, { timestamps: true });
+  
 
 
 export default mongoose.model("Product", productSchema);

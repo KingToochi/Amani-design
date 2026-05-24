@@ -55,9 +55,13 @@ const orderSchema = new mongoose.Schema({
     price: Number,
     quantity: Number,
   }],
+  deliveryDate: {
+    type: Date
+  },
   orderStatus: {
     type: String,
-    default: "processing",
+    enum: [, "pending", "delivered"],
+    default: "pending",
   },
   createdAt: {
     type: Date,
