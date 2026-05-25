@@ -943,6 +943,25 @@ app.get("/data", verifyToken, async(req, res) => {
 
 })
 
+app.get("/admin/vendors", verifyToken, async(req, res) => {
+  const auth = req.user
+
+  const user = await User.findOne({_id: auth._id})
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+
+  try {
+    const vendors = await User.find({role: "vendor"}).select("id fname lname username email phoneNumber typeOfVendor status subscriber subscriptionDetails.plan subscriptionDetails.status joinedAt")
+
+    return res.json({ success: true, vendors });
+  }catch(error) {
+    console.log(error)
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+
+})
+
 app.get("/orders", verifyToken, async(req, res) => {
   const auth = req.user;
   try {
