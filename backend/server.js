@@ -868,7 +868,11 @@ app.get("/data", verifyToken, async(req, res) => {
   {
     $group: {
       _id: "$_id",
-      name: { $first: "$name" },
+      name: {
+            $first: {
+            $concat: ["$fname", " ", "$lname"]
+            }
+         },
       totalPurchases: { $sum: "$productOrdered.amount" }
     }
   },
@@ -913,7 +917,11 @@ app.get("/data", verifyToken, async(req, res) => {
       {
         $group: {
           _id: "$_id",
-          name: { $first: "$name" },
+          name: {
+            $first: {
+            $concat: ["$fname", " ", "$lname"]
+            }
+         },
           totalSales: { $sum: { $size: "$productSales" } }
         }
       },
