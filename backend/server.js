@@ -836,80 +836,7 @@ app.get("/data", verifyToken, async(req, res) => {
     if (!user || user.role !== "admin") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
-  //   const users = await User.find().sort({lname: -1});
-  //   const sales = await Sales.find()
-  //   const orders = await Orders.find().sort({createdAt:-1})
-  //   const products = await Product.find()
-
-  //   const pendingApprovals = await User.find(
-  //     {$and : [
-  //       {role: "vendor"},
-  //       {status: "pending"}
-  //     ]}
-  //   )
-
-  //   const topSellers = await User.aggregate([
-  //     {
-  //       $match: {"role": "vendor"}
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: "products",
-  //         localField: "_id",
-  //         foreignField: "vendorId",
-  //         as: "vendorProducts"
-  //       }
-  //     },
-  //     { $unwind: "$vendorProducts" },
-  //     {
-  //         $lookup: {
-  //           from: "sales",
-  //           localField: "vendorProducts._id",
-  //           foreignField: "productId",
-  //           as: "productSales"
-  //         }
-  //       },
-  //       {
-  //         $addFields: {
-  //           totalSalesCount: {$size: "$productSales"}
-  //         }
-  //       },
-  //       {
-  //   $group: {
-  //     _id: "$_id",
-  //     name: { $first: "$name" }, // adjust field
-  //     totalSalesCount: { $sum: "$totalSalesCount" },
-  //   },
-  // },
-  //       {
-  //         $sort:{totalSalesCount: -1}
-  //       }
-  //   ])
-
-  //   const topBuyers = await User.aggregate([
-  //     {
-  //       $match: {"role": "user"}
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: "orders",
-  //         localField: "_id",
-  //         foreignField: "customerId",
-  //         as: "productOrdered"
-  //       }
-  //     },
-  //     {
-  //       $addFields: {totalSalesCount: {$size: "$productOrdered"}}
-  //     },
-  //     {
-  //       $sort:{totalSalesCount: -1}
-  //     }
-  //   ])
-
-  //   const pendingOrders = await Orders.find({orderStatus: "pending"}).sort({createdAt:-1})
-  //   const deliveredOrders = await Orders.find({orderStatus: "delivered"}).sort({createdAt:-1})
-
-
+  
   const totalUsers = await User.countDocuments();
   const totalSales = await Sales.countDocuments();
   const totalOrders = await Order.countDocuments();
@@ -917,7 +844,7 @@ app.get("/data", verifyToken, async(req, res) => {
   const pendingApprovals = await User.countDocuments({role: "vendor", status: "pending"})
   const pendingOrders = await Order.countDocuments({orderStatus: "pending"})
   const deliveredOrders = await Order.countDocuments({orderStatus: "delivered"})
-  const topBuyers = await User.aggregate([
+  const topBuyer = await User.aggregate([
   {
     $match: { role: "user" }
   },
@@ -932,7 +859,8 @@ app.get("/data", verifyToken, async(req, res) => {
   },
 
   {
-    $unwind: "$productOrdered"
+    $unwind: "$productOrdered",
+    preserveNullAndEmptyArrays: true
   },
 
   {
@@ -965,7 +893,8 @@ app.get("/data", verifyToken, async(req, res) => {
       }
     },
      {
-        $unwind: "$vendorProducts"
+        $unwind: "$vendorProducts",
+        preserveNullAndEmptyArrays: true
       },
 
       {
@@ -994,7 +923,7 @@ app.get("/data", verifyToken, async(req, res) => {
       }
       
   ])
-    return res.json({success: true, totalUsers, totalSales, totalOrders, totalProducts, topSellers, topBuyers, pendingApprovals, pendingOrders, deliveredOrders})
+    return res.json({success: true, totalUsers, totalSales, totalOrders, totalProducts, topSeller, topBuyer, pendingApprovals, pendingOrders, deliveredOrders})
 
   }catch(error){
       return res.json({success: false, message: "An error occurred while fetching data", error})
