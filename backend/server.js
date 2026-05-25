@@ -987,7 +987,7 @@ app.get("/data", verifyToken, async(req, res) => {
 
       {
         $sort: { totalSales: -1 }
-      }
+      },
 
       {
         $limit: 1
