@@ -6,14 +6,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faShoppingCart, faCheckCircle, faClock, faDollarSign, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import CustomFetch from "../../hooks/UseFetch";
 const AdminDashboard = () => {
-    const [users, setUsers] = useState([]);
+    const [totalUsers, setTotalUsers] = useState(0);
     const [topSellers, setTopSellers] = useState([]);
     const [topBuyers, setTopBuyers] = useState([]);
-    const [pendingOrders, setPendingOrders] = useState([]);
-    const [deliveredOrders, setDeliveredOrders] = useState([]);
+    const [pendingOrders, setPendingOrders] = useState(0);
+    const [deliveredOrders, setDeliveredOrders] = useState(0);
     const [totalSales, setTotalSales] = useState(0);
-    const [sales, setSales] = useState([]);
+    const [totalOrders, setTotalOrders] = useState(0);
     const [pendingApprovals, setPendingApprovals] = useState([]);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [pendingApproval, setPendingApproval] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const url = `${BASE_URL}/data`;
@@ -34,14 +36,14 @@ const AdminDashboard = () => {
 
             if (data.success) {
                 console.log(data)
-                setUsers(data.users || []);
+                setTotalUsers(data.totalUsers || 0);
                 setTopBuyers(data.topBuyers || []);
                 setTopSellers(data.topSellers || []);
-                setPendingOrders(data.pendingOrders || []);
-                setDeliveredOrders(data.deliveredOrders || []);
-                setSales(data.sales || []);
-                const total = (data.sales || []).reduce((sum, sale) => sum + (sale.finalAmount || 0), 0);
-                setTotalSales(total);
+                setPendingOrders(data.pendingOrders || 0);
+                setDeliveredOrders(data.deliveredOrders || 0);
+                setTotalSales(data.totalSales || 0);
+                setTotalOrders(data.totalOrders || 0);
+                setTotalProducts(data.totalProducts || 0);
             } else {
                 setError('Failed to fetch data');
             }
@@ -141,7 +143,7 @@ const AdminDashboard = () => {
                             </div>
                             <div className="ml-4">
                                 <h3 className="text-lg font-semibold text-gray-700">Pending Orders</h3>
-                                <p className="text-2xl font-bold text-gray-900">{pendingOrders.length}</p>
+                                <p className="text-2xl font-bold text-gray-900">{pendingOrders}</p>
                             </div>
                         </div>
                     </div>
@@ -154,7 +156,7 @@ const AdminDashboard = () => {
                             </div>
                             <div className="ml-4">
                                 <h3 className="text-lg font-semibold text-gray-700">Delivered Orders</h3>
-                                <p className="text-2xl font-bold text-gray-900">{deliveredOrders.length}</p>
+                                <p className="text-2xl font-bold text-gray-900">{deliveredOrders}</p>
                             </div>
                         </div>
                     </div>

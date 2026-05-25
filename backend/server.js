@@ -836,80 +836,165 @@ app.get("/data", verifyToken, async(req, res) => {
     if (!user || user.role !== "admin") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
-    const users = await User.find().sort({lname: -1});
-    const sales = await Sales.find()
-    const orders = await Orders.find().sort({createdAt:-1})
-    const products = await Product.find()
+  //   const users = await User.find().sort({lname: -1});
+  //   const sales = await Sales.find()
+  //   const orders = await Orders.find().sort({createdAt:-1})
+  //   const products = await Product.find()
 
-    const pendingApprovals = await User.find(
-      {$and : [
-        {role: "vendor"},
-        {status: "pending"}
-      ]}
-    )
+  //   const pendingApprovals = await User.find(
+  //     {$and : [
+  //       {role: "vendor"},
+  //       {status: "pending"}
+  //     ]}
+  //   )
 
-    const topSellers = await User.aggregate([
-      {
-        $match: {"role": "vendor"}
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "vendorId",
-          as: "designerProducts"
-        }
-      },
-      { $unwind: "$designerProducts" },
-      {
-          $lookup: {
-            from: "sales",
-            localField: "designerProducts._id",
-            foreignField: "productId",
-            as: "productSales"
-          }
-        },
-        {
-          $addFields: {
-            totalSalesCount: {$size: "$productSales"}
-          }
-        },
-        {
+  //   const topSellers = await User.aggregate([
+  //     {
+  //       $match: {"role": "vendor"}
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: "products",
+  //         localField: "_id",
+  //         foreignField: "vendorId",
+  //         as: "vendorProducts"
+  //       }
+  //     },
+  //     { $unwind: "$vendorProducts" },
+  //     {
+  //         $lookup: {
+  //           from: "sales",
+  //           localField: "vendorProducts._id",
+  //           foreignField: "productId",
+  //           as: "productSales"
+  //         }
+  //       },
+  //       {
+  //         $addFields: {
+  //           totalSalesCount: {$size: "$productSales"}
+  //         }
+  //       },
+  //       {
+  //   $group: {
+  //     _id: "$_id",
+  //     name: { $first: "$name" }, // adjust field
+  //     totalSalesCount: { $sum: "$totalSalesCount" },
+  //   },
+  // },
+  //       {
+  //         $sort:{totalSalesCount: -1}
+  //       }
+  //   ])
+
+  //   const topBuyers = await User.aggregate([
+  //     {
+  //       $match: {"role": "user"}
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: "orders",
+  //         localField: "_id",
+  //         foreignField: "customerId",
+  //         as: "productOrdered"
+  //       }
+  //     },
+  //     {
+  //       $addFields: {totalSalesCount: {$size: "$productOrdered"}}
+  //     },
+  //     {
+  //       $sort:{totalSalesCount: -1}
+  //     }
+  //   ])
+
+  //   const pendingOrders = await Orders.find({orderStatus: "pending"}).sort({createdAt:-1})
+  //   const deliveredOrders = await Orders.find({orderStatus: "delivered"}).sort({createdAt:-1})
+
+
+  const totalUsers = await User.countDocuments();
+  const totalSales = await Sales.countDocuments();
+  const totalOrders = await Order.countDocuments();
+  const totalProducts = await Product.countDocuments();
+  const pendingApprovals = await User.countDocuments({role: "vendor", status: "pending"})
+  const pendingOrders = await Order.countDocuments({orderStatus: "pending"})
+  const deliveredOrders = await Order.countDocuments({orderStatus: "delivered"})
+  const topBuyers = await User.aggregate([
+  {
+    $match: { role: "user" }
+  },
+
+  {
+    $lookup: {
+      from: "orders",
+      localField: "_id",
+      foreignField: "customerId",
+      as: "productOrdered"
+    }
+  },
+
+  {
+    $unwind: "$productOrdered"
+  },
+
+  {
     $group: {
       _id: "$_id",
-      name: { $first: "$name" }, // adjust field
-      totalSalesCount: { $sum: "$totalSalesCount" },
-    },
+      name: { $first: "$name" },
+      totalPurchases: { $sum: "$productOrdered.amount" }
+    }
   },
-        {
-          $sort:{totalSalesCount: -1}
-        }
-    ])
 
-    const topBuyers = await User.aggregate([
-      {
-        $match: {"role": "user"}
-      },
-      {
-        $lookup: {
-          from: "orders",
-          localField: "_id",
-          foreignField: "customerId",
-          as: "productOrdered"
-        }
-      },
-      {
-        $addFields: {totalSalesCount: {$size: "$productOrdered"}}
-      },
-      {
-        $sort:{totalSalesCount: -1}
+  {
+    $sort: { totalPurchases: -1 }
+  },
+
+  {
+    $limit: 1
+  }
+]);
+
+  const topSeller = await User.aggregate([
+    {
+      $match : { role: "vendor" } 
+    },
+    {
+      $lookup : {
+        from: "products",
+        localField: "_id",
+        foreignField: "vendorId",
+        as: "vendorProducts"
       }
-    ])
+    },
+     {
+        $unwind: "$vendorProducts"
+      },
 
-    const pendingOrders = await Orders.find({orderStatus: "pending"}).sort({createdAt:-1})
-    const deliveredOrders = await Orders.find({orderStatus: "delivered"}).sort({createdAt:-1})
+      {
+        $lookup : {
+          from: "sales",
+          localField: "vendorProducts._id",
+          foreignField: "productId",
+          as: "productSales"
+        }
+      },
 
-    return res.json({success: true, users, sales, orders, products, topSellers, topBuyers, pendingApprovals, pendingOrders, deliveredOrders})
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          totalSales: { $sum: { $size: "$productSales" } }
+        }
+      },
+
+      {
+        $sort: { totalSales: -1 }
+      }
+
+      {
+        $limit: 1
+      }
+      
+  ])
+    return res.json({success: true, totalUsers, totalSales, totalOrders, totalProducts, topSellers, topBuyers, pendingApprovals, pendingOrders, deliveredOrders})
 
   }catch(error){
       return res.json({success: false, message: "error fetching data"})
