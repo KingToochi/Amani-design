@@ -859,9 +859,11 @@ app.get("/data", verifyToken, async(req, res) => {
   },
 
   {
-    $unwind: "$productOrdered",
+  $unwind: {
+    path: "$productOrdered",
     preserveNullAndEmptyArrays: true
-  },
+  }
+},
 
   {
     $group: {
@@ -893,9 +895,11 @@ app.get("/data", verifyToken, async(req, res) => {
       }
     },
      {
-        $unwind: "$vendorProducts",
-        preserveNullAndEmptyArrays: true
-      },
+    $unwind: {
+      path: "$vendorProducts",
+      preserveNullAndEmptyArrays: true
+      }
+    },
 
       {
         $lookup : {
