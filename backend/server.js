@@ -438,6 +438,7 @@ app.post("/users/login", async (req, res) => {
     const isUsername = await User.findOne({ username: email.toLowerCase() });
     const user = isUsername || await User.findOne({ email: email.toLowerCase()  });
     if (!user) return res.status(404).json({ success: false, error: "User not found" });
+    if(user.role !== "user" && user.role !== "vendor") return res.status(403).json({ success: false, message: "Access denied" });
     const hashedPassword = user.password
     const ismatch = await bcrypt.compare(password, hashedPassword)
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
@@ -777,20 +778,20 @@ app.get("/admin/details", verifyToken, async(req, res) => {
   const auth = req.user
 
   try {
-    const admin = await User.findOne({_id: auth._id})
+    const user = await User.findOne({_id: auth._id})
 
-    if (!admin || admin.status !== "admin") {
+    if (!user || user.role !== "admin") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
     const adminDetails = {
-      fname: admin.fname,
-      lname: admin.lname,
-      email: admin.email,
-      phoneNumber: admin.phoneNumber,
-      dob: admin.dob,
-      profilePicture: admin.profilePicture,
-      joinedAt: admin.joinedAt,
+      fname: user.fname,
+      lname: user.lname,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      dob: user.dob,
+      profilePicture: user.profilePicture,
+      joinedAt: user.joinedAt,
     }
 
     return res.json({ success: true, admin: adminDetails })
@@ -831,8 +832,8 @@ app.get("/data", verifyToken, async(req, res) => {
   const auth = req.user
 
   try {
-    const admin = await User.findOne({_id: auth._id});
-    if (!admin || admin.role !== "admin") {
+    const user = await User.findOne({_id: auth._id});
+    if (!user || user.role !== "admin") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
     const users = await User.find().sort({lname: -1});

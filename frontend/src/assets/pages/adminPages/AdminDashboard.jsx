@@ -4,7 +4,7 @@ import { AuthContext } from "../../hooks/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faShoppingCart, faCheckCircle, faClock, faDollarSign, faTrophy } from "@fortawesome/free-solid-svg-icons";
-
+import CustomFetch from "../../hooks/UseFetch";
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [topSellers, setTopSellers] = useState([]);
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     const [pendingApprovals, setPendingApprovals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const url = BASE_URL;
+    const url = `${BASE_URL}/data`;
     const { auth, isLoggedIn } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -27,9 +27,8 @@ const AdminDashboard = () => {
         }
 
         try {
-            let response = await fetch(`${url}/data`, {
+            let response = await CustomFetch(url, {
                 method: "GET",
-                credentials: "include"
             });
             let data = await response.json();
 

@@ -5,6 +5,7 @@ import Logo from "../../images/mainLogo.jpg";
 import {BASE_URL} from "../../Url";
 import { useEffect, useContext } from "react";
 import { AuthContext } from "../../hooks/AuthProvider";
+import CustomFetch from "../../hooks/UseFetch";
 import {
     faTachometerAlt,
     faUserTie,
@@ -27,7 +28,7 @@ const NavBar = () => {
     const [adminDetails, setAdminDetails] = useState({});
     const location = useLocation();
     const { auth, logout } = useContext(AuthContext);
-    const url = BASE_URL;
+    const url = `${BASE_URL}/admin/details`;
     const navigate = useNavigate();
 
 
@@ -38,10 +39,9 @@ const NavBar = () => {
         }
 
         try {
-            const response = await fetch(`${url}/admin/details`, {
+            const response = await CustomFetch(url, {
                 method: "GET",
-                credentials: "include"
-            })
+            });
         
             const data = await response.json();
             setAdminDetails(data.admin);
