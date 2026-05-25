@@ -997,7 +997,7 @@ app.get("/data", verifyToken, async(req, res) => {
     return res.json({success: true, totalUsers, totalSales, totalOrders, totalProducts, topSellers, topBuyers, pendingApprovals, pendingOrders, deliveredOrders})
 
   }catch(error){
-      return res.json({success: false, message: "error fetching data"})
+      return res.json({success: false, message: "An error occurred while fetching data", error})
   }
 
 })
