@@ -110,18 +110,7 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    {isLoggedIn && auth.role === "designer" 
-                    ? 
-                    <Link to="/designer"
-                    className="flex items-center"
-                    >
-                        <img src={logo} alt="AmaniSky logo" 
-                        className="w-[40px] h-[40px] rounded-full mx-auto my-4 
-                        sm:w-[50px] sm:h-[50px]
-                        "
-                        />
-                    </Link>
-                    :
+                    
                     <div 
                     className="flex items-center"
                     >
@@ -131,7 +120,6 @@ const Navigation = ()=> {
                         "
                         />
                     </div>
-                    }
                 </li>
 
                  <li>
@@ -171,6 +159,19 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
+                    {isLoggedIn &&( auth.role === "designer" || auth.role === "vendor")
+                    ? 
+                    <Link to="/designer"
+                    className="flex flex-col gap-2 items-center"
+                    >
+                        <FaUser />
+                        <h1
+                        className="hidden 
+                        sm:flex
+                        "
+                        >Vendor</h1>
+                    </Link>
+                    :
                     <Link to="/profile"
                     className="flex flex-col gap-2 items-center"
                     >
@@ -181,6 +182,7 @@ const Navigation = ()=> {
                         "
                         >Profile</h1>
                     </Link>
+                    }
                 </li>
             </ul>
         </nav>
