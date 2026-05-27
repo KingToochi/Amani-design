@@ -51,8 +51,8 @@ const NavBar = () => {
     }
 
     const navItems = [
-        { name: "Dashboard", path: "/admin/dashboard", icon: faTachometerAlt },
-        { name: "Designers", path: "/admin/designers", icon: faUserTie },
+        { name: "Dashboard", path: "/admin", icon: faTachometerAlt },
+        { name: "Vendors", path: "/admin/vendors", icon: faUserTie },
         { name: "Customers", path: "/admin/customers", icon: faUsers },
         { name: "Products", path: "/admin/products", icon: faBox },
         { name: "Orders", path: "/admin/orders", icon: faShoppingCart },

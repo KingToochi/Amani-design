@@ -962,6 +962,91 @@ app.get("/admin/vendors", verifyToken, async(req, res) => {
 
 })
 
+app.get("/admin/customers", verifyToken, async(req, res) => {
+  const auth = req.user
+
+  const user = await User.findOne({_id: auth._id})
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+
+  try {
+    const customers = await User.find({role: "user"}).select("id fname lname username dob email phoneNumber joinedAt")
+    return res.json({ success: true, customers });
+  }catch(error) {
+    console.log(error)
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+})
+
+app.get("/admin/products", verifyToken, async(req, res) => {
+  const auth = req.user
+  const user = await User.findOne({_id: auth._id})
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+
+  try {
+    const products = await Product.find()
+    .select("_id vendorId productName")
+    .sort({_id: -1})
+    return res.json({ success: true, products });
+  }catch(error){
+    console.log(error)
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+})
+
+app.get("/admin/orders", verifyToken, async(req, res) => {
+  const auth = req.user
+  const user = await User.findOne({_id: auth._id})
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+
+  try {
+    const totalOrder = await Order.aggregate([
+      {
+        $project: {
+          orderNumber: 1,
+          amount: 1,
+          currency: 1,
+          paymentStatus: 1,
+          customerName: 1,
+          customerEmail: 1,
+          customerPhone: 1,
+          orderStatus: 1,
+          createdAt: 1,
+          items: 1,
+          products: 1,
+        },
+      },
+      {
+        $group: {
+          _id: "$orderStatus",
+          count: { $sum: 1 },
+          orders: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ])
+
+    return res.json({
+      success: true,
+      totalOrder,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error,
+    })
+  }
+})
+
 app.get("/orders", verifyToken, async(req, res) => {
   const auth = req.user;
   try {
@@ -1050,6 +1135,7 @@ app.get("/orders", verifyToken, async(req, res) => {
       });
     }
 })
+
 
 app.get("/sales", verifyToken, async(req, res) => {
   const auth = req.user;

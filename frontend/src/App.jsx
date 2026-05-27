@@ -28,6 +28,10 @@ import AdminLogin from "./assets/pages/adminPages/AdmniLogin";
 import Dashboard from "./assets/pages/designerPage/Dashboard";
 import Orders from "./assets/pages/designerPage/Orders";
 import Sales from "./assets/pages/designerPage/Sales";
+import Order from "./assets/pages/adminPages/Order";
+import Vendors from "./assets/pages/adminPages/Vendors";
+import Customer from "./assets/pages/adminPages/Customers";
+import ProductAdmin from "./assets/pages/adminPages/Product";
 
 function App() {
   return (
@@ -61,7 +65,11 @@ function App() {
         <Route element={<ProtectedRoute allowedRole={["admin"]}/>}>
           <Route path="/admin" element={<AdminLayout />} >
             <Route index element={<AdminDashboard />} />
-        </Route>
+            <Route path="vendors" element={<Vendors />} />
+            <Route path="orders" element={<Order />} />
+            <Route path="customers" element={<Customer />} />
+            <Route path="products" element={<ProductAdmin />} />
+          </Route>
         </Route>
         
 
