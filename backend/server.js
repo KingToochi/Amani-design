@@ -557,7 +557,7 @@ app.post("/users/login/admin", async (req, res) => {
 
     res.json({ success: true, message: "Admin login successful", accessToken, refreshToken  });
   }catch(error){
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error.message});
   }
 });
 
