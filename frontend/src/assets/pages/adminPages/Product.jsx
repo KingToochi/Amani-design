@@ -35,6 +35,12 @@ const Product = () => {
     fetchProducts();
   }, [url]);
 
+  const handleViewProduct = (id) => {
+    // Implement navigation to product details page
+    // For example, using React Router:
+    navigate(`/admin/products/${id}`);
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-10">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -101,6 +107,9 @@ const Product = () => {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">
                         {product._id}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        <button onClick={() => handleViewProduct(product._id)} className="text-green-700 hover:text-green-900 cursor-pointer">View Details</button>
                       </td>
                     </tr>
                   ))}

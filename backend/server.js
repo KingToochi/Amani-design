@@ -1222,6 +1222,54 @@ app.get("/sales", verifyToken, async(req, res) => {
     }
 })
 
+app.get("/viewProduct/:id", verifyToken, async(req, res) => {
+  const auth = req.user
+  const user = await User.findOne({_id: auth._id})
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+  try {
+    const product = await Product.findOne({_id: req.params.id}).populate("vendorId", "fname lname username email")
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" })
+    return res.json({ success: true, product });
+  } catch(error) {
+    console.log(error)
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+})
+
+app.get("/viewVendor/:id", verifyToken, async(req, res) => {
+  const auth = req.user
+  const user = await User.findOne({_id: auth._id})
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+  try {
+    const vendor = await User.findOne({_id: req.params.id})
+    if (!vendor) return res.status(404).json({ success: false, message: "Vendor not found" })
+    return res.json({ success: true, vendor });
+  } catch(error) {
+    console.log(error)
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+})
+
+app.get("/viewCustomer/:id", verifyToken, async(req, res) => {
+  const auth = req.user
+  const user = await User.findOne({_id: auth._id})
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+  try {
+    const customer = await User.findOne({_id: req.params.id})
+    if (!customer) return res.status(404).json({ success: false, message: "Customer not found" })
+    return res.json({ success: true, customer });
+  } catch(error) {
+    console.log(error)
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+})
+
 app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
   try {
     const auth = req.user;

@@ -30,6 +30,9 @@ import Orders from "./assets/pages/designerPage/Orders";
 import Sales from "./assets/pages/designerPage/Sales";
 import Order from "./assets/pages/adminPages/Order";
 import Vendors from "./assets/pages/adminPages/Vendors";
+import ViewVendor from "./assets/pages/adminPages/ViewVendor";
+import ViewProduct from "./assets/pages/adminPages/ViewProduct";
+import ViewCustomer from "./assets/pages/adminPages/VIewCustomer";
 import Customer from "./assets/pages/adminPages/Customers";
 import ProductAdmin from "./assets/pages/adminPages/Product";
 
@@ -66,6 +69,9 @@ function App() {
           <Route path="/admin" element={<AdminLayout />} >
             <Route index element={<AdminDashboard />} />
             <Route path="vendors" element={<Vendors />} />
+            <Route path="viewVendor/:id" element={<ViewVendor />} />
+            <Route path="viewProduct/:id" element={<ViewProduct />} />
+            <Route path="viewCustomer/:id" element={<ViewCustomer />} />
             <Route path="orders" element={<Order />} />
             <Route path="customers" element={<Customer />} />
             <Route path="products" element={<ProductAdmin />} />

@@ -27,6 +27,12 @@ const Customers = () => {
         fetchCustomers();
     }, []);
 
+    const handleViewCustomer = (id) => {
+        // Implement navigation to customer details page
+        // For example, using React Router:
+        navigate(`/admin/customers/${id}`);
+    }
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -73,6 +79,9 @@ const Customers = () => {
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{customer.phoneNumber || '—'}</td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{customer.status || 'active'}</td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : 'N/A'}</td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                            <button onClick={() => handleViewCustomer(customer._id)} className="text-green-700 hover:text-green-900 cursor-pointer">View Details</button>
+                                        </td>
                                     </tr>
                                 ))
                             ) : (

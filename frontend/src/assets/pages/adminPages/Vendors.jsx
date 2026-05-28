@@ -2,6 +2,7 @@
 import CustomFetch from '../../hooks/UseFetch';
 import {BASE_URL} from '../../Url';
 import ServerError from '../../components/ServerError';
+import { useNavigate } from 'react-router-dom';
 
 const Vendors = () => {
     const [vendorsData, setVendorsData] = useState([])
@@ -9,6 +10,7 @@ const Vendors = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const url = `${BASE_URL}/admin/vendors`;
+    const navigate = useNavigate();
 
     const category = [
         "all vendors",
@@ -96,6 +98,10 @@ const Vendors = () => {
         fetchVendors();
     }, []);
 
+
+    const handleViewVendor = (id) => {
+        navigate(`/admin/vendors/${id}`);
+    } 
     if (loading) {
         return (
             <div className="flex items-center justify-center py-16">
@@ -156,7 +162,7 @@ const Vendors = () => {
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{vendor.subscriptionDetails?.status || 'inactive'}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{vendor.phoneNumber || '—'}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm">
-                                        <button className="text-green-700 hover:text-green-900 cursor-pointer">View Details</button>
+                                        <button onClick={() => handleViewVendor(vendor._id)} className="text-green-700 hover:text-green-900 cursor-pointer">View Details</button>
                                     </td>
                                 </tr>
                             ))}
