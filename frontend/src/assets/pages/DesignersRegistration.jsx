@@ -495,7 +495,7 @@ const DesignerRegistration = () => {
                 className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 font-[abril]">
                     <option value="" hidden>What type of Vendor are you</option>
                     <option value="manufacturer">Manufacturer</option>
-                    <option value="wholeseller">Wholeseller</option>
+                    <option value="wholesaler">Wholesaler</option>
                     <option value="retailer">Retailer</option>
                 </select>
                 <h1 className="text-red-300">{error?.typeOfVendor}</h1>
