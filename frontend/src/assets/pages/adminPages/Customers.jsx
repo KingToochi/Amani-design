@@ -30,7 +30,7 @@ const Customers = () => {
     const handleViewCustomer = (id) => {
         // Implement navigation to customer details page
         // For example, using React Router:
-        navigate(`/admin/customers/${id}`);
+        navigate(`/admin/viewCustomer/${id}`);
     }
 
     if (loading) {

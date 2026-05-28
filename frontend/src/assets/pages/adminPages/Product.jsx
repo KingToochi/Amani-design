@@ -38,7 +38,7 @@ const Product = () => {
   const handleViewProduct = (id) => {
     // Implement navigation to product details page
     // For example, using React Router:
-    navigate(`/admin/products/${id}`);
+    navigate(`/admin/viewProduct/${id}`);
   }
 
   return (

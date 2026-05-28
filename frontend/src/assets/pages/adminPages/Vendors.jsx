@@ -100,7 +100,7 @@ const Vendors = () => {
 
 
     const handleViewVendor = (id) => {
-        navigate(`/admin/vendors/${id}`);
+        navigate(`/admin/viewVendor/${id}`);
     } 
     if (loading) {
         return (

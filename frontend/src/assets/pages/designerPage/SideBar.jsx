@@ -41,7 +41,7 @@ const SideBar = ({className, userData}) => {
             className="flex flex-col gap-6 "
             >
                 <li>
-                    <Link
+                    <Link to="?designer"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <MdOutlineDashboard  />
@@ -57,7 +57,7 @@ const SideBar = ({className, userData}) => {
                     </Link>
                 </li> */}
                 <li>
-                    <Link to="products"
+                    <Link to="/designer/products"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <FaPalette />
@@ -65,7 +65,7 @@ const SideBar = ({className, userData}) => {
                     </Link>
                 </li>
                 <li>
-                    <Link to="orders"
+                    <Link to="/designer/orders"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
                     >
                         <FcSalesPerformance />

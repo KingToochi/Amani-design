@@ -11,7 +11,7 @@ const [email, setEmail] = useState('');
 const [password, setPassword] = useState('');
 const [error, setError] = useState('');
 const [isLoading, setIsLoading] = useState(false);
-const { setAuth } = useContext(AuthContext);
+const { verifyAndFetchAuth } = useContext(AuthContext);
 const navigate = useNavigate();
 
 const handleSubmit = async (e) => {
@@ -42,12 +42,12 @@ const handleSubmit = async (e) => {
         } else if(!result.success && result.message === "Access denied") {
             setError("Access denied");
             setIsLoading(false);
-            navigate('unauthorized');
+            navigate('/unauthorized');
+            return;
         }
 
         if (result.success) {
             // Fetch and set auth data from backend
-            const { verifyAndFetchAuth } = useContext(AuthContext);
             await verifyAndFetchAuth();
 
             // Redirect to admin dashboard

@@ -497,7 +497,7 @@ app.post("/refresh", async (req, res) => {
   if (!token) return res.status(401).json({ message: "No refresh token" });
 
   try {
-    const decoded = jwt.verify(token, process.env.REFRESH_JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     const newAccessToken = await generateToken(decoded.email, { expiresIn: "30m" });
 
