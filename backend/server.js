@@ -302,8 +302,8 @@ app.post("/users/registration", async (req, res) => {
 
     await newUser.save();
 
-    const accessToken = await generateToken(email, { expiresIn: "30m" })
-    const refreshToken = await generateToken(email, { expiresIn: "7d" })
+    const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
+    const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, {
@@ -401,8 +401,8 @@ if (req.files.proofOfAddress) {
         role: "vendor",
       });
       await newUser.save();
-      const accessToken = await generateToken(email, { expiresIn: "30m" })
-      const refreshToken = await generateToken(email, { expiresIn: "7d" })
+      const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
+      const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
 
       // Set access token in HTTP-only cookie
       res.cookie("accessToken", accessToken, {
