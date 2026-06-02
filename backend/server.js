@@ -324,7 +324,7 @@ app.post("/users/registration", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     });
 
-    res.status(201).json({ success: true, message: "User registered successfully" });
+    res.status(201).json({ success: true, message: "User registered successfully" , accessToken, refreshToken});
   } catch (err) {
     console.error("User registration error:", err); // <-- Add this if not alrea
     res.status(500).json({success:false, message: "Server error" });
@@ -423,7 +423,7 @@ if (req.files.proofOfAddress) {
         maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
       });
 
-      res.status(201).json({ success: true,  message: "User registered successfully" });
+      res.status(201).json({ success: true,  message: "User registered successfully", accessToken, refreshToken });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: error.message });
