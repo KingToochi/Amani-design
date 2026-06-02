@@ -308,8 +308,7 @@ app.post("/users/registration", async (req, res) => {
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      // secure: true,
-      //secure: isProduction,       // false in localhost for development
+      secure: isProduction,
       sameSite: "none",
       maxAge: 30 * 60 * 1000  // 30 minutes
     });
@@ -317,8 +316,7 @@ app.post("/users/registration", async (req, res) => {
     // Set refresh token in HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      // secure: true,
-     secure: isProduction,
+      secure: isProduction,
       sameSite: "none",
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
@@ -407,8 +405,7 @@ if (req.files.proofOfAddress) {
       // Set access token in HTTP-only cookie
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        // secure: true,
-        //secure: isProduction,       // false in localhost for development
+        secure: isProduction,
         sameSite: isProduction ? "none" : "lax",
         maxAge: 30 * 60 * 1000  // 30 minutes
       });
@@ -416,8 +413,7 @@ if (req.files.proofOfAddress) {
       // Set refresh token in HTTP-only cookie
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        // secure: true,
-       secure: isProduction,
+        secure: isProduction,
         sameSite: isProduction ? "none" : "lax",
         path: "/refresh",
         maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
