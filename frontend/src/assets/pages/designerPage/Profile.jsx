@@ -11,10 +11,10 @@ const InfoRow = ({ label, value }) => (
 )
 
 const SubscriptionCard = ({ subscription }) => {
-    const plan = subscriptionDetails?.plan ?? "Free"
-    const status = subscriptionDetails?.status ?? "inactive"
-    const start = subscriptionDetails?.startDate
-    const expiry = subscriptionDetails?.expiryDate
+    const plan = subscription?.plan 
+    const status = subscription?.status
+    const start = subscription?.startDate
+    const expiry = subscription?.expiryDate
 
     return (
         <div className="bg-white shadow rounded-lg p-4 w-full">
