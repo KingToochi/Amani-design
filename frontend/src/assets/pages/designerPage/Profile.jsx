@@ -64,6 +64,7 @@ const Profile = () => {
                 typeOfVendor: data.user?.typeOfVendor || null
             })
             setLoading(false)
+            console.log("Fetched user data:", data.user)
         } catch (error) {
             setServerError({ message: "Failed to fetch user data" })
             setUserData(null)

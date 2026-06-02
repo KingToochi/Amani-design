@@ -704,10 +704,10 @@ app.get("/userInfo", verifyToken, async(req, res) => {
       typeOfVendor: user.typeOfVendor,
       status: user.status,
       subscriber: user.subscriber,
-      subsriptionPlan : user?.subscriptionDetails.plan,
-      subcriptionStatus : user?.subscriptionDetails.status,
-      subscriptionStartDate: user?.subscriptionDetails.startDate,
-      subscriptionExpiryDate: user?.subscriptionDetails.expiryDate,
+      subscriptionPlan: user?.subscriptionDetails?.plan,
+      subscriptionStatus: user?.subscriptionDetails?.status,
+      subscriptionStartDate: user?.subscriptionDetails?.startDate,
+      subscriptionExpiryDate: user?.subscriptionDetails?.expiryDate,
       // Add any other non-sensitive fields here
     }
     

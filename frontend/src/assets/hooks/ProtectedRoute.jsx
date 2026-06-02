@@ -3,8 +3,12 @@ import { useContext } from "react";
 import { AuthContext } from "./AuthProvider";
 
 const ProtectedRoute = ({ allowedRole }) => {
-    const { auth } = useContext(AuthContext);
+    const { auth, loading } = useContext(AuthContext);
     const location = useLocation();
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    }
 
     if (auth?.role && allowedRole.includes(auth.role)) {
         return <Outlet />;
