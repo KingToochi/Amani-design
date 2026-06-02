@@ -10,11 +10,11 @@ const InfoRow = ({ label, value }) => (
     </div>
 )
 
-const SubscriptionCard = ({ subscription }) => {
-    const plan = subscription?.plan 
-    const status = subscription?.status
-    const start = subscription?.startDate
-    const expiry = subscription?.expiryDate
+const SubscriptionCard = ({ userData }) => {
+    const plan = userData?.subscriptionPlan ?? "Free"
+    const status = userData?.subscriptionStatus ?? "inactive"
+    const start = userData?.subscriptionStartDate
+    const expiry = userData?.subscriptionExpiryDate
 
     return (
         <div className="bg-white shadow rounded-lg p-4 w-full">
@@ -133,7 +133,7 @@ const Profile = () => {
                                 <div className="text-sm text-gray-500">@{userData?.username}</div>
                             </div>
                             <div className="w-full mt-2">
-                                <SubscriptionCard subscription={userData?.subscriptionDetails} />
+                                <SubscriptionCard userData={userData} />
                             </div>
                         </div>
 
