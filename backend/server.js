@@ -1411,7 +1411,7 @@ app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: "Error fetching product analytics"
+      message: error.message
     });
   }
 });
