@@ -1353,7 +1353,7 @@ app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
       ]),
 
       // COMMENTS
-      Comment.aggregate([
+      Comments.aggregate([
         {
           $match: {
             targetId: { $in: productIds }
@@ -1475,7 +1475,7 @@ app.get(
           },
         ]),
 
-        Order.aggregate([
+        Orders.aggregate([
           {
             $match: {
               "products.productId": {
@@ -1485,7 +1485,7 @@ app.get(
           },
         ]),
 
-        Comment.aggregate([
+        Comments.aggregate([
           {
             $match: {
               targetId: { $in: productIds },
@@ -1501,7 +1501,7 @@ app.get(
           },
         ]),
 
-        Like.aggregate([
+        Likes.aggregate([
           {
             $match: {
               productId: { $in: productIds },
@@ -1526,7 +1526,7 @@ app.get(
 
       res.status(500).json({
         success: false,
-        message: "Server error",
+        message: error.message,
       });
     }
   }
