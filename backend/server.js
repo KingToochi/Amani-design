@@ -1279,7 +1279,7 @@ app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
       });
     }
 
-    if (user.role !== "vendor" && user.role !== "designer") {
+    if (user.role !== "vendor") {
       return res.status(403).json({
         success: false,
         message: "Access denied"
@@ -1322,7 +1322,7 @@ app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
     ] = await Promise.all([
 
       // SALES
-      Sale.aggregate([
+      Sales.aggregate([
         {
           $match: {
             productId: { $in: productIds }
@@ -1338,7 +1338,7 @@ app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
       ]),
 
       // ORDERS
-      Order.aggregate([
+      Orders.aggregate([
         {
           $match: {
             "products.productId": { $in: productIds }
@@ -1467,7 +1467,7 @@ app.get(
         ratings,
         likes,
       ] = await Promise.all([
-        Sale.aggregate([
+        Sales.aggregate([
           {
             $match: {
               productId: { $in: productIds },
