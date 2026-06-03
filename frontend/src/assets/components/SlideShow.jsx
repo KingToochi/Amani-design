@@ -1,22 +1,30 @@
 import { useState, useEffect } from "react";
 
-const Slide = ({ imageArray, alt }) => {
+const Slide = ({ imageArray, alt, className = "w-full h-full object-cover rounded-lg" }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isActive, setIsActive] = useState(false);
 
     useEffect(() => {
+
+        if (!isActive || imageArray.length === 0) return;
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) => (prevIndex + 1) % imageArray.length);
-        }, 3000);
+        }, 1000);
 
         return () => clearInterval(interval); // cleanup
-    }, [imageArray.length]);
+    }, [isActive, imageArray.length]);
 
     return (
-        <div className="w-full h-64 relative overflow-hidden">
+        <div 
+            onMouseEnter={() => setIsActive(true)}
+            onMouseLeave={() => setIsActive(false)}
+            onTouchStart={() => setIsActive(true)}
+            onTouchEnd={() => setIsActive(false)}>
             <img
                 src={imageArray[currentIndex]}
                 alt={alt}
-                className="w-full h-full object-cover rounded-lg"
+                className={className}
+                
             />
         </div>
     );

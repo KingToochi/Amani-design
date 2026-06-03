@@ -6,6 +6,7 @@ import { IoChatboxOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BsTag } from "react-icons/bs";
 import logo from "../../images/mainLogo.jpg"
+import { FaStore } from "react-icons/fa";
 
 
 
@@ -56,6 +57,16 @@ const SideBar = ({className, userData}) => {
                         <h1>Analytics</h1>
                     </Link>
                 </li> */}
+
+                <li>
+                    <Link to="/products"
+                    className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                    >
+                        <FaStore />
+                        <h1>Store</h1>
+                    </Link>
+                </li>
+                
                 <li>
                     <Link to="/designer/products"
                     className="flex w-full items-center gap-2 text-lg font-[abril] font-normal focus:bg-purple-800/50 px-2 focus:rounded-lg"

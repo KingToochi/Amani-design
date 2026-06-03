@@ -6,6 +6,7 @@ import { BASE_URL} from "../../Url";
 import { BiSolidLike } from "react-icons/bi";
 import { LikeContext } from "../../hooks/Like";
 import {AuthContext} from "../../hooks/AuthProvider"
+import Slide from "../../components/SlideShow";
 
 
 
@@ -56,7 +57,7 @@ const Products = () => {
         if (isLoggedIn) {
             fetchLikes()
         }
-}, [isLoggedIn])
+    }, [isLoggedIn])
 
     const addToWishList = (design) => {
         setWishList(
@@ -164,9 +165,11 @@ const Products = () => {
                 >
                     <Link key={design._id} to={`/product-details/${design._id}`}
                     >
-                        <img 
+                        {/* <img 
                         className="rounded-lg break-inside-avoid mb-2"
-                        src={design.productImage} alt="images"/>
+                        src={design.productImages?.[0]} alt="images"/> */}
+                        <Slide imageArray={design.productImages} alt={design.productName} className="rounded-lg break-inside-avoid mb-2"/>
+
                     </Link>
                     <div
                     className="flex flex-col absolute  right-0 gap-4"

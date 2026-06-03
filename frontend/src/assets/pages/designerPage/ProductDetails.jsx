@@ -21,9 +21,12 @@ const ProductDetails = () => {
 
 
     const fetchProductDetail = async(id) => {
+        console.log(id)
         
         try {
-            let response = await fetch(url)
+            let response = await fetch(url, {
+                "method": "GET",
+            })
             let data = await response.json()
             console.log(data)
             setProductDetails(data)
@@ -125,7 +128,7 @@ const ProductDetails = () => {
                     md:w-[50%] md:h-auto 
                     "
                     >
-                        <img src={productDetails?.productImages} className="w-full h-full rounded-lg "/>
+                        <img src={productDetails.productImages?.[0]} className="w-full h-full rounded-lg "/>
                     </div>
                     <div
                     className="w-full flex flex-col gap-5 px-4

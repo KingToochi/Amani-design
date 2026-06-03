@@ -120,7 +120,7 @@ const Header = ({userData}) => {
                                 </li> */}
 
                                 <li>
-                                    <Link to="/designer/store" 
+                                    <Link to="/products" 
                                     onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
