@@ -239,7 +239,8 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
                 setError({ submit: errorData.message || "Failed to add product" });
             }
         } catch (error) {
-            setError({ submit: "Network error. Please try again." });
+            // setError({ submit: "Network error. Please try again." });
+            setError({ submit: error.message || "An unexpected error occurred. Please try again." });
         } finally {
             setIsSubmitting(false);
         }

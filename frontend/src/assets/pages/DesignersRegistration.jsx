@@ -39,6 +39,7 @@ const DesignerRegistration = () => {
     const [successMessage, setSuccessMessage] = useState({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const formInputValidation = async(event) => {
+        event.preventDefault()
         let {name, id, value, files} = event.target
         const file = files?.[0]
         if (id === "profilePicture" || id === "proofOfAddress") {
