@@ -13,8 +13,18 @@ const ProductDetails = () => {
     const [editPrice, setEditPrice] = useState(false)
     const [editDescription, setEditDescription] = useState(false)
     const [editCategory, setEditCategory] = useState(false)
+    const [editBaseColor, setEditBaseColor] = useState(false)
+    const [editBaseSize, setEditBaseSize] = useState(false)
+    const [editProductName, setEditProductName] = useState(false)
     const [productDetails, setProductDetails] = useState({})
+    const [editVariant, setEditVariant] = useState(false)
     const [productList, setProductList] = useState({})
+    const [editVariantPrice, setEditVariantPrice] = useState(false)
+    const [editVariantColor, setEditVariantColor] = useState(false)
+    const [editVariantSize, setEditVariantSize] = useState(false)
+    const [variantToEdit, setVariantToEdit] = useState({})
+    const [editingField, setEditingField] = useState(null)
+    const [message, setMessage] = useState("")
     const {id} = useParams()
     const Navigate = useNavigate()
     const url = `${BASE_URL}/products/${id}`
@@ -44,26 +54,68 @@ const ProductDetails = () => {
         setEditPrice(true)
         setEditDescription(false)
         setEditCategory(false)
+        setEditBaseColor(false)
+        setEditBaseSize(false)
     }
 
     const handleEditDescription = () => {
         setEditDescription(true)
         setEditCategory(false)
         setEditPrice(false)
+        setEditBaseColor(false)
+        setEditBaseSize(false)
     }
 
     const handleEditCategory = () => {
         setEditCategory(true)
          setEditPrice(false)
          setEditDescription(false)
+         setEditBaseColor(false)
+        setEditBaseSize(false)
     }
 
+
+    const handleEditBaseColor = () => {
+        setEditBaseColor(true)
+        setEditDescription(false)
+        setEditCategory(false)
+        setEditBaseSize(false)
+        setEditPrice(false)
+    }
+
+        const handleEditBaseSize = () => {
+        setEditBaseSize(true)
+        setEditDescription(false)
+        setEditCategory(false)
+        setEditBaseColor(false)
+        setEditPrice(false)
+    }
+
+    const handleEditVariants = (id, field) => {
+        setEditVariant(true)
+        setEditDescription(false)
+        setEditCategory(false)
+        setEditPrice(false)
+        setEditBaseColor(false)
+        setEditBaseSize(false)
+        const variant = productDetails.variants.find(variant => variant._id === id)
+        if (!variant) return
+        setVariantToEdit(variant)
+        setEditingField(field)
+    }
+   
     if (!productDetails) {
     return <p className="text-gray-50">Loading product details...</p>;
   }
 
   const handleUpdate = async(productDetails, e) => {
     e.preventDefault()
+    setEditDescription(false)
+    setEditCategory(false)
+    setEditBaseColor(false)
+    setEditBaseSize(false)
+    setEditPrice(false)
+    setEditVariant(false)
     try {
         let response = await fetch (url, {
             "method" : "PUT",
@@ -72,6 +124,7 @@ const ProductDetails = () => {
         })
 
         if(response.ok) {
+            setMessage("Product updated successfully")
             console.log(`${productDetails} submitted successfully`)
         }
 
@@ -94,7 +147,7 @@ const ProductDetails = () => {
                 })
                 setProductList(prev => prev.filter(product => product.id !== id))
                 if (response.ok) {
-                    
+                    setMessage("Product deleted successfully")
                     Navigate("/designer/products")
                 }
             }catch(error){
@@ -103,9 +156,19 @@ const ProductDetails = () => {
         }
     }catch(error){
         console.log(error)
+        setMessage("Failed to delete product")
     }
   }
+  
+useEffect(()=> {
+    if(!message) return
+    const timer = setTimeout(()=> {
+        setMessage("")
+    }, 3000)
 
+    return () => clearTimeout(timer)
+}, [message])
+    
   const handleGoBack = () => Navigate("/designer/products")
 
     return(
@@ -119,10 +182,17 @@ const ProductDetails = () => {
                             <FaArrowLeft />
                         </button>
                 </div>
+                <div className="w-full flex items-center justify-center">
+                    <p className="text-green-500 font-semibold">{message}</p>
+                </div>
+                <div className="w-full">
+                        <h1 className="font-bold px-6 text-xl">{productDetails.productName}</h1>
+                    </div>
                 <div className="w-[90%] mx-auto min-h -screen flex flex-col  font-[abril] text-xl px-4 gap-4
                 sm:text-2xl
                 md:flex-row
                 ">
+                    
                     <div
                     className="w-full
                     md:w-[50%] md:h-auto 
@@ -131,8 +201,8 @@ const ProductDetails = () => {
                         <img src={productDetails.productImages?.[0]} className="w-full h-full rounded-lg "/>
                     </div>
                     <div
-                    className="w-full flex flex-col gap-5 px-4
-                    md:w-1/2  
+                    className="w-full flex flex-col gap-2 border-1 border-gray-300 rounded-lg p-4 md:w-1/2  
+                    
                      "
                     >
                     <div className="w-full 
@@ -152,6 +222,45 @@ const ProductDetails = () => {
                         <div className="w-full flex items-center justify-between gap-2 pt-2">
                             <h1 className="flex items-center font-semibold"><TbCurrencyNaira />{productDetails.basePrice}</h1>
                             <button onClick={handleEditPrice} className="cursor-pointer">
+                                <CiEdit  className="font-normal"/>
+                            </button>
+                        </div>
+                        }
+                    </div>
+
+                    <div className="w-full">
+                        {editBaseColor
+                        ?
+                        <form className="w-auto flex flex-col justify-center font-[abril] text-gray-500">
+                            <input type="text" value={productDetails.baseColor} onChange={(e) => setProductDetails({...productDetails, [e.target.name]: e.currentTarget.value})} name="baseColor" className="w-[70%] border-2 rounded-lg py-2 px-2 border-gray-700 focus:outline-none font-[abril]"/>
+                        </form> 
+                        :
+                        <div className="w-full flex items-center justify-between gap-2 pt-2">
+                            <h1 className="flex items-center font-semibold">{productDetails.baseColor}</h1>
+                            <button onClick={handleEditBaseColor} className="cursor-pointer">
+                                <CiEdit  className="font-normal"/>
+                            </button>
+                        </div>
+                        }
+                    </div>
+
+                    <div className="w-full">
+                        {editBaseSize
+                        ?
+                        <select id="baseSize" name="baseSize" value={productDetails.baseSize} onChange={(e) => setProductDetails({...productDetails, [e.target.name]: e.currentTarget.value})}
+                        className="w-auto flex flex-col justify-center font-[abril] text-gray-500"
+                        >
+                            <option hidden>Base Size</option>
+                            <option value="xs">Extra Small</option>
+                            <option value="s">Small</option>
+                            <option value="m">Medium</option>
+                            <option value="l">Large</option>
+                            <option value="xl">Extra Large</option>
+                        </select>
+                        :
+                        <div className="w-full flex items-center justify-between gap-2 pt-2">
+                            <h1 className="flex items-center font-semibold">{productDetails.baseSize}</h1>
+                            <button onClick={handleEditBaseSize} className="cursor-pointer">
                                 <CiEdit  className="font-normal"/>
                             </button>
                         </div>
@@ -208,6 +317,73 @@ const ProductDetails = () => {
                                     <CiEdit  className="font-normal"/>
                                 </button>
                              </div>
+                        }
+                    </div>
+
+                    <div className="w-full">
+                        {
+                            productDetails.hasVariants
+                            &&
+                            <div className="w-full flex flex-col gap-4">
+                                {productDetails.variants?.map((variant, index) => (
+                                    <div key={variant._id} className="w-full flex flex-col gap-2 border-1 border-gray-300 rounded-lg p-4">
+                                        <h2 className="text-lg font-semibold">Variants[{index+1}]</h2>
+                                        {
+                                            (editVariant && editingField === "price" && variantToEdit._id === variant._id) 
+                                            ?
+                                            <form className="w-1/2 mx-auto flex justify-between gap-4 items-center bg-gray-50 border-1 rounded-lg text-gray-900
+                                            md:w-2/3
+                                            lg:w-1/2"
+                                            >
+                                                <FiMinus />
+                                                <input type="number" value={variant.price} onChange={(e) => setProductDetails({...productDetails, variants: productDetails.variants.map(v => v._id === variant._id ? {...v, [e.target.name]: e.currentTarget.value} : v)})} name="price" className="w-[70%]   focus:outline-none"/>
+                                                <GoPlus/>
+                                            </form>
+
+
+                                            :
+                                                <div className="w-full flex items-center justify-between gap-2">
+                                                <p className="text-gray-500 flex items-center font-semibold">price: <TbCurrencyNaira />{variant.price}</p>
+                                                <button onClick={() => handleEditVariants(variant._id, "price")} className="cursor-pointer">
+                                                    <CiEdit  className="font-normal"/>
+                                                </button>
+                                            </div>
+                                        }
+                                        {
+                                            (editVariant && editingField === "color" && variantToEdit._id === variant._id)
+                                            ?
+                                            <form className="w-auto flex flex-col justify-center font-[abril] text-gray-500">
+                                                <input type="text" value={variant.color} onChange={(e) => setProductDetails({...productDetails, variants: productDetails.variants.map(v => v._id === variant._id ? {...v, [e.target.name]: e.currentTarget.value} : v)})} name="color" className="w-[70%]   focus:outline-none"/>
+                                            </form>
+                                            :
+                                            <div className="w-full flex items-center justify-between gap-2">
+                                                <p className="text-gray-500">color: {variant.color}</p>
+                                                <button onClick={() => handleEditVariants(variant._id, "color")} className="cursor-pointer">
+                                                    <CiEdit  className="font-normal"/>
+                                                </button>
+                                            </div>
+                                        }
+                                        {
+                                            (editVariant && editingField === "size" && variantToEdit._id === variant._id)
+                                            ?
+                                            <select id="size" name="size" value={variant.size} onChange={(e) => setProductDetails({...productDetails, variants: productDetails.variants.map(v => v._id === variant._id ? {...v, [e.target.name]: e.currentTarget.value} : v)})} className="w-[70%]   focus:outline-none">
+                                                <option value="S">S</option>
+                                                <option value="M">M</option>
+                                                <option value="L">L</option>
+                                                <option value="XL">XL</option>
+                                            </select>
+                                            :
+                                            <div className="w-full flex items-center justify-between gap-2">
+                                                <p className="text-gray-500">size: {variant.size}</p>
+                                                <button onClick={() => handleEditVariants(variant._id, "size")} className="cursor-pointer">
+                                                    <CiEdit  className="font-normal"/>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                ))}
+                            </div>
+                           
                         }
                     </div>
                     <div
