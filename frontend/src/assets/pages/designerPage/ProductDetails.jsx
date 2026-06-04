@@ -404,6 +404,24 @@ useEffect(()=> {
                     </div>
                     </div>
         </div>
+        {/* {
+                            productDetails.productImages?.map((image, index) => (
+                                <div key={index} className="w-full flex flex-row items-center justify-center">
+                                    <img src={image} alt={`Product Image ${index + 1}`} className="w-full h-auto object-cover rounded-lg" />
+                                </div>
+                            ))
+                        } */}
+
+        <div className="w-full grid grid-cols-4 gap-2">
+            {productDetails?.productImages?.map((image, index) => (
+                <img 
+                key={index} 
+                src={image} 
+                alt={`Product ${index + 1}`}
+                className="w-full h-auto object-cover rounded-lg"
+                />
+            ))}
+        </div>
         </div>
     )
 }
