@@ -84,7 +84,7 @@ console.log(cart)
                                 lg:w-[20%]
                               "
                                 >
-                                    <img src={cartItems.productImage} 
+                                    <img src={cartItems?.productImages[0]} alt={cartItems.productName}
                                     className="w-full object-conver rounded-lg break-inside-avoid
                                     sm:h-[200px] 
                                     lg:object-contain
@@ -95,8 +95,8 @@ console.log(cart)
                                 className="w-[40%] flex flex-col"
                                 >
                                     <h1 className="font-semibold">{cartItems.productName}</h1>
-                                    <h1>Size: {cartItems.size}</h1>
-                                    <h1>color: {cartItems.color}</h1>
+                                    <h1>Size: {cartItems.selectedSize}</h1>
+                                    <h1>color: {cartItems.selectedColor}</h1>
                                     <h1 className="flex items-center "><TbCurrencyNaira/>{cartItems.productPrice * cartItems.quantity}</h1>
                                 </div>
                                 <div 
@@ -151,9 +151,9 @@ console.log(cart)
                                         </h1>
                                         <div className="w-1/2 flex justify-end items-center">
                                             <TbCurrencyNaira/>
-                                            <span>
-                                                {freeDelivery ? "free" : "4000"}
-                                            </span>
+                                            <h1>
+                                                Delivery cost will the handle by the logistic company
+                                            </h1>
                                         </div>
                                     </div>
                             </div>
@@ -167,7 +167,7 @@ console.log(cart)
                                             <TbCurrencyNaira/>
                                             <span>
                                                 {
-                                                    freeDelivery ? subTotal : subTotal + 4000
+                                                    subTotal
                                                 }
                                             </span>
                                         </div>

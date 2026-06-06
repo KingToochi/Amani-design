@@ -47,15 +47,24 @@ const PDetails = () => {
             return;
         }
 
+        let itemId;
+
+        if ((selectedColor !== productDetails.baseColor) && (selectedSize !== productDetails.baseSize)) {
+            selectedVariant = productDetails.variant.find(variant => selectedColor === variant.color && selectedSize === variant.size)
+            itemId = selectedVariant._id
+        }else{
+            itemId = productDetails._id
+        }
+
         setCart(prevCart => {
             // Check if product exists in cart using _id
-            const existing = prevCart.find(item => item._id === productDetails._id)
+            const existing = prevCart.find(item => item._id === itemId)
 
             let updatedCart;
             if (existing) {
                 // Update quantity if product exists
                 updatedCart = prevCart.map(item =>
-                    item._id === productDetails._id
+                    item._id === itemId
                     ? {...item, quantity: item.quantity + quantity}
                     : item
                 )
@@ -64,9 +73,11 @@ const PDetails = () => {
                 // Add new product with size and color
                 updatedCart = [...prevCart, {
                     ...productDetails,
+                    itemId,
                     quantity,
                     selectedSize,
-                    selectedColor
+                    selectedColor,
+                    productPrice
                 }]
                 console.log(`Added ${productDetails.productName} to cart`)
             }
