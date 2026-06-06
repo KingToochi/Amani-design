@@ -165,9 +165,6 @@ const Products = () => {
                 >
                     <Link key={design._id} to={`/product-details/${design._id}`}
                     >
-                        {/* <img 
-                        className="rounded-lg break-inside-avoid mb-2"
-                        src={design.productImages?.[0]} alt="images"/> */}
                         <Slide imageArray={design.productImages} alt={design.productName} className="rounded-lg break-inside-avoid mb-2"/>
 
                     </Link>

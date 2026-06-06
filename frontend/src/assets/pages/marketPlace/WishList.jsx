@@ -37,7 +37,7 @@ return(
                         <FaHeart className="text-red-500 text-xl mx-auto" />
                     </button>
                     <Link to={`/product-details/${wish._id}`}>
-                        <img src={wish.productImage}
+                        <img src={wish?.productImages[0]}
                         className="rounded-lg break-inside-avoid mb-2"
                         />
                     </Link>

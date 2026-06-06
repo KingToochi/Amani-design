@@ -37,7 +37,7 @@ const Search = ({ searchedProduct, setShowSearchedProduct, setShowSearchBar}) =>
               {/* Image Container */}
               <div className="relative aspect-square overflow-hidden bg-gray-100">
                 <img
-                  src={items.productImage}
+                  src={items.productImages[0]}
                   alt={items.productDescription || "Product image"}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
