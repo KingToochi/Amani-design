@@ -42,6 +42,10 @@ const PDetails = () => {
 
     const handleCart = () => {
         if (!productDetails) return;
+        if (!selectedSize || !selectedColor) {
+            setMessage("Please select size and color before adding to cart.")
+            return;
+        }
 
         setCart(prevCart => {
             // Check if product exists in cart using _id
