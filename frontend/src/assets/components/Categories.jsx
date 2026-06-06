@@ -3,26 +3,47 @@ import women from "../images/women2.jpg";
 import accessories from "../images/image6.jpg";
 import { Link } from "react-router-dom";
 import Products from "../pages/marketPlace/Products";
+import { useState, useEffect } from "react";
+import { BASE_URL } from "../Url";
 
 const Categories = ({products, loading, error}) => {
+    const [menProducts, setMenProducts] = useState([]);
+    const [womenProducts, setWomenProducts] = useState([]);
+    const [accessoriesProducts, setAccessoriesProducts] = useState([]);
+
     // Filter products by category
-    const menProducts = products?.filter(product => 
-        product.category?.toLowerCase() === 'men' || 
-        product.category?.toLowerCase() === 'men\'s' ||
-        product.category?.toLowerCase() === 'mens'
-    ) || [];
+    // const menProducts = products?.filter(product => 
+    //     product.category?.toLowerCase() === 'men' || 
+    //     product.category?.toLowerCase() === 'men\'s' ||
+    //     product.category?.toLowerCase() === 'mens'
+    // ) || [];
     
-    const womenProducts = products?.filter(product => 
-        product.category?.toLowerCase() === 'women' || 
-        product.category?.toLowerCase() === 'women\'s' ||
-        product.category?.toLowerCase() === 'womens'
-    ) || [];
+    // const womenProducts = products?.filter(product => 
+    //     product.category?.toLowerCase() === 'women' || 
+    //     product.category?.toLowerCase() === 'women\'s' ||
+    //     product.category?.toLowerCase() === 'womens'
+    // ) || [];
     
-    const accessoriesProducts = products?.filter(product => 
-        product.category?.toLowerCase() === 'accessories' || 
-        product.category?.toLowerCase() === 'accessory' ||
-        product.category?.toLowerCase() === 'accessories'
-    ) || [];
+    // const accessoriesProducts = products?.filter(product => 
+    //     product.category?.toLowerCase() === 'accessories' || 
+    //     product.category?.toLowerCase() === 'accessory' ||
+    //     product.category?.toLowerCase() === 'accessories'
+    // ) || [];
+
+    const fetchCategoryProducts = async () => {
+        try {
+            let response = await fetch(`${BASE_URL}/categories`, {
+                method: "GET",
+            });
+            let data = await response.json();
+            console.log("Fetched category products:", data);
+            setMenProducts(data.fetchMenProduct)
+            setAccessoriesProducts(data.fetchAccessories)
+            setWomenProducts(data.fetchWomenProduct)
+        } catch (error) {
+            console.error("Error fetching category products:", error);
+        }
+    }
 
     const categories = [
         {

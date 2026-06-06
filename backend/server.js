@@ -91,6 +91,24 @@ app.get("/products", async (req, res) => {
   const products = await Product.find();
   res.json(products);
 });
+app.get("/categories", async (req, res) => {
+  try {
+    const fetchMenProduct = await Product.findOne({
+      productSubCategory: { $regex: "\\bmen\\b", $options: "i" },
+    });
+
+  const fetchWomenProduct = await Product.findOne({
+    productSubCategory: { $regex: "\\bwomen\\b", $options: "i" },
+  });
+
+  const fetchAccessories = await Product.findOne({
+    productSubCategory: { $regex: "\\baccessory\\b", $options: "i" },
+  });
+    return res.status(200).json({success:true, fetchAccessories, fetchMenProduct, fetchWomenProduct})
+  }catch(error){
+    res.status(500).json({ success: false, message: "Error fetching categories", error: error.message });
+  }
+})
 
 // get products by designer id 
 

@@ -26,6 +26,7 @@ const HomePage = () => {
             }
             
             let data = await response.json()
+            console.log("Fetched products:", data)
             setProduct(data)
             setError(null)
         } catch(error) {
