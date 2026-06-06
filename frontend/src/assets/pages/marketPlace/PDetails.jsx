@@ -13,14 +13,22 @@ const PDetails = () => {
     const [cart, setCart] = useContext(CartContext);
     const [quantity, setQuantity] = useState(1)
     const [loading, setLoading] = useState(true)
-    const [selectedSize, setSelectedSize] = useState('M')
-    const [selectedColor, setSelectedColor] = useState('Black')
+    const [selectedSize, setSelectedSize] = useState(null)
+    const [selectedColor, setSelectedColor] = useState(null)
+    const [productPrice, setProductPrice] = useState(0)
+    const [colors, setColors] = useState([])
+    const [sizes, setSizes] = useState([])
+    const [message, setMessage] = useState(null)
 
     const fetchProduct = async() => {
         try {
             let response = await fetch(`${url}/products/${_id}`)
             let data = await response.json()
             setProductDetails(data)
+            setProductPrice(data.basePrice) // Set price from fetched data
+            addColors(data) // Populate colors based on product data
+            addSizes(data) // Populate sizes based on product data
+            console.log('Fetched product details:', data)
         } catch(error) {
             console.log(error)
         } finally {
@@ -69,6 +77,95 @@ const PDetails = () => {
         setQuantity(1)
     }
 
+    const addColors = (data) => {
+        const variantColors = data.hasVariants
+            ? data.variants.map(variant => variant.color)
+            : [];
+
+        setColors(prevColors => [
+            ...new Set([
+                ...prevColors,
+                data.baseColor,
+                ...variantColors
+            ])
+        ]);
+    };
+
+    const addSizes = (data) => {
+        const variantSizes = data.hasVariants
+            ? data.variants.map(variant => variant.size)
+            : [];
+
+        setSizes(prevSizes => [
+            ...new Set([
+                ...prevSizes,
+                data.baseSize,
+                ...variantSizes
+            ])
+        ]);
+    };
+
+    const handleSelectedSize = (size) => {
+        setSelectedSize(size)
+       
+
+        const baseColor = (productDetails.baseSize === size) ? productDetails.baseColor : null
+        const basePrice = (productDetails.baseSize === size) ? productDetails.basePrice : null
+
+        const variantWithSelectedSize = productDetails.hasVariants ? productDetails.variants.filter(variant => variant.size === size) : []
+
+        if (variantWithSelectedSize.length > 0) {
+            const colorsForSize = variantWithSelectedSize.map(variant => variant.color)
+            setProductPrice(basePrice ?? variantWithSelectedSize[0].price)
+            setColors([
+                ...new Set([
+                    ...(baseColor ? [baseColor] : []),
+                    ...colorsForSize
+                ])
+            ])
+
+        }else {
+            setProductPrice(productDetails.basePrice)
+            addColors(productDetails) // Reset colors to all available options
+        }
+
+    }
+
+   const handleSelectedColor = (color) => {
+    setMessage("");
+
+    // Base product
+    if (
+        color === productDetails.baseColor &&
+        (
+            selectedSize === productDetails.baseSize ||
+            !selectedSize
+        )
+    ) {
+        setSelectedColor(color);
+        setProductPrice(productDetails.basePrice);
+        return;
+    }
+
+    const variant = productDetails.hasVariants
+        ? productDetails.variants.find(
+              variant =>
+                  variant.color === color &&
+                  variant.size === selectedSize
+          )
+        : null;
+
+    if (!variant) {
+        setMessage(
+            `${color} is not available for the selected size.`
+        );
+        return;
+    }
+
+    setSelectedColor(color);
+    setProductPrice(variant.price);
+};
+
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -96,11 +193,11 @@ const PDetails = () => {
             md:flex-row
             "
             >
-                <img src={productDetails.productImage}
+                <img src={productDetails?.productImages[0]}
                 className="rounded-lg
                  md:w-[50%] md:max-h-screen object-cover
                 "
-                alt={productDetails.productName}
+                alt={productDetails?.productName}
                 />
                 <div
                 className="mt-4 flex flex-col px-6 gap-4
@@ -108,18 +205,19 @@ const PDetails = () => {
                 "
                 >
                     <h1 className="flex items-center gap-2">
-                        <TbCurrencyNaira /> {productDetails.productPrice}
+                        <TbCurrencyNaira /> {productPrice}
                     </h1>
-                    <h1>{productDetails.productCategory}</h1>
+                    <h1 className="text-semibold text-sm text-gray-700">{productDetails.productCategory}</h1>
+                    <p className="text-gray-400 text-sm">{productDetails.productDescription}</p>
                     
                     {/* Size Selection */}
                     <div>
                         <h1 className="mb-2">Size:</h1>
                         <div className="flex gap-2">
-                            {['XS', 'S', 'M', 'L', 'XL'].map(size => (
+                            {sizes.map(size => (
                                 <button
                                     key={size}
-                                    onClick={() => setSelectedSize(size)}
+                                    onClick={() => handleSelectedSize(size)}
                                     className={`px-3 py-1 border rounded ${
                                         selectedSize === size 
                                         ? 'bg-black text-white' 
@@ -129,6 +227,7 @@ const PDetails = () => {
                                     {size}
                                 </button>
                             ))}
+                            <h2 className="text-sm text-red-500">{message}</h2>
                         </div>
                     </div>
 
@@ -136,10 +235,10 @@ const PDetails = () => {
                     <div>
                         <h1 className="mb-2">Color:</h1>
                         <div className="flex gap-2">
-                            {['Black', 'White', 'Blue', 'Red'].map(color => (
+                            {colors.map(color => (
                                 <button
                                     key={color}
-                                    onClick={() => setSelectedColor(color)}
+                                    onClick={() => handleSelectedColor(color)}
                                     className={`px-3 py-1 border rounded ${
                                         selectedColor === color 
                                         ? 'bg-black text-white' 
@@ -196,6 +295,20 @@ const PDetails = () => {
                     )}
                 </div>
             </div>
+            <div className="w-full mt-6">
+                    {productDetails.productImages.length > 1 && (
+                        <div className="w-full grid grid-cols-4 gap-2">
+                            {productDetails?.productImages?.map((image, index) => (
+                            <img 
+                            key={index} 
+                            src={image} 
+                            alt={`Product ${index + 1}`}
+                            className="w-full h-auto object-cover rounded-lg"
+                        />
+                        ))}
+                        </div>
+                    )}
+                </div>
         </div>
     )
 }
