@@ -10,7 +10,7 @@ import Search from "../pages/marketPlace/SearchPage";
 import {BASE_URL} from "../Url";
 import { CartContext } from "../hooks/CartContext";
 import { useContext } from "react";
-
+import {AuthContext} from "../hooks/AuthProvider";
 const Header = () => {
     const [dropDown, setDropDown] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false)
@@ -18,6 +18,7 @@ const Header = () => {
     const [searchedProduct, setSearchedProduct] = useState([])
     const [showSearchedProduct, setShowSearchedProduct] = useState(false)
     const [cart] = useContext(CartContext)
+    const {isLoggedIn, auth} = useContext(AuthContext)
     const url = BASE_URL
      const handleChange = (e) => {
         setQuery(e.target.value)
@@ -40,6 +41,7 @@ const Header = () => {
         console.log(data)
         
     }
+    console.log("isLoggedIn:", isLoggedIn, auth)
 
     return (
         <>
@@ -115,7 +117,7 @@ const Header = () => {
 
                 {/* User & Cart Icons */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                    <Link to="/profile"><FaRegUser className="text-base sm:text-lg cursor-pointer" /></Link>
+                    <Link to={(auth.role === "vendor") ? "/designer" : "/profile"}><FaRegUser className="text-base sm:text-lg cursor-pointer" /></Link>
                     <div className="relative">
                         <Link to="/cart"><MdOutlineShoppingBag className="text-base sm:text-lg cursor-pointer" /></Link>
                         <span className={`${cart.length == 0 && "hidden" } absolute -top-2 -right-2 bg-amber-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center`}>{cart.length}</span>

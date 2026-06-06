@@ -16,9 +16,10 @@ const Cart = ()=> {
     }
     
 const handleMinus = (_id) => {
+    console.log(_id)
   setCart(prevCart =>
     prevCart.map(item =>
-      item._id === _id
+      item.itemId === _id
         ? { 
             ...item, 
             quantity: item.quantity > 1 ? item.quantity - 1 : 1 
@@ -30,10 +31,11 @@ const handleMinus = (_id) => {
 
 
 const handlePlus = (_id) => {
+    console.log(_id)
     setCart(
         prevCart => prevCart.map(
             item => 
-                item._id === _id ?
+                item.itemId === _id ?
                  {...item, quantity : item.quantity + 1 }
                  : item
         )
@@ -43,7 +45,7 @@ const handlePlus = (_id) => {
 const handleDelete = (_id) => {
     setCart(
         prevCart => prevCart.filter(
-            item => item._id !== _id
+            item => item.itemId !== _id
         )
         )
 }
@@ -72,7 +74,7 @@ console.log(cart)
                 >
                     {
                         cart.map(cartItems => (
-                            <div key ={cartItems._id}>
+                            <div key ={cartItems.itemId}>
                             <div
                             className="w-full flex  gap-2 mb-4 h-[200px] items-center px-2 border-b-1 
                             sm:gap-4 
@@ -102,7 +104,7 @@ console.log(cart)
                                 <div 
                                 className="flex flex-col w-[30%] h-full justify-between py-6"
                                 >
-                                    <button onClick={() => handleDelete(cartItems._id)}
+                                    <button onClick={() => handleDelete(cartItems.itemId)}
                                     className="self-end cursor-pointer"
                                     >
                                         <MdDelete />
@@ -110,13 +112,13 @@ console.log(cart)
                                     <div
                                     className="flex self-end gap-4 "
                                     >
-                                        <button onClick={() => {handleMinus(cartItems._id)}}
+                                        <button onClick={() => {handleMinus(cartItems.itemId)}}
                                             className=" border-1 rounded-lg border-gray-300 px-1 cursor-pointer"
                                             >
                                             <FaMinus/>
                                         </button>
                                         {cartItems.quantity}
-                                        <button onClick={() => {handlePlus(cartItems._id)}}
+                                        <button onClick={() => {handlePlus(cartItems.itemId)}}
                                             className=" border-1 rounded-lg border-gray-300 px-1 cursor-pointer"
                                         >
                                             <FaPlus/>
@@ -149,9 +151,8 @@ console.log(cart)
                                         <h1 className="w-1/2 ">
                                             Delivery Cost
                                         </h1>
-                                        <div className="w-1/2 flex justify-end items-center">
-                                            <TbCurrencyNaira/>
-                                            <h1>
+                                        <div className="w-1/2 flex justify-end items-center ">
+                                            <h1 className="text-sm text-red-400">
                                                 Delivery cost will the handle by the logistic company
                                             </h1>
                                         </div>

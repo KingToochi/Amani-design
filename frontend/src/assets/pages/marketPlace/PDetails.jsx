@@ -50,7 +50,7 @@ const PDetails = () => {
         let itemId;
 
         if ((selectedColor !== productDetails.baseColor) && (selectedSize !== productDetails.baseSize)) {
-            selectedVariant = productDetails.variant.find(variant => selectedColor === variant.color && selectedSize === variant.size)
+            const selectedVariant = productDetails.variants.find(variant => selectedColor === variant.color && selectedSize === variant.size)
             itemId = selectedVariant._id
         }else{
             itemId = productDetails._id

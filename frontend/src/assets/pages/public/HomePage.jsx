@@ -6,11 +6,13 @@ import { BASE_URL } from "../../Url";
 import Footer from "../../components/Footer";
 import NewArrival from "../../components/NewArrival";
 
+
 const HomePage = () => {
     const [product, setProduct] = useState([])
     const [newArrival, setNewArrival] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+   
 
     const url = BASE_URL
 
