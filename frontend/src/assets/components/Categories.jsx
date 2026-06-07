@@ -6,29 +6,12 @@ import Products from "../pages/marketPlace/Products";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../Url";
 
-const Categories = ({products, loading, error}) => {
+const Categories = () => {
     const [menProducts, setMenProducts] = useState([]);
     const [womenProducts, setWomenProducts] = useState([]);
     const [accessoriesProducts, setAccessoriesProducts] = useState([]);
-
-    // Filter products by category
-    // const menProducts = products?.filter(product => 
-    //     product.category?.toLowerCase() === 'men' || 
-    //     product.category?.toLowerCase() === 'men\'s' ||
-    //     product.category?.toLowerCase() === 'mens'
-    // ) || [];
-    
-    // const womenProducts = products?.filter(product => 
-    //     product.category?.toLowerCase() === 'women' || 
-    //     product.category?.toLowerCase() === 'women\'s' ||
-    //     product.category?.toLowerCase() === 'womens'
-    // ) || [];
-    
-    // const accessoriesProducts = products?.filter(product => 
-    //     product.category?.toLowerCase() === 'accessories' || 
-    //     product.category?.toLowerCase() === 'accessory' ||
-    //     product.category?.toLowerCase() === 'accessories'
-    // ) || [];
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
 
     const fetchCategoryProducts = async () => {
         try {
@@ -40,44 +23,55 @@ const Categories = ({products, loading, error}) => {
             setMenProducts(data.fetchMenProduct)
             setAccessoriesProducts(data.fetchAccessories)
             setWomenProducts(data.fetchWomenProduct)
+            setError(null)
         } catch (error) {
             console.error("Error fetching category products:", error);
+            setError(error.message)
+        }finally {
+            setLoading(false)
         }
     }
+
+    useEffect(()=> {
+        fetchCategoryProducts()
+    }, [])
 
     const categories = [
         {
             name: "Men",
-            image: men,
+            image: menProducts?.productImages?.[0],
             link: "/men",
             description: "Bold styles for the modern gentleman",
-            count: menProducts.length,
+            // count: menProducts.length,
             products: menProducts
         },
         {
             name: "Women",
-            image: women,
+            image: womenProducts?.productImages?.[0],
             link: "/women",
             description: "Elegant pieces for every occasion",
-            count: womenProducts.length,
+            // count: womenProducts.length,
             products: womenProducts
         },
         {
             name: "Accessories",
-            image: accessories,
+            image: accessoriesProducts?.productImages?.[0] || accessories,
             link: "/accessories",
             description: "Complete your look with our collection",
-            count: accessoriesProducts.length,
+            // count: accessoriesProducts.length,
             products: accessoriesProducts
         }
     ];
 
     if (loading) return <div>Loading products...</div>
     if (error) return <div>Error: {error}</div>
-
+    
+    
 
     return (
-        <section className="absolute top-180 py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <section className="absolute top-160 py-16 px-4 sm:px-6 lg:px-8 bg-gray-50
+        md:top-150
+        ">
             <div className="max-w-7xl mx-auto">
                 {/* Section Header */}
                 <div className="text-center mb-12">
@@ -90,7 +84,7 @@ const Categories = ({products, loading, error}) => {
                 </div>
 
                 {/* Categories Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-[90%] mx-auto">
                     {categories.map((category, index) => (
                         <Link
                             key={category.name}
@@ -104,7 +98,7 @@ const Categories = ({products, loading, error}) => {
                             className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 aspect-[4/5]"
                         >
                             {/* Image */}
-                            <div className="w-full h-full overflow-hidden">
+                            <div className="w-full  h-full overflow-hidden">
                                 <img
                                     src={category.image}
                                     alt={`${category.name} category`}
@@ -120,9 +114,6 @@ const Categories = ({products, loading, error}) => {
                                 <h3 className="text-2xl md:text-3xl font-bold mb-2">
                                     {category.name}
                                 </h3>
-                                <p className="text-sm md:text-base text-gray-200 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                                    {category.description}
-                                </p>
                                 <p className="text-sm md:text-base text-gray-200 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
                                     {category.description}
                                 </p>

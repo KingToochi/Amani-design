@@ -10,44 +10,43 @@ import NewArrival from "../../components/NewArrival";
 const HomePage = () => {
     const [product, setProduct] = useState([])
     const [newArrival, setNewArrival] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+  
    
 
     const url = BASE_URL
 
-    const fetchProduct = async () => {
-        try {
-            setLoading(true)
-            let response = await fetch(`${url}/products`)
+    // const fetchProduct = async () => {
+    //     try {
+    //         setLoading(true)
+    //         let response = await fetch(`${url}/products`)
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! status: ${response.status}`)
+    //         }
             
-            let data = await response.json()
-            console.log("Fetched products:", data)
-            setProduct(data)
-            setError(null)
-        } catch(error) {
-            console.log(error)
-            setError(error.message)
-        } finally {
-            setLoading(false)
-        }
-    }
+    //         let data = await response.json()
+    //         console.log("Fetched products:", data)
+    //         setProduct(data)
+    //         setError(null)
+    //     } catch(error) {
+    //         console.log(error)
+    //         setError(error.message)
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }
 
-    useEffect(() => {
-        fetchProduct()
-    }, [])
+    // useEffect(() => {
+    //     fetchProduct()
+    // }, [])
 
     
     return (
         <div className="w-full relative">
             <Header/>
             <HeroBanner/>
-            <Categories products={product} loading={loading} error={error} />
-            <NewArrival products={product} />
+            <Categories/>
+            {/* <NewArrival products={product} /> */}
             <Footer/>
         </div>
     )
