@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { FaNairaSign } from "react-icons/fa6"
 import logo from "../../images/mainLogo.jpg"
+import CustomFetch from "../../hooks/UseFetch"
 
 const CheckOut = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -32,9 +33,16 @@ const CheckOut = () => {
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [cartLoading, setCartLoading] = useState(true);
+    const [formData, setFormData] = useState({
+        phoneNumber : "",
+        shippingAddress: "",
+        city: "",
+        state: ""
+    })
     const navigate = useNavigate();
     const location = useLocation();
     const pathName = location.pathname;
+
     console.log(pathName)
 
     
@@ -45,7 +53,8 @@ const CheckOut = () => {
     const authContext = useContext(AuthContext);
     const user = authContext?.user;
     
-    const url = BASE_URL;
+    const url = `${BASE_URL}/userInfo`;
+    const updateUrl = `${BASE_URL}/user/update`
     console.log(cart)
 
     useEffect(() => {
@@ -55,18 +64,18 @@ const CheckOut = () => {
 
     const fetchUserinfo = async () => {
         try {
-            const response = await fetch(`${url}/userInfo`, {
+            const response = await CustomFetch(url, {
                 method: 'GET',
                 credentials: 'include',
                 'Content-Type': 'application/json'
-                }
-            );
+                }) 
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log(data)
             setUserInfo(data.user);
         } catch (error) {
             console.error('Error fetching user info:', error);
@@ -76,6 +85,48 @@ const CheckOut = () => {
         }
     };
 
+    const handleEditMode = () => {
+        setFormData({
+            phoneNumber: userInfo.phoneNumber || "",
+            shippingAddress: userInfo.shippingAddress || "",
+            city: userInfo.city || "",
+            state: userInfo.state || ""
+        });
+
+        setEditMode(prev => !prev);
+    };
+
+    const handleUpdateUser = async () => {
+    try {
+        const response = await CustomFetch(updateUrl, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response) return;
+
+        const data = await response.json();
+
+        if (response.ok) {
+            setUserInfo(prev => ({
+                ...prev,
+                ...formData
+            }));
+
+            setEditMode(false);
+
+            console.log(data.message);
+        } else {
+            console.log(data.message);
+        }
+
+        } catch (error) {
+        console.log(error);
+        }
+    };
     // Safe calculation functions
     const calculateSubtotal = () => {
         if (!cart || cart.length === 0) return 0;
@@ -261,7 +312,7 @@ const CheckOut = () => {
                                     Shipping Information
                                 </h2>
                                 <button 
-                                    onClick={() => setEditMode(!editMode)}
+                                    onClick={() => handleEditMode()}
                                     className="text-sm text-gray-500 hover:text-black flex items-center transition"
                                 >
                                     <Edit className="h-4 w-4 mr-1" />
@@ -296,7 +347,13 @@ const CheckOut = () => {
                                         {editMode ? (
                                             <input 
                                                 type="tel" 
-                                                defaultValue={userInfo.phoneNumber}
+                                                value = {formData.phoneNumber}
+                                                onChange={(e)=>
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        phoneNumber: e.target.value
+                                                    }))
+                                                }
                                                 className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
                                             />
                                         ) : (
@@ -312,20 +369,38 @@ const CheckOut = () => {
                                             <div className="space-y-3">
                                                 <input 
                                                     type="text" 
-                                                    defaultValue={userInfo.shippingAddress}
+                                                    value = {formData.shippingAddress}
                                                     placeholder="Street address"
+                                                    onChange={(e)=> {
+                                                        setFormData(prev =>({
+                                                            ...prev,
+                                                            shippingAddress: e.target.value
+                                                        }))
+                                                    }}
                                                     className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
                                                 />
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <input 
                                                         type="text" 
-                                                        defaultValue={userInfo.city}
+                                                        value={formData.city}
+                                                        onChange={(e)=>{
+                                                            setFormData(prev=>({
+                                                                ...prev,
+                                                                city: e.target.value
+                                                            }))
+                                                        }}
                                                         placeholder="City"
                                                         className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
                                                     />
                                                     <input 
                                                         type="text" 
-                                                        defaultValue={userInfo.state}
+                                                        value={formData.state}
+                                                        onChange={(e)=>{
+                                                            setFormData(prev=>({
+                                                                ...prev,
+                                                                state: e.target.value
+                                                            }))
+                                                        }}
                                                         placeholder="State"
                                                         className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
                                                     />
@@ -339,7 +414,9 @@ const CheckOut = () => {
                                     </div>
 
                                     {editMode && (
-                                        <button className="bg-black text-white px-6 py-2 rounded-xl hover:bg-gray-800 transition text-sm font-medium">
+                                        <button 
+                                        onClick={()=>handleUpdateUser()}
+                                        className="bg-black text-white px-6 py-2 rounded-xl hover:bg-gray-800 transition text-sm font-medium">
                                             Save Changes
                                         </button>
                                     )}
@@ -377,7 +454,7 @@ const CheckOut = () => {
                                         className="flex space-x-4"
                                     >
                                         <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
-                                            {item?.ProductImages ? (
+                                            {item?.productImages ? (
                                                 <img src={item?.productImages?.[0]} alt={item.name} className="w-full h-full object-cover rounded-xl" />
                                             ) : (
                                                 <Package className="h-6 w-6 text-gray-400" />
