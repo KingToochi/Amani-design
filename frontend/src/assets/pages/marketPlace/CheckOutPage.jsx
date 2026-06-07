@@ -20,6 +20,7 @@ import {
   AlertCircle,
   Loader
 } from 'lucide-react';
+import { FaNairaSign } from "react-icons/fa6"
 import logo from "../../images/mainLogo.jpg"
 
 const CheckOut = () => {
@@ -45,6 +46,7 @@ const CheckOut = () => {
     const user = authContext?.user;
     
     const url = BASE_URL;
+    console.log(cart)
 
     useEffect(() => {
         setCartLoading(false);
@@ -78,23 +80,23 @@ const CheckOut = () => {
     const calculateSubtotal = () => {
         if (!cart || cart.length === 0) return 0;
         return cart.reduce((sum, item) => {
-            const price = item?.price || 0;
-            const quantity = item?.quantity || 1;
+            const price = item?.productPrice || 0;
+            const quantity = item?.quantity || 0;
             return sum + (price * quantity);
         }, 0);
     };
 
-    const calculateShipping = () => {
-        // const subtotal = calculateSubtotal();
-        return 8000 > 10000 ? 0 : 9.99;
-    };
+    // const calculateShipping = () => {
+    //     // const subtotal = calculateSubtotal();
+    //     return
+    // };
 
-    const calculateTax = () => {
-        return calculateSubtotal() * 0.08;
-    };
+    // const calculateTax = () => {
+    //     return calculateSubtotal() * 0.08;
+    // };
 
     const calculateTotal = () => { 
-        const total = calculateSubtotal() + calculateShipping() + calculateTax()
+        const total = calculateSubtotal()
         return total
        
     };
@@ -118,8 +120,8 @@ const CheckOut = () => {
     payment_options: 'card,mobilemoney,ussd',
     customer: {
         email: userInfo?.email || '',
-      phone_number: userInfo?.phoneNumber || '',
-      name: `${userInfo?.fname || ''} ${userInfo?.lname || ''}`.trim()
+        phone_number: userInfo?.phoneNumber || '',
+        name: `${userInfo?.fname || ''} ${userInfo?.lname || ''}`.trim()
     },
     customizations: {
           title: "Amanisky Fashion World",
@@ -348,9 +350,10 @@ const CheckOut = () => {
                         {/* Mobile Place Order Button */}
                         <button 
                             onClick={handlePlaceOrder}
-                            className="lg:hidden w-full bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold shadow-lg"
+                            className="justify-center flex mx-auto gap-2 lg:hidden w-full bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold shadow-lg"
                         >
-                            Pay Now • ${calculateTotal().toFixed(2)}
+                            Pay Now • 
+                            <span className='flex items-center'><FaNairaSign />{calculateTotal().toFixed(2)}</span>
                         </button>
                     </div>
 
@@ -367,26 +370,29 @@ const CheckOut = () => {
                             <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                                 {cart.map((item, index) => (
                                     <motion.div 
-                                        key={item._id || item.id || index}
+                                        key={item.itemId}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: index * 0.1 }}
                                         className="flex space-x-4"
                                     >
                                         <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
-                                            {item?.image ? (
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-xl" />
+                                            {item?.ProductImages ? (
+                                                <img src={item?.productImages?.[0]} alt={item.name} className="w-full h-full object-cover rounded-xl" />
                                             ) : (
                                                 <Package className="h-6 w-6 text-gray-400" />
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="font-medium text-sm">{item?.name || 'Product'}</h3>
+                                            <h3 className="font-medium text-sm">{item?.productName || 'Product'}</h3>
                                             <p className="text-xs text-gray-500 mt-1">
-                                                Size: {item?.size || 'M'} | Qty: {item?.quantity || 1}
+                                                Size: {item?.selectedSize || 'M'} | Qty: {item?.quantity || 1}
                                             </p>
-                                            <p className="font-semibold text-sm mt-1">
-                                                ${((item?.price || 0) * (item?.quantity || 1)).toFixed(2)}
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Color: {item?.selectedColor || ''}
+                                            </p>
+                                            <p className="font-semibold text-sm mt-1 flex items-center">
+                                                <FaNairaSign />{((item?.productPrice || 0) * (item?.quantity || 1)).toFixed(2)}
                                             </p>
                                         </div>
                                     </motion.div>
@@ -397,28 +403,28 @@ const CheckOut = () => {
                             <div className="space-y-3 py-4 border-t border-gray-100">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Subtotal</span>
-                                    <span className="font-medium">${calculateSubtotal().toFixed(2)}</span>
+                                    <span className="font-medium flex items-center"><FaNairaSign/>{calculateSubtotal().toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-sm">
+                                {/* <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Shipping</span>
                                     {calculateShipping() === 0 ? (
                                         <span className="text-green-600 font-medium">Free</span>
                                     ) : (
                                         <span className="font-medium">${calculateShipping().toFixed(2)}</span>
                                     )}
-                                </div>
-                                <div className="flex justify-between text-sm">
+                                </div> */}
+                                {/* <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Tax (8%)</span>
                                     <span className="font-medium">${calculateTax().toFixed(2)}</span>
-                                </div>
+                                </div> */}
                                 <div className="flex justify-between text-lg font-semibold pt-3 border-t border-gray-200">
                                     <span>Total</span>
-                                    <span className="text-black">${calculateTotal().toFixed(2)}</span>
+                                    <span className="flex items-center text-black"><FaNairaSign/>{calculateTotal().toFixed(2)}</span>
                                 </div>
                             </div>
 
                             {/* Free Shipping Progress */}
-                            {calculateSubtotal() < 100 && (
+                            {/* {calculateSubtotal() < 100 && (
                                 <div className="mb-6">
                                     <div className="flex justify-between text-xs mb-2">
                                         <span className="text-gray-600">Add ${(100 - calculateSubtotal()).toFixed(2)} for free shipping</span>
@@ -432,14 +438,15 @@ const CheckOut = () => {
                                         ></motion.div>
                                     </div>
                                 </div>
-                            )}
+                            )} */}
 
                             {/* Desktop Place Order Button */}
                             <button 
                                 onClick={handlePlaceOrder}
-                                className="hidden lg:block w-full bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold"
+                                className="w-full flex flex-row hidden lg:flex justify-center gap-4 bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold"
                             >
-                                Pay Now • ${calculateTotal().toFixed(2)}
+                                Pay Now • 
+                                <span className='flex items-center'><FaNairaSign/>{calculateTotal().toFixed(2)}</span>
                             </button>
                         </div>
                     </motion.div>

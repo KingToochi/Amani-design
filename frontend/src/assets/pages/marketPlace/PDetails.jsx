@@ -49,22 +49,32 @@ const PDetails = () => {
 
         let itemId;
 
-        if ((selectedColor !== productDetails.baseColor) && (selectedSize !== productDetails.baseSize)) {
-            const selectedVariant = productDetails.variants.find(variant => selectedColor === variant.color && selectedSize === variant.size)
-            itemId = selectedVariant._id
-        }else{
+        const isBaseProduct = selectedColor === productDetails.baseColor && selectedSize === productDetails.baseSize
+
+        if (isBaseProduct) {
             itemId = productDetails._id
+
+        }else {
+            const selectedVariant = productDetails.variants?.find(variant => selectedColor === variant.color && selectedSize === variant.size)
+            if (!selectedVariant){
+                setMessage("Selected variant not available.");
+                return;
+    
+            }
+            itemId = selectedVariant._id
+            
         }
+       
 
         setCart(prevCart => {
             // Check if product exists in cart using _id
-            const existing = prevCart.find(item => item._id === itemId)
+            const existing = prevCart.find(item => item.itemId === itemId)
 
             let updatedCart;
             if (existing) {
                 // Update quantity if product exists
                 updatedCart = prevCart.map(item =>
-                    item._id === itemId
+                    item.itemId === itemId
                     ? {...item, quantity: item.quantity + quantity}
                     : item
                 )
