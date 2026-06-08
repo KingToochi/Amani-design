@@ -42,6 +42,7 @@ connectDB();
 
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
+const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY  );
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
@@ -1550,5 +1551,50 @@ app.get(
   }
 );
 
+app.post("/verifyPayment", verifyToken, async(req, res) => {
+  app.post("/verifyPayment", verifyToken, async (req, res) => {
+  const {auth} = req.user
+  try {
+    const { transaction_id, amount, currency, cart } = req.body;
+    
+
+    if (!transaction_id) {
+      return res.status(400).json({
+        success: false,
+        message: "transaction_id is required"
+      });
+    }
+
+    const verification = await flw.Transaction.verify({
+      id: transaction_id
+    });
+
+    console.log(verification);
+
+    if (
+      verification.status !== "success" ||
+      verification.data.status !== "successful"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment verification failed"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      verification
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+})
 
 server.listen(4000, () => console.log("Server running on port 4000"));

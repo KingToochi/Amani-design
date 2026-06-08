@@ -42,6 +42,7 @@ const CheckOut = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const pathName = location.pathname;
+    const verifyPaymentUrl = `${BASE_URL}/verifyPayment`
 
     console.log(pathName)
 
@@ -155,8 +156,27 @@ const CheckOut = () => {
     const handlePlaceOrder = () => {
 
         handleFlutterPayment({
-            callback: (response) => {
+            callback: async(response) => {
                console.log(response);
+               if(response.status === "successful" || response.status === "success") {
+                try {
+                    let verification = await CustomFetch(verifyPaymentUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        transaction_id: response.transaction_id,
+                        amount: response.amount,
+                        currency: currency,
+                        customer: customer,
+                        cart: cart
+                    })
+                    })
+                }catch(error) {
+                    console.log(error)
+                }
+               }
                 closePaymentModal() // this will close the modal programmatically
             },
             onClose: () => {},
@@ -164,7 +184,7 @@ const CheckOut = () => {
     };
 
     const config = {
-    public_key: "FLWPUBK_TEST-83a22d70d3bcbefaddd2aafcb8e66f8b-X",
+    public_key: "FLWPUBK_TEST-f937ac1137adeb155b1fd0d7fba53f2f-X",
     tx_ref: Date.now(),
     amount: calculateTotal(),
     currency: 'NGN',
