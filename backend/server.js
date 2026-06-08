@@ -1556,6 +1556,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
   const {auth} = req.user
   try {
     const { transaction_id, amount, currency, cart } = req.body;
+    console.log(cart)
     
 
     if (!transaction_id) {
