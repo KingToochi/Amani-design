@@ -168,8 +168,8 @@ const CheckOut = () => {
                     body: JSON.stringify({
                         transaction_id: response.transaction_id,
                         amount: response.amount,
-                        currency: currency,
-                        customer: customer,
+                        currency: response.currency,
+                        customer: response.customer,
                         cart: cart
                     })
                     })
