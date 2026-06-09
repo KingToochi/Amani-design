@@ -18,7 +18,7 @@ import bcrypt from "bcryptjs";
 import Rating from "./models/Rating.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
-import Flutterwave  from 'flutterwave-react-v3';
+import Flutterwave  from 'flutterwave-node-v3';
 
 
 dotenv.config();
