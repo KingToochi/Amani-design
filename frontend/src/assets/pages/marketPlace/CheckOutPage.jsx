@@ -4,7 +4,7 @@ import { AuthContext } from '../../hooks/AuthProvider';
 import { CartContext } from '../../hooks/CartContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useFlutterwave } from 'flutterwave-react-v3';
+import  Flutterwave  from 'flutterwave-react-v3';
 import { 
   ShoppingBag, 
   Truck, 
