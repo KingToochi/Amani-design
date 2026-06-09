@@ -1554,12 +1554,10 @@ app.get(
 
 app.post("/verifyPayment", verifyToken, async(req, res) => {
   const {auth} = req.user
-  // const user = await User.findOne({_id: auth._id})
+  console.log(auth)
   try {
-    const { transaction_id, amount, currency, cart } = req.body;
+    const { transaction_id, cart, currency, amount} = req.body;
     console.log(cart)
-    
-
     if (!transaction_id) {
       return res.status(400).json({
         success: false,
@@ -1567,11 +1565,19 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       });
     }
 
+
+
+    const existingTransaction = await Order.findOne({transactionId: transaction_id})
+    if (existingTransaction) {
+      return res.status(409).json({
+      success: false,
+      message: "Transaction already processed"
+      });
+    }
+
     const verification = await flw.Transaction.verify({
       id: transaction_id
     });
-
-    console.log(verification);
 
     if (
       verification.status !== "success" ||
@@ -1582,6 +1588,47 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
         message: "Payment verification failed"
       });
     }
+
+    if (verification.data.amount !== amount) {
+      return res.status(400).json({
+      success: false,
+      message: "Amount mismatch"
+      });
+    }
+    const rawEmail = verification.data.customer.email;
+    // Handle case where email might not have the prefix
+    const cleanEmail = rawEmail.includes('_') 
+      ? rawEmail.split('_').pop() 
+      : rawEmail;
+
+
+    const products = cart.map(product => ({
+      productId: product._id,
+      quantity: product.quantity
+    }));
+    const cartItems = cart.map(product => ({
+      id: product.itemId,
+      name: product.productName,
+      quantity: product.quantity,
+      color: product.selectedColor,
+      size: product.selectedSize, 
+    }))
+
+    const newOrder = new Order({
+      orderNumber: `Amanisky-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
+      product: products,
+      transactionId: transaction_id,
+      amount: verification.data.amount,
+      currency: verification.data.currency,
+      paymentStatus: verification.data.status,
+      customerEmail: cleanEmail,
+      customerId: verification.data.customer.id,
+      customerName: verification.data.customer.name,
+      customerPhone: verification.data.customer.phone_number,
+      items: cartItems,
+    })
+
+    await newOrder.save()
 
     return res.status(200).json({
       success: true,

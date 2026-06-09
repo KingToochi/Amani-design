@@ -51,9 +51,12 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   items: [{
+    id: string,
     name: String,
     price: Number,
     quantity: Number,
+    color: string,
+    size: string,
   }],
   deliveryDate: {
     type: Date
