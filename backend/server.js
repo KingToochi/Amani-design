@@ -1597,6 +1597,5 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
     });
   }
 });
-})
 
 server.listen(4000, () => console.log("Server running on port 4000"));
