@@ -1553,8 +1553,8 @@ app.get(
 );
 
 app.post("/verifyPayment", verifyToken, async(req, res) => {
-  app.post("/verifyPayment", verifyToken, async (req, res) => {
   const {auth} = req.user
+  const user = await User.findOne({_id: auth._id})
   try {
     const { transaction_id, amount, currency, cart } = req.body;
     console.log(cart)
