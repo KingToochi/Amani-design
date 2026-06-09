@@ -4,7 +4,7 @@ import { AuthContext } from '../../hooks/AuthProvider';
 import { CartContext } from '../../hooks/CartContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import  Flutterwave  from 'flutterwave-react-v3';
+import { useFlutterwave } from 'flutterwave-react-v3';
 import { 
   ShoppingBag, 
   Truck, 
@@ -277,7 +277,7 @@ const CheckOut = () => {
             </div>
         );
     }
-
++
     return (
         <div className="min-h-screen bg-gray-50 mb-[75px]">
             {/* Header with Progress */}
