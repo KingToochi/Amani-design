@@ -177,6 +177,7 @@ const CheckOut = () => {
                     const verificationResponse = await response.json()
                     if (response.ok) {
                         setError(null)
+                        navigate("/customer-orders")
 
                     }
                 }catch(error) {
