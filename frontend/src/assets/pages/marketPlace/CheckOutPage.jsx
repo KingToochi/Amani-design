@@ -154,42 +154,65 @@ const CheckOut = () => {
     };
 
     const handlePlaceOrder = () => {
-
-        handleFlutterPayment({
-            callback: async(response) => {
-               console.log(response);
-               if(response.status === "successful" || response.status === "success") {
-                try {
-                    let verification = await CustomFetch(verifyPaymentUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        transaction_id: response.transaction_id,
-                        amount: response.amount,
-                        currency: response.currency,
-                        customer: response.customer,
-                        cart: cart
-                    })
-                    })
-
-                    const verificationResponse = await verification.json()
-                    if (verification.ok) {
-                        setError(null)
-                        setCart([])
-                        navigate("/customer-orders")
-
-                    }
-                }catch(error) {
-                    console.log(error)
-                }
-               }
-                closePaymentModal() // this will close the modal programmatically
+  handleFlutterPayment({
+    callback: async (response) => {
+      console.log(response);
+      
+      if (response.status === "successful" || response.status === "success") {
+        try {
+          const verification = await CustomFetch(verifyPaymentUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
             },
-            onClose: () => {},
+            body: JSON.stringify({
+              transaction_id: response.transaction_id,
+              amount: response.amount,
+              currency: response.currency,
+              customer: response.customer,
+              cart: cart
+            })
           });
-    };
+
+          // Check if the response is OK before parsing
+          if (verification.ok) {
+            const verificationResponse = await verification.json();
+            
+            if (verificationResponse.success) {
+              setError(null);
+              setCart([]);
+              navigate("/customer-orders");
+              closePaymentModal(); // Close only on success
+            } else {
+              // Handle verification failure
+              setError(verificationResponse.message || "Payment verification failed");
+              console.error("Verification failed:", verificationResponse);
+              closePaymentModal();
+            }
+          } else {
+            // Handle HTTP error status
+            const errorData = await verification.json();
+            setError(errorData.message || "Payment verification failed");
+            console.error("Verification HTTP error:", verification.status, errorData);
+            closePaymentModal();
+          }
+        } catch (error) {
+          console.error("Payment verification error:", error);
+          setError("An error occurred during payment verification");
+          closePaymentModal();
+        }
+      } else {
+        // Payment was not successful
+        setError(`Payment ${response.status}: Please try again`);
+        closePaymentModal();
+      }
+    },
+    onClose: () => {
+      // Optional: Handle modal close without payment
+      console.log("Payment modal closed");
+    },
+  });
+};
 
     const config = {
     public_key: "FLWPUBK_TEST-f937ac1137adeb155b1fd0d7fba53f2f-X",
