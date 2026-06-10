@@ -1553,7 +1553,7 @@ app.get(
 );
 
 app.post("/verifyPayment", verifyToken, async(req, res) => {
-  const {auth} = req.user
+  const auth = req.user
   console.log(auth)
   try {
     const { transaction_id, cart, currency, amount} = req.body;
@@ -1564,7 +1564,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
         message: "transaction_id is required"
       });
     }
-    // const user = await User.findOne({_id : auth._id})
+    const user = await User.findOne({_id : auth._id})
 
     const existingTransaction = await Order.findOne({transactionId: transaction_id})
     if (existingTransaction) {
@@ -1621,7 +1621,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       currency: verification.data.currency,
       paymentStatus: verification.data.status,
       customerEmail: cleanEmail,
-      // customerId : user?._id,
+      customerId : user?._id,
       customerPaymentId: verification.data.customer.id,
       customerName: verification.data.customer.name,
       customerPhone: verification.data.customer.phone_number,
@@ -1635,7 +1635,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       verification,
       message: "Order saved successfully",
       newOrder,
-    
+      user
     });
 
   } catch (error) {
@@ -1644,7 +1644,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
-   
+      user
     });
   }
 });
