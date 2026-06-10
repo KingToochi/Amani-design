@@ -1616,7 +1616,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
 
     const newOrder = new Order({
       orderNumber: `Amanisky-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
-      product: products,
+      products: products,
       transactionId: transaction_id,
       amount: verification.data.amount,
       currency: verification.data.currency,
