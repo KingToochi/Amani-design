@@ -175,7 +175,7 @@ const CheckOut = () => {
                     })
 
                     const verificationResponse = await verification.json()
-                    if (response.ok) {
+                    if (verification.ok) {
                         setError(null)
                         setCart([])
                         navigate("/customer-orders")
