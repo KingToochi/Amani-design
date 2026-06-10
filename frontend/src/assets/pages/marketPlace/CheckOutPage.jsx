@@ -173,6 +173,12 @@ const CheckOut = () => {
                         cart: cart
                     })
                     })
+
+                    const verificationResponse = await response.json()
+                    if (response.ok) {
+                        setError(null)
+
+                    }
                 }catch(error) {
                     console.log(error)
                 }

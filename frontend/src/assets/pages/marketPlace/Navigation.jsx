@@ -1,4 +1,4 @@
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaClipboardList } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa6";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -155,6 +155,19 @@ const Navigation = ()=> {
                         sm:flex
                         "
                         >Shopping</h1>
+                    </Link>
+                </li>
+
+                <li>
+                    <Link to="/customerOrders"
+                    className="flex flex-col gap-2 items-center"
+                    >
+                        <FaClipboardList />
+                        <h1
+                        className="hidden 
+                        sm:flex
+                        "
+                        >Orders</h1>
                     </Link>
                 </li>
 

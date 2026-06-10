@@ -1649,4 +1649,36 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
   }
 });
 
+app.get("/customerOrders", verifyToken, async(req, res) => {
+  const auth = req.user;
+
+  try {
+    // Verify user exists in database
+    const user = await User.findById(auth._id).select("_id");
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    const orders = await Order.find({ customerId: auth._id })
+      .select("orderNumber transactionId currency amount items orderStatus deliverydate createdAt")
+      .sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      orders
+    });
+
+  } catch(error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
 server.listen(4000, () => console.log("Server running on port 4000"));
