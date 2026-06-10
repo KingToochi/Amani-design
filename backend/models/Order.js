@@ -42,6 +42,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  customerPaymentId: {
+    type: String,
+    required: true
+  },
   customerName: {
     type: String,
     required: true,

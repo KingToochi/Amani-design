@@ -1564,6 +1564,9 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
         message: "transaction_id is required"
       });
     }
+    const user = await User.findOne({
+      _id : auth._id
+    })
 
 
 
@@ -1622,7 +1625,8 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       currency: verification.data.currency,
       paymentStatus: verification.data.status,
       customerEmail: cleanEmail,
-      customerId: verification.data.customer.id,
+      customerId : user._id,
+      customerPaymentId: verification.data.customer.id,
       customerName: verification.data.customer.name,
       customerPhone: verification.data.customer.phone_number,
       items: cartItems,
@@ -1632,7 +1636,9 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
 
     return res.status(200).json({
       success: true,
-      verification
+      verification,
+      message: "Order saved successfully",
+      newOrder
     });
 
   } catch (error) {
