@@ -1664,7 +1664,7 @@ app.get("/customerOrders", verifyToken, async(req, res) => {
     }
 
     const orders = await Order.find({ customerId: auth._id })
-      .select("orderNumber transactionId currency amount items orderStatus deliverydate createdAt")
+      .select("orderNumber transactionId currency amount items orderStatus deliverydate paymentStatus createdAt")
       .sort({ createdAt: -1 });
 
     return res.json({

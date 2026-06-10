@@ -159,7 +159,7 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    <Link to="/customerOrders"
+                    <Link to="/customer-orders"
                     className="flex flex-col gap-2 items-center"
                     >
                         <FaClipboardList />
