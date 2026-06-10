@@ -174,7 +174,7 @@ const CheckOut = () => {
                     })
                     })
 
-                    const verificationResponse = await response.json()
+                    const verificationResponse = await verification.json()
                     if (response.ok) {
                         setError(null)
                         setCart([])
