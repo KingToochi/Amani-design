@@ -22,7 +22,7 @@ const OrderDetails = () => {
             if (response.ok){
                 const details = await response.json()
                 console.log(details)
-                setOrderDetails(details.data)
+                setOrderDetails(details.order)
                 setError(null)
             }else {
                 setError({message: "unable to fetch order details"})
@@ -44,7 +44,7 @@ const OrderDetails = () => {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <Loader className="h-12 w-12 animate-spin text-black mx-auto" />
-                    <p className="mt-4 text-gray-600 font-light">Fetching your orders...</p>
+                    <p className="mt-4 text-gray-600 font-light">Fetching your order details...</p>
                 </div>
             </div>
         )
@@ -60,7 +60,13 @@ const OrderDetails = () => {
 
     return(
         <div>
-            
+            <div>
+                {orderDetails?.map(order => (
+                    <div key={}>
+
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }

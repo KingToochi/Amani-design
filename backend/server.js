@@ -1695,21 +1695,26 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
       });
     }
 
-    const order = await Order.findById(orderId).select("products currency amount items orderStatus")
-    if (!order) {
-      return res.status(404).json({
-      success: false,
-      message: "Order not found"
-      });
-    }
+    // const order = await Order.findById(orderId).select("products currency amount items orderStatus")
+    // if (!order) {
+    //   return res.status(404).json({
+    //   success: false,
+    //   message: "Order not found"
+    //   });
+    // }
 
-    const productId = order.products.map(product => product.productId)
-    const product = await Product.find( {_id: { $in: productId }}).select("productImages")
-    const data = [order, product]
+    // const productId = order.products.map(product => product.productId)
+    // const product = await Product.find( {_id: { $in: productId }}).select("productImages")
+    // const data = [order, product]
+
+    const order = await Order.findById(orderId)
+    .select("products currency amount items orderStatus")
+    .populate('products.productId', 'productImages')
+    .lean();
 
     return res.json({
       success: true,
-      data
+      order
     });
     
   } catch(error) {
