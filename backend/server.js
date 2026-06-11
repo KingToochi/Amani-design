@@ -19,6 +19,7 @@ import Rating from "./models/Rating.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
 import Flutterwave  from 'flutterwave-node-v3';
+import ProductDetails from "../frontend/src/assets/pages/designerPage/ProductDetails.jsx";
 
 
 dotenv.config();
@@ -1680,5 +1681,44 @@ app.get("/customerOrders", verifyToken, async(req, res) => {
     });
   }
 });
+app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
+  const auth = req.user
+  const orderId = req.params.id
+  try {
+     // Verify user exists in database
+    const user = await User.findById(auth._id).select("_id");
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
 
+    const order = await Order.findById(orderId).select("products currency amount items orderStatus")
+    if (!order) {
+      return res.status(404).json({
+      success: false,
+      message: "Order not found"
+      });
+    }
+
+    const productId = order.products.map(product => product.productId)
+    const product = await Product.findById( {_id: { $in: productIds }}).select("productImages")
+    const data = [order, product]
+
+    return res.json({
+      success: true,
+      data
+    });
+    
+  } catch(error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+
+})
 server.listen(4000, () => console.log("Server running on port 4000"));

@@ -36,6 +36,7 @@ import ViewCustomer from "./assets/pages/adminPages/VIewCustomer";
 import Customer from "./assets/pages/adminPages/Customers";
 import ProductAdmin from "./assets/pages/adminPages/Product";
 import CustomerOrder from "./assets/pages/marketPlace/Orders";
+import OrderDetails from "./assets/pages/marketPlace/OrderDetails";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
           <Route path="/payment-callback" element={<PaymentCallback />} />
           <Route path="/customer-orders" element={<CustomerOrder />} />
           <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/order-details/:id" element={<OrderDetails/>} />
         </Route>
         <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>

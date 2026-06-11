@@ -50,7 +50,7 @@ const CustomerOrder = () => {
     }
 
     const handleViewOrder = (id) => {
-        navigate(`/orderDetails/${id}`)
+        navigate(`/order-details/${id}`)
     }
 
     useEffect(() => {
@@ -155,9 +155,9 @@ const CustomerOrder = () => {
                                     ? new Date(order.deliveryDate).toLocaleDateString()
                                     : "_"}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{order?.orderStatus}</td>
-                                    {/* <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm">
                                         <button onClick={()=>handleViewOrder(order._id)} className="text-green-700 hover:text-green-900 cursor-pointer">View Order Details</button>
-                                    </td> */}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
