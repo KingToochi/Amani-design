@@ -20,6 +20,7 @@ const OrderDetails = () => {
 
             if (response.ok){
                 const details = await response.json()
+                console.log(details)
                 setOrderDetails(details.data)
                 setError(null)
             }else {

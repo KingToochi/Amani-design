@@ -19,7 +19,7 @@ import Rating from "./models/Rating.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
 import Flutterwave  from 'flutterwave-node-v3';
-import ProductDetails from "../frontend/src/assets/pages/designerPage/ProductDetails.jsx";
+
 
 
 dotenv.config();
