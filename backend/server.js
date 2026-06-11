@@ -1704,7 +1704,7 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
     }
 
     const productId = order.products.map(product => product.productId)
-    const product = await Product.findById( {_id: { $in: productIds }}).select("productImages")
+    const product = await Product.find( {_id: { $in: productId }}).select("productImages")
     const data = [order, product]
 
     return res.json({

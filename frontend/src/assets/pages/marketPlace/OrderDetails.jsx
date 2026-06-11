@@ -3,13 +3,14 @@ import { useParams } from "react-router-dom";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/UseFetch";
 import ServerError from "../../components/ServerError";
+import { Loader, ShoppingBag, AlertCircle } from "lucide-react"
 
 const OrderDetails = () => {
     const [orderDetails, setOrderDetails] = useState();
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    const {id} = useParams
+    const {id} = useParams()
     const url = `${BASE_URL}/customerOrderDetails/${id}`
 
     const fetchOrderDetails = async() => {
@@ -49,13 +50,13 @@ const OrderDetails = () => {
         )
     }
 
-    if (error) {
-        return(
-            <div>
-                <ServerError/>
-            </div>
-        )
-    }
+    // if (error) {
+    //     return(
+    //         <div>
+    //             <ServerError/>
+    //         </div>
+    //     )
+    // }
 
     return(
         <div>
