@@ -1612,7 +1612,8 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       quantity: product.quantity,
       color: product.selectedColor,
       size: product.selectedSize,
-      price: product.productPrice 
+      price: product.productPrice,
+      productId: product._id,
     }))
 
     const newOrder = new Order({

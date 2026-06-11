@@ -125,7 +125,7 @@ const OrderDetails = () => {
             <div className="max-w-4xl mx-auto">
                 {/* Back Button */}
                 <Link 
-                    to="/orders" 
+                    to="/customer-orders" 
                     className="inline-flex items-center gap-2 text-gray-600 hover:text-indigo-600 mb-6 transition-colors group"
                 >
                     <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -170,7 +170,9 @@ const OrderDetails = () => {
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Items</p>
-                                    <p className="text-2xl font-bold text-gray-900">{orderDetails.items?.length || orderDetails.products?.length || 0}</p>
+                                    <p className="text-2xl font-bold text-gray-900">{orderDetails.items?.reduce((totalCount,item)=> {
+                                        return totalCount + item.quantity
+                                    },0)|| 0}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -210,9 +212,9 @@ const OrderDetails = () => {
                                         {/* Product Image Placeholder */}
                                         <div className="flex-shrink-0">
                                             <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-                                                {item.image ? (
+                                                {item.productId ? (
                                                     <img 
-                                                        src={item.image} 
+                                                        src={item.productId.productImages[0]} 
                                                         alt={item.name}
                                                         className="w-full h-full object-cover rounded-xl"
                                                     />
