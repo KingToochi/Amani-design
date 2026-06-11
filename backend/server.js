@@ -1611,7 +1611,8 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       name: product.productName,
       quantity: product.quantity,
       color: product.selectedColor,
-      size: product.selectedSize, 
+      size: product.selectedSize,
+      price: product.productPrice 
     }))
 
     const newOrder = new Order({
@@ -1708,7 +1709,7 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
     // const data = [order, product]
 
     const order = await Order.findById(orderId)
-    .select("products currency amount items orderStatus")
+    .select("products paymentStatus currency amount items orderStatus")
     .populate('products.productId', 'productImages')
     .lean();
 
