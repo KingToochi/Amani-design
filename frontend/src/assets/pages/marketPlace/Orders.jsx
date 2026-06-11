@@ -147,7 +147,7 @@ const CustomerOrder = () => {
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{order?.paymentStatus}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{order?.currency}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{order?.amount}</td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order?.items?.length}</td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order?.items}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{new Date(order.createdAt).toLocaleDateString()}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{order.deliveryDate
                                     ? new Date(order.deliveryDate).toLocaleDateString()
