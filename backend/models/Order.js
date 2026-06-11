@@ -61,6 +61,7 @@ const orderSchema = new mongoose.Schema({
     quantity: Number,
     color: String,
     size: String,
+    productId: String,
   }],
   deliveryDate: {
     type: Date
