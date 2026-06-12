@@ -15,7 +15,8 @@ import {
   Calendar,
   ArrowLeft,
   Receipt,
-  CircleCheckBig
+  CircleCheckBig,
+  PackageCheck 
 } from "lucide-react";
 
 const OrderDetails = () => {
@@ -26,6 +27,7 @@ const OrderDetails = () => {
 
     const { id } = useParams();
     const url = `${BASE_URL}/customerOrderDetails/${id}`;
+    const confirmingItemUrl = `${BASE_URL}/confirmItemReceived`
 
     const fetchOrderDetails = async () => {
         try {
@@ -52,14 +54,44 @@ const OrderDetails = () => {
         }
     };
 
+    const itemsWithImages = orderDetails?.items?.map(item => {
+        const matchingProduct = orderDetails.products?.find(
+            product => product.productId?._id === item.productId
+        );
+
+    return {
+        ...item,
+        image: matchingProduct?.productId?.productImages?.[0] || null
+    };
+});
+
     const handleItemReceived = async (itemId) => {
-        setConfirmingItem(itemId);
-        // Add your API call here to confirm item receipt
-        setTimeout(() => {
-            setConfirmingItem(null);
-            // Show success message
-            alert("Item marked as received!");
-        }, 1000);
+
+        const data = [itemId, id];
+
+        try {
+            let response = await CustomFetch(confirmingItemUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            console.log(result);
+
+        } catch (error) {
+            console.error(error);
+        }
+        // setConfirmingItem(itemId);
+        
+        // // Add your API call here to confirm item receipt
+        // setTimeout(() => {
+        //     setConfirmingItem(null);
+        //     // Show success message
+        //     alert("Item marked as received!");
+        // }, 1000);
     };
 
     useEffect(() => {
@@ -205,16 +237,16 @@ const OrderDetails = () => {
                     
                     <div className="divide-y divide-gray-100">
                         {/* Use items array from your API response */}
-                        {(orderDetails.items || orderDetails.products || []).map((item, index) => {
+                        {(itemsWithImages || []).map((item, index) => {
                             return (
                                 <div key={item._id || item.productId || index} className="p-6 hover:bg-gray-50 transition-colors">
                                     <div className="flex flex-col sm:flex-row gap-6">
                                         {/* Product Image Placeholder */}
                                         <div className="flex-shrink-0">
                                             <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-                                                {item.productId ? (
+                                                {item.image ? (
                                                     <img 
-                                                        src={item.productId.productImages[0]} 
+                                                        src={item.image} 
                                                         alt={item.name}
                                                         className="w-full h-full object-cover rounded-xl"
                                                     />
@@ -234,7 +266,7 @@ const OrderDetails = () => {
                                                     )}
                                                 </div>
                                                 <p className="text-2xl font-bold text-indigo-600">
-                                                    {orderDetails.currency || 'NGN'} {item.price?.toLocaleString() || (orderDetails.amount / orderDetails.items?.length)?.toLocaleString()}
+                                                    {orderDetails.currency || 'NGN'} {item.price * item.quantity?.toLocaleString()}
                                                 </p>
                                             </div>
                                             
@@ -262,26 +294,32 @@ const OrderDetails = () => {
                                                     <span className="text-xs font-medium text-gray-500">QUANTITY:</span>
                                                     <span className="font-semibold text-gray-900">{item.quantity || 1}</span>
                                                 </div>
+
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-medium text-gray-500">status:</span>
+                                                    <span className="font-semibold text-gray-900">{item?.status || "pending"}</span>
+                                                </div>
                                             </div>
                                             
                                             {/* Action Button */}
+                                            {!confirmingItem ? (
                                             <button
                                                 onClick={() => handleItemReceived(item._id || item.productId || index)}
                                                 disabled={confirmingItem === (item._id || item.productId || index)}
                                                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                {confirmingItem === (item._id || item.productId || index) ? (
-                                                    <>
-                                                        <Loader className="h-4 w-4 animate-spin" />
-                                                        Confirming...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <CircleCheckBig className="h-4 w-4" />
-                                                        Item Received
-                                                    </>
-                                                )}
+                                                <PackageCheck  className="h-4 w-4" />
+                                                        Confirm Item Received
                                             </button>
+                                            ) : (
+                                                <div>
+                                                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:scale-105"><CircleCheckBig  className="h-4 w-4" />
+                                                    Item Received
+                                                    </span>
+                                                    <h1 className="text-sm">Please inspect your order on delivery. You have 24 hours to report any issues. If there’s a problem, visit our Support Center for assistance.
+                                                    </h1>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -291,7 +329,7 @@ const OrderDetails = () => {
                 </div>
 
                 {/* Delivery Information Card */}
-                <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="mt-6 pb-10 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
                         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                             <Truck className="h-5 w-5 text-indigo-600" />

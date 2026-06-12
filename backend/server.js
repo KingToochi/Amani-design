@@ -6,7 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
-import jwt from "jsonwebtoken";
+import jwt, { verify } from "jsonwebtoken";
 import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
@@ -1728,4 +1728,51 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
   }
 
 })
+
+app.put("/confirmItemReceived", verifyToken, async (req, res) => {
+    try {
+        const auth = req.user;
+
+        const { id, itemId } = req.body;
+
+        const order = await Order.findById(id);
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+        }
+
+        // find the item
+        const itemIndex = order.items.findIndex(
+            item => item.itemId === itemId || item.itemId.toString() === itemId
+        );
+
+        if (itemIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: "Item not found"
+            });
+        }
+
+        // update ONLY that field
+        order.items[itemIndex].status = "delivered";
+
+        await order.save();
+
+        return res.json({
+            success: true,
+            message: "Item marked as delivered",
+            order
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+});
 server.listen(4000, () => console.log("Server running on port 4000"));
