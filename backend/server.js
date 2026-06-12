@@ -1746,7 +1746,7 @@ app.put("/confirmItemReceived", verifyToken, async (req, res) => {
 
         // find the item
         const itemIndex = order.items.findIndex(
-            item => item.itemId === itemId || item.itemId.toString() === itemId
+            item => item.id === itemId || item.id.toString() === itemId
         );
 
         if (itemIndex === -1) {

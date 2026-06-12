@@ -67,7 +67,9 @@ const OrderDetails = () => {
 
     const handleItemReceived = async (itemId) => {
 
-        const data = [itemId, id];
+        const data = {itemId, id};
+        console.log(data)
+        console.log(itemsWithImages)
 
         try {
             let response = await CustomFetch(confirmingItemUrl, {
@@ -137,7 +139,7 @@ const OrderDetails = () => {
     const orderStatusColors = {
         pending: "bg-yellow-100 text-yellow-800",
         processing: "bg-blue-100 text-blue-800",
-        shipped: "bg-purple-100 text-purple-800",
+        in_transit: "bg-purple-100 text-purple-800",
         delivered: "bg-green-100 text-green-800",
         cancelled: "bg-red-100 text-red-800"
     };
@@ -145,7 +147,7 @@ const OrderDetails = () => {
     const orderStatusIcons = {
         pending: Package,
         processing: Truck,
-        shipped: Truck,
+        in_transit: Truck,
         delivered: CheckCircle,
         cancelled: AlertCircle
     };
@@ -302,21 +304,24 @@ const OrderDetails = () => {
                                             </div>
                                             
                                             {/* Action Button */}
-                                            {!confirmingItem ? (
+                                          {confirmingItem !== item.id ? (
                                             <button
-                                                onClick={() => handleItemReceived(item._id || item.productId || index)}
-                                                disabled={confirmingItem === (item._id || item.productId || index)}
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                <PackageCheck  className="h-4 w-4" />
-                                                        Confirm Item Received
+                                            onClick={() => handleItemReceived(item.id)}
+                                            disabled={confirmingItem === item.id}
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+                                                <PackageCheck className="h-4 w-4" />
+                                                Confirm Item Received
                                             </button>
                                             ) : (
-                                                <div>
-                                                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:scale-105"><CircleCheckBig  className="h-4 w-4" />
+                                            <div>
+                                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white       rounded-lg">
+                                                    <CircleCheckBig className="h-4 w-4" />
                                                     Item Received
-                                                    </span>
-                                                    <h1 className="text-sm">Please inspect your order on delivery. You have 24 hours to report any issues. If there’s a problem, visit our Support Center for assistance.
+                                                </span>
+
+                                                    <h1 className="text-sm mt-2 text-gray-600">
+                                                    Please inspect your order on delivery. You have 24 hours to report any issues. If there’s a problem, visit our Support Center for assistance.
                                                     </h1>
                                                 </div>
                                             )}
