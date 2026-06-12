@@ -6,7 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
-import jwt, { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
