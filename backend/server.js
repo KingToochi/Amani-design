@@ -1758,6 +1758,39 @@ app.put("/confirmItemReceived", verifyToken, async (req, res) => {
 
         // update ONLY that field
         order.items[itemIndex].status = "delivered";
+        const updateOrderStatus = () => {
+          const statuses = order.items.map(item => item.status);
+
+        if (statuses.every(status => status === "pending")) {
+          return "pending" ;
+        }
+
+        if (statuses.includes("pending")) {
+          return "partially_verified";
+        }
+
+        if (statuses.includes("in_transit")) {
+          return "in_transit";
+        }
+        if (statuses.every(status =>
+          ["completed", "unavailable"].includes(status)
+        )) {
+          return "completed";
+        }
+
+        if (statuses.every(status =>
+          ["delivered", "completed", "unavailable"].includes(status)
+        )) {
+          return "delivered";
+        }
+        if (statuses.every(status => status === "unavailable")) {
+          return "cancelled" ;
+        }
+
+      return "verified";
+      };
+
+        order.orderStatus = updateOrderStatus()
 
         await order.save();
 

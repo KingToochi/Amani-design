@@ -16,14 +16,14 @@ import {
   ArrowLeft,
   Receipt,
   CircleCheckBig,
-  PackageCheck 
+  PackageCheck,
+  RotateCcw
 } from "lucide-react";
 
 const OrderDetails = () => {
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [confirmingItem, setConfirmingItem] = useState(null);
 
     const { id } = useParams();
     const url = `${BASE_URL}/customerOrderDetails/${id}`;
@@ -63,7 +63,9 @@ const OrderDetails = () => {
         ...item,
         image: matchingProduct?.productId?.productImages?.[0] || null
     };
-});
+    });
+
+    const updateOrderStatus
 
     const handleItemReceived = async (itemId) => {
 
@@ -81,19 +83,15 @@ const OrderDetails = () => {
             });
 
             const result = await response.json();
+            if (result.ok) {
+                fetchOrderDetails()
+
+            }
             console.log(result);
 
         } catch (error) {
             console.error(error);
         }
-        // setConfirmingItem(itemId);
-        
-        // // Add your API call here to confirm item receipt
-        // setTimeout(() => {
-        //     setConfirmingItem(null);
-        //     // Show success message
-        //     alert("Item marked as received!");
-        // }, 1000);
     };
 
     useEffect(() => {
@@ -145,12 +143,15 @@ const OrderDetails = () => {
     };
 
     const orderStatusIcons = {
-        pending: Package,
-        processing: Truck,
-        in_transit: Truck,
-        delivered: CheckCircle,
-        cancelled: AlertCircle
-    };
+    pending: Package,
+    confirmed: CheckCircle,
+    unavailable: AlertCircle,
+    in_transit: Truck,
+    delivered: CheckCircle,
+    returned: RotateCcw,
+    completed: CheckCircle,
+    cancelled: AlertCircle
+};
 
     const StatusIcon = orderStatusIcons[orderDetails.orderStatus?.toLowerCase()] || Package;
 
@@ -304,7 +305,7 @@ const OrderDetails = () => {
                                             </div>
                                             
                                             {/* Action Button */}
-                                          {confirmingItem !== item.id ? (
+                                          { item.status !== "delivered" ? (
                                             <button
                                             onClick={() => handleItemReceived(item.id)}
                                             disabled={confirmingItem === item.id}
@@ -321,7 +322,7 @@ const OrderDetails = () => {
                                                 </span>
 
                                                     <h1 className="text-sm mt-2 text-gray-600">
-                                                    Please inspect your order on delivery. You have 24 hours to report any issues. If there’s a problem, visit our Support Center for assistance.
+                                                    Please inspect the item on delivery. You have 24 hours to report any issues. If there’s a problem, visit our Support Center for assistance.
                                                     </h1>
                                                 </div>
                                             )}
