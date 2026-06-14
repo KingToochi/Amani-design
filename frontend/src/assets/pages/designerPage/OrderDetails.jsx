@@ -17,10 +17,11 @@ import {
   Receipt,
   CircleCheckBig,
   Send,
-  DollarSign,
+  Currency,
   Clock,
   Check,
-  XCircle
+  XCircle,
+  RotateCcw
 } from "lucide-react";
 
 const VendorOrderDetails = () => {
@@ -57,16 +58,6 @@ const VendorOrderDetails = () => {
     };
 
     const handleItemSent = async (itemId) => {
-        setSendingItem(itemId);
-        // Add your API call here to mark item as sent
-        // Example: await CustomFetch(`${BASE_URL}/order/${id}/item/${itemId}/sent`, { method: "POST" })
-        setTimeout(() => {
-            setSendingItem(null);
-            // Show success message
-            alert("Item marked as sent!");
-            // Refresh order details
-            fetchOrderDetails();
-        }, 1000);
     };
 
     useEffect(() => {
@@ -97,7 +88,7 @@ const VendorOrderDetails = () => {
                     <h2 className="text-2xl font-semibold text-gray-700 mb-2">Order Not Found</h2>
                     <p className="text-gray-500 mb-6">We couldn't find the order you're looking for.</p>
                     <Link 
-                        to="/vendor/orders" 
+                        to="/designer/orders" 
                         className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4" />
@@ -111,19 +102,37 @@ const VendorOrderDetails = () => {
     // Status color mapping
     const orderStatusColors = {
         pending: "bg-yellow-100 text-yellow-800",
-        processing: "bg-blue-100 text-blue-800",
-        shipped: "bg-purple-100 text-purple-800",
+        confirmed: "bg-sky-100 text-sky-800",
+        unavailable: "bg-gray-100 text-gray-800",
+        in_transit: "bg-purple-100 text-purple-800",
         delivered: "bg-green-100 text-green-800",
-        cancelled: "bg-red-100 text-red-800"
+        completed: "bg-emerald-100 text-emerald-800",
+        returned: "bg-orange-100 text-orange-800",
+        cancelled: "bg-red-100 text-red-800",
     };
 
     const orderStatusIcons = {
         pending: Package,
-        processing: Truck,
-        shipped: Truck,
+        confirmed: CheckCircle,
+        unavailable: AlertCircle,
+        in_transit: Truck,
         delivered: CheckCircle,
+        returned: RotateCcw,
+        completed: CheckCircle,
         cancelled: AlertCircle
-    };
+        };
+
+        const itemsWithImages = orderDetails?.items?.map(item => {
+            const matchingProduct = orderDetails.products?.find(
+                product => product.productId?._id === item.productId
+            );
+
+        return {
+            ...item,
+            image: matchingProduct?.productId?.productImages?.[0] || null
+            };
+        });
+
 
     // Payment status configurations
     const paymentStatusConfig = {
@@ -144,7 +153,7 @@ const VendorOrderDetails = () => {
         },
         refunded: {
             color: "bg-gray-100 text-gray-800",
-            icon: DollarSign,
+            icon: Currency,
             label: "Refunded"
         }
     };
@@ -152,17 +161,27 @@ const VendorOrderDetails = () => {
     const StatusIcon = orderStatusIcons[orderDetails.orderStatus?.toLowerCase()] || Package;
 
     // Calculate summary statistics
-    const totalItems = orderDetails.items?.length || orderDetails.products?.length || 0;
+    const totalItems = orderDetails.items?.reduce((totalCount, item) => {
+        return totalCount + item.quantity
+    }, 0);
     const totalAmount = orderDetails.amount || 0;
-    const paidItems = orderDetails.items?.filter(item => item.paymentStatus === 'paid')?.length || 0;
-    const sentItems = orderDetails.items?.filter(item => item.sentStatus === 'sent')?.length || 0;
+    const paidItems = orderDetails.items?.reduce((total, item) => {
+        return item.status === "completed" 
+        ? total + item.quantity
+        : total;
+    }, 0);
+    const sentItems = orderDetails.items?.reduce((total, item) => {
+        return item.status === "in_transit" || item.status === "delivered" || item.status === "completed"
+            ? total + item.quantity
+            : total;
+        }, 0);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 {/* Back Button */}
                 <Link 
-                    to="/vendor/orders" 
+                    to="/designer/orders" 
                     className="inline-flex items-center gap-2 text-gray-600 hover:text-indigo-600 mb-6 transition-colors group"
                 >
                     <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -197,7 +216,7 @@ const VendorOrderDetails = () => {
                                 <div>
                                     <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Amount</p>
                                     <p className="text-2xl font-bold text-gray-900">
-                                        {orderDetails.currency || 'NGN'} {totalAmount?.toLocaleString()}
+                                        {orderDetails.Currency || 'NGN'} {totalAmount?.toLocaleString()}
                                     </p>
                                 </div>
                             </div>
@@ -212,7 +231,7 @@ const VendorOrderDetails = () => {
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-green-50 rounded-lg">
-                                    <DollarSign className="h-5 w-5 text-green-600" />
+                                    <Currency className="h-5 w-5 text-green-600" />
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Paid Items</p>
@@ -232,7 +251,7 @@ const VendorOrderDetails = () => {
                     </div>
 
                     {/* Customer Information */}
-                    {orderDetails.customer && (
+                    {/* {orderDetails.customer && (
                         <div className="p-6 border-b border-gray-100 bg-gray-50">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3">Customer Information</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -250,7 +269,7 @@ const VendorOrderDetails = () => {
                                 </div>
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
 
                 {/* Items Section */}
@@ -263,8 +282,8 @@ const VendorOrderDetails = () => {
                     </div>
                     
                     <div className="divide-y divide-gray-100">
-                        {(orderDetails.items || orderDetails.products || []).map((item, index) => {
-                            const PaymentIcon = paymentStatusConfig[item.paymentStatus?.toLowerCase()]?.icon || DollarSign;
+                        {itemsWithImages.map((item, index) => {
+                            const PaymentIcon = paymentStatusConfig[item.paymentStatus?.toLowerCase()]?.icon || Currency;
                             const paymentConfig = paymentStatusConfig[item.paymentStatus?.toLowerCase()] || paymentStatusConfig.pending;
                             
                             return (
@@ -274,13 +293,17 @@ const VendorOrderDetails = () => {
                                         <div className="flex-shrink-0">
                                             <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center overflow-hidden">
                                                 {item.image ? (
+                                                    <Link to={`/productdetails/${item.productId}`}>
                                                     <img 
                                                         src={item.image} 
                                                         alt={item.name}
                                                         className="w-full h-full object-cover rounded-xl"
                                                     />
+                                                    </Link>
                                                 ) : (
-                                                    <Package className="h-8 w-8 text-gray-400" />
+                                                    <Link>
+                                                        <Package className="h-8 w-8 text-gray-400" />
+                                                    </Link>
                                                 )}
                                             </div>
                                         </div>
@@ -295,7 +318,7 @@ const VendorOrderDetails = () => {
                                                     )}
                                                 </div>
                                                 <p className="text-2xl font-bold text-indigo-600">
-                                                    {orderDetails.currency || 'NGN'} {item.price?.toLocaleString() || (orderDetails.amount / totalItems)?.toLocaleString()}
+                                                    {orderDetails.Currency || 'NGN'} {(item.price * item.quantity)?.toLocaleString() || (orderDetails.amount / totalItems)?.toLocaleString()}
                                                 </p>
                                             </div>
                                             

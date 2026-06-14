@@ -65,8 +65,6 @@ const OrderDetails = () => {
     };
     });
 
-    const updateOrderStatus
-
     const handleItemReceived = async (itemId) => {
 
         const data = {itemId, id};
@@ -83,7 +81,7 @@ const OrderDetails = () => {
             });
 
             const result = await response.json();
-            if (result.ok) {
+            if (response.ok) {
                 fetchOrderDetails()
 
             }
@@ -136,12 +134,14 @@ const OrderDetails = () => {
     // Status color mapping
     const orderStatusColors = {
         pending: "bg-yellow-100 text-yellow-800",
-        processing: "bg-blue-100 text-blue-800",
+        confirmed: "bg-sky-100 text-sky-800",
+        unavailable: "bg-gray-100 text-gray-800",
         in_transit: "bg-purple-100 text-purple-800",
         delivered: "bg-green-100 text-green-800",
-        cancelled: "bg-red-100 text-red-800"
+        completed: "bg-emerald-100 text-emerald-800",
+        returned: "bg-orange-100 text-orange-800",
+        cancelled: "bg-red-100 text-red-800",
     };
-
     const orderStatusIcons = {
     pending: Package,
     confirmed: CheckCircle,
@@ -308,7 +308,6 @@ const OrderDetails = () => {
                                           { item.status !== "delivered" ? (
                                             <button
                                             onClick={() => handleItemReceived(item.id)}
-                                            disabled={confirmingItem === item.id}
                                             className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
     >
                                                 <PackageCheck className="h-4 w-4" />

@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react"
 import { BASE_URL } from "../../Url"
 import CustomFetch from "../../hooks/UseFetch"
+import { Link } from "react-router-dom";
 
 const statusColors = {
   pending: "bg-amber-100 text-amber-700",
+  partially_verified: "bg-yellow-100 text-yellow-700",
+  verified: "bg-blue-100 text-blue-700",
+  in_transit: "bg-sky-100 text-sky-700",
   delivered: "bg-emerald-100 text-emerald-700",
+  completed: "bg-green-100 text-green-700",
   cancelled: "bg-rose-100 text-rose-700",
-  shipped: "bg-sky-100 text-sky-700",
-  processing: "bg-violet-100 text-violet-700",
-  unknown: "bg-slate-100 text-slate-700",
-}
-
+  returned: "bg-orange-100 text-orange-700",
+  unknown: "bg-slate-100 text-slate-700"
+};
 const formatDate = (dateString) => {
   if (!dateString) return "-"
   return new Date(dateString).toLocaleString("en-US", {
@@ -21,6 +24,10 @@ const formatDate = (dateString) => {
     minute: "2-digit",
   })
 }
+
+const handleViewOrder = (id) => {
+        navigate(`/vendor_order/${id}`)
+  }
 
 const Orders = () => {
   const [totalOrder, setTotalOrder] = useState([])
@@ -89,7 +96,11 @@ const Orders = () => {
   }
 
   const getItemCount = (order) => {
-    if (Array.isArray(order.items)) return order.items.length
+    if (Array.isArray(order.items)) {
+      const noOfItems = order.items?.reduce((totalCount,item)=> {
+          return totalCount + item.quantity
+        },0)
+    }
     if (Array.isArray(order.products)) {
       return order.products.reduce(
         (sum, item) => sum + (Number(item.quantity) || 1),
@@ -126,15 +137,6 @@ const Orders = () => {
             <p className="text-sm font-medium text-slate-500">Other statuses</p>
             <p className="mt-4 text-4xl font-bold text-slate-900">{otherOrders}</p>
           </div>
-        </div>
-
-        <div className="grid gap-4 xl:grid-cols-3">
-          {Object.entries(orderSummary.byStatus).map(([status, count]) => (
-            <div key={status} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">{status}</p>
-              <p className="mt-4 text-3xl font-semibold text-slate-900">{count}</p>
-            </div>
-          ))}
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -185,42 +187,57 @@ const Orders = () => {
 
                   <div className="mt-6 space-y-4">
                     {(group.orders || []).map((order) => (
-                      <div key={order._id} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-slate-500">Order ID</p>
-                            <p className="text-lg font-semibold text-slate-900">{order._id}</p>
-                          </div>
-                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                            <div>
-                              <p className="text-sm text-slate-500">Placed</p>
-                              <p className="font-medium text-slate-900">{formatDate(order.createdAt)}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-slate-500">Payment</p>
-                              <p className="font-medium text-slate-900">{order.paymentStatus || "Unknown"}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-slate-500">Items</p>
-                              <p className="font-medium text-slate-900">{getItemCount(order)}</p>
-                            </div>
-                          </div>
+                    <Link
+                    key={order._id}
+                    to={`vendor_order/${order._id}`}
+                    className="block rounded-3xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition"
+                    >
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-slate-500">Order ID</p>
+                          <p className="text-lg font-semibold text-slate-900">{order._id}</p>
                         </div>
-                        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                           <div>
-                            <p className="text-sm text-slate-500">Order amount</p>
-                            <p className="text-lg font-semibold text-slate-900">
-                              {order.currency || "NGN"} {Number(order.amount || 0).toLocaleString()}
+                            <p className="text-sm text-slate-500">Placed</p>
+                            <p className="font-medium text-slate-900">{formatDate(order.createdAt)}</p>
+                          </div>
+
+                          <div>
+                            <p className="text-sm text-slate-500">Payment</p>
+                            <p className="font-medium text-slate-900">
+                            {order.paymentStatus || "Unknown"}
                             </p>
                           </div>
-                          <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-sm text-slate-700">
-                            <span className={`h-2.5 w-2.5 rounded-full ${getBadgeClasses(order.orderStatus || group.status).split(" ")[0]}`} />
-                            {order.orderStatus || group.status}
+
+                          <div>
+                            <p className="text-sm text-slate-500">Items</p>
+                            <p className="font-medium text-slate-900">{getItemCount(order)}</p>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-sm text-slate-500">Order amount</p>
+                          <p className="text-lg font-semibold text-slate-900">
+                            {order.currency || "NGN"} {Number(order.amount || 0).toLocaleString()}
+                          </p>
+                        </div>
+
+                        <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-sm text-slate-700">
+                          <span
+                            className={`h-2.5 w-2.5 rounded-full ${
+                              getBadgeClasses(order.orderStatus || group.status).split(" ")[0]
+                            }`}
+                          />
+                          {order.orderStatus || group.status}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
                 </div>
               ))
             )}

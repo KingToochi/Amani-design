@@ -37,6 +37,7 @@ import Customer from "./assets/pages/adminPages/Customers";
 import ProductAdmin from "./assets/pages/adminPages/Product";
 import CustomerOrder from "./assets/pages/marketPlace/Orders";
 import OrderDetails from "./assets/pages/marketPlace/OrderDetails";
+import VendorOrderDetails from "./assets/pages/designerPage/OrderDetails";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
           <Route path="productdetails/:id" element={<ProductDetails />} />
           <Route path="orders" element={<Orders />} />
           <Route path="sales" element={<Sales />} />
+          <Route path="orders/vendor_order/:id" element={<VendorOrderDetails/>}/>
         </Route> 
         </Route>
 
