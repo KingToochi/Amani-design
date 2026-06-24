@@ -185,17 +185,16 @@ const VendorOrderDetails = () => {
         completed: CheckCircle,
         cancelled: AlertCircle
         };
+    const itemsWithImages = orderDetails?.item?.map(item => {
+        const matchingProduct = orderDetails?.image?.find(
+            product => product._id?.toString() === item.productId?.toString()
+        );
 
-       const itemsWithImages = orderDetails?.[0]?.map(item => {
-    const matchingProduct = orderDetails[1]?.find(
-        product => product._id?.toString() === item.productId?.toString()
-    );
-
-    return {
-        ...item,
-        image: matchingProduct?.productImages?.[0] || null
-    };
-});
+        return {
+            ...item,
+            image: matchingProduct?.productImages?.[0] || null
+        };
+    });
 
 
     // Payment status configurations
@@ -225,16 +224,16 @@ const VendorOrderDetails = () => {
     const StatusIcon = orderStatusIcons[orderDetails.orderStatus?.toLowerCase()] || Package;
 
     // Calculate summary statistics
-    const totalItems = orderDetails.items?.reduce((totalCount, item) => {
+    const totalItems = orderDetails.item?.reduce((totalCount, item) => {
         return totalCount + item.quantity
     }, 0);
     const totalAmount = orderDetails.amount || 0;
-    const paidItems = orderDetails.items?.reduce((total, item) => {
+    const paidItems = orderDetails.item?.reduce((total, item) => {
         return item.status === "completed" 
         ? total + item.quantity
         : total;
     }, 0);
-    const sentItems = orderDetails.items?.reduce((total, item) => {
+    const sentItems = orderDetails.item?.reduce((total, item) => {
         return item.status === "in_transit" || item.status === "delivered" || item.status === "completed"
             ? total + item.quantity
             : total;
