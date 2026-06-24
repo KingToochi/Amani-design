@@ -1106,7 +1106,7 @@ app.get("/orders", verifyToken, async(req, res) => {
     totalOrder = await Order.aggregate([
       {
         $match :{ 
-          "products.productId" : {$in : productIds}}
+          "items.productId" : {$in : productIds}}
       },
 
       {
@@ -1697,18 +1697,6 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
       });
     }
 
-    // const order = await Order.findById(orderId).select("products currency amount items orderStatus")
-    // if (!order) {
-    //   return res.status(404).json({
-    //   success: false,
-    //   message: "Order not found"
-    //   });
-    // }
-
-    // const productId = order.products.map(product => product.productId)
-    // const product = await Product.find( {_id: { $in: productId }}).select("productImages")
-    // const data = [order, product]
-
     const order = await Order.findById(orderId)
     .select("products paymentStatus currency amount items orderStatus")
     .populate('products.productId', 'productImages')
@@ -1728,6 +1716,71 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
   }
 
 })
+
+app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
+  const auth = req.user;
+  const orderId = req.params.id;
+
+  try {
+    const user = await User.findById(auth._id).select("_id role");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    if (user.role !== "vendor") {
+      return res.status(403).json({
+        success: false,
+        message: "User not authorized"
+      });
+    }
+
+    const products = await Product.find({
+      vendorId: user._id
+    }).select("_id");
+
+    const productIds = products.map(item => item._id);
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
+
+    const vendorItems = order.items.filter(item =>
+      productIds.some(
+        id => id.toString() === item.productId.toString()
+      )
+    );
+
+    if (vendorItems.length === 0) {
+      return res.status(403).json({
+        success: false,
+        message: "This order does not contain your products"
+      });
+    }
+
+    return res.json({
+      success: true,
+      order,
+      vendorItems
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
 
 app.put("/confirmItemReceived", verifyToken, async (req, res) => {
     try {

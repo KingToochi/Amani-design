@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { BASE_URL } from "../../Url";
@@ -29,9 +30,11 @@ const VendorOrderDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sendingItem, setSendingItem] = useState(null);
+    const [itemAvailability, setItemAvailability] = useState({});
 
     const { id } = useParams();
-    const url = `${BASE_URL}/customerOrderDetails/${id}`;
+    const url = `${BASE_URL}/vendorOrderDetails/${id}`;
+    const confirmItemAvailableUrl = `${BASE_URL}/confirmItemAvailable`
 
     const fetchOrderDetails = async () => {
         try {
@@ -44,7 +47,7 @@ const VendorOrderDetails = () => {
                 console.log("API Response:", details);
                 
                 // Your API returns {success: true, order: {...}}
-                setOrderDetails(details.order);
+                setOrderDetails(details.vendorItems);
                 setError(null);
             } else {
                 setError({ message: "Unable to fetch order details" });
@@ -57,8 +60,69 @@ const VendorOrderDetails = () => {
         }
     };
 
+    const handleProductAvailability = (itemId, available) => {
+        setItemAvailability(prev => ({
+            ...prev,
+            [itemId]: {
+                ...prev[itemId],
+                hasProduct: available
+            }
+        }));
+    };
+
+    const handleQuantityAvailability = (itemId, available) => {
+        setItemAvailability(prev => ({
+            ...prev,
+            [itemId]: {
+                ...prev[itemId],
+                fullQuantityAvailable: available
+            }
+        }));
+    };
+
+    const handleAvailableQuantityChange = (itemId, quantity) => {
+        setItemAvailability(prev => ({
+            ...prev,
+            [itemId]: {
+                ...prev[itemId],
+                availableQuantity: quantity
+            }
+        }));
+    };
+
     const handleItemSent = async (itemId) => {
     };
+
+    // const submitAvailability = async (
+    //     itemId,
+    //     hasProduct,
+    //     availableQuantity
+    //     ) => {
+
+    //     const response = await CustomFetch(
+    //         `${BASE_URL}/designer/check-product`,
+    //         {
+    //         method: "PUT",
+    //         headers: {
+    //             "Content-Type": "application/json"
+    //         },
+    //         body: JSON.stringify({
+    //             orderId: id,
+    //             itemId,
+    //             hasProduct,
+    //             availableQuantity
+    //         })
+    //         }
+    //     );
+
+    //     const result = await response.json();
+
+    //     if (response.ok) {
+    //         fetchOrderDetails();
+    //     }
+
+    //     console.log(result);
+    //     };
 
     useEffect(() => {
         fetchOrderDetails();
@@ -327,7 +391,7 @@ const VendorOrderDetails = () => {
                                                 {item.size && (
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-xs font-medium text-gray-500">SIZE:</span>
-                                                        <span className="px-2 py-1 bg-gray-100 rounded-md text-sm font-semibold">{item.size}</span>
+                                                        <span className="px-2 py-1 bg-gray-100 rounded-md text-sm font-semibold">{item.size.toUpperCase()}</span>
                                                     </div>
                                                 )}
                                                 {item.color && (
@@ -357,24 +421,149 @@ const VendorOrderDetails = () => {
                                                 </div>
                                                 
                                                 {/* Sent Status Badge */}
-                                                {item.sentStatus === 'sent' && (
+                                                {item.status === 'in_transit' && (
                                                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                        <Send className="h-3 w-3" />
-                                                        <span>Sent</span>
+                                                        <truck className="h-3 w-3" />
+                                                        <span>In Transit</span>
                                                     </div>
                                                 )}
                                                 
                                                 {/* Delivery Status Badge */}
-                                                {item.deliveryStatus === 'delivered' && (
+                                                {item.status === 'delivered' && (
                                                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                         <CheckCircle className="h-3 w-3" />
                                                         <span>Delivered</span>
                                                     </div>
                                                 )}
+                                                {item.status === 'unavailable' && (
+                                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        <AlertCircle className="h-3 w-3" />
+                                                        <span>Returned</span>
+                                                    </div>
+                                                )}
+
+                                                {item.status === 'returned' && (
+                                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        <AlertCircle className="h-3 w-3" />
+                                                        <span>Returned</span>
+                                                    </div>
+                                                )}
+
+                                                {item.status === 'completed' && (
+                                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        <CheckCircle className="h-3 w-3" />
+                                                        <span>completed</span>
+                                                    </div>
+                                                )}
                                             </div>
+
+                                            {!itemAvailability[item._id]?.hasProduct && (
+                                                <div className="mt-4 p-4 rounded-lg bg-gray-50 flex items-center justify-between">
+                                                    <h3 className="font-medium mb-3">
+                                                        Do you have this product?
+                                                    </h3>
+
+                                                    <div className="flex gap-4">
+                                                        <button
+                                                            onClick={() =>
+                                                                handleProductAvailability(item._id, true)
+                                                            }
+                                                            className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                                                        >
+                                                            Yes
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                handleItemNotAvailable(item._id)
+                                                            }
+                                                            className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                                                        >
+                                                            No
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {itemAvailability[item._id]?.hasProduct &&
+                                            !itemAvailability[item._id]?.fullQuantityAvailable && (
+                                                <div className="mt-4 p-4 border rounded-lg bg-blue-50">
+                                                    <h3 className="font-medium mb-3">
+                                                        Is the required quantity ({item.quantity}) available?
+                                                    </h3>
+
+                                                    <div className="flex gap-3">
+                                                        <button
+                                                            onClick={() =>
+                                                                handleQuantityAvailability(item._id, true)
+                                                            }
+                                                            className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                                                        >
+                                                            Yes
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                handleQuantityAvailability(item._id, false)
+                                                            }
+                                                            className="px-4 py-2 bg-orange-600 text-white rounded-lg"
+                                                        >
+                                                            No
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {itemAvailability[item._id]?.hasProduct &&
+                                            itemAvailability[item._id]?.fullQuantityAvailable === false && (
+                                                <div className="mt-4 p-4 border rounded-lg bg-yellow-50">
+                                                    <label className="block text-sm font-medium mb-2">
+                                                        Quantity Available
+                                                    </label>
+
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        max={item.quantity}
+                                                        value={
+                                                            itemAvailability[item._id]?.availableQuantity || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleAvailableQuantityChange(
+                                                                item._id,
+                                                                Number(e.target.value)
+                                                            )
+                                                        }
+                                                        className="w-full border rounded-lg p-2"
+                                                    />
+
+                                                    <button
+                                                        className="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-lg"
+                                                        onClick={() => {
+                                                            const qty =
+                                                                itemAvailability[item._id]
+                                                                    ?.availableQuantity || 0;
+
+                                                            if (qty <= 0) {
+                                                                handleItemNotAvailable(item._id);
+                                                                return;
+                                                            }
+
+                                                            console.log({
+                                                                itemId: item._id,
+                                                                availableQuantity: qty
+                                                            });
+
+                                                            // send to backend
+                                                        }}
+                                                    >
+                                                        Confirm Available Quantity
+                                                    </button>
+                                                </div>
+                                            )}
                                             
                                             {/* Action Button - Only show if payment is confirmed and item not sent */}
-                                            {item.paymentStatus === 'paid' && item.sentStatus !== 'sent' && (
+                                            {/* {itemAvailable && item.paymentStatus === 'paid' && item.sentStatus !== 'sent' && (
                                                 <button
                                                     onClick={() => handleItemSent(item._id || item.productId || index)}
                                                     disabled={sendingItem === (item._id || item.productId || index)}
@@ -392,23 +581,23 @@ const VendorOrderDetails = () => {
                                                         </>
                                                     )}
                                                 </button>
-                                            )}
+                                            )} */}
                                             
-                                            {/* Item Already Sent Message */}
-                                            {item.sentStatus === 'sent' && (
+                                            {/* Item Already Sent Message
+                                            {itemAvailable && item.status === 'in_transit' && (
                                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg border border-green-200">
                                                     <CheckCircle className="h-4 w-4" />
                                                     <span className="text-sm font-medium">Item has been sent to customer</span>
                                                 </div>
-                                            )}
+                                            )} */}
                                             
-                                            {/* Payment Required Message */}
-                                            {item.paymentStatus !== 'paid' && item.sentStatus !== 'sent' && (
+                                            {/* Payment Required Message
+                                            {itemAvailable && item.paymentStatus !== 'paid' && item.sentStatus !== 'sent' && (
                                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
                                                     <Clock className="h-4 w-4" />
                                                     <span className="text-sm font-medium">Awaiting payment confirmation</span>
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </div>
                                 </div>
