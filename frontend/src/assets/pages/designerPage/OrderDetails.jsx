@@ -186,7 +186,7 @@ const VendorOrderDetails = () => {
         cancelled: AlertCircle
         };
 
-        const itemsWithImages = orderDetails?.items?.map(item => {
+        const itemsWithImages = orderDetails?.map(item => {
             const matchingProduct = orderDetails.products?.find(
                 product => product.productId?._id === item.productId
             );

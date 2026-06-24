@@ -1766,10 +1766,18 @@ app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
       });
     }
 
+
+    const vendorItemId = vendorItems.map(item => item.productId)
+    const vendorItemImage = await Product.find(
+      {_id : {$in : vendorItemId}}
+    ).select("_id productImages")
+
+    const vendorOrder = [vendorItems, vendorItemImage]
+
     return res.json({
       success: true,
       order,
-      vendorItems
+      vendorOrder
     });
 
   } catch (error) {
