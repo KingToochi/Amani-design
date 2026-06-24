@@ -47,7 +47,7 @@ const VendorOrderDetails = () => {
                 console.log("API Response:", details);
                 
                 // Your API returns {success: true, order: {...}}
-                setOrderDetails(details.vendorItems);
+                setOrderDetails(details.vendorOrder);
                 setError(null);
             } else {
                 setError({ message: "Unable to fetch order details" });
@@ -186,16 +186,16 @@ const VendorOrderDetails = () => {
         cancelled: AlertCircle
         };
 
-        const itemsWithImages = orderDetails?.map(item => {
-            const matchingProduct = orderDetails.products?.find(
-                product => product.productId?._id === item.productId
-            );
+       const itemsWithImages = orderDetails?.[0]?.map(item => {
+    const matchingProduct = orderDetails[1]?.find(
+        product => product._id?.toString() === item.productId?.toString()
+    );
 
-        return {
-            ...item,
-            image: matchingProduct?.productId?.productImages?.[0] || null
-            };
-        });
+    return {
+        ...item,
+        image: matchingProduct?.productImages?.[0] || null
+    };
+});
 
 
     // Payment status configurations
