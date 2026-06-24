@@ -1772,14 +1772,13 @@ app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
       {_id : {$in : vendorItemId}}
     ).select("_id productImages")
     const amount = order.amount
-    const customerDetails = await User.findById(order.costumerId).select("fName lName shippingAddress")
+    const customerDetails = await User.findById(order.customerId).select("fName lName shippingAddress")
 
     const vendorOrder = {item: vendorItems, image: vendorItemImage, amount: amount, customerDetails: customerDetails}
 
     return res.json({
       success: true,
       vendorOrder,
-      customerDetails
     });
 
   } catch (error) {
