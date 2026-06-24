@@ -1772,7 +1772,7 @@ app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
       {_id : {$in : vendorItemId}}
     ).select("_id productImages")
     const amount = order.amount
-    const customerDetails = await User.findById(order.customerId).select("fName lName shippingAddress")
+    const customerDetails = await User.findById(order.customerId).select("fName lName shippingAddress city state")
 
     const vendorOrder = {item: vendorItems, image: vendorItemImage, amount: amount, customerDetails: customerDetails}
 
