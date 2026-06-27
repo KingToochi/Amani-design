@@ -1113,10 +1113,10 @@ app.get("/orders", verifyToken, async(req, res) => {
         $project :{
           products: {
             $filter: {
-              input: "$products",
-              as: "product",
+              input: "$items",
+              as: "item",
               cond: {
-              $in: ["$$product.productId", productIds]
+              $in: ["$$item.productId", productIds]
               }
             }
           },
@@ -1125,7 +1125,6 @@ app.get("/orders", verifyToken, async(req, res) => {
           createdAt: 1,
           paymentStatus: 1,
           currency: 1,
-          items: 1
         }
       },
 
