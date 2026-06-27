@@ -1106,17 +1106,17 @@ app.get("/orders", verifyToken, async(req, res) => {
     totalOrder = await Order.aggregate([
       {
         $match :{ 
-          "items.productId" : {$in : productIds}}
+          "products.productId" : {$in : productIds}}
       },
 
       {
         $project :{
           products: {
             $filter: {
-              input: "$items",
-              as: "item",
+              input: "$products",
+              as: "product",
               cond: {
-              $in: ["$$item.productId", productIds]
+              $in: ["$$product.productId", productIds]
               }
             }
           },
@@ -1125,6 +1125,7 @@ app.get("/orders", verifyToken, async(req, res) => {
           createdAt: 1,
           paymentStatus: 1,
           currency: 1,
+          items: 1
         }
       },
 
