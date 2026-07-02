@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { BASE_URL } from "../../Url";
@@ -31,6 +30,9 @@ const VendorOrderDetails = () => {
     const [error, setError] = useState(null);
     const [sendingItem, setSendingItem] = useState(null);
     const [itemAvailability, setItemAvailability] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
 
     const { id } = useParams();
     const url = `${BASE_URL}/vendorOrderDetails/${id}`;
@@ -46,7 +48,6 @@ const VendorOrderDetails = () => {
                 const details = await response.json();
                 console.log("API Response:", details);
                 
-                // Your API returns {success: true, order: {...}}
                 setOrderDetails(details.vendorOrder);
                 setError(null);
             } else {
@@ -65,7 +66,8 @@ const VendorOrderDetails = () => {
             ...prev,
             [itemId]: {
                 ...prev[itemId],
-                hasProduct: available
+                hasProduct: available,
+                confirmed: false
             }
         }));
     };
@@ -75,7 +77,9 @@ const VendorOrderDetails = () => {
             ...prev,
             [itemId]: {
                 ...prev[itemId],
-                fullQuantityAvailable: available
+                fullQuantityAvailable: available,
+                confirmed: available,
+                availableQuantity: available ? prev[itemId]?.availableQuantity || 0 : 0
             }
         }));
     };
@@ -85,44 +89,135 @@ const VendorOrderDetails = () => {
             ...prev,
             [itemId]: {
                 ...prev[itemId],
-                availableQuantity: quantity
+                availableQuantity: quantity,
+                confirmed: false
             }
         }));
     };
 
-    const handleItemSent = async (itemId) => {
+    // Handle "No" for product availability
+    const handleItemNotAvailable = (itemId) => {
+        setItemAvailability(prev => ({
+            ...prev,
+            [itemId]: {
+                hasProduct: false,
+                fullQuantityAvailable: false,
+                availableQuantity: 0,
+                confirmed: true
+            }
+        }));
     };
 
-    // const submitAvailability = async (
-    //     itemId,
-    //     hasProduct,
-    //     availableQuantity
-    //     ) => {
+    // Handle "No" for quantity availability
+    const handleQuantityNotAvailable = (itemId) => {
+        setItemAvailability(prev => ({
+            ...prev,
+            [itemId]: {
+                ...prev[itemId],
+                hasProduct: true,
+                fullQuantityAvailable: false,
+                availableQuantity: 0,
+                confirmed: true
+            }
+        }));
+    };
 
-    //     const response = await CustomFetch(
-    //         `${BASE_URL}/designer/check-product`,
-    //         {
-    //         method: "PUT",
-    //         headers: {
-    //             "Content-Type": "application/json"
-    //         },
-    //         body: JSON.stringify({
-    //             orderId: id,
-    //             itemId,
-    //             hasProduct,
-    //             availableQuantity
-    //         })
-    //         }
-    //     );
+    // Submit all confirmations
+    const submitAllConfirmations = async () => {
+        // Reset states
+        setSubmitError(null);
+        setSubmitSuccess(false);
+        setIsSubmitting(true);
 
-    //     const result = await response.json();
+        // Check if all items have been confirmed
+        const items = orderDetails.item || [];
+        const unconfirmedItems = items.filter(item => {
+            const availability = itemAvailability[item._id];
+            return !availability || !availability.confirmed;
+        });
 
-    //     if (response.ok) {
-    //         fetchOrderDetails();
-    //     }
+        if (unconfirmedItems.length > 0) {
+            setSubmitError(`Please confirm availability for all items. ${unconfirmedItems.length} item(s) pending confirmation.`);
+            setIsSubmitting(false);
+            return;
+        }
 
-    //     console.log(result);
-    //     };
+        // Prepare data for submission
+        const submissionData = {
+            orderId: id,
+            items: items.map(item => {
+                const availability = itemAvailability[item._id];
+                return {
+                    itemId: item._id,
+                    productId: item.productId,
+                    hasProduct: availability.hasProduct,
+                    fullQuantityAvailable: availability.fullQuantityAvailable,
+                    availableQuantity: availability.availableQuantity || 0,
+                    originalQuantity: item.quantity
+                };
+            })
+        };
+
+        try {
+            const response = await CustomFetch(
+                `${BASE_URL}/confirmItemAvailability`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(submissionData)
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setSubmitSuccess(true);
+                // Refresh order details to get updated status
+                await fetchOrderDetails();
+                // Reset availability state
+                setItemAvailability({});
+                setTimeout(() => {
+                    setSubmitSuccess(false);
+                }, 5000);
+            } else {
+                setSubmitError(result.message || "Failed to submit confirmations");
+            }
+        } catch (error) {
+            console.error("Submission error:", error);
+            setSubmitError("An error occurred while submitting confirmations");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Check if all items are confirmed
+    const areAllItemsConfirmed = () => {
+        const items = orderDetails?.item || [];
+        if (items.length === 0) return false;
+        
+        return items.every(item => {
+            const availability = itemAvailability[item._id];
+            return availability && availability.confirmed === true;
+        });
+    };
+
+    // Check if any item is marked as unavailable
+    const hasUnavailableItems = () => {
+        const items = orderDetails?.item || [];
+        return items.some(item => {
+            const availability = itemAvailability[item._id];
+            return availability && availability.hasProduct === false;
+        });
+    };
+
+    const submitItemAvailability = () => {
+        
+    }
+
+    const handleItemSent = async (itemId) => {
+    };
 
     useEffect(() => {
         fetchOrderDetails();
@@ -337,17 +432,61 @@ const VendorOrderDetails = () => {
 
                 {/* Items Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                    <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                             <ShoppingBag className="h-5 w-5 text-indigo-600" />
                             Order Items
                         </h2>
+                        {/* Submit Button */}
+                        <button
+                            onClick={submitAllConfirmations}
+                            disabled={isSubmitting || !areAllItemsConfirmed()}
+                            className={`inline-flex items-center gap-2 px-6 py-2 rounded-lg text-white font-medium transition-all transform hover:scale-105 ${
+                                areAllItemsConfirmed() && !isSubmitting
+                                    ? 'bg-indigo-600 hover:bg-indigo-700'
+                                    : 'bg-gray-400 cursor-not-allowed'
+                            }`}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader className="h-4 w-4 animate-spin" />
+                                    Submitting...
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle className="h-4 w-4" />
+                                    Submit Confirmations
+                                </>
+                            )}
+                        </button>
                     </div>
+                    
+                    {/* Submit Status Messages */}
+                    {submitError && (
+                        <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-medium text-red-800">Submission Error</p>
+                                <p className="text-sm text-red-700">{submitError}</p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {submitSuccess && (
+                        <div className="mx-6 mt-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+                            <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-medium text-green-800">Success!</p>
+                                <p className="text-sm text-green-700">All item confirmations have been submitted successfully.</p>
+                            </div>
+                        </div>
+                    )}
                     
                     <div className="divide-y divide-gray-100">
                         {itemsWithImages.map((item, index) => {
                             const PaymentIcon = paymentStatusConfig[item.paymentStatus?.toLowerCase()]?.icon || Currency;
                             const paymentConfig = paymentStatusConfig[item.paymentStatus?.toLowerCase()] || paymentStatusConfig.pending;
+                            const availability = itemAvailability[item._id];
                             
                             return (
                                 <div key={item._id || item.productId || index} className="p-6 hover:bg-gray-50 transition-colors">
@@ -378,6 +517,19 @@ const VendorOrderDetails = () => {
                                                     <h3 className="text-lg font-semibold text-gray-900">{item.name || `Item ${index + 1}`}</h3>
                                                     {item.productId && (
                                                         <p className="text-sm text-gray-500 mt-1">SKU: {typeof item.productId === 'string' ? item.productId.slice(-6) : item.productId?._id?.slice(-6) || 'N/A'}</p>
+                                                    )}
+                                                    {/* Confirmation Status Badge */}
+                                                    {availability?.confirmed && (
+                                                        <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">
+                                                            <CheckCircle className="h-3 w-3" />
+                                                            Confirmed
+                                                        </span>
+                                                    )}
+                                                    {availability && !availability.confirmed && (
+                                                        <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                                                            <Clock className="h-3 w-3" />
+                                                            Pending Confirmation
+                                                        </span>
                                                     )}
                                                 </div>
                                                 <p className="text-2xl font-bold text-indigo-600">
@@ -422,7 +574,7 @@ const VendorOrderDetails = () => {
                                                 {/* Sent Status Badge */}
                                                 {item.status === 'in_transit' && (
                                                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                        <truck className="h-3 w-3" />
+                                                        <Truck className="h-3 w-3" />
                                                         <span>In Transit</span>
                                                     </div>
                                                 )}
@@ -451,14 +603,15 @@ const VendorOrderDetails = () => {
                                                 {item.status === 'completed' && (
                                                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                         <CheckCircle className="h-3 w-3" />
-                                                        <span>completed</span>
+                                                        <span>Completed</span>
                                                     </div>
                                                 )}
                                             </div>
 
+                                            {/* Availability Confirmation Section */}
                                             {!itemAvailability[item._id]?.hasProduct && (
                                                 <div className="mt-4 p-4 rounded-lg bg-gray-50 flex items-center justify-between">
-                                                    <h3 className="font-medium mb-3">
+                                                    <h3 className="font-medium">
                                                         Do you have this product?
                                                     </h3>
 
@@ -467,7 +620,7 @@ const VendorOrderDetails = () => {
                                                             onClick={() =>
                                                                 handleProductAvailability(item._id, true)
                                                             }
-                                                            className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                                                         >
                                                             Yes
                                                         </button>
@@ -476,7 +629,7 @@ const VendorOrderDetails = () => {
                                                             onClick={() =>
                                                                 handleItemNotAvailable(item._id)
                                                             }
-                                                            className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                                                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                                                         >
                                                             No
                                                         </button>
@@ -496,16 +649,16 @@ const VendorOrderDetails = () => {
                                                             onClick={() =>
                                                                 handleQuantityAvailability(item._id, true)
                                                             }
-                                                            className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                                                         >
                                                             Yes
                                                         </button>
 
                                                         <button
                                                             onClick={() =>
-                                                                handleQuantityAvailability(item._id, false)
+                                                                handleQuantityNotAvailable(item._id)
                                                             }
-                                                            className="px-4 py-2 bg-orange-600 text-white rounded-lg"
+                                                            className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
                                                         >
                                                             No
                                                         </button>
@@ -537,7 +690,7 @@ const VendorOrderDetails = () => {
                                                     />
 
                                                     <button
-                                                        className="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-lg"
+                                                        className="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                                         onClick={() => {
                                                             const qty =
                                                                 itemAvailability[item._id]
@@ -548,12 +701,16 @@ const VendorOrderDetails = () => {
                                                                 return;
                                                             }
 
-                                                            console.log({
-                                                                itemId: item._id,
-                                                                availableQuantity: qty
-                                                            });
-
-                                                            // send to backend
+                                                            setItemAvailability(prev => ({
+                                                                ...prev,
+                                                                [item._id]: {
+                                                                    ...prev[item._id],
+                                                                    hasProduct: true,
+                                                                    fullQuantityAvailable: false,
+                                                                    availableQuantity: qty,
+                                                                    confirmed: true
+                                                                }
+                                                            }));
                                                         }}
                                                     >
                                                         Confirm Available Quantity

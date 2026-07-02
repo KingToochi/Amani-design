@@ -1791,6 +1791,88 @@ app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
   }
 });
 
+app.post("/confirmItemAvailability", verifyToken, async (req, res) => {
+  const auth = req.user;
+  const { orderId, items = [] } = req.body;
+
+  try {
+    const user = await User.findById(auth._id).select("_id role");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    if (user.role !== "vendor") {
+      return res.status(403).json({
+        success: false,
+        message: "User not authorized"
+      });
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
+
+    items.forEach((itemUpdate) => {
+      const itemIndex = order.items.findIndex((item) => {
+        const itemId = itemUpdate.itemId?.toString();
+        return (
+          item._id?.toString() === itemId ||
+          item.id?.toString() === itemId ||
+          item.productId?.toString() === itemUpdate.productId?.toString()
+        );
+      });
+
+      if (itemIndex === -1) return;
+
+      const hasProduct = itemUpdate.hasProduct === true;
+      const fullQuantityAvailable = itemUpdate.fullQuantityAvailable === true;
+      const availableQuantity = Number(itemUpdate.availableQuantity || 0);
+
+      order.items[itemIndex].availabilityConfirmed = true;
+      order.items[itemIndex].availability = {
+        hasProduct,
+        fullQuantityAvailable,
+        availableQuantity,
+        originalQuantity: itemUpdate.originalQuantity || order.items[itemIndex].quantity || 0,
+      };
+
+      if (!hasProduct) {
+        order.items[itemIndex].status = "unavailable";
+      } else if (fullQuantityAvailable) {
+        order.items[itemIndex].status = "confirmed";
+      } else {
+        order.items[itemIndex].status = "confirmed";
+      }
+    });
+
+    const allItemsReviewed = order.items.every((item) => item.availabilityConfirmed === true);
+    order.orderStatus = allItemsReviewed ? "verified" : "partially_verified";
+
+    await order.save();
+
+    return res.json({
+      success: true,
+      message: "Item availability confirmations saved",
+      order
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
 app.put("/confirmItemReceived", verifyToken, async (req, res) => {
     try {
         const auth = req.user;
