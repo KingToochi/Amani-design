@@ -40,7 +40,7 @@ const Categories = () => {
         {
             name: "Men",
             image: menProducts?.productImages?.[0],
-            link: "/men",
+            link: "/collection/men",
             description: "Bold styles for the modern gentleman",
             // count: menProducts.length,
             products: menProducts
@@ -48,7 +48,7 @@ const Categories = () => {
         {
             name: "Women",
             image: womenProducts?.productImages?.[0],
-            link: "/women",
+            link: "/collection/women",
             description: "Elegant pieces for every occasion",
             // count: womenProducts.length,
             products: womenProducts
@@ -56,7 +56,7 @@ const Categories = () => {
         {
             name: "Accessories",
             image: accessoriesProducts?.productImages?.[0] || accessories,
-            link: "/accessories",
+            link: "/collection/accessories",
             description: "Complete your look with our collection",
             // count: accessoriesProducts.length,
             products: accessoriesProducts

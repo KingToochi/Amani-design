@@ -76,7 +76,7 @@ const CustomerOrder = () => {
                             <h2 className="text-xl font-semibold mb-2">Orders Unavailable</h2>
                             <p className="text-gray-600 mb-6">{error}</p>
                             <button 
-                                onClick={() => navigate('/login')}
+                                onClick={() => navigate('/login', { state: { from: '/customer-orders' } })}
                                 className="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition font-medium"
                             >
                                 Sign In to Continue

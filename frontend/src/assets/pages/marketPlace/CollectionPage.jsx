@@ -2,27 +2,28 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { BASE_URL } from "../../Url";
 import { TbCurrencyNaira } from "react-icons/tb";
+import { matchesCategory } from "../../utils/categoryMatcher";
 
 const categoryConfig = {
   men: {
     title: "Men's Collection",
     description: "Bold essentials and refined staples for every occasion.",
-    filter: (product) => /men|male|gentleman/i.test(product?.productCategory || "")
+    categoryKey: "men"
   },
   women: {
     title: "Women's Collection",
     description: "Elegant pieces designed to stand out with confidence.",
-    filter: (product) => /women|female|lady|girl/i.test(product?.productCategory || "")
+    categoryKey: "women"
   },
   accessories: {
     title: "Accessories",
     description: "The finishing touches that complete your signature look.",
-    filter: (product) => /accessory|bag|purse|jewel|belt|watch/i.test(product?.productCategory || "")
+    categoryKey: "accessories"
   },
   "new-arrivals": {
     title: "New Arrivals",
     description: "Freshly added favorites for the latest season.",
-    filter: () => true
+    categoryKey: "all"
   }
 };
 
@@ -49,7 +50,7 @@ const CollectionPage = () => {
 
         const filtered = slug === "new-arrivals"
           ? [...allProducts].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 12)
-          : allProducts.filter(pageConfig.filter);
+          : allProducts.filter((product) => matchesCategory(product, pageConfig.categoryKey));
 
         setProducts(filtered);
       } catch (error) {

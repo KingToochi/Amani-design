@@ -7,6 +7,7 @@ import { BiSolidLike } from "react-icons/bi";
 import { LikeContext } from "../../hooks/Like";
 import {AuthContext} from "../../hooks/AuthProvider"
 import Slide from "../../components/SlideShow";
+import { matchesCategory } from "../../utils/categoryMatcher";
 
 
 
@@ -15,6 +16,7 @@ const Products = () => {
     
     const url = BASE_URL;
     const [designs, setDesigns] = useState([])
+    const [activeCategory, setActiveCategory] = useState("all")
     const [wishList, setWishList] = useContext(WishiListContext)
     const [like, setLike] = useContext(LikeContext)
     const {auth, isLoggedIn} = useContext(AuthContext) 
@@ -25,7 +27,8 @@ const Products = () => {
         try {
             let response = await fetch(`${url}/products`)
             let data = await response.json()
-            setDesigns(data)
+            const normalizedProducts = Array.isArray(data) ? data : data.products || [];
+            setDesigns(normalizedProducts)
 
         } catch (error) {
             console.log(error)
@@ -96,6 +99,23 @@ const Products = () => {
 }
 
 
+    const categories = [
+        { key: "all", label: "All" },
+        { key: "men-clothing", label: "Men's Clothing" },
+        { key: "men-footwear", label: "Men's Footwear" },
+        { key: "women-footwear", label: "Women's Footwear" },
+        { key: "women-clothing", label: "Women's Clothing" },
+        { key: "men-bags", label: "Men's Bags" },
+        { key: "women-bags", label: "Women's Bags" },
+        { key: "men-accessories", label: "Men's Accessories" },
+        { key: "women-accessories", label: "Women's Accessories" },
+        { key: "kids-clothing", label: "Kid's Clothing" },
+        { key: "kids-footwear", label: "Kid's Footwear" },
+        { key: "kids-accessories", label: "Kid's Accessories" }
+    ];
+
+    const filteredDesigns = designs.filter((design) => matchesCategory(design, activeCategory));
+
     return (
         <div 
         className="flex flex-col text-gray-50 text-lg font-[abril] px-2 gap-4
@@ -110,48 +130,15 @@ const Products = () => {
             md:h-[70px]
             "
             >
-                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer  ">
-                    <Link>Men's Clothing</Link>
-                </li>
-
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Men's Footwears</Link>
-                </li>
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Women's Footwears</Link>
-                </li>
-                <li className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Women's Clothing</Link>
-                </li>
-
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Men's handBag/purse</Link>
-                </li>
-
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Women's handBag/purse</Link>
-                </li>
-
-                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Men's Clothing Accessories</Link>
-                </li>
-
-                 <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Women's Clothing Accessories</Link>
-                </li>
-
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Kid's Clothing</Link>
-                </li>
-
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Kid's Footwear</Link>
-                </li>
-
-                <li  className="flex-shrink-0 border-1 rounded-lg px-2 bg-stone-800 cursor-pointer">
-                    <Link>Kid's Clothing Accessories</Link>
-                </li>
-                
+                {categories.map((category) => (
+                    <li
+                        key={category.key}
+                        className={`flex-shrink-0 border rounded-lg px-2 py-1 cursor-pointer ${activeCategory === category.key ? "bg-amber-600 text-white" : "bg-stone-800"}`}
+                        onClick={() => setActiveCategory(category.key)}
+                    >
+                        <button type="button" className="w-full text-left">{category.label}</button>
+                    </li>
+                ))}
             </ul>
             <div
             className="columns-2 gap-2
@@ -159,7 +146,7 @@ const Products = () => {
             lg:columns-4
             "
             >
-            {designs.map(design =>(
+            {filteredDesigns.map(design =>(
                 <div key={design._id}
                 className="w-full flex relative"
                 >
