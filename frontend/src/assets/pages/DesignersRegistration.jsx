@@ -249,7 +249,11 @@ const DesignerRegistration = () => {
                         setError(prev => ({...prev, [id]:"field required"}))
                         setIsSubmitting(false)
                     } else {
-                        form.append(id, formData[id])
+                        if (id === "termsAndCondition") {
+                            form.append("termsAndCondition", formData.termsAndCondition ? "true" : "false")
+                        } else {
+                            form.append(id, formData[id])
+                        }
                         setError(prev => {
                             const newErr = {...prev}
                             delete newErr[id]

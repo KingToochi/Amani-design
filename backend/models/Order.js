@@ -66,7 +66,46 @@ const orderSchema = new mongoose.Schema({
       type: String,
       enum: ["pending","confirmed", "unavailable", "in_transit", "delivered", "cancelled", "returned", "completed"],
       default: "pending",
-    }, 
+    },
+    availabilityConfirmed: {
+      type: Boolean,
+      default: false,
+    },
+    availability: {
+      hasProduct: {
+        type: Boolean,
+        default: false,
+      },
+      fullQuantityAvailable: {
+        type: Boolean,
+        default: false,
+      },
+      availableQuantity: {
+        type: Number,
+        default: 0,
+      },
+      originalQuantity: {
+        type: Number,
+        default: 0,
+      },
+    },
+    sentAt: {
+      type: Date,
+      default: null,
+    },
+  }],
+  endorOrderQuantityDetails: [{
+    itemId: String,
+    productId: String,
+    originalQuantity: Number,
+    availableQuantity: Number,
+    hasProduct: Boolean,
+    fullQuantityAvailable: Boolean,
+    itemStatus: String,
+    confirmedAt: {
+      type: Date,
+      default: Date.now,
+    },
   }],
   deliveryDate: {
     type: Date

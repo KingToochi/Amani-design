@@ -33,12 +33,12 @@ const Login = () => {
             })
             let result = await response.json()
             console.log(result)
-            if (result.success) {
+            if (response.ok && result.success) {
                 // Fetch and set auth data from backend
                 await verifyAndFetchAuth();
-                navigate(from) 
+                navigate(from, { replace: true }) 
             } else {
-                throw new Error(result.error)
+                throw new Error(result.message || result.error || "Login failed")
             }
         } catch(error) {
             console.log(error)

@@ -11,7 +11,7 @@ import ServerError from "../components/ServerError";
 const UserRegistration = () => {
     const url = BASE_URL
     const navigate = useNavigate()
-    const {setAuth} = useContext(AuthContext)
+    const { setAuth, verifyAndFetchAuth } = useContext(AuthContext)
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
     const [isSubmiting, setIsSubmitting] = useState(false)
@@ -239,8 +239,6 @@ const UserRegistration = () => {
                 let data = await response.json()
                 console.log(data)
                 if (data.success) {
-                    // Fetch and set auth data from backend
-                    const { verifyAndFetchAuth } = useContext(AuthContext);
                     await verifyAndFetchAuth();
                     navigate("/")
                 } else {

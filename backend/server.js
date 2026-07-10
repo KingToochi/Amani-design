@@ -46,6 +46,42 @@ const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY  );
 
+const parseBooleanFlag = (value) => {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
+    if (['false', '0', 'no', 'off', ''].includes(normalized)) return false;
+  }
+  return Boolean(value);
+};
+
+const updateOrderStatusFromItems = (order) => {
+  const statuses = (order.items || []).map((item) => item.status);
+
+  if (statuses.every((status) => status === "pending")) {
+    return "pending";
+  }
+
+  if (statuses.every((status) => status === "unavailable")) {
+    return "cancelled";
+  }
+
+  if (statuses.every((status) => ["delivered", "completed", "unavailable"].includes(status))) {
+    return statuses.every((status) => status === "unavailable") ? "cancelled" : "delivered";
+  }
+
+  if (statuses.some((status) => ["in_transit", "delivered", "completed"].includes(status))) {
+    return "in_transit";
+  }
+
+  if (statuses.includes("pending")) {
+    return "partially_verified";
+  }
+
+  return "verified";
+};
+
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
 
@@ -67,7 +103,7 @@ const verifyToken = async(req, res, next) => {
   }
   
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
@@ -285,7 +321,7 @@ app.post("/users/registration", async (req, res) => {
    console.log("Registration request body:", req.body);
   try {
     const { fname, lname, username, email, password, termsAndCondition, termsAccepted } = req.body;
-    const acceptedTerms = Boolean(termsAndCondition ?? termsAccepted);
+    const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
 
     if (!fname || !lname || !username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -366,7 +402,7 @@ app.post("/users/registration/designers",uploadImage.fields([
 
   try {
     const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted} = req.body
-    const acceptedTerms = Boolean(termsAndCondition ?? termsAccepted);
+    const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
 
   if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !typeOfVendor || !bankName || !accountNumber || !identificationNumber || !city || !state ) {
   return res.json({message: "All fields required"})
@@ -466,16 +502,20 @@ if (req.files.proofOfAddress) {
 app.post("/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const isUsername = await User.findOne({ username: email.toLowerCase() });
-    const user = isUsername || await User.findOne({ email: email.toLowerCase()  });
-    if (!user) return res.status(404).json({ success: false, error: "User not found" });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
+
+    const loginIdentifier = String(email).trim().toLowerCase();
+    const user = await User.findOne({ $or: [{ email: loginIdentifier }, { username: loginIdentifier }] });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
     if(user.role !== "user" && user.role !== "vendor") return res.status(403).json({ success: false, message: "Access denied" });
     const hashedPassword = user.password
     const ismatch = await bcrypt.compare(password, hashedPassword)
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
 
-    const accessToken = await generateToken(email, { expiresIn: "30m" })
-    const refreshToken = await generateToken(email, { expiresIn: "7d" })
+    const accessToken = await generateToken(loginIdentifier, { expiresIn: "30m" })
+    const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, {
@@ -551,10 +591,12 @@ app.post("/refresh", async (req, res) => {
 app.post("/users/login/admin", async (req, res) => {
   try{
     const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
 
-    const isUsername = await User.findOne({ username: email.toLowerCase() });
-
-    const user = await User.findOne({ email: email.toLowerCase() }) || isUsername;
+    const loginIdentifier = String(email).trim().toLowerCase();
+    const user = await User.findOne({ $or: [{ email: loginIdentifier }, { username: loginIdentifier }] });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
     const hashedPassword = user.password
     console.log(hashedPassword)
@@ -564,8 +606,8 @@ app.post("/users/login/admin", async (req, res) => {
     if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
     if (user.role !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
 
-    const accessToken = await generateToken(email, { expiresIn: "15m" })
-    const refreshToken = await generateToken(email, { expiresIn: "7d" })
+    const accessToken = await generateToken(loginIdentifier, { expiresIn: "15m" })
+    const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, {
@@ -756,8 +798,11 @@ app.get("/userInfo", verifyToken, async(req, res) => {
     })
   } 
 })
-const generateToken = async (email,  options = { expiresIn: "1h" }) => {
-  const user = await User.findOne({email: email})
+const generateToken = async (userIdentifier,  options = { expiresIn: "1h" }) => {
+  const normalizedIdentifier = String(userIdentifier).trim().toLowerCase();
+  const user = await User.findOne({
+    $or: [{ email: normalizedIdentifier }, { username: normalizedIdentifier }],
+  });
    if (!user) {
     throw new Error("User not found")
   }
@@ -1786,9 +1831,24 @@ app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
       {_id : {$in : vendorItemId}}
     ).select("_id productImages")
     const amount = order.amount
-    const customerDetails = await User.findById(order.customerId).select("fName lName shippingAddress city state")
+    const customerDetails = await User.findById(order.customerId).select("fname lname phoneNumber shippingAddress city state")
+    const customerName = [customerDetails?.fname, customerDetails?.lname].filter(Boolean).join(" ") || order.customerName || "N/A"
 
-    const vendorOrder = {item: vendorItems, image: vendorItemImage, amount: amount, customerDetails: customerDetails}
+    const vendorOrder = {
+      _id: order._id,
+      orderNumber: order.orderNumber,
+      orderStatus: order.orderStatus,
+      currency: order.currency,
+      amount,
+      createdAt: order.createdAt,
+      paymentStatus: order.paymentStatus,
+      customerName,
+      customerPhone: customerDetails?.phoneNumber || order.customerPhone || "N/A",
+      shippingAddress: customerDetails?.shippingAddress || "No shipping address provided",
+      item: vendorItems,
+      image: vendorItemImage,
+      customerDetails,
+    }
 
     return res.json({
       success: true,
@@ -1859,10 +1919,30 @@ app.post("/confirmItemAvailability", verifyToken, async (req, res) => {
         originalQuantity: itemUpdate.originalQuantity || order.items[itemIndex].quantity || 0,
       };
 
+      const detailIndex = order.endorOrderQuantityDetails.findIndex((detail) => {
+        const detailItemId = detail.itemId?.toString();
+        return detailItemId === itemUpdate.itemId?.toString() || detail.productId?.toString() === itemUpdate.productId?.toString();
+      });
+
+      const vendorDetail = {
+        itemId: order.items[itemIndex]._id?.toString() || itemUpdate.itemId,
+        productId: itemUpdate.productId,
+        originalQuantity: itemUpdate.originalQuantity || order.items[itemIndex].quantity || 0,
+        availableQuantity,
+        hasProduct,
+        fullQuantityAvailable,
+        itemStatus: !hasProduct ? "unavailable" : "confirmed",
+        confirmedAt: new Date(),
+      };
+
+      if (detailIndex === -1) {
+        order.endorOrderQuantityDetails.push(vendorDetail);
+      } else {
+        order.endorOrderQuantityDetails[detailIndex] = vendorDetail;
+      }
+
       if (!hasProduct) {
         order.items[itemIndex].status = "unavailable";
-      } else if (fullQuantityAvailable) {
-        order.items[itemIndex].status = "confirmed";
       } else {
         order.items[itemIndex].status = "confirmed";
       }
@@ -1887,83 +1967,50 @@ app.post("/confirmItemAvailability", verifyToken, async (req, res) => {
   }
 });
 
-app.put("/confirmItemReceived", verifyToken, async (req, res) => {
+app.put("/markItemAsSent", verifyToken, async (req, res) => {
     try {
         const auth = req.user;
+        const { orderId, itemId } = req.body;
 
-        const { id, itemId } = req.body;
+        const user = await User.findById(auth._id).select("_id role");
 
-        const order = await Order.findById(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (user.role !== "vendor") {
+            return res.status(403).json({ success: false, message: "User not authorized" });
+        }
+
+        const order = await Order.findById(orderId);
 
         if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: "Order not found"
-            });
+            return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-        // find the item
-        const itemIndex = order.items.findIndex(
-            item => item.id === itemId || item.id.toString() === itemId
-        );
+        const itemIndex = order.items.findIndex((item) => {
+            const candidateId = itemId?.toString();
+            return item._id?.toString() === candidateId || item.id?.toString() === candidateId || item.productId?.toString() === candidateId;
+        });
 
         if (itemIndex === -1) {
-            return res.status(404).json({
-                success: false,
-                message: "Item not found"
-            });
+            return res.status(404).json({ success: false, message: "Item not found" });
         }
 
-        // update ONLY that field
-        order.items[itemIndex].status = "delivered";
-        const updateOrderStatus = () => {
-          const statuses = order.items.map(item => item.status);
-
-        if (statuses.every(status => status === "pending")) {
-          return "pending" ;
+        if (order.items[itemIndex].status === "unavailable") {
+            return res.status(400).json({ success: false, message: "This item is marked unavailable and cannot be sent" });
         }
 
-        if (statuses.includes("pending")) {
-          return "partially_verified";
-        }
-
-        if (statuses.includes("in_transit")) {
-          return "in_transit";
-        }
-        if (statuses.every(status =>
-          ["completed", "unavailable"].includes(status)
-        )) {
-          return "completed";
-        }
-
-        if (statuses.every(status =>
-          ["delivered", "completed", "unavailable"].includes(status)
-        )) {
-          return "delivered";
-        }
-        if (statuses.every(status => status === "unavailable")) {
-          return "cancelled" ;
-        }
-
-      return "verified";
-      };
-
-        order.orderStatus = updateOrderStatus()
+        order.items[itemIndex].status = "in_transit";
+        order.items[itemIndex].sentAt = new Date();
+        order.orderStatus = updateOrderStatusFromItems(order);
 
         await order.save();
 
-        return res.json({
-            success: true,
-            message: "Item marked as delivered",
-            order
-        });
-
+        return res.json({ success: true, message: "Item marked as sent", order });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
+        return res.status(500).json({ success: false, message: "Server error" });
     }
 });
 server.listen(4000, () => console.log("Server running on port 4000"));

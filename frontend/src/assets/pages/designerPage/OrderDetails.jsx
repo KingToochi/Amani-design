@@ -28,11 +28,11 @@ const VendorOrderDetails = () => {
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [sendingItem, setSendingItem] = useState(null);
     const [itemAvailability, setItemAvailability] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [sendingItem, setSendingItem] = useState(null);
 
     const { id } = useParams();
     const url = `${BASE_URL}/vendorOrderDetails/${id}`;
@@ -212,16 +212,57 @@ const VendorOrderDetails = () => {
         });
     };
 
-    const submitItemAvailability = () => {
-        
-    }
-
     const handleItemSent = async (itemId) => {
+        setSubmitError(null);
+        setSubmitSuccess(false);
+        setSendingItem(itemId);
+
+        try {
+            const response = await CustomFetch(`${BASE_URL}/markItemAsSent`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ orderId: id, itemId })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setSubmitSuccess(result.message || "Item marked as sent");
+                await fetchOrderDetails();
+            } else {
+                setSubmitError(result.message || "Failed to update item status");
+            }
+        } catch (error) {
+            console.error("Send item error:", error);
+            setSubmitError("An error occurred while updating the item status");
+        } finally {
+            setSendingItem(null);
+        }
     };
 
     useEffect(() => {
         fetchOrderDetails();
     }, [id]);
+
+    useEffect(() => {
+        if (!orderDetails?.item) return;
+
+        const initialAvailability = {};
+        orderDetails.item.forEach((item) => {
+            if (item.availabilityConfirmed) {
+                initialAvailability[item._id] = {
+                    hasProduct: item.availability?.hasProduct ?? false,
+                    fullQuantityAvailable: item.availability?.fullQuantityAvailable ?? false,
+                    availableQuantity: item.availability?.availableQuantity ?? 0,
+                    confirmed: true,
+                };
+            }
+        });
+
+        setItemAvailability(initialAvailability);
+    }, [orderDetails]);
 
     if (loading) {
         return (
@@ -409,25 +450,23 @@ const VendorOrderDetails = () => {
                     </div>
 
                     {/* Customer Information */}
-                    {/* {orderDetails.customer && (
-                        <div className="p-6 border-b border-gray-100 bg-gray-50">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3">Customer Information</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-sm text-gray-500">Name</p>
-                                    <p className="font-medium text-gray-900">{orderDetails.customer.name || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Email</p>
-                                    <p className="font-medium text-gray-900">{orderDetails.customer.email || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Phone</p>
-                                    <p className="font-medium text-gray-900">{orderDetails.customer.phone || 'N/A'}</p>
-                                </div>
+                    <div className="p-6 border-b border-gray-100 bg-gray-50">
+                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Customer Information</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <p className="text-sm text-gray-500">Name</p>
+                                <p className="font-medium text-gray-900">{orderDetails.customerName || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Phone</p>
+                                <p className="font-medium text-gray-900">{orderDetails.customerPhone || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Shipping Address</p>
+                                <p className="font-medium text-gray-900">{orderDetails.shippingAddress || 'No shipping address provided'}</p>
                             </div>
                         </div>
-                    )} */}
+                    </div>
                 </div>
 
                 {/* Items Section */}
@@ -718,8 +757,7 @@ const VendorOrderDetails = () => {
                                                 </div>
                                             )}
                                             
-                                            {/* Action Button - Only show if payment is confirmed and item not sent */}
-                                            {/* {itemAvailable && item.paymentStatus === 'paid' && item.sentStatus !== 'sent' && (
+                                            {availability?.confirmed && availability?.hasProduct !== false && !["in_transit", "delivered", "completed", "unavailable", "returned"].includes(item.status) && (
                                                 <button
                                                     onClick={() => handleItemSent(item._id || item.productId || index)}
                                                     disabled={sendingItem === (item._id || item.productId || index)}
@@ -737,15 +775,14 @@ const VendorOrderDetails = () => {
                                                         </>
                                                     )}
                                                 </button>
-                                            )} */}
-                                            
-                                            {/* Item Already Sent Message
-                                            {itemAvailable && item.status === 'in_transit' && (
+                                            )}
+
+                                            {item.status === "in_transit" && (
                                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg border border-green-200">
                                                     <CheckCircle className="h-4 w-4" />
                                                     <span className="text-sm font-medium">Item has been sent to customer</span>
                                                 </div>
-                                            )} */}
+                                            )}
                                             
                                             {/* Payment Required Message
                                             {itemAvailable && item.paymentStatus !== 'paid' && item.sentStatus !== 'sent' && (
