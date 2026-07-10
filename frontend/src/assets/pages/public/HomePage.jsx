@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { BASE_URL } from "../../Url";
 import Footer from "../../components/Footer";
 import NewArrival from "../../components/NewArrival";
+import { Link } from "react-router-dom";
 
 
 const HomePage = () => {
@@ -45,6 +46,11 @@ const HomePage = () => {
         <div className="w-full relative">
             <Header/>
             <HeroBanner/>
+            <div className="px-4 py-6 text-center">
+                <Link to="/products" className="inline-flex items-center rounded-full bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-amber-700">
+                    Explore the Collection
+                </Link>
+            </div>
             <Categories/>
             {/* <NewArrival products={product} /> */}
             <Footer/>

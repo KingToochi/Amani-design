@@ -69,16 +69,16 @@ const Header = () => {
                         <Link to="/products">All Products</Link>
                     </li>
                     <li>
-                        <Link to="/">Women</Link>
+                        <Link to="/collection/women">Women</Link>
                     </li>
                     <li>
-                        <Link to="/">Men</Link>
+                        <Link to="/collection/men">Men</Link>
                     </li>
                     <li>
-                        <Link to="/">Accessories</Link>
+                        <Link to="/collection/accessories">Accessories</Link>
                     </li>
                     <li>
-                        <Link to="/">New Arrival</Link>
+                        <Link to="/collection/new-arrivals">New Arrivals</Link>
                     </li>
                 </ul>
 
@@ -139,16 +139,16 @@ const Header = () => {
                                     <Link to="/products" className="block w-full" onClick={() => setDropDown(false)}>Store</Link>
                                 </li>
                                 <li className="px-4 py-3 border-b border-gray-100">
-                                    <Link to="/" className="block w-full" onClick={() => setDropDown(false)}>Women</Link>
+                                    <Link to="/collection/women" className="block w-full" onClick={() => setDropDown(false)}>Women</Link>
                                 </li>
                                 <li className="px-4 py-3 border-b border-gray-100">
-                                    <Link to="/" className="block w-full" onClick={() => setDropDown(false)}>Men</Link>
+                                    <Link to="/collection/men" className="block w-full" onClick={() => setDropDown(false)}>Men</Link>
                                 </li>
                                 <li className="px-4 py-3 border-b border-gray-100">
-                                    <Link to="/" className="block w-full" onClick={() => setDropDown(false)}>Accessories</Link>
+                                    <Link to="/collection/accessories" className="block w-full" onClick={() => setDropDown(false)}>Accessories</Link>
                                 </li>
                                 <li className="px-4 py-3">
-                                    <Link to="/" className="block w-full" onClick={() => setDropDown(false)}>New Arrivals</Link>
+                                    <Link to="/collection/new-arrivals" className="block w-full" onClick={() => setDropDown(false)}>New Arrivals</Link>
                                 </li>
                             </ul>
                         </div>

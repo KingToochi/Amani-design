@@ -26,6 +26,7 @@ const UserRegistration = () => {
         status: false,
         password: false,
         cpassword: false,
+        terms: false,
     })
     const [error, setError] = useState({})
     const [formData, setFormData] = useState({
@@ -34,18 +35,35 @@ const UserRegistration = () => {
         username: "",
         email: "",
         password: "",
+        termsAndCondition: false,
     })
 
     const validateFormInput = async(event) => {
         // extract the id and value of each form input 
-        const {id, value, name} = event.target
+        const {id, value, name, type, checked} = event.target
+        const fieldValue = type === "checkbox" ? checked : value
         // update the formdata with the values and id of the form input
         setFormData(prev => ({
-            ...prev, [id]: value
+            ...prev, [id]: fieldValue
         }))
         setShowMessage(prev => ({...prev, [id] : true}))
         // check if the formdata have any empty field
-         if (value.trim() === "") {
+         if (type === "checkbox") {
+            if (!checked) {
+                setError(prev => ({ ...prev, terms: "You must accept the terms and conditions" }))
+                setShowMessage(prev => ({ ...prev, terms: true }))
+            } else {
+                setError(prev => {
+                    const newErr = { ...prev }
+                    delete newErr.terms
+                    return newErr
+                })
+                setShowMessage(prev => ({ ...prev, terms: false }))
+            }
+            return;
+        }
+
+        if (value.trim() === "") {
             setError(prev => ({
             ...prev,
             [id]: `${name} is required`
@@ -180,6 +198,14 @@ const UserRegistration = () => {
         const validateForm = () => {
             for (let id in formData) {
                 const formValue = formData[id]
+                if (id === "termsAndCondition") {
+                    if (!formValue) {
+                        hasError = true
+                        setError(prev => ({...prev, terms: "You must accept the terms and conditions"}))
+                        setShowMessage(prev => ({...prev, terms: true}))
+                    }
+                    continue
+                }
                 if (formValue.length === 0) {
                     hasError = true
                     setError(prev => ({...prev, [id]:"field required"}))
@@ -208,7 +234,7 @@ const UserRegistration = () => {
                         "Content-Type": "application/json"
                     },
                     credentials: "include",
-                    body : JSON.stringify(formData)
+                    body : JSON.stringify({ ...formData, termsAndCondition: Boolean(formData.termsAndCondition) })
                 })
                 let data = await response.json()
                 console.log(data)
@@ -363,6 +389,19 @@ const UserRegistration = () => {
                     >{error.cpassword}</h1>
                 }
             </div>
+            <label className="flex items-start gap-3 rounded-lg border border-gray-300 p-3 text-sm text-gray-700">
+                <input
+                    type="checkbox"
+                    id="termsAndCondition"
+                    checked={formData.termsAndCondition}
+                    onChange={validateFormInput}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                />
+                <span>
+                    I agree to the <a href="/terms" target="_blank" rel="noreferrer" className="text-amber-600 underline">Terms and Conditions</a> and understand my account data will be used to manage my profile.
+                </span>
+            </label>
+            {showMessage.terms && error.terms && <h1 className="text-red-300">{error.terms}</h1>}
             <div
             className=" mx-auto"
             >

@@ -97,7 +97,7 @@ const Navigation = ()=> {
                 </li>
 
                 <li>
-                    <Link
+                    <Link to="/about"
                     className="flex flex-col gap-2 items-center"
                     >
                         <IoMdNotificationsOutline />
@@ -105,7 +105,7 @@ const Navigation = ()=> {
                         className="hidden 
                         sm:flex
                         "
-                        >Notification</h1>
+                        >About</h1>
                     </Link>
                 </li>
 

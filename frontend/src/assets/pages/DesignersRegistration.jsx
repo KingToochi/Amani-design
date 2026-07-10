@@ -34,13 +34,14 @@ const DesignerRegistration = () => {
         identificationNumber: "",
         password: "",
         cpassword: "",
+        termsAndCondition: false,
     })
     const [error, setError] = useState({})
     const [successMessage, setSuccessMessage] = useState({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const formInputValidation = async(event) => {
         event.preventDefault()
-        let {name, id, value, files} = event.target
+        let {name, id, value, files, type, checked} = event.target
         const file = files?.[0]
         if (id === "profilePicture" || id === "proofOfAddress") {
             if (!file) {
@@ -71,9 +72,23 @@ const DesignerRegistration = () => {
             }
             return
         }
+        const fieldValue = type === "checkbox" ? checked : value
          setformData(prev => ({
-            ...prev, [id]: value
+            ...prev, [id]: fieldValue
         }))
+        if (type === "checkbox") {
+            if (!checked) {
+                setError(prev => ({...prev, terms: "You must accept the terms and conditions"}))
+            } else {
+                setError(prev => {
+                    const newErr = {...prev}
+                    delete newErr.terms
+                    return newErr
+                })
+            }
+            return
+        }
+
         if (value.trim() === "") {
             setError(prev => ({
                 ...prev, [id]: `this feild is required`
@@ -221,6 +236,14 @@ const DesignerRegistration = () => {
             const validateForm = () => {
                 for (let id in formData) {
                     const formValue = formData[id]
+                    if (id === "termsAndCondition") {
+                        if (!formValue) {
+                            hasError = true
+                            setError(prev => ({...prev, terms: "You must accept the terms and conditions"}))
+                            setIsSubmitting(false)
+                        }
+                        continue
+                    }
                     if (!formValue) {
                         hasError = true
                         setError(prev => ({...prev, [id]:"field required"}))
@@ -560,6 +583,20 @@ const DesignerRegistration = () => {
                                 <h1 className="text-red-300">{error?.cpassword}</h1>
                              </div>
                         </div>
+
+                        <label className="flex items-start gap-3 rounded-lg border border-gray-300 p-3 text-sm text-gray-700">
+                            <input
+                                type="checkbox"
+                                id="termsAndCondition"
+                                checked={formData.termsAndCondition}
+                                onChange={formInputValidation}
+                                className="mt-1 h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                            />
+                            <span>
+                                I agree to the <a href="/terms" target="_blank" rel="noreferrer" className="text-amber-600 underline">Terms and Conditions</a>.
+                            </span>
+                        </label>
+                        {error.terms && <h1 className="text-red-300">{error.terms}</h1>}
             <div
             className="w-full text-center"
             >

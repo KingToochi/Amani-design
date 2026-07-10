@@ -284,9 +284,15 @@ app.delete("/products/:id", async (req, res) => {
 app.post("/users/registration", async (req, res) => {
    console.log("Registration request body:", req.body);
   try {
-    const { fname, lname, username, email, password} = req.body;
+    const { fname, lname, username, email, password, termsAndCondition, termsAccepted } = req.body;
+    const acceptedTerms = Boolean(termsAndCondition ?? termsAccepted);
+
     if (!fname || !lname || !username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (!acceptedTerms) {
+      return res.status(400).json({ success: false, message: "You must accept the terms and conditions" });
     }
 
     const exists = await User.findOne({
@@ -317,6 +323,7 @@ app.post("/users/registration", async (req, res) => {
       MeansOfIdentification: "",
       identificationNumber: "",
       password: hashedPassword,
+      termsAndCondition: acceptedTerms,
       status: "approved",
       role: "user",
     });
@@ -358,9 +365,15 @@ app.post("/users/registration/designers",uploadImage.fields([
   console.log("FILES:", req.files)
 
   try {
-    const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state} = req.body
+    const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted} = req.body
+    const acceptedTerms = Boolean(termsAndCondition ?? termsAccepted);
+
   if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !typeOfVendor || !bankName || !accountNumber || !identificationNumber || !city || !state ) {
   return res.json({message: "All fields required"})
+}
+
+if (!acceptedTerms) {
+  return res.status(400).json({ success: false, message: "You must accept the terms and conditions" })
 }
 
 const exists = await User.findOne({
@@ -417,6 +430,7 @@ if (req.files.proofOfAddress) {
         state,
         country: "Nigeria",
         shippingAddress: `${houseNumber} ${streetName}, ${city}, ${state}`,
+        termsAndCondition: acceptedTerms,
         role: "vendor",
       });
       await newUser.save();

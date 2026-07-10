@@ -4,15 +4,33 @@ const Footer = () => {
   const footerSections = [
     {
       title: "Shop",
-      links: ["New Arrivals", "Women's Collection", "Men's Collection", "Accessories", "Sale"]
+      links: [
+        { label: "New Arrivals", to: "/collection/new-arrivals" },
+        { label: "Women's Collection", to: "/collection/women" },
+        { label: "Men's Collection", to: "/collection/men" },
+        { label: "Accessories", to: "/collection/accessories" },
+        { label: "All Products", to: "/products" }
+      ]
     },
     {
       title: "Customer Service",
-      links: ["Contact Us", "FAQs", "Shipping Info", "Returns & Exchanges", "Size Guide"]
+      links: [
+        { label: "Contact Us", to: "/contact" },
+        { label: "FAQs", to: "/faq" },
+        { label: "Shipping Info", to: "/about" },
+        { label: "Returns & Exchanges", to: "/contact" },
+        { label: "Size Guide", to: "/faq" }
+      ]
     },
     {
       title: "About AmaniSky",
-      links: ["Our Story", "Sustainability", "Careers", "Press", "Blog"]
+      links: [
+        { label: "Our Story", to: "/about" },
+        { label: "Privacy Policy", to: "/privacy" },
+        { label: "Terms of Service", to: "/terms" },
+        { label: "Contact", to: "/contact" },
+        { label: "Blog", to: "/faq" }
+      ]
     }
   ];
 
@@ -83,12 +101,12 @@ const Footer = () => {
               </h3>
               <ul className="space-y-2">
                 {section.links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <a
-                      href="#"
+                      href={link.to}
                       className="text-gray-400 hover:text-amber-500 text-sm transition-colors duration-300"
                     >
-                      {link}
+                      {link.label}
                     </a>
                   </li>
                 ))}
@@ -120,14 +138,14 @@ const Footer = () => {
 
             {/* Legal Links */}
             <div className="flex space-x-4 text-sm">
-              <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors duration-300">
+              <a href="/privacy" className="text-gray-400 hover:text-amber-500 transition-colors duration-300">
                 Privacy Policy
               </a>
-              <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors duration-300">
+              <a href="/terms" className="text-gray-400 hover:text-amber-500 transition-colors duration-300">
                 Terms of Service
               </a>
-              <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors duration-300">
-                Cookie Policy
+              <a href="/faq" className="text-gray-400 hover:text-amber-500 transition-colors duration-300">
+                FAQs
               </a>
             </div>
           </div>

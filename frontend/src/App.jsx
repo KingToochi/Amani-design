@@ -38,6 +38,12 @@ import ProductAdmin from "./assets/pages/adminPages/Product";
 import CustomerOrder from "./assets/pages/marketPlace/Orders";
 import OrderDetails from "./assets/pages/marketPlace/OrderDetails";
 import VendorOrderDetails from "./assets/pages/designerPage/OrderDetails";
+import CollectionPage from "./assets/pages/marketPlace/CollectionPage";
+import AboutPage from "./assets/pages/marketPlace/AboutPage";
+import ContactPage from "./assets/pages/marketPlace/ContactPage";
+import FAQPage from "./assets/pages/marketPlace/FAQPage";
+import PrivacyPage from "./assets/pages/marketPlace/PrivacyPage";
+import TermsPage from "./assets/pages/marketPlace/TermsPage";
 
 function App() {
   return (
@@ -54,10 +60,16 @@ function App() {
           <Route path="profile" element={<ProfilePage/>} />
           <Route path="login/registration" element={<UserRegistration/>}/> 
           <Route path="checkout" element={<CheckOut/>} />
-          <Route path="/payment-callback" element={<PaymentCallback />} />
-          <Route path="/customer-orders" element={<CustomerOrder />} />
-          <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/order-details/:id" element={<OrderDetails/>} />
+          <Route path="payment-callback" element={<PaymentCallback />} />
+          <Route path="customer-orders" element={<CustomerOrder />} />
+          <Route path="admin-login" element={<AdminLogin />} />
+          <Route path="order-details/:id" element={<OrderDetails/>} />
+          <Route path="collection/:slug" element={<CollectionPage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="faq" element={<FAQPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="terms" element={<TermsPage />} />
         </Route>
         <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
         <Route path="/designer" element={<DesignerLayout/>}>

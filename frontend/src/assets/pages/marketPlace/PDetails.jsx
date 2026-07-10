@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useState, useEffect, useContext } from "react"
 import { FiArrowLeft } from "react-icons/fi"
 import { FaNairaSign } from "react-icons/fa6"
@@ -9,6 +9,7 @@ import { BASE_URL } from "../../Url"
 const PDetails = () => {
     const url = BASE_URL
     const {_id} = useParams()
+    const navigate = useNavigate()
     const [productDetails, setProductDetails] = useState(null) // Start with null, not empty array
     const [cart, setCart] = useContext(CartContext);
     const [quantity, setQuantity] = useState(1)
@@ -300,6 +301,10 @@ const PDetails = () => {
                     className="w-full flex justify-between text-gray-50 mt-4"
                     >
                         <button 
+                        onClick={() => {
+                            handleCart();
+                            navigate('/checkout');
+                        }}
                         className="border-1 px-4 py-2 rounded-lg bg-blue-700 cursor-pointer hover:bg-blue-800 transition"
                         >
                             <h1>Buy Now</h1>

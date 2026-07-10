@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  termsAndCondition: {
+    type: Boolean,
+    default: false,
+  },
   subscriptionDetails: {
     plan:{
       type: String,
