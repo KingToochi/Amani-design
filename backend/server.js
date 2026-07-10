@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import dotenv from "dotenv";
+import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import http from "http";
@@ -25,16 +26,28 @@ import Flutterwave  from 'flutterwave-node-v3';
 dotenv.config();
 const app = express();
 
-// Configure CORS to accept credentials
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://amanisky-fashion.vercel.app",
+  "https://fashion.amanisky.tech",
+  "https://www.fashion.amanisky.tech",
+  process.env.FRONTEND_URL,
+  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim()).filter(Boolean) : []),
+].filter(Boolean);
+
+// Configure CORS to accept credentials from the live frontend domain and local development
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://amanisky-fashion.vercel.app"
-  ],
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  // allowedHeaders: ['Content-Type', 'Authorization']
-   allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 app.use(express.json());
@@ -44,7 +57,13 @@ connectDB();
 
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
-const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY  );
+const clientId = process.env.FLW_CLIENT_ID;
+const clientSecret = process.env.FLW_CLIENT_SECRET;
+const encryptionKey = process.env.FLW_ENCRYPTION_KEY;
+const flw = new Flutterwave(
+  clientId || process.env.FLW_PUBLIC_KEY || process.env.FLUTTERWAVE_PUBLIC_KEY,
+  clientSecret || process.env.FLW_SECRET_KEY || process.env.FLUTTERWAVE_SECRET_KEY
+);
 
 const parseBooleanFlag = (value) => {
   if (typeof value === 'boolean') return value;
@@ -1612,6 +1631,65 @@ app.get(
   }
 );
 
+app.post("/createPayment", verifyToken, async (req, res) => {
+  const auth = req.user;
+
+  try {
+    const { amount, currency = "NGN", email, name, phoneNumber, cart = [], redirectUrl, txRef, description } = req.body;
+
+    if (!amount) {
+      return res.status(400).json({ success: false, message: "Amount is required" });
+    }
+
+    const paymentPayload = {
+      tx_ref: txRef || `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      amount: Number(amount),
+      currency,
+      redirect_url: redirectUrl || `${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-callback`,
+      customer: {
+        email: email || "customer@example.com",
+        name: name || "Amani Customer",
+        phonenumber: phoneNumber || "00000000000"
+      },
+      customizations: {
+        title: "AmaniSky Fashion World",
+        description: description || "Payment for your order",
+        logo: "https://amanisky-fashion.vercel.app/logo.png"
+      },
+      payment_options: "card",
+      meta: {
+        source: "amani-marketplace",
+        cartItems: cart.map((item) => ({ id: item.itemId, name: item.productName, quantity: item.quantity }))
+      }
+    };
+
+    if (encryptionKey) {
+      paymentPayload.encryption_key = encryptionKey;
+    }
+
+    const response = await axios({
+      method: "post",
+      url: "https://api.flutterwave.com/v4/transactions",
+      headers: {
+        Authorization: `Bearer ${clientSecret}`,
+        "Content-Type": "application/json"
+      },
+      data: paymentPayload
+    });
+
+    const paymentLink = response?.data?.data?.link || response?.data?.data?.authorization_url || response?.data?.data?.checkout_url;
+
+    if (!paymentLink) {
+      return res.status(400).json({ success: false, message: "Unable to initialize payment", data: response?.data });
+    }
+
+    return res.status(200).json({ success: true, link: paymentLink, data: response?.data?.data });
+  } catch (error) {
+    console.error("Create payment error:", error?.response?.data || error.message);
+    return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
+  }
+});
+
 app.post("/verifyPayment", verifyToken, async(req, res) => {
   const auth = req.user
   console.log(auth)
@@ -1634,9 +1712,16 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       });
     }
 
-    const verification = await flw.Transaction.verify({
-      id: transaction_id
+    const verificationResponse = await axios({
+      method: "get",
+      url: `https://api.flutterwave.com/v4/transactions/${transaction_id}/verify`,
+      headers: {
+        Authorization: `Bearer ${clientSecret}`,
+        "Content-Type": "application/json"
+      }
     });
+
+    const verification = verificationResponse.data;
 
     if (
       verification.status !== "success" ||

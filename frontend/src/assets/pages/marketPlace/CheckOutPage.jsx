@@ -4,7 +4,6 @@ import { AuthContext } from '../../hooks/AuthProvider';
 import { CartContext } from '../../hooks/CartContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
 import { 
   ShoppingBag, 
   Truck, 
@@ -43,6 +42,8 @@ const CheckOut = () => {
     const location = useLocation();
     const pathName = location.pathname;
     const verifyPaymentUrl = `${BASE_URL}/verifyPayment`
+    const createPaymentUrl = `${BASE_URL}/createPayment`
+    const redirectUrl = `${window.location.origin}/payment-callback`;
 
     console.log(pathName)
 
@@ -159,92 +160,48 @@ const CheckOut = () => {
         return Number((subtotal + paymentFee).toFixed(2));
     };
 
-    const handlePlaceOrder = () => {
+    const handlePlaceOrder = async () => {
   const subtotal = calculateSubtotal();
   const paymentFee = calculatePaymentFee(subtotal);
   const amountToCharge = calculateTotal();
 
-  handleFlutterPayment({
-    callback: async (response) => {
-      console.log(response);
-      
-      if (response.status === "successful" || response.status === "success") {
-        try {
-          const verification = await CustomFetch(verifyPaymentUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              transaction_id: response.transaction_id,
-              amount: amountToCharge,
-              merchantAmount: subtotal,
-              paymentFee,
-              currency: response.currency,
-              customer: response.customer,
-              cart: cart
-            })
-          });
+  try {
+    const paymentInit = await CustomFetch(createPaymentUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        amount: amountToCharge,
+        currency: "NGN",
+        email: userInfo?.email || "",
+        name: `${userInfo?.fname || ""} ${userInfo?.lname || ""}`.trim(),
+        phoneNumber: userInfo?.phoneNumber || "",
+        cart,
+        redirectUrl,
+        txRef: `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        description: `Payment for ${cart?.length || 0} items`
+      })
+    });
 
-          // Check if the response is OK before parsing
-          if (verification.ok) {
-            const verificationResponse = await verification.json();
-            
-            if (verificationResponse.success) {
-              setError(null);
-              setCart([]);
-              navigate("/customer-orders");
-              closePaymentModal(); // Close only on success
-            } else {
-              // Handle verification failure
-              setError(verificationResponse.message || "Payment verification failed");
-              console.error("Verification failed:", verificationResponse);
-              closePaymentModal();
-            }
-          } else {
-            // Handle HTTP error status
-            const errorData = await verification.json();
-            setError(errorData.message || "Payment verification failed");
-            console.error("Verification HTTP error:", verification.status, errorData);
-            closePaymentModal();
-          }
-        } catch (error) {
-          console.error("Payment verification error:", error);
-          setError("An error occurred during payment verification");
-          closePaymentModal();
-        }
-      } else {
-        // Payment was not successful
-        setError(`Payment ${response.status}: Please try again`);
-        closePaymentModal();
-      }
-    },
-    onClose: () => {
-      // Optional: Handle modal close without payment
-      console.log("Payment modal closed");
-    },
-  });
+    if (!paymentInit?.ok) {
+      const initError = await paymentInit?.json?.().catch(() => ({}));
+      throw new Error(initError.message || "Unable to start payment");
+    }
+
+    const paymentData = await paymentInit.json();
+
+    if (paymentData.success && paymentData.link) {
+      window.location.href = paymentData.link;
+      return;
+    }
+
+    throw new Error(paymentData.message || "Unable to start payment");
+  } catch (error) {
+    console.error("Payment initialization error:", error);
+    setError(error.message || "Payment initialization failed");
+  }
 };
-
-    const config = {
-    public_key: "FLWPUBK_TEST-f937ac1137adeb155b1fd0d7fba53f2f-X",
-    tx_ref: Date.now(),
-    amount: calculateTotal(),
-    currency: 'NGN',
-    payment_options: 'card,mobilemoney,ussd',
-    customer: {
-        email: userInfo?.email || '',
-        phone_number: userInfo?.phoneNumber || '',
-        name: `${userInfo?.fname || ''} ${userInfo?.lname || ''}`.trim()
-    },
-    customizations: {
-          title: "Amanisky Fashion World",
-          description: `Payment for ${cart?.length || 0} items`,
-          logo: logo,
-        },
-  };
-
-  const handleFlutterPayment = useFlutterwave(config);
 
     // Show loading state
     if (cartLoading || loading) {
