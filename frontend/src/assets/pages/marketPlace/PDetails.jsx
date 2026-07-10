@@ -302,8 +302,18 @@ const PDetails = () => {
                     >
                         <button 
                         onClick={() => {
-                            handleCart();
-                            navigate('/checkout');
+                            if (!productDetails) return;
+                            if (!selectedSize || !selectedColor) {
+                                setMessage("Please select size and color before buying.");
+                                return;
+                            }
+
+                            const addAndGoToCheckout = () => {
+                                handleCart();
+                                navigate('/checkout');
+                            };
+
+                            addAndGoToCheckout();
                         }}
                         className="border-1 px-4 py-2 rounded-lg bg-blue-700 cursor-pointer hover:bg-blue-800 transition"
                         >

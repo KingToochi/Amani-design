@@ -1616,7 +1616,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
   const auth = req.user
   console.log(auth)
   try {
-    const { transaction_id, cart, currency, amount} = req.body;
+    const { transaction_id, cart, currency, amount, merchantAmount, paymentFee } = req.body;
     console.log(cart)
     if (!transaction_id) {
       return res.status(400).json({
@@ -1648,7 +1648,12 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       });
     }
 
-    if (verification.data.amount !== amount) {
+    const normalizedAmount = Number(amount || 0);
+    const normalizedMerchantAmount = Number(merchantAmount || 0);
+    const normalizedPaymentFee = Number(paymentFee || 0);
+    const expectedAmount = Number((normalizedMerchantAmount + normalizedPaymentFee).toFixed(2));
+
+    if (Number(verification.data.amount) !== normalizedAmount || Number(verification.data.amount) !== expectedAmount) {
       return res.status(400).json({
       success: false,
       message: "Amount mismatch"
@@ -1680,6 +1685,9 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       products: products,
       transactionId: transaction_id,
       amount: verification.data.amount,
+      subtotalAmount: normalizedMerchantAmount || Number(verification.data.amount),
+      paymentFee: normalizedPaymentFee || 0,
+      amountPaid: verification.data.amount,
       currency: verification.data.currency,
       paymentStatus: verification.data.status,
       customerEmail: cleanEmail,

@@ -147,13 +147,23 @@ const CheckOut = () => {
     //     return calculateSubtotal() * 0.08;
     // };
 
-    const calculateTotal = () => { 
-        const total = calculateSubtotal()
-        return total
-       
+    const calculatePaymentFee = (subtotal = calculateSubtotal()) => {
+        const feeRate = Number(import.meta.env.VITE_PAYMENT_FEE_RATE || 0.029);
+        const feeFixed = Number(import.meta.env.VITE_PAYMENT_FEE_FIXED || 100);
+        return Number((subtotal * feeRate + feeFixed).toFixed(2));
+    };
+
+    const calculateTotal = () => {
+        const subtotal = calculateSubtotal();
+        const paymentFee = calculatePaymentFee(subtotal);
+        return Number((subtotal + paymentFee).toFixed(2));
     };
 
     const handlePlaceOrder = () => {
+  const subtotal = calculateSubtotal();
+  const paymentFee = calculatePaymentFee(subtotal);
+  const amountToCharge = calculateTotal();
+
   handleFlutterPayment({
     callback: async (response) => {
       console.log(response);
@@ -167,7 +177,9 @@ const CheckOut = () => {
             },
             body: JSON.stringify({
               transaction_id: response.transaction_id,
-              amount: response.amount,
+              amount: amountToCharge,
+              merchantAmount: subtotal,
+              paymentFee,
               currency: response.currency,
               customer: response.customer,
               cart: cart
@@ -531,6 +543,10 @@ const CheckOut = () => {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Subtotal</span>
                                     <span className="font-medium flex items-center"><FaNairaSign/>{calculateSubtotal().toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Payment charge</span>
+                                    <span className="font-medium flex items-center"><FaNairaSign/>{calculatePaymentFee().toFixed(2)}</span>
                                 </div>
                                 {/* <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Shipping</span>

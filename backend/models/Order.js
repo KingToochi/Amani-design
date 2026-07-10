@@ -25,6 +25,18 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  subtotalAmount: {
+    type: Number,
+    default: 0,
+  },
+  paymentFee: {
+    type: Number,
+    default: 0,
+  },
+  amountPaid: {
+    type: Number,
+    default: 0,
+  },
   currency: {
     type: String,
     default: "NGN",
