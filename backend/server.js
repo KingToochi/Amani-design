@@ -61,8 +61,8 @@ const clientId = process.env.FLW_CLIENT_ID;
 const clientSecret = process.env.FLW_CLIENT_SECRET;
 const encryptionKey = process.env.FLW_ENCRYPTION_KEY;
 const flw = new Flutterwave(
-  clientId || process.env.FLW_PUBLIC_KEY || process.env.FLUTTERWAVE_PUBLIC_KEY,
-  clientSecret || process.env.FLW_SECRET_KEY || process.env.FLUTTERWAVE_SECRET_KEY
+  clientId,
+  clientSecret
 );
 
 const parseBooleanFlag = (value) => {

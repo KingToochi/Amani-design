@@ -161,9 +161,9 @@ const CheckOut = () => {
     };
 
     const handlePlaceOrder = async () => {
-  const subtotal = calculateSubtotal();
-  const paymentFee = calculatePaymentFee(subtotal);
-  const amountToCharge = calculateTotal();
+        const subtotal = calculateSubtotal();
+        const paymentFee = calculatePaymentFee(subtotal);
+        const amountToCharge = calculateTotal();
 
   try {
     const paymentInit = await CustomFetch(createPaymentUrl, {
