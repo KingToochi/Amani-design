@@ -20,6 +20,7 @@ import Rating from "./models/Rating.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
 import Flutterwave  from 'flutterwave-node-v3';
+import { getAccessToken } from "./services/flutterwave.js";
 
 
 
@@ -54,7 +55,7 @@ app.use(express.json());
 app.use(cookieParser());
 connectDB();
 
-
+const token = getAccessToken();
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
 const clientId = process.env.FLW_CLIENT_ID;
@@ -62,8 +63,11 @@ const clientSecret = process.env.FLW_CLIENT_SECRET;
 const encryptionKey = process.env.FLW_ENCRYPTION_KEY;
 const flw = new Flutterwave(
   clientId,
-  clientSecret
+  clientSecret 
 );
+const generateToken = () => {
+
+}
 
 const parseBooleanFlag = (value) => {
   if (typeof value === 'boolean') return value;
@@ -1635,21 +1639,22 @@ app.post("/createPayment", verifyToken, async (req, res) => {
   const auth = req.user;
 
   try {
+    console.log("Create payment request body:", req.body);
     const { amount, currency = "NGN", email, name, phoneNumber, cart = [], redirectUrl, txRef, description } = req.body;
 
     if (!amount) {
       return res.status(400).json({ success: false, message: "Amount is required" });
     }
-
+    
     const paymentPayload = {
       tx_ref: txRef || `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       amount: Number(amount),
       currency,
-      redirect_url: redirectUrl || `${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-callback`,
+      redirect_url: redirectUrl || `${process.env.FRONTEND_URL}/payment-callback`,
       customer: {
-        email: email || "customer@example.com",
-        name: name || "Amani Customer",
-        phonenumber: phoneNumber || "00000000000"
+        email: email,
+        name: name,
+        phonenumber: phoneNumber
       },
       customizations: {
         title: "AmaniSky Fashion World",
@@ -1671,7 +1676,7 @@ app.post("/createPayment", verifyToken, async (req, res) => {
       method: "post",
       url: "https://api.flutterwave.com/v4/transactions",
       headers: {
-        Authorization: `Bearer ${clientSecret}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       },
       data: paymentPayload
@@ -1695,6 +1700,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
   console.log(auth)
   try {
     const { transaction_id, cart, currency, amount, merchantAmount, paymentFee } = req.body;
+    console.log("Verify payment request body:", req.body);
     console.log(cart)
     if (!transaction_id) {
       return res.status(400).json({
@@ -1716,7 +1722,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       method: "get",
       url: `https://api.flutterwave.com/v4/transactions/${transaction_id}/verify`,
       headers: {
-        Authorization: `Bearer ${clientSecret}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       }
     });
