@@ -210,7 +210,8 @@ const CheckOut = () => {
         cart,
         redirectUrl,
         txRef: `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        description: `Payment for ${cart?.length || 0} items`
+        description: `Payment for ${cart?.length || 0} items`,
+        paymentMethod: paymentMethod
       })
     });
 

@@ -1641,10 +1641,14 @@ app.post("/createPayment", verifyToken, async (req, res) => {
 
   try {
     console.log("Create payment request body:", req.body);
-    const { amount, currency = "NGN", email, name, phoneNumber, cart = [], redirectUrl, txRef, description } = req.body;
+    const { amount, currency = "NGN", email, name, phoneNumber, cart = [], redirectUrl, txRef, description, paymentMethod} = req.body;
 
     if (!amount) {
       return res.status(400).json({ success: false, message: "Amount is required" });
+    }
+
+    if (!paymentMethod) {
+      return res.status(400).json({ success: false, message: "Payment Method is required" });
     }
     
     const paymentPayload = {
@@ -1662,7 +1666,7 @@ app.post("/createPayment", verifyToken, async (req, res) => {
         description: description || "Payment for your order",
         logo: "https://amanisky-fashion.vercel.app/logo.png"
       },
-      payment_options: "card",
+      payment_options: paymentMethod,
       meta: {
         source: "amani-marketplace",
         cartItems: cart.map((item) => ({ id: item.itemId, name: item.productName, quantity: item.quantity }))
@@ -1683,6 +1687,7 @@ app.post("/createPayment", verifyToken, async (req, res) => {
       headers: {
         Authorization: `Bearer ${token}`,
         "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
         "Content-Type": "application/json"
       },
       data: paymentPayload
