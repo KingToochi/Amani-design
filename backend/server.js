@@ -67,9 +67,7 @@ const flw = new Flutterwave(
   clientId,
   clientSecret 
 );
-const generateToken = () => {
 
-}
 
 const parseBooleanFlag = (value) => {
   if (typeof value === 'boolean') return value;
