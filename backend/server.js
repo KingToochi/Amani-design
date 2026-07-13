@@ -1678,8 +1678,8 @@ app.post("/createPayment", verifyToken, async (req, res) => {
     //   paymentPayload.encryption_key = encryptionKey;
     // }
 
-    // const idempotencyKey = uuidv4().replace(/-/g, "");
-    // console.log("Idempotency Key:", idempotencyKey);
+    const idempotencyKey = uuidv4().replace(/-/g, "");
+    console.log("Idempotency Key:", idempotencyKey);
 
 
     const createCustomer = await axios({
@@ -1687,6 +1687,8 @@ app.post("/createPayment", verifyToken, async (req, res) => {
       url: 'https://developersandbox-api.flutterwave.com/customers',
       headers: {
         Authorization: `Bearer ${token}`,
+        "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
         "Content-Type": "application/json"
       },
       data: {
