@@ -17,7 +17,10 @@ import {
   CheckCircle,
   Package,
   AlertCircle,
-  Loader
+  Loader,
+  Landmark,
+  Wallet,
+  Smartphone,
 } from 'lucide-react';
 import { FaNairaSign } from "react-icons/fa6"
 import logo from "../../images/mainLogo.jpg"
@@ -86,6 +89,33 @@ const CheckOut = () => {
             setLoading(false);
         }
     };
+
+    const methods = [
+        {
+            id: "card",
+            title: "Debit/Credit Card",
+            description: "Visa, Mastercard, Verve",
+            icon: <CreditCard size={26} />,
+        },
+        {
+            id: "bank_transfer",
+            title: "Bank Transfer",
+            description: "Transfer directly from your bank",
+            icon: <Landmark size={26} />,
+        },
+        {
+            id: "ussd",
+            title: "USSD",
+            description: "Pay using your bank USSD code",
+            icon: <Smartphone size={26} />,
+        },
+        {
+            id: "mobile_money",
+            title: "Mobile Money",
+            description: "Wallet & Mobile Money",
+            icon: <Wallet size={26} />,
+        },
+    ];
 
     const handleEditMode = () => {
         setFormData({
@@ -444,13 +474,13 @@ const CheckOut = () => {
                         </motion.div>
 
                         {/* Mobile Place Order Button */}
-                        <button 
+                        {/* <button 
                             onClick={handlePlaceOrder}
                             className="justify-center flex mx-auto gap-2 lg:hidden w-full bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold shadow-lg"
                         >
                             Pay Now • 
                             <span className='flex items-center'><FaNairaSign />{calculateTotal().toFixed(2)}</span>
-                        </button>
+                        </button> */}
                     </div>
 
                     {/* Right Column - Order Summary */}
@@ -541,13 +571,81 @@ const CheckOut = () => {
                             )} */}
 
                             {/* Desktop Place Order Button */}
-                            <button 
+                            <div className="bg-white rounded-xl shadow-md p-6">
+                                <h2 className="text-xl font-semibold mb-5">
+                                    Select Payment Method
+                            </h2>
+
+                            <div className="space-y-4">
+                                {methods.map((method) => (
+                                    <div
+                                        key={method.id}
+                                        onClick={() =>
+                                            setPaymentMethod(method.id)
+                                        }
+                                        className={`flex items-center justify-between border rounded-lg p-4 cursor-pointer transition-all duration-200
+                                        ${
+                                            paymentMethod === method.id
+                                                ? "border-blue-600 bg-blue-50"
+                                                : "border-gray-300 hover:border-blue-400"
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div
+                                                className={`p-3 rounded-full ${
+                                                    paymentMethod === method.id
+                                                        ? "bg-blue-600 text-white"
+                                                        : "bg-gray-100"
+                                                }`}
+                                            >
+                                                {method.icon}
+                                            </div>
+
+                                            <div>
+                                                <h3 className="font-medium">
+                                                    {method.title}
+                                                </h3>
+
+                                                <p className="text-sm text-gray-500">
+                                                    {method.description}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <input
+                                            type="radio"
+                                            checked={
+                                                paymentMethod === method.id
+                                            }
+                                            onChange={() =>
+                                                setPaymentMethod(method.id)
+                                            }
+                                            className="w-5 h-5 accent-blue-600"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={handlePlaceOrder}
+                                disabled={!paymentMethod}
+                                className={`mt-6 w-full py-3 rounded-lg font-semibold transition
+                                ${
+                                    paymentMethod
+                                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                        : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                }`}
+                            >
+                                Continue Payment
+                            </button>
+                        </div>
+                            {/* <button 
                                 onClick={handlePlaceOrder}
                                 className="w-full flex flex-row hidden lg:flex justify-center gap-4 bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold"
                             >
                                 Pay Now • 
                                 <span className='flex items-center'><FaNairaSign/>{calculateTotal().toFixed(2)}</span>
-                            </button>
+                            </button> */}
                         </div>
                     </motion.div>
                 </div>
