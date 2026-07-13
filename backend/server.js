@@ -21,6 +21,8 @@ import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
 import Flutterwave  from 'flutterwave-node-v3';
 import { getAccessToken } from "./services/flutterwave.js";
+import { v4 as uuidv4 } from "uuid";
+
 
 
 
@@ -1672,11 +1674,16 @@ app.post("/createPayment", verifyToken, async (req, res) => {
       paymentPayload.encryption_key = encryptionKey;
     }
 
+    const idempotencyKey = uuidv4().replace(/-/g, "");
+    console.log(idempotencyKey);
+
+
     const response = await axios({
       method: "post",
       url: "https://api.flutterwave.com/v4/transactions",
       headers: {
         Authorization: `Bearer ${token}`,
+        "X-Idempotency-Key": idempotencyKey,
         "Content-Type": "application/json"
       },
       data: paymentPayload
