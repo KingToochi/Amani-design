@@ -1680,6 +1680,9 @@ app.post("/createPayment", verifyToken, async (req, res) => {
 
     const idempotencyKey = uuidv4().replace(/-/g, "");
     console.log("Idempotency Key:", idempotencyKey);
+    const formattedPhone = phoneNumber.startsWith("0")
+    ? phoneNumber.substring(1)
+    : phoneNumber;
 
 
     const createCustomer = await axios({
@@ -1701,11 +1704,12 @@ app.post("/createPayment", verifyToken, async (req, res) => {
           line1: shippingAddress,
           city: city,
           state: state,
-          country: "NG"
+          country: "NG",
+          postal_code: "480001",
         },
         phone: {
           country_code: "234",
-          number: phoneNumber
+          number: formattedPhone
         }, 
        
       }
