@@ -1642,7 +1642,7 @@ app.post("/createPayment", verifyToken, async (req, res) => {
 
   try {
     console.log("Create payment request body:", req.body);
-    const { amount, currency = "NGN", email, name, phoneNumber, cart = [], redirectUrl, txRef, description, paymentMethod} = req.body;
+    const { amount, currency = "NGN", email, fname, lname, shippingAddress, city, state, phoneNumber, cart = [], redirectUrl, txRef, description, paymentMethod} = req.body;
 
     if (!amount) {
       return res.status(400).json({ success: false, message: "Amount is required" });
@@ -1693,8 +1693,21 @@ app.post("/createPayment", verifyToken, async (req, res) => {
       },
       data: {
         email: email,
-        name: name,
-        phonenumber: phoneNumber
+        name: {
+          first: fname,
+          last: lname
+        },
+        address: {
+          line1: shippingAddress,
+          city: city,
+          state: state,
+          country: "NG"
+        },
+        phone: {
+          country_code: "234",
+          number: phoneNumber
+        }, 
+       
       }
     });
 
