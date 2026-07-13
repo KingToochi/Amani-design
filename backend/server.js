@@ -1637,6 +1637,7 @@ app.get(
 
 app.post("/createPayment", verifyToken, async (req, res) => {
   const auth = req.user;
+  console.log(token)
 
   try {
     console.log("Create payment request body:", req.body);
@@ -1673,7 +1674,7 @@ app.post("/createPayment", verifyToken, async (req, res) => {
     }
 
     const idempotencyKey = uuidv4().replace(/-/g, "");
-    console.log(idempotencyKey);
+    console.log("Idempotency Key:", idempotencyKey);
 
 
     const response = await axios({
