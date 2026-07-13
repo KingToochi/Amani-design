@@ -1,72 +1,38 @@
-// src/components/FlutterwavePayment.jsx
-import logo from "../images/mainLogo.jpg";
-import { BASE_URL } from "../Url";
+{paymentMethod === "card" && (
+        <div className="border rounded-lg p-5 space-y-4 bg-gray-50">
 
-const FlutterwavePayment = ({
-  userInfo,
-  amount,
-  paymentMethod,
-  cartItems,
-  cart = []
-}) => {
-  const redirectUrl = `${window.location.origin}/payment-callback`;
-  const API_URL = BASE_URL;
+            <h3 className="font-semibold">Card Details</h3>
 
-  const handlePayment = async () => {
-    try {
-      const response = await fetch(`${API_URL}/createPayment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          amount,
-          currency: "NGN",
-          email: userInfo?.email || "",
-          name: `${userInfo?.fname || ""} ${userInfo?.lname || ""}`.trim(),
-          phoneNumber: userInfo?.phoneNumber || "",
-          cart: cartItems || cart,
-          redirectUrl,
-          txRef: `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-          description: `Payment for ${(cartItems || cart)?.length || 0} items`
-        })
-      });
+            <input
+                type="text"
+                placeholder="Card Number"
+                className="w-full border rounded-lg p-3"
+            />
 
-      const result = await response.json();
+            <div className="grid grid-cols-3 gap-3">
+                <input
+                    type="text"
+                    placeholder="MM"
+                    className="border rounded-lg p-3"
+                />
 
-      if (result.success && result.link) {
-        window.location.href = result.link;
-      } else {
-        alert(result.message || "Unable to initialize payment");
-      }
-    } catch (error) {
-      console.error("Payment initialization error:", error);
-      alert("Unable to initialize payment. Please try again.");
-    }
-  };
+                <input
+                    type="text"
+                    placeholder="YY"
+                    className="border rounded-lg p-3"
+                />
 
-  return (
-    <button
-      onClick={handlePayment}
-      style={{
-        backgroundColor: "#F97316",
-        color: "white",
-        padding: "12px 24px",
-        border: "none",
-        borderRadius: "5px",
-        fontSize: "16px",
-        cursor: "pointer",
-        width: "100%",
-        fontWeight: "600",
-        transition: "background-color 0.3s ease",
-      }}
-      onMouseEnter={(e) => e.target.style.backgroundColor = "#fb923c"}
-      onMouseLeave={(e) => e.target.style.backgroundColor = "#F97316"}
-    >
-      Pay ₦{amount?.toLocaleString() || '0'}
-    </button>
-  );
-};
+                <input
+                    type="password"
+                    placeholder="CVV"
+                    className="border rounded-lg p-3"
+                />
+            </div>
 
-export default FlutterwavePayment;
+            <input
+                type="text"
+                placeholder="Card Holder Name"
+                className="w-full border rounded-lg p-3"
+            />
+        </div>
+    )}

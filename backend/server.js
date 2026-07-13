@@ -1651,47 +1651,61 @@ app.post("/createPayment", verifyToken, async (req, res) => {
       return res.status(400).json({ success: false, message: "Payment Method is required" });
     }
     
-    const paymentPayload = {
-      tx_ref: txRef || `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      amount: Number(amount),
-      currency,
-      redirect_url: redirectUrl || `${process.env.FRONTEND_URL}/payment-callback`,
-      customer: {
+    // const paymentPayload = {
+    //   tx_ref: txRef || `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    //   amount: Number(amount),
+    //   currency,
+    //   redirect_url: redirectUrl || `${process.env.FRONTEND_URL}/payment-callback`,
+    //   customer: {
+    //     email: email,
+    //     name: name,
+    //     phonenumber: phoneNumber
+    //   },
+    //   customizations: {
+    //     title: "AmaniSky Fashion World",
+    //     description: description || "Payment for your order",
+    //     logo: "https://amanisky-fashion.vercel.app/logo.png"
+    //   },
+    //   payment_options: paymentMethod,
+    //   meta: {
+    //     source: "amani-marketplace",
+    //     cartItems: cart.map((item) => ({ id: item.itemId, name: item.productName, quantity: item.quantity }))
+    //   }
+    // };
+
+    // if (encryptionKey) {
+    //   paymentPayload.encryption_key = encryptionKey;
+    // }
+
+    // const idempotencyKey = uuidv4().replace(/-/g, "");
+    // console.log("Idempotency Key:", idempotencyKey);
+
+
+    const creatCustomer = await axios({
+      method: "post",
+      url: 'https://developersandbox-api.flutterwave.com/customers',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      data: {
         email: email,
         name: name,
         phonenumber: phoneNumber
-      },
-      customizations: {
-        title: "AmaniSky Fashion World",
-        description: description || "Payment for your order",
-        logo: "https://amanisky-fashion.vercel.app/logo.png"
-      },
-      payment_options: paymentMethod,
-      meta: {
-        source: "amani-marketplace",
-        cartItems: cart.map((item) => ({ id: item.itemId, name: item.productName, quantity: item.quantity }))
       }
-    };
-
-    if (encryptionKey) {
-      paymentPayload.encryption_key = encryptionKey;
-    }
-
-    const idempotencyKey = uuidv4().replace(/-/g, "");
-    console.log("Idempotency Key:", idempotencyKey);
-
-
-    const response = await axios({
-      method: "post",
-      url: 'https://developersandbox-api.flutterwave.com/orchestration/direct-charges',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "X-Idempotency-Key": idempotencyKey,
-        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-        "Content-Type": "application/json"
-      },
-      data: paymentPayload
     });
+
+    // const response = await axios({
+    //   method: "post",
+    //   url: 'https://developersandbox-api.flutterwave.com/orchestration/direct-charges',
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //     "X-Idempotency-Key": idempotencyKey,
+    //     "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+    //     "Content-Type": "application/json"
+    //   },
+    //   data: paymentPayload
+    // });
 
     const paymentLink = response?.data?.data?.link || response?.data?.data?.authorization_url || response?.data?.data?.checkout_url;
 
