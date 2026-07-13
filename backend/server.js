@@ -57,7 +57,7 @@ app.use(express.json());
 app.use(cookieParser());
 connectDB();
 
-const token = getAccessToken();
+const token = await getAccessToken();
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
 const clientId = process.env.FLW_CLIENT_ID;
