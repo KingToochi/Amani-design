@@ -1736,6 +1736,9 @@ app.post("/createPayment", verifyToken, async (req, res) => {
     // return res.status(200).json({ success: true, link: paymentLink, data: response?.data?.data });
   } catch (error) {
     console.error("Create payment error:", error?.response?.data || error.message);
+    console.log(
+  error.response?.data?.error?.validation_errors
+);
     return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
   }
 });
