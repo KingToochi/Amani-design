@@ -1683,7 +1683,7 @@ app.post("/createPayment", verifyToken, async (req, res) => {
 
     const response = await axios({
       method: "post",
-      url: "https://api.flutterwave.com/v4/transactions",
+      url: 'https://developersandbox-api.flutterwave.com/orchestration/direct-charges',
       headers: {
         Authorization: `Bearer ${token}`,
         "X-Idempotency-Key": idempotencyKey,
