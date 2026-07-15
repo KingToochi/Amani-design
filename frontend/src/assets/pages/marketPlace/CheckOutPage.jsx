@@ -46,6 +46,7 @@ const CheckOut = () => {
     const pathName = location.pathname;
     const verifyPaymentUrl = `${BASE_URL}/verifyPayment`
     const createPaymentUrl = `${BASE_URL}/createPayment`
+    const createFlutterwaveCustomerUrl = `${BASE_URL}/createFlutterwavePayment`
     const redirectUrl = `${window.location.origin}/payment-callback`;
 
     console.log(pathName)
@@ -196,7 +197,7 @@ const CheckOut = () => {
         const amountToCharge = calculateTotal();
 
   try {
-    const paymentInit = await CustomFetch(createPaymentUrl, {
+    const paymentInit = await CustomFetch(createFlutterwaveCustomerUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
