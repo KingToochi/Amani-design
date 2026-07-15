@@ -1682,7 +1682,17 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
       });
     }
 
-    const paymentInfo = [email, fname, lname, shippingAddress, city, state, phoneNumber, amount, paymentMethod]
+    const paymentInfo = {
+      email: email,
+      fname: fname,
+      lname: lname,
+      shippingAddress: shippingAddress,
+      city: city,
+      state: state,
+      phoneNumber: phoneNumber,
+      amount: amount,
+      paymentMethod : paymentMethod
+    }
 
     const formattedPhone = phoneNumber.startsWith("0")
       ? phoneNumber.substring(1)
