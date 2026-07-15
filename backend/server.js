@@ -1682,6 +1682,8 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
       });
     }
 
+    const paymentInfo = [email, fname, lname, shippingAddress, city, state, phoneNumber, amount, paymentMethod]
+
     const formattedPhone = phoneNumber.startsWith("0")
       ? phoneNumber.substring(1)
       : phoneNumber;
@@ -1759,6 +1761,8 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
       success: true,
       message: "Customer ready",
       data: flutterwaveCustomer,
+      paymentInfo
+
     });
   } catch (error) {
     console.error(

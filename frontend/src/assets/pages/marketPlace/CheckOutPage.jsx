@@ -227,8 +227,8 @@ const CheckOut = () => {
 
     const customerData = await createCustomer.json();
 
-    if (customerData.success && customerData.link) {
-      window.location.href = customerData.link;
+    if (customerData.success) {
+      navigate("/payment")
       return;
     }
 

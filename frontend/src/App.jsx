@@ -44,6 +44,7 @@ import ContactPage from "./assets/pages/marketPlace/ContactPage";
 import FAQPage from "./assets/pages/marketPlace/FAQPage";
 import PrivacyPage from "./assets/pages/marketPlace/PrivacyPage";
 import TermsPage from "./assets/pages/marketPlace/TermsPage";
+import flutterwavePaymentData from "./assets/components/FlutterWavePayment";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
           <Route path="profile" element={<ProfilePage/>} />
           <Route path="login/registration" element={<UserRegistration/>}/> 
           <Route path="checkout" element={<CheckOut/>} />
+          <Route path="payment" element={<flutterwavePaymentData/>} />
           <Route path="payment-callback" element={<PaymentCallback />} />
           <Route path="customer-orders" element={<CustomerOrder />} />
           <Route path="admin-login" element={<AdminLogin />} />
