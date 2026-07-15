@@ -197,7 +197,7 @@ const CheckOut = () => {
         const amountToCharge = calculateTotal();
 
   try {
-    const paymentInit = await CustomFetch(createFlutterwaveCustomerUrl, {
+    const createCustomer = await CustomFetch(createFlutterwaveCustomerUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -220,19 +220,19 @@ const CheckOut = () => {
       })
     });
 
-    if (!paymentInit?.ok) {
-      const initError = await paymentInit?.json?.().catch(() => ({}));
+    if (!createCustomer?.ok) {
+      const initError = await createCustomer?.json?.().catch(() => ({}));
       throw new Error(initError.message || "Unable to start payment");
     }
 
-    const paymentData = await paymentInit.json();
+    const customerData = await createCustomer.json();
 
-    if (paymentData.success && paymentData.link) {
-      window.location.href = paymentData.link;
+    if (customerData.success && customerData.link) {
+      window.location.href = customerData.link;
       return;
     }
 
-    throw new Error(paymentData.message || "Unable to start payment");
+    throw new Error(customerData.message || "Unable to create customer for payment");
   } catch (error) {
     console.error("Payment initialization error:", error);
     setError(error.message || "Payment initialization failed");

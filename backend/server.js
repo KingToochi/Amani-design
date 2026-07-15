@@ -1681,7 +1681,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
         message: "Missing required customer information",
       });
     }
-
+    const idempotencyKey = uuidv4().replace(/-/g, "");
     const formattedPhone = phoneNumber.startsWith("0")
       ? phoneNumber.substring(1)
       : phoneNumber;
@@ -1701,6 +1701,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            "X-Idempotency-Key": idempotencyKey,
           },
         }
       );
@@ -1714,7 +1715,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
     } catch (searchError) {
       console.log("Customer not found. Creating a new customer...");
 
-      const idempotencyKey = uuidv4().replace(/-/g, "");
+      
 
       const createResponse = await axios.post(
         "https://developersandbox-api.flutterwave.com/customers",
