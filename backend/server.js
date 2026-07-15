@@ -1709,7 +1709,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
 
       console.log(
         "Existing Flutterwave customer found:",
-        flutterwaveCustomer.id
+        flutterwaveCustomerCustomer
       );
     } catch (searchError) {
       console.log("Customer not found. Creating a new customer...");

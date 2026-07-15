@@ -46,7 +46,7 @@ const CheckOut = () => {
     const pathName = location.pathname;
     const verifyPaymentUrl = `${BASE_URL}/verifyPayment`
     const createPaymentUrl = `${BASE_URL}/createPayment`
-    const createFlutterwaveCustomerUrl = `${BASE_URL}/createFlutterwavePayment`
+    const createFlutterwaveCustomerUrl = `${BASE_URL}/createFlutterwaveCustomer`
     const redirectUrl = `${window.location.origin}/payment-callback`;
 
     console.log(pathName)
