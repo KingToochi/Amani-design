@@ -1,3 +1,12 @@
+import {useState, useEffect} from 'react';
+
+const flutterwavePaymentData = () => {
+
+}
+
+export default flutterwavePaymentData;
+
+
 {paymentMethod === "card" && (
         <div className="border rounded-lg p-5 space-y-4 bg-gray-50">
 
