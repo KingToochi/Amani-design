@@ -227,18 +227,19 @@ const CheckOut = () => {
 
     const customerData = await createCustomer.json();
 
-    if (customerData.success){
-      navigate("/payment"),{
+    if (customerData.success) {
+    navigate("/payment", {
         state: {
-            customer: customerData.data.data.customer,
-            amount: customerData.data.data.amount,
-            currency: customerData.data.data.currency,
-            paymentMethod: customerData.data.data.paymentMethod,
-            txRef: customerData.data.data.txRef
-  }
+            customer: customerData.data[0],        // First customer in the array
+            amount: customerData.paymentInfo.amount,
+            currency: "NGN",                       // or return it from the backend
+            paymentMethod: customerData.paymentInfo.paymentMethod,
+            txRef: customerData.paymentInfo.txRef  // if available
+        }
+    });
+
+    return;
 }
-      return;
-    }
 
     throw new Error(customerData.message || "Unable to create customer for payment");
   } catch (error) {
