@@ -227,8 +227,16 @@ const CheckOut = () => {
 
     const customerData = await createCustomer.json();
 
-    if (customerData.success) {
-      navigate("/payment")
+    if (customerData.success){
+      navigate("/payment"),{
+        state: {
+            customer: customerData.data.data.customer,
+            amount: customerData.data.data.amount,
+            currency: customerData.data.data.currency,
+            paymentMethod: customerData.data.data.paymentMethod,
+            txRef: customerData.data.data.txRef
+  }
+}
       return;
     }
 
