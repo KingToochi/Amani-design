@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
 import {
     CreditCard,
     Landmark,
@@ -9,9 +10,29 @@ import {
     Phone,
     CheckCircle
 } from "lucide-react";
+import {BASE_URL} from "../Url"
+import CustomFetch from "../hooks/useFetch";
 
 const FlutterwavePaymentData = () => {
     const { state } = useLocation();
+    const url = `${BASE_URL}/payment-method`;
+    const [paymentDetails, setPaymentDetails] = useState({
+        card : {
+            cardNumber : null,
+            expiryMonth : null,
+            expiryYear: null,
+            cvv : null,
+            cardHolder : null,
+        },
+        ussd : {
+            bank: null
+        },
+        mobile_money : {
+            phoneNumber : null
+        },
+
+    });
+    const [errors, setErrors] = useState({});
 
     const {
         customer,
@@ -34,6 +55,112 @@ const FlutterwavePaymentData = () => {
                 </div>
             </div>
         );
+    }
+
+    const validatePayment = () => {
+        const newErrors = {};
+
+        switch (paymentMethod) {
+            case "card":
+                if (!paymentDetails.card.cardNumber.trim()) {
+                    newErrors.cardNumber = "Card number is required.";
+                }
+
+                if (!paymentDetails.card.expiryMonth.trim()) {
+                    newErrors.expiryMonth = "Expiry month is required.";
+                }
+
+                if (!paymentDetails.card.expiryYear.trim()) {
+                    newErrors.expiryYear = "Expiry year is required.";
+                }
+
+                if (!paymentDetails.card.cvv.trim()) {
+                    newErrors.cvv = "CVV is required.";
+                }
+
+                if (!paymentDetails.card.cardHolder.trim()) {
+                    newErrors.cardHolder = "Card holder name is required.";
+                }
+
+                break;
+
+            case "ussd":
+                if (!paymentDetails.ussd.bank.trim()) {
+                    newErrors.bank = "Please select a bank.";
+                }
+                break;
+
+            case "mobile_money":
+                if (!paymentDetails.mobile_money.phoneNumber.trim()) {
+                    newErrors.phoneNumber = "Phone number is required.";
+                }
+                break;
+
+            case "bank_transfer":
+                // Flutterwave generates the account details.
+                // No validation required here.
+                break;
+
+            default:
+                newErrors.payment = "Please select a payment method.";
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleContinue = () => {
+
+        if (!validatePayment()) {
+            return;
+        }
+
+        let payload = {};
+
+        switch (paymentMethod) {
+            case "card":
+                payload = paymentDetails.card;
+                break;
+
+            case "ussd":
+                payload = paymentDetails.ussd;
+                break;
+
+            case "mobile_money":
+                payload = paymentDetails.mobile_money;
+                break;
+
+            case "bank_transfer":
+                payload = paymentDetails.bank_transfer;
+                break;
+        }
+
+        console.log({
+            customer,
+            amount,
+            currency,
+            paymentMethod,
+            paymentDetails: payload,
+        });
+    };
+
+    const handleSubmit = async() => {
+        handleContinue()
+        try {
+            let response = await fetch(url , {
+                method: "POST",
+                headers : {"Content-Type" : "application/json"},
+                body: JSON.stringify({
+                    paymentMethod : paymentMethod,
+                    paymentDetails : paymentDetails,
+                })
+            })
+            let data = await response.json()
+            
+        } catch(error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -61,32 +188,45 @@ const FlutterwavePaymentData = () => {
                             </h3>
 
                             <input
-                                type="text"
+                                type="number"
                                 placeholder="Card Number"
                                 className="w-full border rounded-xl p-4"
+                                value = {paymentDetails?.card?.cardNumber || ""}
+                                onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, cardNumber: e.target.value}})}
                             />
 
                             <div className="grid grid-cols-3 gap-4">
 
                                 <input
                                     placeholder="MM"
+                                    type="number"
                                     className="border rounded-xl p-4"
+                                    value = {paymentDetails?.card?.expiryMonth || ""}
+                                    onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, expiryMonth: e.target.value}})}
                                 />
 
                                 <input
                                     placeholder="YY"
+                                    type = "number"
                                     className="border rounded-xl p-4"
+                                    value = {paymentDetails?.card?.expiryYear || ""}
+                                    onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, expiryYear: e.target.value}})}
                                 />
 
                                 <input
                                     placeholder="CVV"
                                     type="password"
                                     className="border rounded-xl p-4"
+                                    value = {paymentDetails?.card?.cvv || ""}
+                                    onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, cvv: e.target.value}})}
                                 />
 
                             </div>
 
                             <input
+                                type="text"
+                                value = {paymentDetails?.card?.cardHolder || ""}
+                                onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, cardHolder: e.target.value}})}
                                 placeholder="Card Holder Name"
                                 className="w-full border rounded-xl p-4"
                             />
@@ -111,7 +251,10 @@ const FlutterwavePaymentData = () => {
                                 Flutterwave will generate your USSD code.
                             </p>
 
-                            <select className="w-full border rounded-xl p-4">
+                            <select className="w-full border rounded-xl p-4"
+                            value = {paymentDetails?.ussd?.bank || ""}
+                            onChange={(e) => setPaymentDetails({...paymentDetails, ussd: {...paymentDetails.ussd, bank: e.target.value}})}
+                            >
 
                                 <option>Select Bank</option>
 
