@@ -2383,7 +2383,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
         )
     };
     console.log("Encrypted card details:", encryptedCard);
-    const response = await axios({
+    const generatePaymentMethod = await axios({
       url :  'https://developersandbox-api.flutterwave.com/payment-methods',
       method: "POST",
 
@@ -2398,6 +2398,23 @@ app.post("/payment-method", verifyToken, async (req, res) => {
         "card": encryptedCard,
       }
     })
+
+    let response = generatePaymentMethod.data;
+     if (
+      response.status !== "success" ||
+      response.data.status !== "successful"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment failed"
+      });
+    }
+
+    return(res.status(200).json({
+      success: true,
+      message: "Payment method created successfully",
+      data: response?.data
+    }));
   }catch(error){
     console.error("Create payment error:", error?.response?.data || error.message);
     console.log(
