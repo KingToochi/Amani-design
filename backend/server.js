@@ -1985,13 +1985,14 @@ app.post("/payment-method", verifyToken, async (req, res) => {
         "card": encryptedCard,
       }
     })
-
+    console.log(generatePaymentMethod)
     let response = generatePaymentMethod.data;
+    console.log(response)
      if (
       response.status !== "success" ||
       response.data.status !== "successful"
     ) {
-      console.error("Create payment error:", error?.response?.data || error.message);
+      
       return res.status(400).json({
         success: false,
         message: "Payment failed"
