@@ -2382,6 +2382,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
             nonce
         )
     };
+    console.log("Encrypted card details:", encryptedCard);
     const response = await axios({
       url :  'https://developersandbox-api.flutterwave.com/payment-methods',
       method: "POST",
