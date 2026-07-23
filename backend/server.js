@@ -1729,7 +1729,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
         }
@@ -1768,7 +1768,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
             "X-Idempotency-Key": idempotencyKey,
             "Content-Type": "application/json",
           },
@@ -1809,116 +1809,6 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
   }
 });
 
-// app.post("/createPayment", verifyToken, async (req, res) => {
-//   const auth = req.user;
-//   console.log(token)
-
-//   try {
-//     console.log("Create payment request body:", req.body);
-//     const { amount, currency = "NGN", email, fname, lname, shippingAddress, city, state, phoneNumber, cart = [], redirectUrl, txRef, description, paymentMethod} = req.body;
-
-//     if (!amount) {
-//       return res.status(400).json({ success: false, message: "Amount is required" });
-//     }
-
-//     if (!paymentMethod) {
-//       return res.status(400).json({ success: false, message: "Payment Method is required" });
-//     }
-    
-//     // const paymentPayload = {
-//     //   tx_ref: txRef || `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-//     //   amount: Number(amount),
-//     //   currency,
-//     //   redirect_url: redirectUrl || `${process.env.FRONTEND_URL}/payment-callback`,
-//     //   customer: {
-//     //     email: email,
-//     //     name: name,
-//     //     phonenumber: phoneNumber
-//     //   },
-//     //   customizations: {
-//     //     title: "AmaniSky Fashion World",
-//     //     description: description || "Payment for your order",
-//     //     logo: "https://amanisky-fashion.vercel.app/logo.png"
-//     //   },
-//     //   payment_options: paymentMethod,
-//     //   meta: {
-//     //     source: "amani-marketplace",
-//     //     cartItems: cart.map((item) => ({ id: item.itemId, name: item.productName, quantity: item.quantity }))
-//     //   }
-//     // };
-
-//     // if (encryptionKey) {
-//     //   paymentPayload.encryption_key = encryptionKey;
-//     // }
-
-//     const idempotencyKey = uuidv4().replace(/-/g, "");
-//     console.log("Idempotency Key:", idempotencyKey);
-//     const formattedPhone = phoneNumber.startsWith("0")
-//     ? phoneNumber.substring(1)
-//     : phoneNumber;
-
-
-//     const createCustomer = await axios({
-//       method: "post",
-//       url: 'https://developersandbox-api.flutterwave.com/customers',
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         "X-Idempotency-Key": idempotencyKey,
-//         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-//         "Content-Type": "application/json"
-//       },
-//       data: {
-//         email: email,
-//         name: {
-//           first: fname,
-//           last: lname
-//         },
-//         address: {
-//           line1: shippingAddress,
-//           city: city,
-//           state: state,
-//           country: "NG",
-//           postal_code: "480001",
-//         },
-//         phone: {
-//           country_code: "234",
-//           number: formattedPhone
-//         }, 
-       
-//       }
-//     });
-
-//     let response = createCustomer.data;
-
-//     return res.status(200).json({ success: true, message: "Customer created successfully", data: response?.data });
-
-//     // const response = await axios({
-//     //   method: "post",
-//     //   url: 'https://developersandbox-api.flutterwave.com/orchestration/direct-charges',
-//     //   headers: {
-//     //     Authorization: `Bearer ${token}`,
-//     //     "X-Idempotency-Key": idempotencyKey,
-//     //     "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-//     //     "Content-Type": "application/json"
-//     //   },
-//     //   data: paymentPayload
-//     // });
-
-//   // const paymentLink = response?.data?.data?.link || response?.data?.data?.authorization_url || response?.data?.data?.checkout_url;
-
-//     // if (!paymentLink) {
-//     //   return res.status(400).json({ success: false, message: "Unable to initialize payment", data: response?.data });
-//     // }
-
-//     // return res.status(200).json({ success: true, link: paymentLink, data: response?.data?.data });
-//   } catch (error) {
-//     console.error("Create payment error:", error?.response?.data || error.message);
-//     console.log(
-//   error.response?.data?.error?.validation_errors
-// );
-//     return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
-//   }
-// });
 
 app.post("/verifyPayment", verifyToken, async(req, res) => {
   const auth = req.user
@@ -2034,6 +1924,90 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
     });
   }
 });
+app.post("/payment-method", verifyToken, async (req, res) => {
+  const {paymentMethod, paymentDetails} = req.body
+  if (!paymentMethod) {
+    return res.status(400).json({
+        success: false,
+        message: "payment method is required"
+      });
+  }
+  if (paymentMethod === "card") {
+      const {cardNumber, expiryYear, expiryMonth, cardHolder, cvv} = paymentDetails
+      if (!cardNumber || !expiryYear || !expiryMonth || !cardHolder || !cvv) {
+        return res.status(400).json({
+          success: false,
+          message: "field is required"
+        });
+      }
+      try {
+    const nonce = generateNonce();
+
+    const encryptedCard = {
+        nonce,
+        encrypted_card_number: await encryptAES(
+            cardNumber,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        ),
+
+        encrypted_expiry_month: await encryptAES(
+            expiryMonth,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        ),
+
+        encrypted_expiry_year: await encryptAES(
+            expiryYear,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        ),
+
+        encrypted_cvv: await encryptAES(
+            cvv,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        )
+    };
+    console.log("Encrypted card details:", encryptedCard);
+    const generatePaymentMethod = await axios({
+      url :  'https://developersandbox-api.flutterwave.com/payment-methods',
+      method: "POST",
+
+      headers : {
+        Authorization : `Bearer ${token}`,
+        "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+        "Content-Type": "application/json"
+      },
+      data : {
+        "type": "card",
+        "card": encryptedCard,
+      }
+    })
+
+    let response = generatePaymentMethod.data;
+     if (
+      response.status !== "success" ||
+      response.data.status !== "successful"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment failed"
+      });
+    }
+
+    return(res.status(200).json({
+      success: true,
+      message: "Payment method created successfully",
+      data: response?.data
+    }));
+  }catch(error){
+    console.error("Create payment error:", error?.response?.data || error.message);
+    return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
+  }
+  }
+})
 
 app.get("/customerOrders", verifyToken, async(req, res) => {
   const auth = req.user;
@@ -2337,91 +2311,5 @@ app.put("/markItemAsSent", verifyToken, async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 });
-app.post("/payment-method", verifyToken, async (req, res) => {
-  const {paymentMethod, paymentDetails} = req.body
-  if (!paymentMethod) {
-    return res.status(400).json({
-        success: false,
-        message: "payment method is required"
-      });
-  }
-  if (paymentMethod === "card") {
-      const {cardNumber, expiryYear, expiryMonth, cardHolder, cvv} = paymentDetails
-      if (!cardNumber || !expiryYear || !expiryMonth || !cardHolder || !cvv) {
-        return res.status(400).json({
-          success: false,
-          message: "field is required"
-        });
-      }
-      try {
-    const nonce = generateNonce();
 
-    const encryptedCard = {
-        nonce,
-        encrypted_card_number: await encryptAES(
-            cardNumber,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        ),
-
-        encrypted_expiry_month: await encryptAES(
-            expiryMonth,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        ),
-
-        encrypted_expiry_year: await encryptAES(
-            expiryYear,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        ),
-
-        encrypted_cvv: await encryptAES(
-            cvv,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        )
-    };
-    console.log("Encrypted card details:", encryptedCard);
-    const generatePaymentMethod = await axios({
-      url :  'https://developersandbox-api.flutterwave.com/payment-methods',
-      method: "POST",
-
-      headers : {
-        Authorization : `Bearer ${token}`,
-        "X-Idempotency-Key": idempotencyKey,
-        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-        "Content-Type": "application/json"
-      },
-      data : {
-        "type": "card",
-        "card": encryptedCard,
-      }
-    })
-
-    let response = generatePaymentMethod.data;
-     if (
-      response.status !== "success" ||
-      response.data.status !== "successful"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment failed"
-      });
-    }
-
-    return(res.status(200).json({
-      success: true,
-      message: "Payment method created successfully",
-      data: response?.data
-    }));
-  }catch(error){
-    console.error("Create payment error:", error?.response?.data || error.message);
-    console.log(
-  error.response?.data?.error?.validation_errors
-);
-    return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
-  }
-  }
-})
 server.listen(4000, () => console.log("Server running on port 4000"));

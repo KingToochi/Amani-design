@@ -199,6 +199,7 @@ const CheckOut = () => {
   try {
     const createCustomer = await CustomFetch(createFlutterwaveCustomerUrl, {
       method: "POST",
+      credentials: "include", 
       headers: {
         "Content-Type": "application/json"
       },

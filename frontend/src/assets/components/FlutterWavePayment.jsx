@@ -14,6 +14,7 @@ import {BASE_URL} from "../Url"
 import CustomFetch from "../hooks/useFetch";
 
 const FlutterwavePaymentData = () => {
+    const [loading, setLoading] = useState(false);
     const { state } = useLocation();
     const url = `${BASE_URL}/payment-method`;
     const [paymentDetails, setPaymentDetails] = useState({
@@ -146,6 +147,7 @@ const FlutterwavePaymentData = () => {
     // };
 
     const handleSubmit = async() => {
+        setLoading(true)
         if (!validatePayment()) {
             return;
         }
@@ -191,6 +193,8 @@ const FlutterwavePaymentData = () => {
             
         } catch(error) {
             console.log(error)
+        }finally {
+            setLoading(false)
         }
     }
 
@@ -374,8 +378,9 @@ const FlutterwavePaymentData = () => {
                     <button
                     onClick={handleSubmit}
                         className="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 font-semibold transition"
+                        disabled={loading}
                     >
-                        Continue Payment
+                        {loading ? "Processing..." : "Continue Payment"}
                     </button>
 
                 </div>
