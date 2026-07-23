@@ -61,7 +61,7 @@ app.use(express.json());
 app.use(cookieParser());
 connectDB();
 
-const token = await getAccessToken();
+
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
 const clientId = process.env.FLW_CLIENT_ID;
@@ -1942,6 +1942,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
       }
       try {
     const nonce = generateNonce();
+    const accessToken = await getAccessToken();
 
     const encryptedCard = {
         nonce,
@@ -1975,7 +1976,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
       method: "POST",
 
       headers : {
-        Authorization : `Bearer ${token}`,
+        Authorization : `Bearer ${accessToken}`,
         "X-Idempotency-Key": idempotencyKey,
         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
         "Content-Type": "application/json"
@@ -1989,6 +1990,9 @@ app.post("/payment-method", verifyToken, async (req, res) => {
     let response = generatePaymentMethod.data;
     console.log(response)
      if (
+      generatePaymentMethod.status !== 200 ||
+      generatePaymentMethod.statusText !== "OK" ||
+      generatePaymentMethod.data.status !== "success" ||
       response.status !== "success" ||
       response.data.status !== "successful"
     ) {
