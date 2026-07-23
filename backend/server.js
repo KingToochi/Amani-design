@@ -23,6 +23,9 @@ import Flutterwave  from 'flutterwave-node-v3';
 import { getAccessToken } from "./services/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import { create } from "domain";
+import { type } from "os";
+import crypto from "crypto";
+import { encryptAES } from "./services/flutterwaveEncryption.js";
 
 
 
@@ -69,7 +72,7 @@ const flw = new Flutterwave(
   clientSecret 
 );
 
-
+const idempotencyKey = uuidv4().replace(/-/g, "");
 const parseBooleanFlag = (value) => {
   if (typeof value === 'boolean') return value;
   if (typeof value === 'string') {
@@ -134,6 +137,21 @@ const verifyToken = async(req, res, next) => {
     return res.status(401).json({ message: "Invalid or expired token", err });
   }
 };
+
+function generateNonce() {
+    const chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    let nonce = "";
+
+    const bytes = crypto.randomBytes(12);
+
+    for (let i = 0; i < 12; i++) {
+        nonce += chars[bytes[i] % chars.length];
+    }
+
+    return nonce;
+}
 
 
 // ---- Multer ----
@@ -2319,4 +2337,73 @@ app.put("/markItemAsSent", verifyToken, async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 });
+app.post("/payment-method", verifyToken, async (req, res) => {
+  const {paymentMethod, paymentDetails} = req.body
+  if (!paymentMethod) {
+    return res.status(400).json({
+        success: false,
+        message: "payment method is required"
+      });
+  }
+  if (paymentMethod === "card") {
+      const {cardNumber, expiryYear, expiryMonth, cardHolder, cvv} = paymentDetails
+      if (!cardNumber || !expiryYear || !expiryMonth || !cardHolder || !cvv) {
+        return res.status(400).json({
+          success: false,
+          message: "field is required"
+        });
+      }
+      try {
+    const nonce = generateNonce();
+
+    const encryptedCard = {
+        nonce,
+        encrypted_card_number: await encryptAES(
+            cardNumber,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        ),
+
+        encrypted_expiry_month: await encryptAES(
+            expiryMonth,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        ),
+
+        encrypted_expiry_year: await encryptAES(
+            expiryYear,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        ),
+
+        encrypted_cvv: await encryptAES(
+            cvv,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        )
+    };
+    const response = await axios({
+      url :  'https://developersandbox-api.flutterwave.com/payment-methods',
+      method: "POST",
+
+      headers : {
+        Authorization : `Bearer ${token}`,
+        "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+        "Content-Type": "application/json"
+      },
+      data : {
+        "type": "card",
+        "card": encryptedCard,
+      }
+    })
+  }catch(error){
+    console.error("Create payment error:", error?.response?.data || error.message);
+    console.log(
+  error.response?.data?.error?.validation_errors
+);
+    return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
+  }
+  }
+})
 server.listen(4000, () => console.log("Server running on port 4000"));

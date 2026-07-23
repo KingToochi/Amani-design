@@ -18,17 +18,17 @@ const FlutterwavePaymentData = () => {
     const url = `${BASE_URL}/payment-method`;
     const [paymentDetails, setPaymentDetails] = useState({
         card : {
-            cardNumber : null,
-            expiryMonth : null,
-            expiryYear: null,
-            cvv : null,
-            cardHolder : null,
+            cardNumber : "",
+            expiryMonth : "",
+            expiryYear: "",
+            cvv : "",
+            cardHolder : "",
         },
         ussd : {
-            bank: null
+            bank: ""
         },
         mobile_money : {
-            phoneNumber : null
+            phoneNumber : ""
         },
 
     });
@@ -110,8 +110,42 @@ const FlutterwavePaymentData = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleContinue = () => {
+    // const handleContinue = () => {
 
+    //     if (!validatePayment()) {
+    //         return;
+    //     }
+
+    //     let payload = {};
+
+    //     switch (paymentMethod) {
+    //         case "card":
+    //             payload = paymentDetails.card;
+    //             break;
+
+    //         case "ussd":
+    //             payload = paymentDetails.ussd;
+    //             break;
+
+    //         case "mobile_money":
+    //             payload = paymentDetails.mobile_money;
+    //             break;
+
+    //         case "bank_transfer":
+    //             payload = paymentDetails.bank_transfer;
+    //             break;
+    //     }
+
+    //     console.log({
+    //         customer,
+    //         amount,
+    //         currency,
+    //         paymentMethod,
+    //         paymentDetails: payload,
+    //     });
+    // };
+
+    const handleSubmit = async() => {
         if (!validatePayment()) {
             return;
         }
@@ -143,17 +177,13 @@ const FlutterwavePaymentData = () => {
             paymentMethod,
             paymentDetails: payload,
         });
-    };
-
-    const handleSubmit = async() => {
-        handleContinue()
         try {
             let response = await fetch(url , {
                 method: "POST",
                 headers : {"Content-Type" : "application/json"},
                 body: JSON.stringify({
                     paymentMethod : paymentMethod,
-                    paymentDetails : paymentDetails,
+                    paymentDetails : payload,
                 })
             })
             let data = await response.json()
@@ -341,6 +371,7 @@ const FlutterwavePaymentData = () => {
                     )}
 
                     <button
+                    onClick={handleSubmit}
                         className="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 font-semibold transition"
                     >
                         Continue Payment
