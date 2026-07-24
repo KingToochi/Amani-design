@@ -1994,7 +1994,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
       generatePaymentMethod.statusText !== "OK" ||
       generatePaymentMethod.data.status !== "success" ||
       response.status !== "success" ||
-      response.data.status !== "successful" ||
+      response.data.status !== "success" ||
       response.status !== "success"
     ) {
       
