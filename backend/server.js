@@ -1987,16 +1987,9 @@ app.post("/payment-method", verifyToken, async (req, res) => {
       }
     })
     console.log(generatePaymentMethod)
-    let response = generatePaymentMethod;
+    let response = generatePaymentMethod.data;
     console.log(response)
-     if (
-      generatePaymentMethod.status !== 200 ||
-      generatePaymentMethod.statusText !== "OK" ||
-      generatePaymentMethod.data.status !== "success" ||
-      response.status !== "success" ||
-      response.data.status !== "success" ||
-      response.status !== "success"
-    ) {
+     if (response.status !== "success") {
       
       return res.status(400).json({
         success: false,
