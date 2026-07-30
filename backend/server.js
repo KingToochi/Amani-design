@@ -1925,12 +1925,18 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
   }
 });
 app.post("/payment-method", verifyToken, async (req, res) => {
-  const {paymentMethod, paymentDetails} = req.body
+  const {paymentMethod, paymentDetails, customer, amount, currency} = req.body
   if (!paymentMethod) {
     return res.status(400).json({
         success: false,
         message: "payment method is required"
       });
+
+  let paymentMethodId;
+  const nonce = generateNonce();
+  const accessToken = await getAccessToken();
+
+
   }
   if (paymentMethod === "card") {
       const {cardNumber, expiryYear, expiryMonth, cardHolder, cvv} = paymentDetails
@@ -1940,10 +1946,22 @@ app.post("/payment-method", verifyToken, async (req, res) => {
           message: "field is required"
         });
       }
-      try {
-    const nonce = generateNonce();
-    const accessToken = await getAccessToken();
 
+      if (!customer || !customer.id || !customer.name || !customer.address || !customer.phone) {
+        return res.status(400).json({
+          success: false,
+          message: "customer information is required"
+        });
+      }
+
+      if (!currency || !amount) {
+        return res.status(400).json({
+          success : false,
+          message: "currency and amount is required"
+        });
+      }
+  
+      try {
     const encryptedCard = {
         nonce,
         encrypted_card_number: await encryptAES(
@@ -1988,6 +2006,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
     })
     console.log(generatePaymentMethod)
     let response = generatePaymentMethod.data;
+    paymentMethodId = response?.id;
     console.log(response)
      if (response.status !== "success") {
       
@@ -1996,16 +2015,51 @@ app.post("/payment-method", verifyToken, async (req, res) => {
         message: "Payment failed"
       });
     }
-
-    return(res.status(200).json({
-      success: true,
-      message: "Payment method created successfully",
-      data: response?.data
-    }));
   }catch(error){
     console.error("Create payment error:", error?.response?.data || error.message);
     return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
   }
+  }
+
+  try {
+    const initateCustomerCharge = await axios ({
+      url : 'https://developersandbox-api.flutterwave.com/charges',
+      method : "POST",
+      headers : {
+        Authorization : `Bearer ${accessToken}`,
+        "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+        "Content-Type": "application/json"
+      },
+      data : {
+        "reference" : `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        "currency" : currency,
+        customer_id : customer.id,
+        "payment_method_id" : paymentMethodId,
+        "amount" : Number(amount),
+        "meta" : {
+          person_name : customer.name.first + " " + customer.name.last,
+        }
+      }
+    })
+
+    let customerCharge  = initateCustomerCharge.data;
+
+    if (!customerCharge || customerCharge.status !== "success") {
+      return res.status(400).json({
+        success: false,
+        message: "Customer charge failed"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Customer charged successfully",
+      customerCharge
+    });
+  }catch(error){
+    console.error("Charge customer error:", error?.response?.data || error.message);
+    return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
   }
 })
 

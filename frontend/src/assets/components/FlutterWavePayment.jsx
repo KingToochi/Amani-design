@@ -42,6 +42,8 @@ const FlutterwavePaymentData = () => {
         paymentMethod,
     } = state || {};
 
+    console.log(state)
+
     if (!state) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -187,9 +189,27 @@ const FlutterwavePaymentData = () => {
                 body: JSON.stringify({
                     paymentMethod : paymentMethod,
                     paymentDetails : payload,
+                    customer : customer,
+                    amount : amount,
+                    currency : currency
                 })
             })
-            let data = await response.json()
+            let CreatePaymentMethod = await response.json()
+
+            console.log(createPaymentMethod)
+            if (createPaymentMethod.status === "success") {
+                alert("Payment method created successfully")
+                navigate("/initiatePayment", {
+                    state : {
+                        customer: customer,
+                        amount: amount,
+                        currency: currency,
+                        paymentMethod: paymentMethod,
+                        paymentDetails: createPaymentMethod.data,
+                    }
+                })
+            }
+            
             
         } catch(error) {
             console.log(error)
