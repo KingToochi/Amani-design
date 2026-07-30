@@ -196,19 +196,24 @@ const FlutterwavePaymentData = () => {
             })
             let CreatePaymentMethod = await response.json()
 
-            console.log(CreatePaymentMethod)
-            if (CreatePaymentMethod.status === "success") {
-                alert("Payment method created successfully")
-                navigate("/initiatePayment", {
+            if (!CreatePaymentMethod.success) {
+                alert(CreatePaymentMethod.message)
+                return
+            }
+
+            if (CreatePaymentMethod?.customerCharge?.status === "success" && CreatePaymentMethod?.customerCharge?.data?.next_action.type === "requires_pin" ) {
+                 alert("Payment method created successfully")
+                navigate("/initiate-payment", {
                     state : {
-                        customer: customer,
-                        amount: amount,
-                        currency: currency,
-                        paymentMethod: paymentMethod,
-                        paymentDetails: createPaymentMethod.data,
+                        details : CreatePaymentMethod.customerCharge.data,
                     }
                 })
             }
+            // if (CreatePaymentMethod.status === "success") {
+               
+            // }
+
+            
             
             
         } catch(error) {

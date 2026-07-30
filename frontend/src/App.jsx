@@ -45,6 +45,7 @@ import FAQPage from "./assets/pages/public/FAQPage";
 import PrivacyPage from "./assets/pages/public/PrivacyPage";
 import TermsPage from "./assets/pages/public/TermsPage";
 import FlutterwavePaymentData from "./assets/components/FlutterWavePayment";
+import initiatePayment from "./assets/components/InitiatePayment";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
           <Route path="login/registration" element={<UserRegistration/>}/> 
           <Route path="checkout" element={<CheckOut/>} />
           <Route path="payment" element={<FlutterwavePaymentData/>} />
+          <Route path="initiate-payment" element={<initiatePayment/>} />
           <Route path="payment-callback" element={<PaymentCallback />} />
           <Route path="customer-orders" element={<CustomerOrder />} />
           <Route path="admin-login" element={<AdminLogin />} />
