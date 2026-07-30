@@ -196,8 +196,8 @@ const FlutterwavePaymentData = () => {
             })
             let CreatePaymentMethod = await response.json()
 
-            console.log(createPaymentMethod)
-            if (createPaymentMethod.status === "success") {
+            console.log(CreatePaymentMethod)
+            if (CreatePaymentMethod.status === "success") {
                 alert("Payment method created successfully")
                 navigate("/initiatePayment", {
                     state : {

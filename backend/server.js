@@ -1931,13 +1931,10 @@ app.post("/payment-method", verifyToken, async (req, res) => {
         success: false,
         message: "payment method is required"
       });
-
+  }
   let paymentMethodId;
   const nonce = generateNonce();
   const accessToken = await getAccessToken();
-
-
-  }
   if (paymentMethod === "card") {
       const {cardNumber, expiryYear, expiryMonth, cardHolder, cvv} = paymentDetails
       if (!cardNumber || !expiryYear || !expiryMonth || !cardHolder || !cvv) {
