@@ -202,7 +202,12 @@ const FlutterwavePaymentData = () => {
                 return
             }
 
+            console.log(
+    JSON.stringify(CreatePaymentMethod, null, 2)
+);
+
             const chargeId = CreatePaymentMethod.customerCharge.data.id;
+            console.log(chargeId)
 
             if (CreatePaymentMethod?.customerCharge?.status === "success" && CreatePaymentMethod?.customerCharge?.data?.next_action.type === "requires_pin" ) {
                  alert("Payment method created successfully")

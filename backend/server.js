@@ -2067,7 +2067,7 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
     return ({success : false, message: "pin and transaction id required"})
   }
 
-  const accessToken = getAccessToken()
+  const accessToken = await getAccessToken()
   const nonce = generateNonce()
   const encrypted_pin = await encryptAES(
             pin,

@@ -15,19 +15,24 @@ const InitiatePayment = () => {
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // const { loading, fetchData } = CustomFetch();
+    console.log(chargeId)
 
     const verifyPin = async () => {
         if (pin.length !== 4) {
             return alert("PIN must be 4 digits.");
         }
 
+        console.log(pin, chargeId)
+
         try {
             const response = await CustomFetch(url, {
             method : "POST",
             credentials: "include", 
             headers : {"Content-Type" : "application/json"},
-            body : {chargeId, pin}
+            body : JSON.stringify({
+                        pin,
+                        chargeId
+                    })
         })
 
         
