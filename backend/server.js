@@ -2003,7 +2003,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
     })
     console.log(generatePaymentMethod)
     let response = generatePaymentMethod.data;
-    paymentMethodId = response?.id;
+    paymentMethodId = response.data.id;
     console.log("Payment method ID:", paymentMethodId);
     console.log(response)
      if (response.status !== "success") {
