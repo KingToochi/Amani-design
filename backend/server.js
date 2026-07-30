@@ -2142,9 +2142,8 @@ app.post("/verifyOtp", verifyToken, async(req, res) => {
       data : {
         "authorization" : {
           "type" : "otp",
-          pin : {
-            nonce,
-            encrypted_otp
+          "otp" : {
+            "code" : otp
           }
 
         }
