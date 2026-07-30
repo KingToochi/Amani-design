@@ -202,9 +202,7 @@ const FlutterwavePaymentData = () => {
                 return
             }
 
-            console.log(
-    JSON.stringify(CreatePaymentMethod, null, 2)
-);
+
 
             const chargeId = CreatePaymentMethod.customerCharge.data.id;
             console.log(chargeId)

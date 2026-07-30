@@ -2115,6 +2115,60 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
     });
   }
 })
+app.post("/verifyOtp", verifyToken, async(req, res) => {
+  const { otp, chargeId } = req.body;
+  if (!otp || !chargeId) {
+    return ({success : false, message: "otp and transaction id required"})
+  }
+
+  const accessToken = await getAccessToken()
+  const nonce = generateNonce()
+  const encrypted_otp = await encryptAES(
+            otp,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        )
+
+  try {
+    const verifyOtp = await axios({
+      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+      method : "PUT",
+      headers : {
+        Authorization : `Bearer ${accessToken}`,
+        "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+        "Content-Type": "application/json"
+      },
+      data : {
+        "authorization" : {
+          "type" : "otp",
+          pin : {
+            nonce,
+            encrypted_otp
+          }
+
+        }
+      }
+    })
+
+    const response = verifyOtp.data;
+    return res.status(200).json({
+        success: true,
+        data: response
+    });
+  }catch(error) {
+     console.error(
+        JSON.stringify(error.response?.data, null, 2)
+    );
+
+    return res.status(error.response?.status || 500).json({
+        success: false,
+        message:
+            error.response?.data?.error?.message ||
+            error.message
+    });
+  }
+})
 
 app.get("/customerOrders", verifyToken, async(req, res) => {
   const auth = req.user;

@@ -7,6 +7,7 @@ import CustomFetch from "../hooks/useFetch";
 const InitiatePayment = () => {
     const location = useLocation();
     const url = `${BASE_URL}/verifyPin`;
+    const otpUrl = `${BASE_URL}/verifyOtp`;
     const {
         details, chargeId
     } = location.state || {};
@@ -35,6 +36,19 @@ const InitiatePayment = () => {
                     })
         })
 
+        let verifyPinResponse = await response.json()
+        console.log(verifyPinResponse)
+
+        if (!verifyPinResponse.success) {
+            return alert("pin verification failed. Please try again.");
+        } else {
+            if (verifyPinResponse?.data?.data?.next_action.type === "requires_otp") {
+                setStep("otp");
+            }
+        }
+
+
+
         
         }catch(error) {
 
@@ -42,25 +56,30 @@ const InitiatePayment = () => {
     };
 
     const verifyOtp = async () => {
-        if (otp.length !== 4) {
-            return alert("OTP must be 4 digits.");
+        if (otp.length !== 4 || otp.length > 5) {
+            return alert("OTP must be 4 digits or more than.");
         }
+        try {
+            const verifyOtp = await CustomFetch(otpUrl, {
+                method : "POST",
+                credentials: "include",
+                headers : {"Content-Type" : "application/json"},
+                body : JSON.stringify({
+                    otp,
+                    chargeId
+                })
+                
+            })
+            let verifyOtpResponse = await verifyOtp.json()
+        console.log(verifyOtpResponse)
 
-        const response = await fetchData({
-            url: `${BASE_URL}/authorize-otp`,
-            method: "POST",
-            data: {
-                otp,
-                transactionId
-            }
-        });
-
-        if (response.success) {
-            alert("Payment Successful");
-        } else {
-            alert(response.message);
+        if (!verifyOtpResponse.success) {
+            return alert("pin verification failed. Please try again.");
         }
-    };
+        }catch(error) { }
+
+        
+    }
 
     return (
         <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
