@@ -2061,6 +2061,61 @@ app.post("/payment-method", verifyToken, async (req, res) => {
   }
 })
 
+app.post("/verifyPin", verifyToken, async(req, res) => {
+  const { pin, chargeId } = req.body;
+  if (!pin || !chargeId) {
+    return ({success : false, message: "pin and transaction id required"})
+  }
+
+  const accessToken = getAccessToken()
+  const nonce = generateNonce()
+  const encrypted_pin = await encryptAES(
+            pin,
+            process.env.FLW_ENCRYPTION_KEY,
+            nonce
+        )
+
+  try {
+    const verifyPin = await axios({
+      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+      method : "PUT",
+      headers : {
+        Authorization : `Bearer ${accessToken}`,
+        "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+        "Content-Type": "application/json"
+      },
+      data : {
+        "authorization" : {
+          "type" : "pin",
+          pin : {
+            nonce,
+            encrypted_pin
+          }
+
+        }
+      }
+    })
+
+    const response = verifyPin.data;
+    return res.status(200).json({
+        success: true,
+        data: response
+    });
+  }catch(error) {
+     console.error(
+        JSON.stringify(error.response?.data, null, 2)
+    );
+
+    return res.status(error.response?.status || 500).json({
+        success: false,
+        message:
+            error.response?.data?.error?.message ||
+            error.message
+    });
+  }
+})
+
 app.get("/customerOrders", verifyToken, async(req, res) => {
   const auth = req.user;
 

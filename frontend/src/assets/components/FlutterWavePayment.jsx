@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
     CreditCard,
@@ -16,6 +16,7 @@ import CustomFetch from "../hooks/useFetch";
 const FlutterwavePaymentData = () => {
     const [loading, setLoading] = useState(false);
     const { state } = useLocation();
+    const navigate = useNavigate()
     const url = `${BASE_URL}/payment-method`;
     const [paymentDetails, setPaymentDetails] = useState({
         card : {
@@ -201,17 +202,17 @@ const FlutterwavePaymentData = () => {
                 return
             }
 
+            const chargeId = CreatePaymentMethod.customerCharge.data.id;
+
             if (CreatePaymentMethod?.customerCharge?.status === "success" && CreatePaymentMethod?.customerCharge?.data?.next_action.type === "requires_pin" ) {
                  alert("Payment method created successfully")
                 navigate("/initiate-payment", {
                     state : {
                         details : CreatePaymentMethod.customerCharge.data,
+                        chargeId : chargeId
                     }
                 })
             }
-            // if (CreatePaymentMethod.status === "success") {
-               
-            // }
 
             
             

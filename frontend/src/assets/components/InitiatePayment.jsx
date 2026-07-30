@@ -4,42 +4,35 @@ import { LockKeyhole, ShieldCheck } from "lucide-react";
 import { BASE_URL } from "../Url";
 import CustomFetch from "../hooks/useFetch";
 
-const initiatePayment = () => {
+const InitiatePayment = () => {
     const location = useLocation();
-
+    const url = `${BASE_URL}/verifyPin`;
     const {
-        transactionId,
-        paymentMethodId,
-        customerId
+        details, chargeId
     } = location.state || {};
-
     const [step, setStep] = useState("pin");
-
     const [pin, setPin] = useState("");
     const [otp, setOtp] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const { loading, fetchData } = CustomFetch();
+    // const { loading, fetchData } = CustomFetch();
 
     const verifyPin = async () => {
         if (pin.length !== 4) {
             return alert("PIN must be 4 digits.");
         }
 
-        const response = await fetchData({
-            url: `${BASE_URL}/authorize-pin`,
-            method: "POST",
-            data: {
-                pin,
-                transactionId,
-                paymentMethodId,
-                customerId
-            }
-        });
+        try {
+            const response = await CustomFetch(url, {
+            method : "POST",
+            credentials: "include", 
+            headers : {"Content-Type" : "application/json"},
+            body : {chargeId, pin}
+        })
 
-        if (response.success) {
-            setStep("otp");
-        } else {
-            alert(response.message);
+        
+        }catch(error) {
+
         }
     };
 
@@ -143,4 +136,4 @@ const initiatePayment = () => {
     );
 };
 
-export default initiatePayment;
+export default InitiatePayment;
