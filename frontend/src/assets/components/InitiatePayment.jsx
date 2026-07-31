@@ -56,7 +56,7 @@ const InitiatePayment = () => {
     };
 
     const verifyOtp = async () => {
-        if (otp.length !== 4 || otp.length > 5) {
+        if (otp.length < 4) {
             return alert("OTP must be 4 digits or more than.");
         }
         try {
@@ -76,7 +76,9 @@ const InitiatePayment = () => {
         if (!verifyOtpResponse.success) {
             return alert("pin verification failed. Please try again.");
         }
-        }catch(error) { }
+        }catch(error) { 
+            
+        }
 
         
     }
@@ -136,7 +138,7 @@ const InitiatePayment = () => {
 
                         <input
                             type="text"
-                            maxLength={4}
+                            maxLength={6}
                             value={otp}
                             onChange={(e) =>
                                 setOtp(e.target.value.replace(/\D/g, ""))

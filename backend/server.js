@@ -19,13 +19,14 @@ import bcrypt from "bcryptjs";
 import Rating from "./models/Rating.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
-import Flutterwave  from 'flutterwave-node-v3';
 import { getAccessToken } from "./services/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import { create } from "domain";
 import { type } from "os";
 import crypto from "crypto";
 import { encryptAES } from "./services/flutterwaveEncryption.js";
+import verifyPayment from "./routes/verifyPayment.js";
+
 
 
 
@@ -61,7 +62,7 @@ app.use(express.json());
 app.use(cookieParser());
 connectDB();
 
-
+const verifyPayment = verifyPayment()
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
 const clientId = process.env.FLW_CLIENT_ID;
@@ -2041,7 +2042,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
       }
     })
 
-    let customerCharge  = initateCustomerCharge.data;
+    let customerCharge  = await initateCustomerCharge.data;
 
     if (!customerCharge || customerCharge.status !== "success") {
       return res.status(400).json({
@@ -2097,7 +2098,13 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
       }
     })
 
-    const response = verifyPin.data;
+    const response = await verifyPin.data;
+    if (!response || response.status !== "success") {
+      return res.status(400).json({
+        success: false,
+        message: "pin verification failed"
+      });
+    }
     return res.status(200).json({
         success: true,
         data: response
@@ -2118,16 +2125,14 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
 app.post("/verifyOtp", verifyToken, async(req, res) => {
   const { otp, chargeId } = req.body;
   if (!otp || !chargeId) {
-    return ({success : false, message: "otp and transaction id required"})
-  }
+  return res.status(400).json({
+    success: false,
+    message: "OTP and charge ID are required",
+  });
+}
 
   const accessToken = await getAccessToken()
-  const nonce = generateNonce()
-  const encrypted_otp = await encryptAES(
-            otp,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        )
+  
 
   try {
     const verifyOtp = await axios({
@@ -2150,11 +2155,45 @@ app.post("/verifyOtp", verifyToken, async(req, res) => {
       }
     })
 
-    const response = verifyOtp.data;
-    return res.status(200).json({
+    const response = await verifyOtp.data;
+
+    if (!response || response.status !== "success") {
+      return res.status(400).json({
+        success: false,
+        message: "Otp verification failed"
+      });
+    } 
+  
+
+    const verifyPayment = await axios({
+      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+      method : "GET",
+      headers : {
+        Authorization : `Bearer ${accessToken}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+
+    let verifyPaymentResponse = await verifyPayment.data
+
+    if (
+    verifyPaymentResponse.status === "success" &&
+    verifyPaymentResponse.data.status === "succeeded"
+) {
+    // Save order
+    // Empty cart
+    // Reduce stock
+}
+    console.log(verifyPaymentResponse)
+    res.status(200).json({
         success: true,
-        data: response
+        data: verifyPaymentResponse
     });
+
+
+
+
   }catch(error) {
      console.error(
         JSON.stringify(error.response?.data, null, 2)
