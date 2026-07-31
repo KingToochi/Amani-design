@@ -2182,7 +2182,8 @@ app.post("/verifyOtp", verifyToken, async(req, res) => {
     console.log(verifyPaymentResponse)
     res.status(200).json({
         success: true,
-        data: verifyPaymentResponse
+        data: verifyPaymentResponse,
+        message : "this is the payment info"
     });
 
 
