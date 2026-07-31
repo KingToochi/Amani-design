@@ -212,7 +212,8 @@ const FlutterwavePaymentData = () => {
                 navigate("/initiate-payment", {
                     state : {
                         details : CreatePaymentMethod.customerCharge.data,
-                        chargeId : chargeId
+                        chargeId : chargeId,
+                        customer : customer,
                     }
                 })
             }

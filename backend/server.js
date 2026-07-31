@@ -2117,7 +2117,7 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
   }
 })
 app.post("/verifyOtp", verifyToken, async(req, res) => {
-  const { otp, chargeId } = req.body;
+  const { otp, chargeId, customerDetails } = req.body;
   if (!otp || !chargeId) {
   return res.status(400).json({
     success: false,
@@ -2157,6 +2157,44 @@ app.post("/verifyOtp", verifyToken, async(req, res) => {
         message: "Otp verification failed"
       });
     } 
+
+    const required_fields = await axios({
+      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+      method : "PUT",
+      headers : {
+        Authorization : `Bearer ${accessToken}`,
+        "X-Idempotency-Key": idempotencyKey,
+        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+        "Content-Type": "application/json"
+      },
+      data : {
+        authorization : {
+          "type" : "avs",
+          "avs" : {
+            "address" : {
+              "country" : customerDetails.country,
+              "state" : customerDetails.state,
+              "line1" :customerDetails.line1,
+              "city" : customerDetails.city,
+              "postal_code" : customerDetails.postal_code
+
+            }
+          }
+        }
+      }
+    })
+
+    let required_fields_response = required_fields.data
+
+    if (!required_fields_response  || required_fields_response  !== "success") {
+      return res.status(400).json({
+        success: false,
+        message: "Otp verification failed"
+      });
+    } 
+
+
+
   
 
     const verifyPayment = await axios({
@@ -2171,14 +2209,16 @@ app.post("/verifyOtp", verifyToken, async(req, res) => {
 
     let verifyPaymentResponse = await verifyPayment.data
 
-    if (
-    verifyPaymentResponse.status === "success" &&
-    verifyPaymentResponse.data.status === "succeeded"
-) {
-    // Save order
-    // Empty cart
-    // Reduce stock
-}
+    if (verifyPaymentResponse.data.status !== "success") {
+      return res.status(400).json({
+        success: false,
+        message: "payment failed"
+      })
+    }
+
+    
+
+    
     console.log(verifyPaymentResponse)
     res.status(200).json({
         success: true,

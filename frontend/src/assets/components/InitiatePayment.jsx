@@ -9,7 +9,7 @@ const InitiatePayment = () => {
     const url = `${BASE_URL}/verifyPin`;
     const otpUrl = `${BASE_URL}/verifyOtp`;
     const {
-        details, chargeId
+        details, chargeId, customer
     } = location.state || {};
     const [step, setStep] = useState("pin");
     const [pin, setPin] = useState("");
@@ -17,6 +17,16 @@ const InitiatePayment = () => {
     const [loading, setLoading] = useState(false);
 
     console.log(chargeId)
+    console.log(details)
+    console.log(customer)
+
+    const customerDetails = {
+        city : customer?.address?.city,
+        country : customer?.address?.country,
+        line1 : customer?.address?.street,
+        state : customer?.address?.state,
+        postal_code : customer?.address?.postal_code,
+    }
 
     const verifyPin = async () => {
         if (pin.length !== 4) {
@@ -66,7 +76,8 @@ const InitiatePayment = () => {
                 headers : {"Content-Type" : "application/json"},
                 body : JSON.stringify({
                     otp,
-                    chargeId
+                    chargeId,
+                    customerDetails
                 })
                 
             })
