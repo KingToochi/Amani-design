@@ -21,8 +21,6 @@ import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
 import { getAccessToken } from "./services/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
-import { create } from "domain";
-import { type } from "os";
 import crypto from "crypto";
 import { encryptAES } from "./services/flutterwaveEncryption.js";
 
@@ -67,10 +65,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const clientId = process.env.FLW_CLIENT_ID;
 const clientSecret = process.env.FLW_CLIENT_SECRET;
 const encryptionKey = process.env.FLW_ENCRYPTION_KEY;
-const flw = new Flutterwave(
-  clientId,
-  clientSecret 
-);
+
 
 const idempotencyKey = uuidv4().replace(/-/g, "");
 const parseBooleanFlag = (value) => {
