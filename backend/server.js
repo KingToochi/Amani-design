@@ -2125,6 +2125,8 @@ app.post("/verifyOtp", verifyToken, async(req, res) => {
   });
 }
 
+console.log(customerDetails)
+
   const accessToken = await getAccessToken()
   
 
