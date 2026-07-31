@@ -25,7 +25,7 @@ import { create } from "domain";
 import { type } from "os";
 import crypto from "crypto";
 import { encryptAES } from "./services/flutterwaveEncryption.js";
-import verifyPayment from "./routes/verifyPayment.js";
+
 
 
 
@@ -62,7 +62,6 @@ app.use(express.json());
 app.use(cookieParser());
 connectDB();
 
-const verifyPayment = verifyPayment()
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
 const clientId = process.env.FLW_CLIENT_ID;
