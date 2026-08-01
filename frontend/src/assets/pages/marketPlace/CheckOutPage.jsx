@@ -98,24 +98,24 @@ const CheckOut = () => {
             description: "Visa, Mastercard, Verve",
             icon: <CreditCard size={26} />,
         },
-        {
-            id: "bank_transfer",
-            title: "Bank Transfer",
-            description: "Transfer directly from your bank",
-            icon: <Landmark size={26} />,
-        },
-        {
-            id: "ussd",
-            title: "USSD",
-            description: "Pay using your bank USSD code",
-            icon: <Smartphone size={26} />,
-        },
-        {
-            id: "mobile_money",
-            title: "Mobile Money",
-            description: "Wallet & Mobile Money",
-            icon: <Wallet size={26} />,
-        },
+        // {
+        //     id: "bank_transfer",
+        //     title: "Bank Transfer",
+        //     description: "Transfer directly from your bank",
+        //     icon: <Landmark size={26} />,
+        // },
+        // {
+        //     id: "ussd",
+        //     title: "USSD",
+        //     description: "Pay using your bank USSD code",
+        //     icon: <Smartphone size={26} />,
+        // },
+        // {
+        //     id: "mobile_money",
+        //     title: "Mobile Money",
+        //     description: "Wallet & Mobile Money",
+        //     icon: <Wallet size={26} />,
+        // },
     ];
 
     const handleEditMode = () => {

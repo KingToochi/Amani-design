@@ -23,10 +23,12 @@ const InitiatePayment = () => {
     const customerDetails = {
         city : customer?.address?.city,
         country : customer?.address?.country,
-        line1 : customer?.address?.street,
+        line1 : customer?.address?.line1,
         state : customer?.address?.state,
         postal_code : customer?.address?.postal_code,
     }
+
+    console.log(customerDetails)
 
     const verifyPin = async () => {
         if (pin.length !== 4) {

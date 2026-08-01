@@ -253,7 +253,7 @@ const FlutterwavePaymentData = () => {
                             </h3>
 
                             <input
-                                type="number"
+                                type="text"
                                 placeholder="Card Number"
                                 className="w-full border rounded-xl p-4"
                                 value = {paymentDetails?.card?.cardNumber || ""}
@@ -263,8 +263,9 @@ const FlutterwavePaymentData = () => {
                             <div className="grid grid-cols-3 gap-4">
 
                                 <input
+                                maxLength={2}
                                     placeholder="MM"
-                                    type="number"
+                                    type="text"
                                     className="border rounded-xl p-4"
                                     value = {paymentDetails?.card?.expiryMonth || ""}
                                     onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, expiryMonth: e.target.value}})}
@@ -272,7 +273,8 @@ const FlutterwavePaymentData = () => {
 
                                 <input
                                     placeholder="YY"
-                                    type = "number"
+                                    type = "text"
+                                    maxLength={2}
                                     className="border rounded-xl p-4"
                                     value = {paymentDetails?.card?.expiryYear || ""}
                                     onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, expiryYear: e.target.value}})}
@@ -288,13 +290,13 @@ const FlutterwavePaymentData = () => {
 
                             </div>
 
-                            <input
+                            {/* <input
                                 type="text"
                                 value = {paymentDetails?.card?.cardHolder || ""}
                                 onChange={(e) => setPaymentDetails({...paymentDetails, card: {...paymentDetails.card, cardHolder: e.target.value}})}
                                 placeholder="Card Holder Name"
                                 className="w-full border rounded-xl p-4"
-                            />
+                            /> */}
 
                         </div>
 

@@ -1931,8 +1931,8 @@ app.post("/payment-method", verifyToken, async (req, res) => {
   const nonce = generateNonce();
   const accessToken = await getAccessToken();
   if (paymentMethod === "card") {
-      const {cardNumber, expiryYear, expiryMonth, cardHolder, cvv} = paymentDetails
-      if (!cardNumber || !expiryYear || !expiryMonth || !cardHolder || !cvv) {
+      const {cardNumber, expiryYear, expiryMonth,  cvv} = paymentDetails
+      if (!cardNumber || !expiryYear || !expiryMonth || !cvv) {
         return res.status(400).json({
           success: false,
           message: "field is required"
