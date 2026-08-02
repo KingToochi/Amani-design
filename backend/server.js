@@ -2160,40 +2160,40 @@ console.log(customerDetails)
       });
     } 
 
-    const required_fields = await axios({
-      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
-      method : "PUT",
-      headers : {
-        Authorization : `Bearer ${accessToken}`,
-        "X-Idempotency-Key": idempotencyKey,
-        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-        "Content-Type": "application/json"
-      },
-      data : {
-        authorization : {
-          "type" : "avs",
-          "avs" : {
-            "address" : {
-              "country" : customerDetails.country,
-              "state" : customerDetails.state,
-              "line1" :customerDetails.line1,
-              "city" : customerDetails.city,
-              "postal_code" : customerDetails.postal_code
+    // const required_fields = await axios({
+    //   url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+    //   method : "PUT",
+    //   headers : {
+    //     Authorization : `Bearer ${accessToken}`,
+    //     "X-Idempotency-Key": idempotencyKey,
+    //     "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+    //     "Content-Type": "application/json"
+    //   },
+    //   data : {
+    //     authorization : {
+    //       "type" : "avs",
+    //       "avs" : {
+    //         "address" : {
+    //           "country" : customerDetails.country,
+    //           "state" : customerDetails.state,
+    //           "line1" :customerDetails.line1,
+    //           "city" : customerDetails.city,
+    //           "postal_code" : customerDetails.postal_code
 
-            }
-          }
-        }
-      }
-    })
+    //         }
+    //       }
+    //     }
+    //   }
+    // })
 
-    let required_fields_response = required_fields.data
+    // let required_fields_response = required_fields.data
 
-    if (!required_fields_response  || required_fields_response  !== "success") {
-      return res.status(400).json({
-        success: false,
-        message: "Otp verification failed"
-      });
-    } 
+    // if (!required_fields_response  || required_fields_response  !== "success") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Otp verification failed"
+    //   });
+    // } 
 
 
 

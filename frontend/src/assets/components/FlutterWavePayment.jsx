@@ -24,7 +24,6 @@ const FlutterwavePaymentData = () => {
             expiryMonth : "",
             expiryYear: "",
             cvv : "",
-            cardHolder : "",
         },
         ussd : {
             bank: ""
@@ -82,9 +81,9 @@ const FlutterwavePaymentData = () => {
                     newErrors.cvv = "CVV is required.";
                 }
 
-                if (!paymentDetails.card.cardHolder.trim()) {
-                    newErrors.cardHolder = "Card holder name is required.";
-                }
+                // if (!paymentDetails.card.cardHolder.trim()) {
+                //     newErrors.cardHolder = "Card holder name is required.";
+                // }
 
                 break;
 
