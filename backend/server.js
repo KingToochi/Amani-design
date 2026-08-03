@@ -2239,6 +2239,8 @@ console.log(customerDetails)
     res.status(200).json({
         success: true,
         data: verifyPaymentResponse,
+        cart : cart,
+        customerDetails : customerDetails,
         message : "this is the payment info"
     });
 
