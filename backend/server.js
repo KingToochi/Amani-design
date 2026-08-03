@@ -361,7 +361,7 @@ app.post("/users/registration", async (req, res) => {
     const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
 
     if (!fname || !lname || !username || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });                               cd frontend                                         
+      return res.status(400).json({ message: "All fields are required" });                                                      
     }
 
     if (!acceptedTerms) {
