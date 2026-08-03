@@ -361,7 +361,7 @@ app.post("/users/registration", async (req, res) => {
     const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
 
     if (!fname || !lname || !username || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: "All fields are required" });                                                                        
     }
 
     if (!acceptedTerms) {
@@ -2117,7 +2117,7 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
   }
 })
 app.post("/verifyOtp", verifyToken, async(req, res) => {
-  const { otp, chargeId, customerDetails } = req.body;
+  const { otp, chargeId, customerDetails, cart} = req.body;
   if (!otp || !chargeId) {
   return res.status(400).json({
     success: false,

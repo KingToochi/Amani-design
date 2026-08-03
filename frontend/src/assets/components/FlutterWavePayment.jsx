@@ -40,6 +40,7 @@ const FlutterwavePaymentData = () => {
         amount,
         currency,
         paymentMethod,
+        cart
     } = state || {};
 
     console.log(state)
@@ -213,6 +214,7 @@ const FlutterwavePaymentData = () => {
                         details : CreatePaymentMethod.customerCharge.data,
                         chargeId : chargeId,
                         customer : customer,
+                        cart : cart
                     }
                 })
             }

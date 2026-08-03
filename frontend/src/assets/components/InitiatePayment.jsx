@@ -9,7 +9,7 @@ const InitiatePayment = () => {
     const url = `${BASE_URL}/verifyPin`;
     const otpUrl = `${BASE_URL}/verifyOtp`;
     const {
-        details, chargeId, customer
+        details, chargeId, customer, cart
     } = location.state || {};
     const [step, setStep] = useState("pin");
     const [pin, setPin] = useState("");
@@ -79,7 +79,8 @@ const InitiatePayment = () => {
                 body : JSON.stringify({
                     otp,
                     chargeId,
-                    customerDetails
+                    customerDetails,
+                    cart
                 })
                 
             })

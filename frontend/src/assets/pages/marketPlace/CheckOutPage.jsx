@@ -213,10 +213,6 @@ const CheckOut = () => {
         shippingAddress: userInfo?.shippingAddress || "",
         city: userInfo?.city || "",
         state: userInfo?.state || "",
-        cart,
-        redirectUrl,
-        txRef: `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        description: `Payment for ${cart?.length || 0} items`,
         paymentMethod: paymentMethod
       })
     });
@@ -235,7 +231,7 @@ const CheckOut = () => {
             amount: customerData.paymentInfo.amount,
             currency: "NGN",                       // or return it from the backend
             paymentMethod: customerData.paymentInfo.paymentMethod,
-            txRef: customerData.paymentInfo.txRef  // if available
+            cart : cart
         }
     });
 
