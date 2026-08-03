@@ -2211,15 +2211,26 @@ console.log(customerDetails)
       },
     })
 
-    let VerifyPaymentResponse = await verifyPayment.data
+    let verifyPaymentResponse = await verifyPayment.data
 
-    if (VerifyPaymentResponse.data.status !== "success" || VerifyPaymentResponse.status !== "success") {
-      console.error("Payment verification failed:", verifyPaymentResponse);
-      return res.status(400).json({
+    // API request failed
+    if (verifyPaymentResponse.status !== "success") {
+    return res.status(400).json({
         success: false,
-        message: "payment failed"
-      })
+        message: "Unable to verify payment",
+    });
     }
+
+// Charge failed
+    if (verifyPaymentResponse.data.status !== "succeeded") {
+    return res.status(400).json({
+        success: false,
+        message: "Payment was not successful",
+        paymentStatus: verifyPaymentResponse.data.status,
+    });
+    }
+
+    console.log(verifyPaymentResponse);
 
     
 
