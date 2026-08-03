@@ -231,7 +231,7 @@ const CheckOut = () => {
             amount: customerData.paymentInfo.amount,
             currency: "NGN",                       // or return it from the backend
             paymentMethod: customerData.paymentInfo.paymentMethod,
-            cart : cart
+            cart : cart,
         }
     });
 

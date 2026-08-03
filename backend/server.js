@@ -2117,6 +2117,7 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
   }
 })
 app.post("/verifyOtp", verifyToken, async(req, res) => {
+  const  auth = req.user
   const { otp, chargeId, customerDetails, cart} = req.body;
   if (!otp || !chargeId || !cart) {
   return res.status(400).json({
@@ -2232,7 +2233,37 @@ console.log(customerDetails)
 
     console.log(verifyPaymentResponse);
 
-    
+    const order = new Order({
+      orderNumber: `AmaniskyOrder-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
+      products: cart.map(product => ({
+        productId: product._id,
+        quantity: product.quantity,
+      })),
+      transactionId: verifyPaymentResponse.data.id,
+      amount: verifyPaymentResponse.data.amount,
+      currency: verifyPaymentResponse.data.currency,
+      paymentStatus: verifyPaymentResponse.data.status,
+      customerEmail: customerDetails.email,
+      customerId: auth._id,
+      customerPaymentId: verifyPaymentResponse?.data?.customer_id,
+      customerName: verifyPaymentResponse?.data?.meta?.name,
+      customerPhone: customerDetails.phoneNumber,
+      items : cart.map(product => ({
+        id: product.itemId,
+        name: product.productName,
+        price: product.productPrice,
+        quantity: product.quantity,
+        color: product.selectedColor,
+        size: product.selectedSize,
+        productId: product._id,
+        status: "pending",
+      })),
+      orderStatus: "pending",
+      createdAt: new Date(),
+    });
+
+    await order.save();
+
 
     
     console.log(verifyPaymentResponse)

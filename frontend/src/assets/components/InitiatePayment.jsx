@@ -26,6 +26,8 @@ const InitiatePayment = () => {
         line1 : customer?.address?.line1,
         state : customer?.address?.state,
         postal_code : customer?.address?.postal_code,
+        email : customer?.email,
+        phoneNumber: `${Phone.country_code.startsWith("+") ? "" : "+"}${Phone.country_code}${Phone.number}`,
     }
 
     console.log(customerDetails)

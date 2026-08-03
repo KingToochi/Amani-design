@@ -106,7 +106,7 @@ const orderSchema = new mongoose.Schema({
       default: null,
     },
   }],
-  endorOrderQuantityDetails: [{
+  vendorOrderQuantityDetails: [{
     itemId: String,
     productId: String,
     originalQuantity: Number,
