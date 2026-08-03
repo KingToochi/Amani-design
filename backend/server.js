@@ -2125,6 +2125,8 @@ app.post("/verifyOtp", verifyToken, async(req, res) => {
   });
 }
 
+console.log(cart);
+
 console.log(customerDetails)
 
   const accessToken = await getAccessToken()
@@ -2209,9 +2211,9 @@ console.log(customerDetails)
       },
     })
 
-    let verifyPaymentResponse = await verifyPayment.data
+    let VerifyPaymentResponse = await verifyPayment.data
 
-    if (verifyPaymentResponse.data.status !== "success" || verifyPaymentResponse.status !== "success") {
+    if (VerifyPaymentResponse.data.status !== "success" || VerifyPaymentResponse.status !== "success") {
       console.error("Payment verification failed:", verifyPaymentResponse);
       return res.status(400).json({
         success: false,
