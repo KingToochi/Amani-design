@@ -388,13 +388,6 @@ app.post("/users/registration", async (req, res) => {
       phoneNumber: "",
       dob: "",
       profilePicture: "",
-      houseNumber: "",
-      city: "",
-      state: "",
-      shippingAddress: `${houseNumber} ${streetName}, ${city}, ${state}`,
-      proofOfAddress: "",
-      MeansOfIdentification: "",
-      identificationNumber: "",
       password: hashedPassword,
       termsAndCondition: acceptedTerms,
       status: "approved",
@@ -2233,6 +2226,15 @@ console.log(customerDetails)
 
     console.log(verifyPaymentResponse);
 
+    const payedAmount = verifyPaymentResponse.data.amount
+
+    if (payedAmount !== cart.amount) {
+      return res.status(400).json({
+        success : false,
+        message : "amount paid not equal to the required amount"
+      })
+    }
+
     const order = new Order({
       orderNumber: `AmaniskyOrder-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
       products: cart.map(product => ({
@@ -2240,7 +2242,7 @@ console.log(customerDetails)
         quantity: product.quantity,
       })),
       transactionId: verifyPaymentResponse.data.id,
-      amount: verifyPaymentResponse.data.amount,
+      amount: payedAmount,
       currency: verifyPaymentResponse.data.currency,
       paymentStatus: verifyPaymentResponse.data.status,
       customerEmail: customerDetails.email,
@@ -2267,12 +2269,12 @@ console.log(customerDetails)
 
     
     console.log(verifyPaymentResponse)
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         data: verifyPaymentResponse,
         cart : cart,
         customerDetails : customerDetails,
-        message : "this is the payment info"
+        message : "payment successful and Order saved"
     });
 
 
