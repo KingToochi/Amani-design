@@ -39,16 +39,13 @@ const UserRegistration = () => {
     })
 
     const validateFormInput = async(event) => {
-        // extract the id and value of each form input 
         const {id, value, name, type, checked} = event.target
         const fieldValue = type === "checkbox" ? checked : value
-        // update the formdata with the values and id of the form input
-        setFormData(prev => ({
-            ...prev, [id]: fieldValue
-        }))
+        const nextFormData = { ...formData, [id]: fieldValue }
+        setFormData(nextFormData)
         setShowMessage(prev => ({...prev, [id] : true}))
-        // check if the formdata have any empty field
-         if (type === "checkbox") {
+
+        if (type === "checkbox") {
             if (!checked) {
                 setError(prev => ({ ...prev, terms: "You must accept the terms and conditions" }))
                 setShowMessage(prev => ({ ...prev, terms: true }))

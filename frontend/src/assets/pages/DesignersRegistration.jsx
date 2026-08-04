@@ -278,14 +278,17 @@ const DesignerRegistration = () => {
                     })
                     let data = await response.json()
                     console.log(data)
-                    if (data.success) {
-                        // Fetch and set auth data from backend
-                        await verifyAndFetchAuth();
-                        navigate("/designer")
+                    if (response.ok && data.success) {
+                        const authVerified = await verifyAndFetchAuth();
+                        if (authVerified) {
+                            navigate("/designer")
+                            return
+                        }
+
+                        throw new Error("Registration succeeded, but your session could not be verified.")
                     } else {
-                        alert(data.message)
                         setIsSubmitting(false)
-                        setServerError(data.message)
+                        setServerError(data.message || "Registration failed")
                         setTimeout(() => {
                             setServerError(null)
                         }, 5000)
