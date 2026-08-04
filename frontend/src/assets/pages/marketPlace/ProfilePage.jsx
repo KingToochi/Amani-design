@@ -5,6 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { BASE_URL } from "../../Url";
+import CustomFetch from "../../hooks/useFetch";
 
 const ProfilePage = () => {
     const {setAuth, logout} = useContext(AuthContext)
@@ -17,7 +18,7 @@ const ProfilePage = () => {
 
     const fetchUserData = async() => {
         try{
-            let response = await fetch(`${url}/users`, {
+            let response = await CustomFetch(`${url}/users`, {
                 method: "GET",
                 credentials: "include"
             })

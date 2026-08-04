@@ -11,19 +11,19 @@ const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message
     const url = BASE_URL
     const [serverError, setServerError] = useState(null)
-    const {auth, setAuth} = useContext(AuthContext)
-    const currentUrl = window.location.href
     const navigate = useNavigate()
     const location = useLocation()
     const from = location.state?.from || '/products';
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm();
     const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
     const handlRegistration = () => SetShowRegistrationModal(true);
-    console.log(currentUrl)
     const { verifyAndFetchAuth } = useContext(AuthContext)
+
     const onSubmit = async(data) => {
+        setServerError(null);
+
         try {
-            let response = await fetch(`${url}/users/login`, {
+            const response = await fetch(`${url}/users/login`, {
                 method: "POST",
                 headers : {
                     "Content-Type": "application/json"
@@ -31,23 +31,25 @@ const Login = () => {
                 credentials: "include",
                 body: JSON.stringify(data)
             })
-            let result = await response.json()
-            console.log(result)
-            if (response.ok && result.success) {
-                // Fetch and set auth data from backend
-                await verifyAndFetchAuth();
-                navigate(from, { replace: true }) 
-            } else {
-                throw new Error(result.message || result.error || "Login failed")
-            }
-        } catch(error) {
-            console.log(error)
-            setServerError(error)
-             setTimeout(() => {setServerError(null)}, 5000)
-        }
-        console.log(serverError)
+            const result = await response.json()
 
-        
+            if (response.ok && result.success) {
+                const authVerified = await verifyAndFetchAuth();
+
+                if (authVerified) {
+                    navigate(from, { replace: true })
+                    return;
+                }
+
+                throw new Error("Login succeeded, but your session could not be verified. Please try again.")
+            }
+
+            throw new Error(result.message || result.error || "Login failed")
+        } catch(error) {
+            console.error(error)
+            setServerError(error)
+            setTimeout(() => {setServerError(null)}, 5000)
+        }
     }
 
     const displayShowRegistrationModal = () => {
@@ -162,16 +164,15 @@ const Login = () => {
             </form>
 
             <div 
-            className="flex w-full justify-center  gap-2">
+            className="flex w-full justify-center gap-2">
                 <h2
                 className="text-base text-gray-600 font-bold"
                 >No Account?</h2>
-                <button 
-                className="w-auto px-2 text-center text-base  text-blue-600 font-bold cursor-pointer">
-                    <Link to="registration">
+                <Link 
+                to="registration"
+                className="w-auto px-2 text-center text-base text-blue-600 font-bold cursor-pointer">
                     Sign up
-                    </Link>
-                </button>
+                </Link>
             </div>
             <div
             className="flex gap-1 justify-center  w-full"
