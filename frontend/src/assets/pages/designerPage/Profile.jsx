@@ -50,6 +50,7 @@ const Profile = () => {
         try {
             let response = await CustomFetch(url, { method: "GET" })
             const data = await response.json()
+            console.log("Fetched user data:", data.user)
             setUserData(data.user)
             setForm({
                 fname: data.user?.fname || "",

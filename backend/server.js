@@ -921,6 +921,8 @@ app.get("/users", verifyToken, async(req, res) => {
           profilePicture: user.profilePicture,
           username: user.username,
           role: user.role,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
           typeOfVendor: user.typeOfVendor
         }
         return res.status(200).json({success:true, message: "user details found", userData: userDetails})

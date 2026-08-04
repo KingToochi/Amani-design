@@ -23,12 +23,14 @@ const ProfilePage = () => {
             })
             let data = await response.json()
             console.log(data)
-            setUserDetails(data.user)
+            setUserDetails(data.userData)
 
         } catch (error) {
             console.log(error)
         }
     }
+
+    console.log(userDetails)
 
 
     useEffect(()  =>{
@@ -61,7 +63,7 @@ const ProfilePage = () => {
 
 
     return(
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8 mb-16">
             <div className="max-w-4xl mx-auto">
                 {/* Profile Header */}
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
