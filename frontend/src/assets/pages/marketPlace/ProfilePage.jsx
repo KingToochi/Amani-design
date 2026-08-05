@@ -49,7 +49,8 @@ const ProfilePage = () => {
 
                 const data = await response.json();
                 if (data.success) {
-                    fetchUserData();
+                    setUserDetails(data.user);
+                    console.log("User data fetched successfully:", data.user);
                 } else {
                     navigate("/login");
                 }
