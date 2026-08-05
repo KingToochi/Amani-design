@@ -11,7 +11,7 @@ import {
     CheckCircle
 } from "lucide-react";
 import {BASE_URL} from "../Url"
-import CustomFetch from "../hooks/useFetch";
+import CustomFetch from "../hooks/UseFetch";
 
 const FlutterwavePaymentData = () => {
     const [loading, setLoading] = useState(false);
