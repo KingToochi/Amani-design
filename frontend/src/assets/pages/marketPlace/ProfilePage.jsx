@@ -37,7 +37,7 @@ const ProfilePage = () => {
     useEffect(()  =>{
         const checkAuth = async () => {
             try {
-                const response = await fetch("https://amani-design-backend.onrender.com/userInfo", {
+                const response = await CustomFetch("https://amani-design-backend.onrender.com/userInfo", {
                     method: "GET",
                     credentials: "include"
                 });
