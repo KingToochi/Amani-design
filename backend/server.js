@@ -431,7 +431,6 @@ app.post("/users/registration/designers",uploadImage.fields([
   console.log("FILES:", req.files)
 
   try {
-    console.log(req.body)
     const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted} = req.body
     const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
 

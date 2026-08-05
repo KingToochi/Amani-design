@@ -232,6 +232,7 @@ const DesignerRegistration = () => {
             setIsSubmitting(true)
             let hasError = false
             const form = new FormData()
+            console.log("Form data before validation:", formData);
     
             const validateForm = () => {
                 for (let id in formData) {
