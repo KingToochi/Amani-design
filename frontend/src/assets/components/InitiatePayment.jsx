@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { LockKeyhole, ShieldCheck } from "lucide-react";
 import { BASE_URL } from "../Url";
-import CustomFetch from "../hooks/useFetch";
+import CustomFetch from "../hooks/UseFetch";
 
 const InitiatePayment = () => {
     const location = useLocation();
