@@ -266,7 +266,7 @@ const DesignerRegistration = () => {
     
     
             validateForm()
-            
+            console.log(form)
     
             if (Object.keys(error).length === 0 && !hasError) {
                 setIsSubmitting(true)
