@@ -5,7 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/useFetch";
+import CustomFetch from "../../hooks/UseFetch";
 
 const ProfilePage = () => {
     const {setAuth, logout} = useContext(AuthContext)
