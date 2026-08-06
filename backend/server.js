@@ -78,6 +78,20 @@ const parseBooleanFlag = (value) => {
   return Boolean(value);
 };
 
+const getCookieOptions = (req, options = {}) => {
+  const origin = (req.headers.origin || "").toLowerCase();
+  const isLocalOrigin = origin.includes("localhost") || origin.includes("127.0.0.1") || req.hostname === "localhost" || req.hostname === "127.0.0.1";
+  const secure = isProduction && !isLocalOrigin;
+  const sameSite = secure ? "none" : "lax";
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite,
+    ...options,
+  };
+};
+
 const updateOrderStatusFromItems = (order) => {
   const statuses = (order.items || []).map((item) => item.status);
 
@@ -400,21 +414,15 @@ app.post("/users/registration", async (req, res) => {
     const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "none",
+    res.cookie("accessToken", accessToken, getCookieOptions(req, {
       maxAge: 30 * 60 * 1000  // 30 minutes
-    });
+    }));
 
     // Set refresh token in HTTP-only cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "none",
+    res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-    });
+    }));
 
     res.status(201).json({ success: true, message: "User registered successfully" , accessToken, refreshToken});
   } catch (err) {
@@ -504,21 +512,15 @@ if (req.files.proofOfAddress) {
       const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
 
       // Set access token in HTTP-only cookie
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+      res.cookie("accessToken", accessToken, getCookieOptions(req, {
         maxAge: 30 * 60 * 1000  // 30 minutes
-      });
+      }));
 
       // Set refresh token in HTTP-only cookie
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+      res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
         path: "/refresh",
         maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-      });
+      }));
 
       res.status(201).json({ success: true,  message: "User registered successfully", accessToken, refreshToken });
     } catch (error) {
@@ -548,23 +550,15 @@ app.post("/users/login", async (req, res) => {
     const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      // secure: true,
-     secure: isProduction,       // false in localhost for development
-      sameSite: isProduction ? "none" : "lax",
+    res.cookie("accessToken", accessToken, getCookieOptions(req, {
       maxAge: 30 * 60 * 1000  // 30 minutes
-    });
+    }));
 
     // Set refresh token in HTTP-only cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      // secure: true,
-     secure: isProduction,       // false in localhost
-      sameSite: isProduction ? "none" : "lax",
+    res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-    });
+    }));
     res.json({ success: true, message: "User login successful", accessToken, refreshToken });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -574,20 +568,11 @@ app.post("/users/login", async (req, res) => {
 // Logout
 app.post("/logout", (req, res) => {
   // Clear HTTP-only cookies
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    // secure: true,
-   secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-  });
+  res.clearCookie("accessToken", getCookieOptions(req));
 
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    // secure: true,
-   secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+  res.clearCookie("refreshToken", getCookieOptions(req, {
     path: "/refresh"
-  });
+  }));
 
   res.json({ success: true, message: "Logged out successfully" });
 });
@@ -603,13 +588,9 @@ app.post("/refresh", async (req, res) => {
     const newAccessToken = await generateToken(decoded.email, { expiresIn: "30m" });
 
     // Set new access token in HTTP-only cookie
-    res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      // secure: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+    res.cookie("accessToken", newAccessToken, getCookieOptions(req, {
       maxAge: 30 * 60 * 1000  // 30 minutes
-    });
+    }));
 
     res.json({ success: true, message: "Token refreshed", accessToken: newAccessToken });
 
@@ -640,23 +621,15 @@ app.post("/users/login/admin", async (req, res) => {
     const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
 
     // Set access token in HTTP-only cookie
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      // secure: true,
-      secure: isProduction,       // false in localhost for development
-      sameSite: isProduction ? "none" : "lax",
+    res.cookie("accessToken", accessToken, getCookieOptions(req, {
       maxAge: 15 * 60 * 1000  // 15 minutes
-    });
+    }));
 
     // Set refresh token in HTTP-only cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      // secure: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+    res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-    });
+    }));
 
     res.json({ success: true, message: "Admin login successful", accessToken, refreshToken  });
   }catch(error){
