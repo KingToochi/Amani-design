@@ -250,11 +250,6 @@ const DesignerRegistration = () => {
                         setError(prev => ({...prev, [id]:"field required"}))
                         setIsSubmitting(false)
                     } else {
-                        if (id === "termsAndCondition") {
-                            form.append("termsAndCondition", formData.termsAndCondition ? "true" : "false")
-                        } else {
-                            form.append(id, formData[id])
-                        }
                         setError(prev => {
                             const newErr = {...prev}
                             delete newErr[id]
@@ -265,11 +260,22 @@ const DesignerRegistration = () => {
                 return hasError
             }
     
-    
             validateForm()
+
+            if (!hasError) {
+                for (const [key, value] of Object.entries(formData)) {
+                    if (value === undefined || value === null) continue
+                    if (key === "termsAndCondition") {
+                        form.append("termsAndCondition", value ? "true" : "false")
+                    } else {
+                        form.append(key, value)
+                    }
+                }
+            }
+    
             console.log(form)
     
-            if (Object.keys(error).length === 0 && !hasError) {
+            if (!hasError) {
                 setIsSubmitting(true)
                 try {
                     let response = await fetch(`${url}/users/registration/designers`, {
@@ -596,6 +602,7 @@ const DesignerRegistration = () => {
                             <input
                                 type="checkbox"
                                 id="termsAndCondition"
+                                name="termsAndCondition"
                                 checked={formData.termsAndCondition}
                                 onChange={formInputValidation}
                                 className="mt-1 h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
