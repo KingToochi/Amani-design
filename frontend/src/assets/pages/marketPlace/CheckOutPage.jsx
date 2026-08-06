@@ -225,13 +225,14 @@ const CheckOut = () => {
     const customerData = await createCustomer.json();
 
     if (customerData.success) {
+    const customer = Array.isArray(customerData.data) ? customerData.data[0] : customerData.data;
     navigate("/payment", {
         state: {
-            customer: customerData.data[0],        // First customer in the array
-            amount: customerData.paymentInfo.amount,
-            currency: "NGN",                       // or return it from the backend
-            paymentMethod: customerData.paymentInfo.paymentMethod,
-            cart : cart,
+            customer,
+            amount: customerData.paymentInfo?.amount ?? amountToCharge,
+            currency: "NGN",
+            paymentMethod: customerData.paymentInfo?.paymentMethod ?? paymentMethod,
+            cart,
         }
     });
 

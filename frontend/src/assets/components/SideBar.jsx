@@ -41,23 +41,23 @@ const SideBar = () => {
                         className="flex flex-col font-[abril] justify-center text-xl font-medium gap-4 px-2"
                         >
                             <li>
-                                <Link to="/dashboard">Home</Link>
+                                <Link to="/">Home</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Product</Link>
+                                <Link to="/products">Products</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Order</Link>
+                                <Link to="/customer-orders">Orders</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Delivery</Link>
+                                <Link to="/cart">Cart</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Contact</Link>
+                                <Link to="/about">About</Link>
                             </li>
                         </ul>
                     </nav>
@@ -82,23 +82,23 @@ const SideBar = () => {
                         className="flex flex-col font-[abril] pl-10 text-xl font-medium gap-8 px-2 "
                         >
                             <li>
-                                <Link to="/dashboard">Home</Link>
+                                <Link to="/">Home</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Products</Link>
+                                <Link to="/products">Products</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Order</Link>
+                                <Link to="/customer-orders">Orders</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Delivery</Link>
+                                <Link to="/cart">Cart</Link>
                             </li>
 
                             <li>
-                                <Link to="/home">Contact</Link>
+                                <Link to="/about">About</Link>
                             </li>
                         </ul>
                     </nav>

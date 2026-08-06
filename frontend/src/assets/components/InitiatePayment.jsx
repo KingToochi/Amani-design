@@ -9,7 +9,7 @@ const InitiatePayment = () => {
     const url = `${BASE_URL}/verifyPin`;
     const otpUrl = `${BASE_URL}/verifyOtp`;
     const {
-        details, chargeId, customer, cart
+        details, chargeId, customer, cart, amount, currency
     } = location.state || {};
     const [step, setStep] = useState("pin");
     const [pin, setPin] = useState("");
@@ -21,13 +21,15 @@ const InitiatePayment = () => {
     console.log(customer)
 
     const customerDetails = {
-        city : customer?.address?.city,
-        country : customer?.address?.country,
-        line1 : customer?.address?.line1,
-        state : customer?.address?.state,
-        postal_code : customer?.address?.postal_code,
-        email : customer?.email,
-        phoneNumber: `${Phone.country_code.startsWith("+") ? "" : "+"}${Phone.country_code}${Phone.number}`,
+        city: customer?.address?.city || "",
+        country: customer?.address?.country || "NG",
+        line1: customer?.address?.line1 || "",
+        state: customer?.address?.state || "",
+        postal_code: customer?.address?.postal_code || "",
+        email: customer?.email || "",
+        phoneNumber: customer?.phone?.number
+            ? `${customer.phone.country_code?.startsWith("+") ? customer.phone.country_code : `+${customer.phone.country_code || "234"}`}${customer.phone.number}`
+            : customer?.phoneNumber || "",
     }
 
     console.log(customerDetails)
@@ -82,7 +84,8 @@ const InitiatePayment = () => {
                     otp,
                     chargeId,
                     customerDetails,
-                    cart
+                    cart,
+                    amount: amount || location.state?.amount
                 })
                 
             })

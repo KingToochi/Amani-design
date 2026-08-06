@@ -19,7 +19,7 @@ const PaymentCallback = () => {
     if (paymentStatus === "successful") {
       setStatus("success");
       setTimeout(() => {
-        navigate("/orders");
+        navigate("/customer-orders");
       }, 3000);
     } else if (paymentStatus === "cancelled") {
       setStatus("cancelled");

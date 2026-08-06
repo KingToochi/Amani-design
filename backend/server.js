@@ -1151,11 +1151,10 @@ app.get("/orders", verifyToken, async(req, res) => {
     }
 
     // get the orders of product link to the user
-    const products = await Product.find({vendorId : user._id})
+    const products = await Product.find({vendorId : user._id}).select("_id");
 
     // get the product Id
-
-    const productIds = products.map((items) => items._id)
+    const productIds = products.map((item) => item._id.toString());
     let totalOrder;
 
     if (productIds.length === 0) {
@@ -1169,28 +1168,40 @@ app.get("/orders", verifyToken, async(req, res) => {
     // get the list of orders of each product
     totalOrder = await Order.aggregate([
       {
-        $match :{ 
-          "products.productId" : {$in : productIds}}
+        $match: {
+          $or: [
+            { "products.productId": { $in: productIds } },
+            { "items.productId": { $in: productIds } },
+          ],
+        },
       },
 
       {
-        $project :{
+        $project: {
           products: {
             $filter: {
               input: "$products",
               as: "product",
               cond: {
-              $in: ["$$product.productId", productIds]
-              }
-            }
+                $in: ["$$product.productId", productIds],
+              },
+            },
           },
           amount: 1,
           orderStatus: 1,
           createdAt: 1,
           paymentStatus: 1,
           currency: 1,
-          items: 1
-        }
+          items: {
+            $filter: {
+              input: "$items",
+              as: "item",
+              cond: {
+                $in: ["$$item.productId", productIds],
+              },
+            },
+          },
+        },
       },
 
       {
@@ -1751,7 +1762,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Customer ready",
-      data: flutterwaveCustomer,
+      data: [flutterwaveCustomer],
       paymentInfo
 
     });
@@ -1796,11 +1807,13 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
       });
     }
 
+    const accessToken = await getAccessToken();
+
     const verificationResponse = await axios({
       method: "get",
       url: `https://api.flutterwave.com/v4/transactions/${transaction_id}/verify`,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json"
       }
     });
@@ -2086,7 +2099,7 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
 })
 app.post("/verifyOtp", verifyToken, async(req, res) => {
   const  auth = req.user
-  const { otp, chargeId, customerDetails, cart} = req.body;
+  const { otp, chargeId, customerDetails, cart, amount } = req.body;
   if (!otp || !chargeId || !cart) {
   return res.status(400).json({
     success: false,
@@ -2201,9 +2214,17 @@ console.log(customerDetails)
 
     console.log(verifyPaymentResponse);
 
-    const payedAmount = verifyPaymentResponse.data.amount
+    const payedAmount = Number(verifyPaymentResponse.data.amount || 0);
+    const subtotalAmount = Number(
+      amount ||
+      cart.reduce((sum, product) => {
+        const price = Number(product.productPrice || product.price || 0);
+        const quantity = Number(product.quantity || 0);
+        return sum + price * quantity;
+      }, 0)
+    );
 
-    if (payedAmount !== cart.amount) {
+    if (payedAmount !== subtotalAmount) {
       return res.status(400).json({
         success : false,
         message : "amount paid not equal to the required amount"
@@ -2218,13 +2239,16 @@ console.log(customerDetails)
       })),
       transactionId: verifyPaymentResponse.data.id,
       amount: payedAmount,
-      currency: verifyPaymentResponse.data.currency,
+      subtotalAmount,
+      paymentFee: 0,
+      amountPaid: payedAmount,
+      currency: verifyPaymentResponse.data.currency || "NGN",
       paymentStatus: verifyPaymentResponse.data.status,
-      customerEmail: customerDetails.email,
+      customerEmail: customerDetails?.email || auth.email || "unknown@example.com",
       customerId: auth._id,
-      customerPaymentId: verifyPaymentResponse?.data?.customer_id,
-      customerName: verifyPaymentResponse?.data?.meta?.name,
-      customerPhone: customerDetails.phoneNumber,
+      customerPaymentId: verifyPaymentResponse?.data?.customer?.id || verifyPaymentResponse?.data?.customer_id || verifyPaymentResponse?.data?.meta?.customer_id || "N/A",
+      customerName: verifyPaymentResponse?.data?.meta?.name || customerDetails?.name || `${customerDetails?.firstName || ""} ${customerDetails?.lastName || ""}`.trim() || "N/A",
+      customerPhone: customerDetails?.phoneNumber || "N/A",
       items : cart.map(product => ({
         id: product.itemId,
         name: product.productName,
@@ -2370,11 +2394,10 @@ app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
       });
     }
 
-    const vendorItems = order.items.filter(item =>
-      productIds.some(
-        id => id.toString() === item.productId.toString()
-      )
-    );
+    const vendorItems = (order.items || []).filter(item => {
+      const itemProductId = item?.productId?.toString?.();
+      return productIds.some((id) => id.toString() === itemProductId);
+    });
 
     if (vendorItems.length === 0) {
       return res.status(403).json({
@@ -2477,7 +2500,7 @@ app.post("/confirmItemAvailability", verifyToken, async (req, res) => {
         originalQuantity: itemUpdate.originalQuantity || order.items[itemIndex].quantity || 0,
       };
 
-      const detailIndex = order.endorOrderQuantityDetails.findIndex((detail) => {
+      const detailIndex = order.vendorOrderQuantityDetails.findIndex((detail) => {
         const detailItemId = detail.itemId?.toString();
         return detailItemId === itemUpdate.itemId?.toString() || detail.productId?.toString() === itemUpdate.productId?.toString();
       });
@@ -2494,9 +2517,9 @@ app.post("/confirmItemAvailability", verifyToken, async (req, res) => {
       };
 
       if (detailIndex === -1) {
-        order.endorOrderQuantityDetails.push(vendorDetail);
+        order.vendorOrderQuantityDetails.push(vendorDetail);
       } else {
-        order.endorOrderQuantityDetails[detailIndex] = vendorDetail;
+        order.vendorOrderQuantityDetails[detailIndex] = vendorDetail;
       }
 
       if (!hasProduct) {

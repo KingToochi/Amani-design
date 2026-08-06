@@ -217,6 +217,8 @@ const FlutterwavePaymentData = () => {
                         chargeId : chargeId,
                         customer : customer,
                         cart : cart,
+                        amount,
+                        currency,
                     }
                 })
             }
