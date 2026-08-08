@@ -123,6 +123,8 @@ const server = http.createServer(app);
 
 const verifyToken = async(req, res, next) => {
   let token;
+  console.log("Authorization header:", req.headers.authorization);
+  console.log("Cookies:", req.cookies);
   
   // Try to get token from Authorization header first
   const authHeader = req.headers.authorization;

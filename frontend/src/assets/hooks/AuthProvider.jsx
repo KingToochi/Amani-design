@@ -32,7 +32,6 @@ const AuthProvider = ({ children }) => {
   // Fetch user info from backend to verify token and get user data
   const verifyAndFetchAuth = async () => {
     setLoading(true);
-
     try {
       let response = await fetch(`${BASE_URL}/userInfo`, {
         method: "GET",

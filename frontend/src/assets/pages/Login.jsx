@@ -34,6 +34,7 @@ const Login = () => {
             const result = await response.json()
 
             if (response.ok && result.success) {
+                console.log("Login successful:", result);
                 const authVerified = await verifyAndFetchAuth();
 
                 if (authVerified) {
