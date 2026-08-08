@@ -20,12 +20,11 @@ const Header = () => {
     const [cart] = useContext(CartContext)
     const {isLoggedIn, auth} = useContext(AuthContext)
     const url = BASE_URL
-     const handleChange = (e) => {
+    const handleChange = (e) => {
         setQuery(e.target.value)
     }
     const handleClick = () => {
         setDropDown((prev) => !prev);
-        setShowSearchedProduct(false)
         setShowSearchedProduct(false)
     }
     const searchItem = async(event) => {

@@ -16,31 +16,6 @@ const HomePage = () => {
 
     const url = BASE_URL
 
-    // const fetchProduct = async () => {
-    //     try {
-    //         setLoading(true)
-    //         let response = await fetch(`${url}/products`)
-            
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! status: ${response.status}`)
-    //         }
-            
-    //         let data = await response.json()
-    //         console.log("Fetched products:", data)
-    //         setProduct(data)
-    //         setError(null)
-    //     } catch(error) {
-    //         console.log(error)
-    //         setError(error.message)
-    //     } finally {
-    //         setLoading(false)
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     fetchProduct()
-    // }, [])
-
     
     return (
         <div className="w-full relative">
