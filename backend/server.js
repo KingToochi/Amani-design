@@ -122,31 +122,66 @@ const updateOrderStatusFromItems = (order) => {
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
 
-const verifyToken = async(req, res, next) => {
-  let token;
-  console.log("Authorization header:", req.headers.authorization);
-  console.log("Cookies:", req.cookies);
+// const verifyToken = async(req, res, next) => {
+//   let token;
+//   console.log("Authorization header:", req.headers.authorization);
+//   console.log("Cookies:", req.cookies);
   
-  // Try to get token from Authorization header first
+//   // Try to get token from Authorization header first
+//   const authHeader = req.headers.authorization;
+//   if (authHeader && authHeader.startsWith("Bearer ")) {
+//     token = authHeader.split(" ")[1];
+//   } 
+//   // Fall back to cookie if header not present
+//   else if (req.cookies.accessToken) {
+//     token = req.cookies.accessToken;
+//   }
+  
+//   if (!token) {
+//     return res.status(401).json({ message: "Unauthorized" });
+//   }
+  
+//   try {
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     req.user = decoded;
+//     next();
+//   } catch (err) {
+//     return res.status(401).json({ message: "Invalid or expired token", err });
+//   }
+// };
+
+const verifyToken = async (req, res, next) => {
+  console.log("========== AUTH DEBUG ==========");
+  console.log("Origin:", req.headers.origin);
+  console.log("Host:", req.headers.host);
+  console.log("Cookie header:", req.headers.cookie);
+  console.log("Parsed cookies:", req.cookies);
+  console.log("================================");
+
+  let token;
+
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
+
+  if (authHeader?.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];
-  } 
-  // Fall back to cookie if header not present
-  else if (req.cookies.accessToken) {
+  } else if (req.cookies?.accessToken) {
     token = req.cookies.accessToken;
   }
-  
+
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({
+      message: "Unauthorized"
+    });
   }
-  
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token", err });
+    return res.status(401).json({
+      message: "Invalid or expired token"
+    });
   }
 };
 
