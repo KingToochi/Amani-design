@@ -81,10 +81,9 @@ const parseBooleanFlag = (value) => {
 const getCookieOptions = (req, options = {}) => {
   const origin = (req.headers.origin || "").toLowerCase();
   const isLocalOrigin = origin.includes("localhost") || origin.includes("127.0.0.1") || req.hostname === "localhost" || req.hostname === "127.0.0.1";
-  // const secure = isProduction && !isLocalOrigin;
-  secure = true
-  // const sameSite = secure ? "none" : "lax";
-  const sameSite = "none"
+  const secure = isProduction && !isLocalOrigin;
+  const sameSite = secure ? "none" : "lax";
+  // const sameSite = "none"
 
   return {
     httpOnly: true,
@@ -123,66 +122,31 @@ const updateOrderStatusFromItems = (order) => {
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
 
-// const verifyToken = async(req, res, next) => {
-//   let token;
-//   console.log("Authorization header:", req.headers.authorization);
-//   console.log("Cookies:", req.cookies);
-  
-//   // Try to get token from Authorization header first
-//   const authHeader = req.headers.authorization;
-//   if (authHeader && authHeader.startsWith("Bearer ")) {
-//     token = authHeader.split(" ")[1];
-//   } 
-//   // Fall back to cookie if header not present
-//   else if (req.cookies.accessToken) {
-//     token = req.cookies.accessToken;
-//   }
-  
-//   if (!token) {
-//     return res.status(401).json({ message: "Unauthorized" });
-//   }
-  
-//   try {
-//     const decoded = jwt.verify(token, JWT_SECRET);
-//     req.user = decoded;
-//     next();
-//   } catch (err) {
-//     return res.status(401).json({ message: "Invalid or expired token", err });
-//   }
-// };
-
-const verifyToken = async (req, res, next) => {
-  console.log("========== AUTH DEBUG ==========");
-  console.log("Origin:", req.headers.origin);
-  console.log("Host:", req.headers.host);
-  console.log("Cookie header:", req.headers.cookie);
-  console.log("Parsed cookies:", req.cookies);
-  console.log("================================");
-
+const verifyToken = async(req, res, next) => {
   let token;
-
+  console.log("Authorization header:", req.headers.authorization);
+  console.log("Cookies:", req.cookies);
+  
+  // Try to get token from Authorization header first
   const authHeader = req.headers.authorization;
-
-  if (authHeader?.startsWith("Bearer ")) {
+  if (authHeader && authHeader.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];
-  } else if (req.cookies?.accessToken) {
+  } 
+  // Fall back to cookie if header not present
+  else if (req.cookies.accessToken) {
     token = req.cookies.accessToken;
   }
-
+  
   if (!token) {
-    return res.status(401).json({
-      message: "Unauthorized"
-    });
+    return res.status(401).json({ message: "Unauthorized" });
   }
-
+  
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({
-      message: "Invalid or expired token"
-    });
+    return res.status(401).json({ message: "Invalid or expired token", err });
   }
 };
 
