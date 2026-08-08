@@ -561,6 +561,8 @@ app.post("/users/login", async (req, res) => {
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     }));
+    console.log("Setting access token cookie");
+    console.log("Access token exists:", !!accessToken);
     res.json({ success: true, message: "User login successful", accessToken, refreshToken });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
