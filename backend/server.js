@@ -84,7 +84,7 @@ const getCookieOptions = (req, options = {}) => {
   const secure = isProduction || isLocalOrigin;
   console.log("Cookie options - Secure:", secure, "Origin:", origin, "Hostname:", req.hostname);                  
   const sameSite = secure ? "none" : "lax";
-  // const sameSite = "none"
+
 
   return {
     httpOnly: true,
