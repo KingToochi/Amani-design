@@ -23,6 +23,9 @@ import { getAccessToken } from "./services/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 import { encryptAES } from "./services/flutterwaveEncryption.js";
+import getToken from "./routes/login_token/getAccessToken.js";
+import storeToken from "./routes/login_token/storeAccessToken.js";
+import getToken from "./routes/login_token/getAccessToken.js";
 
 
 
@@ -133,6 +136,31 @@ const verifyToken = async(req, res, next) => {
   if (authHeader && authHeader.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];
   } 
+  else if (authHeader === "auth") {
+    const userId = authHeader._id
+    const getTheToken = await getToken(userId)
+
+    if (getTheToken.message === "tokens found") {
+      token = getTheToken.accessToken
+    }
+
+    else if (getTheToken.message === "user exist but token is not found") {
+      const accessToken = generateToken(userId, {expiresIn : "30mins"})
+      const refreshAccessToken = generateToken(userId, {expiresIn : "7 days"})
+
+      res.cookie("accessToken", accessToken, getCookieOptions(req, {
+        maxAge: 30 * 60 * 1000  // 30 minutes
+      }));
+
+      res.cookie("refreshAccessToken", refreshAccessToken, getCookieOptions(req, {
+        maxAge : 7 * 24 * 60 * 60 * 1000 // 7 days
+      }))
+
+      await storeToken(userId, accessToken, refreshAccessToken)
+
+      token = accessToken
+    }
+  }
   // Fall back to cookie if header not present
   else if (req.cookies.accessToken) {
     token = req.cookies.accessToken;
@@ -397,6 +425,7 @@ app.post("/users/registration", async (req, res) => {
     const mainUsername = username.toLowerCase()
     const mainEmail = email.toLowerCase()
     let hashedPassword = await bcrypt.hash(password, 10)
+    const recoveryToken = crypto.randomBytes(32).toString("hex");
     const newUser = new User({
       joinedAt: new Date().toISOString(),
       fname,
@@ -410,12 +439,13 @@ app.post("/users/registration", async (req, res) => {
       termsAndCondition: acceptedTerms,
       status: "approved",
       role: "user",
+      recoveryToken : recoveryToken
     });
 
     await newUser.save();
-
     const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
     const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
+   const hashedRecoveryToken = crypto.createHash("sha256").update(recoveryToken).digest("hex");
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, getCookieOptions(req, {
@@ -428,7 +458,9 @@ app.post("/users/registration", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     }));
 
-    res.status(201).json({ success: true, message: "User registered successfully" , accessToken, refreshToken});
+    await storeToken(newUser._id, accessToken, refreshToken, hashedRecoveryToken)
+
+    res.status(201).json({ success: true, message: "User registered successfully"});
   } catch (err) {
     console.error("User registration error:", err); // <-- Add this if not alrea
     res.status(500).json({success:false, message: "Server error" });
@@ -487,6 +519,7 @@ if (req.files.proofOfAddress) {
         fs.unlink(req.files.proofOfAddress[0].path, () => {});
         console.log(proofOfAddressUrl)
       }
+        const recoveryToken = crypto.randomBytes(32).toString("hex");
        const newUser = new User({
         fname,
         lname,
@@ -510,10 +543,15 @@ if (req.files.proofOfAddress) {
         shippingAddress: `${houseNumber} ${streetName}, ${city}, ${state}`,
         termsAndCondition: acceptedTerms,
         role: "vendor",
+        recoveryToken : recoveryToken
       });
       await newUser.save();
       const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
       const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
+      const hashedRecoveryToken = await bcrypt.hash(recoveryToken, 10);
+
+      await storeToken(newUser._id, accessToken, refreshToken, hashedRecoveryToken)
+
 
       // Set access token in HTTP-only cookie
       res.cookie("accessToken", accessToken, getCookieOptions(req, {
@@ -526,7 +564,7 @@ if (req.files.proofOfAddress) {
         maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
       }));
 
-      res.status(201).json({ success: true,  message: "User registered successfully", accessToken, refreshToken });
+      res.status(201).json({ success: true,  message: "User registered successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: error.message });
@@ -552,6 +590,16 @@ app.post("/users/login", async (req, res) => {
 
     const accessToken = await generateToken(loginIdentifier, { expiresIn: "30m" })
     const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
+    const recoveryToken = crypto.randomBytes(32).toString("hex");
+    const hashedRecoveryToken = await bcrypt.hash(recoveryToken, 10);
+    const userId = user._id
+
+    await storeToken(userId, accessToken, refreshToken, hashedRecoveryToken)
+    await User.findByIdAndUpdate(
+      userId,
+      { recoveryToken: recoveryToken },
+      { new: true }
+    );
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, getCookieOptions(req, {
@@ -563,9 +611,11 @@ app.post("/users/login", async (req, res) => {
       path: "/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     }));
+
+
     console.log("Setting access token cookie");
     console.log("Access token exists:", !!accessToken);
-    res.json({ success: true, message: "User login successful", accessToken, refreshToken });
+    res.json({ success: true, message: "User login successful", tokenDetails: { accessToken, refreshToken, recoveryCode, hashedRecoveryToken } });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -810,7 +860,7 @@ app.get("/userInfo", verifyToken, async(req, res) => {
 const generateToken = async (userIdentifier,  options = { expiresIn: "1h" }) => {
   const normalizedIdentifier = String(userIdentifier).trim().toLowerCase();
   const user = await User.findOne({
-    $or: [{ email: normalizedIdentifier }, { username: normalizedIdentifier }],
+    $or: [{ email: normalizedIdentifier }, { username: normalizedIdentifier }, {_id : normalizedIdentifier}],
   });
    if (!user) {
     throw new Error("User not found")
