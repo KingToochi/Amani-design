@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
   meansOfIdentification: String,
   identificationNumber: String,
   password: String,
+  recoveryToken: String,
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],
