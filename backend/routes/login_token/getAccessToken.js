@@ -1,5 +1,5 @@
-import Token from "../../models/Token.js";
-import User from "../../models/User.js"
+import Token from "../../models/token.js";
+import User from "../../models/user.js"
 import crypto from "crypto";
 
 const getToken = async (userId, recoveryToken) => {
