@@ -1,4 +1,4 @@
-import token  from '../../models/token.js';
+import token  from '../../models/Token.js';
 
 const storeToken = async (userId, accessToken, refreshAccessToken, hashedRecoveryToken) => {
 

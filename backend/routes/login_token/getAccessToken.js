@@ -1,5 +1,5 @@
-import token from "../../models/token.js";
-import user from "../../models/user.js";
+import Token from "../../models/Token.js";
+import User from "../../models/User.js"
 import crypto from "crypto";
 
 const getToken = async (userId, recoveryToken) => {
@@ -8,7 +8,7 @@ const getToken = async (userId, recoveryToken) => {
     .update(recoveryToken)
     .digest("hex");
 
-    const existingToken = await token.findOne({ userId});
+    const existingToken = await Token.findOne({userId});
     if (existingToken) {
         if (hashedRecoveryToken !== existingToken.hashedRecoveryToken) {
             return({message: "Invalid recovery token"});
