@@ -136,31 +136,31 @@ const verifyToken = async(req, res, next) => {
   if (authHeader && authHeader.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];
   } 
-  else if (authHeader === "auth") {
-    const userId = authHeader._id
-    const getTheToken = await getToken(userId)
+  // else if (authHeader === "auth") {
+  //   const userId = authHeader._id
+  //   const getTheToken = await getToken(userId)
 
-    if (getTheToken.message === "tokens found") {
-      token = getTheToken.accessToken
-    }
+  //   if (getTheToken.message === "tokens found") {
+  //     token = getTheToken.accessToken
+  //   }
 
-    else if (getTheToken.message === "user exist but token is not found") {
-      const accessToken = generateToken(userId, {expiresIn : "30mins"})
-      const refreshAccessToken = generateToken(userId, {expiresIn : "7 days"})
+  //   else if (getTheToken.message === "user exist but token is not found") {
+  //     const accessToken = generateToken(userId, {expiresIn : "30mins"})
+  //     const refreshAccessToken = generateToken(userId, {expiresIn : "7 days"})
 
-      res.cookie("accessToken", accessToken, getCookieOptions(req, {
-        maxAge: 30 * 60 * 1000  // 30 minutes
-      }));
+  //     res.cookie("accessToken", accessToken, getCookieOptions(req, {
+  //       maxAge: 30 * 60 * 1000  // 30 minutes
+  //     }));
 
-      res.cookie("refreshAccessToken", refreshAccessToken, getCookieOptions(req, {
-        maxAge : 7 * 24 * 60 * 60 * 1000 // 7 days
-      }))
+  //     res.cookie("refreshAccessToken", refreshAccessToken, getCookieOptions(req, {
+  //       maxAge : 7 * 24 * 60 * 60 * 1000 // 7 days
+  //     }))
 
-      await storeToken(userId, accessToken, refreshAccessToken)
+  //     await storeToken(userId, accessToken, refreshAccessToken)
 
-      token = accessToken
-    }
-  }
+  //     token = accessToken
+  //   }
+  // }
   // Fall back to cookie if header not present
   else if (req.cookies.accessToken) {
     token = req.cookies.accessToken;
@@ -425,7 +425,7 @@ app.post("/users/registration", async (req, res) => {
     const mainUsername = username.toLowerCase()
     const mainEmail = email.toLowerCase()
     let hashedPassword = await bcrypt.hash(password, 10)
-    const recoveryToken = crypto.randomBytes(32).toString("hex");
+    // const recoveryToken = crypto.randomBytes(32).toString("hex");
     const newUser = new User({
       joinedAt: new Date().toISOString(),
       fname,
@@ -439,13 +439,12 @@ app.post("/users/registration", async (req, res) => {
       termsAndCondition: acceptedTerms,
       status: "approved",
       role: "user",
-      recoveryToken : recoveryToken
     });
 
     await newUser.save();
     const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
     const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
-   const hashedRecoveryToken = crypto.createHash("sha256").update(recoveryToken).digest("hex");
+  //  const hashedRecoveryToken = crypto.createHash("sha256").update(recoveryToken).digest("hex");
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, getCookieOptions(req, {
@@ -458,7 +457,7 @@ app.post("/users/registration", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     }));
 
-    await storeToken(newUser._id, accessToken, refreshToken, hashedRecoveryToken)
+    // await storeToken(newUser._id, accessToken, refreshToken, hashedRecoveryToken)
 
     res.status(201).json({ success: true, message: "User registered successfully"});
   } catch (err) {
@@ -501,7 +500,7 @@ const mainEmail = email.toLowerCase()
 
 let profilePictureUrl = ""
 let proofOfAddressUrl = ""
-let hashedPassword = await bcrypt.hash(password, 10)
+// let hashedPassword = await bcrypt.hash(password, 10)
 
 if (req.files.profilePicture) {
   const cloudRes = await cloudinary.uploader.upload(req.files.profilePicture[0].path, {
@@ -543,14 +542,13 @@ if (req.files.proofOfAddress) {
         shippingAddress: `${houseNumber} ${streetName}, ${city}, ${state}`,
         termsAndCondition: acceptedTerms,
         role: "vendor",
-        recoveryToken : recoveryToken
       });
       await newUser.save();
       const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
       const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
-      const hashedRecoveryToken = await bcrypt.hash(recoveryToken, 10);
+      // const hashedRecoveryToken = await bcrypt.hash(recoveryToken, 10);
 
-      await storeToken(newUser._id, accessToken, refreshToken, hashedRecoveryToken)
+      // await storeToken(newUser._id, accessToken, refreshToken, hashedRecoveryToken)
 
 
       // Set access token in HTTP-only cookie
@@ -590,16 +588,16 @@ app.post("/users/login", async (req, res) => {
 
     const accessToken = await generateToken(loginIdentifier, { expiresIn: "30m" })
     const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
-    const recoveryToken = crypto.randomBytes(32).toString("hex");
-    const hashedRecoveryToken = await bcrypt.hash(recoveryToken, 10);
-    const userId = user._id
+    // const recoveryToken = crypto.randomBytes(32).toString("hex");
+    // const hashedRecoveryToken = await bcrypt.hash(recoveryToken, 10);
+    // const userId = user._id
 
-    await storeToken(userId, accessToken, refreshToken, hashedRecoveryToken)
-    await User.findByIdAndUpdate(
-      userId,
-      { recoveryToken: recoveryToken },
-      { new: true }
-    );
+    // await storeToken(userId, accessToken, refreshToken, hashedRecoveryToken)
+    // await User.findByIdAndUpdate(
+    //   userId,
+    //   { recoveryToken: recoveryToken },
+    //   { new: true }
+    // );
 
     // Set access token in HTTP-only cookie
     res.cookie("accessToken", accessToken, getCookieOptions(req, {
