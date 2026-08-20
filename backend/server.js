@@ -2594,8 +2594,10 @@ console.log(
 
 console.log("CART ITEM ID:", cartProduct.itemId);
 
-        variant = productDetails.variants.find(
-          v => v._id.toString() === string(cartProduct.itemId)
+        const variant = productDetails.variants.find(
+          variant =>
+            variant.size?.toLowerCase() === cartProduct.selectedSize?.toLowerCase() &&
+            variant.color?.toLowerCase() === cartProduct.selectedColor?.toLowerCase()
         );
 
         if (!variant) {
