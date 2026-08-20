@@ -2216,42 +2216,7 @@ console.log(customerDetails)
         success: false,
         message: "Otp verification failed"
       });
-    } 
-
-    // const required_fields = await axios({
-    //   url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
-    //   method : "PUT",
-    //   headers : {
-    //     Authorization : `Bearer ${accessToken}`,
-    //     "X-Idempotency-Key": idempotencyKey,
-    //     "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-    //     "Content-Type": "application/json"
-    //   },
-    //   data : {
-    //     authorization : {
-    //       "type" : "avs",
-    //       "avs" : {
-    //         "address" : {
-    //           "country" : customerDetails.country,
-    //           "state" : customerDetails.state,
-    //           "line1" :customerDetails.line1,
-    //           "city" : customerDetails.city,
-    //           "postal_code" : customerDetails.postal_code
-
-    //         }
-    //       }
-    //     }
-    //   }
-    // })
-
-    // let required_fields_response = required_fields.data
-
-    // if (!required_fields_response  || required_fields_response  !== "success") {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Otp verification failed"
-    //   });
-    // } 
+    }  
 
 
 
@@ -2289,6 +2254,7 @@ console.log(customerDetails)
     console.log(verifyPaymentResponse);
 
     const payedAmount = Number(verifyPaymentResponse.data.amount || 0);
+    console.log(cart)
     const subtotalAmount = Number(
       amount ||
       cart.reduce((sum, product) => {
@@ -2339,6 +2305,7 @@ console.log(customerDetails)
 
     console.log("Saving order:", order);
     await order.save();
+    console.log("Order saved successfully:", order);
 
 
     
