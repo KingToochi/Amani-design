@@ -23,8 +23,7 @@ import { getAccessToken } from "./services/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 import { encryptAES } from "./services/flutterwaveEncryption.js";
-import getToken from "./routes/login_token/getAccessToken.js";
-import storeToken from "./routes/login_token/storeAccessToken.js";
+
 
 
 
@@ -1770,14 +1769,26 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
         }
       );
 
-      flutterwaveCustomer = searchResponse.data.data;
+      const customers = searchResponse.data?.data;
 
-      console.log(
-        "Existing Flutterwave customer found:",
-        flutterwaveCustomer
-      );
+      if (Array.isArray(customers) && customers.length > 0) {
+        flutterwaveCustomer = customers[0];
+
+        console.log(
+          "Existing Flutterwave customer found:",
+          flutterwaveCustomer
+        );
+      } else {
+        console.log("Customer search returned no customer.");
+      }
+
+      if (!flutterwaveCustomer) {
+        throw new Error("Customer not found in search results.");
+      }
+
     } catch (searchError) {
       console.log("Customer not found. Creating a new customer...");
+      console.log("Customer search failed:", searchError.response?.data || searchError.message);
 
       const idempotencyKey = uuidv4().replace(/-/g, "");
 
@@ -1794,7 +1805,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
             city,
             state,
             country: "NG",
-            postal_code: "480001",
+            postal_code: "480252",
           },
           phone: {
             country_code: "234",
@@ -1823,7 +1834,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Customer ready",
-      data: [flutterwaveCustomer],
+      data: flutterwaveCustomer,
       paymentInfo
 
     });
@@ -1963,6 +1974,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
 });
 app.post("/payment-method", verifyToken, async (req, res) => {
   const {paymentMethod, paymentDetails, customer, amount, currency} = req.body
+  consoler.log({"request" : req.body})
   if (!paymentMethod) {
     return res.status(400).json({
         success: false,

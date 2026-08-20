@@ -43,13 +43,9 @@ const CheckOut = () => {
     })
     const navigate = useNavigate();
     const location = useLocation();
-    const pathName = location.pathname;
-    const verifyPaymentUrl = `${BASE_URL}/verifyPayment`
-    const createPaymentUrl = `${BASE_URL}/createPayment`
     const createFlutterwaveCustomerUrl = `${BASE_URL}/createFlutterwaveCustomer`
     const redirectUrl = `${window.location.origin}/payment-callback`;
 
-    console.log(pathName)
 
     
     // ✅ Fix: Use array destructuring since context provides [cart, setCart]
@@ -225,7 +221,8 @@ const CheckOut = () => {
     const customerData = await createCustomer.json();
 
     if (customerData.success) {
-    const customer = Array.isArray(customerData.data) ? customerData.data[0] : customerData.data;
+    const customer = customerData.data;
+    console.log("Customer Data:", customer);
     navigate("/payment", {
         state: {
             customer,
