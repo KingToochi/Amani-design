@@ -1975,7 +1975,7 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
 });
 app.post("/payment-method", verifyToken, async (req, res) => {
   const {paymentMethod, paymentDetails, customer, amount, currency} = req.body
-  consoler.log({"request" : req.body})
+  console.log({"request" : req.body})
   if (!paymentMethod) {
     return res.status(400).json({
         success: false,
