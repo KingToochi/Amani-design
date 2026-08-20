@@ -1825,7 +1825,8 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
 
       console.log(
         "Flutterwave customer created:",
-        flutterwaveCustomer.id
+        flutterwaveCustomer.id,
+        flutterwaveCustomer
       );
     }
 
