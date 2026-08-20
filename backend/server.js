@@ -2337,6 +2337,7 @@ console.log(customerDetails)
       createdAt: new Date(),
     });
 
+    console.log("Saving order:", order);
     await order.save();
 
 
