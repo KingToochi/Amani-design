@@ -2171,169 +2171,754 @@ app.post("/verifyPin", verifyToken, async(req, res) => {
     });
   }
 })
-app.post("/verifyOtp", verifyToken, async(req, res) => {
-  const  auth = req.user
-  const { otp, chargeId, customerDetails, cart, amount } = req.body;
-  if (!otp || !chargeId || !cart) {
-  return res.status(400).json({
-    success: false,
-    message: "OTP, charge ID, and cart are required",
-  });
-}
+// app.post("/verifyOtp", verifyToken, async(req, res) => {
+//   const  auth = req.user
+//   const { otp, chargeId, customerDetails, cart, amount } = req.body;
+//   if (!otp || !chargeId || !cart) {
+//   return res.status(400).json({
+//     success: false,
+//     message: "OTP, charge ID, and cart are required",
+//   });
+// }
 
-console.log(cart);
+// console.log(cart);
 
-console.log(customerDetails)
+// console.log(customerDetails)
 
-  const accessToken = await getAccessToken()
+//   const accessToken = await getAccessToken()
   
 
+//   try {
+//     const verifyOtp = await axios({
+//       url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+//       method : "PUT",
+//       headers : {
+//         Authorization : `Bearer ${accessToken}`,
+//         "X-Idempotency-Key": idempotencyKey,
+//         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+//         "Content-Type": "application/json"
+//       },
+//       data : {
+//         "authorization" : {
+//           "type" : "otp",
+//           "otp" : {
+//             "code" : otp
+//           }
+
+//         }
+//       }
+//     })
+
+//     const response = await verifyOtp.data;
+
+//     if (!response || response.status !== "success") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Otp verification failed"
+//       });
+//     }  
+
+
+
+  
+
+//     const verifyPayment = await axios({
+//       url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+//       method : "GET",
+//       headers : {
+//         Authorization : `Bearer ${accessToken}`,
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//       },
+//     })
+
+//     let verifyPaymentResponse = await verifyPayment.data
+
+//     // API request failed
+//     if (verifyPaymentResponse.status !== "success") {
+//     return res.status(400).json({
+//         success: false,
+//         message: "Unable to verify payment",
+//     });
+//     }
+
+// // Charge failed
+//     if (verifyPaymentResponse.data.status !== "succeeded") {
+//     return res.status(400).json({
+//         success: false,
+//         message: "Payment was not successful",
+//         paymentStatus: verifyPaymentResponse.data.status,
+//     });
+//     }
+
+//     console.log(verifyPaymentResponse);
+
+//     const payedAmount = Number(verifyPaymentResponse.data.amount || 0);
+//     console.log({"cart": cart})
+//     let subtotalAmount = 0;
+
+// for (const product of cart) {
+//     const productDetails = await Product.findById(product._id);
+
+//     if (!productDetails) {
+//         return res.status(400).json({
+//             success: false,
+//             message: `Product ${product._id} not found`
+//         });
+//     }
+
+//     let price;
+
+//     if (productDetails.hasVariants) {
+
+//         const variant = productDetails.variants.find(
+//             variant =>
+//                 variant._id.toString() === product.itemId.toString()
+//         );
+
+//         if (!variant) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: `Variant not found for ${product.productName}`
+//             });
+//         }
+
+//         price = Number(variant.price);
+
+//     } else {
+
+//         price = Number(productDetails.basePrice);
+
+//     }
+
+//     const quantity = Number(product.quantity || 0);
+
+//     subtotalAmount += price * quantity;
+// }
+
+// console.log("Trusted subtotal:", subtotalAmount);
+
+//     if (payedAmount !== subtotalAmount) {
+//       return res.status(400).json({
+//         success : false,
+//         message : "amount paid not equal to the required amount"
+//       })
+//     }
+
+//     const order = new Order({
+//       orderNumber: `AmaniskyOrder-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
+//       products: cart.map(product => ({
+//         productId: product._id,
+//         quantity: product.quantity,
+//       })),
+//       transactionId: verifyPaymentResponse.data.id,
+//       amount: payedAmount,
+//       subtotalAmount,
+//       paymentFee: 0,
+//       amountPaid: payedAmount,
+//       currency: verifyPaymentResponse.data.currency || "NGN",
+//       paymentStatus: verifyPaymentResponse.data.status,
+//       customerEmail: customerDetails?.email || auth.email || "unknown@example.com",
+//       customerId: auth._id,
+//       customerPaymentId: verifyPaymentResponse?.data?.customer?.id || verifyPaymentResponse?.data?.customer_id || verifyPaymentResponse?.data?.meta?.customer_id || "N/A",
+//       customerName: verifyPaymentResponse?.data?.meta?.person_name || customerDetails?.name || `${customerDetails?.firstName || ""} ${customerDetails?.lastName || ""}`.trim() || "N/A",
+//       customerPhone: customerDetails?.phoneNumber || "N/A",
+//       items : cart.map(product => ({
+//         id: product.itemId,
+//         name: product.productName,
+//         price: product.productPrice,
+//         quantity: product.quantity,
+//         color: product.selectedColor,
+//         size: product.selectedSize,
+//         productId: product._id,
+//         status: "pending",
+//       })),
+//       orderStatus: "pending",
+//       createdAt: new Date(),
+//     });
+
+//     console.log("Saving order:", order);
+//     await order.save();
+//     console.log("Order saved successfully:", order);
+
+
+    
+//     console.log(verifyPaymentResponse)
+//     return res.status(200).json({
+//         success: true,
+//         data: verifyPaymentResponse,
+//         cart : cart,
+//         customerDetails : customerDetails,
+//         message : "payment successful and Order saved"
+//     });
+
+
+
+
+//   }catch(error) {
+//      console.log(
+//         JSON.stringify(error.response?.data, null, 2)
+//     );
+
+//     return res.status(error.response?.status || 500).json({
+//         success: false,
+//         message:
+//             error.response?.data?.error?.message ||
+//             error.message
+//     });
+//   }
+// })
+app.post("/verifyOtp", verifyToken, async (req, res) => {
   try {
+    const auth = req.user;
+
+    const {
+      otp,
+      chargeId,
+      customerDetails,
+      cart
+    } = req.body;
+
+    // --------------------------------------------------
+    // 1. Validate request
+    // --------------------------------------------------
+
+    if (!otp || !chargeId || !Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP, charge ID, and cart are required"
+      });
+    }
+
+    console.log("Cart:", cart);
+    console.log("Customer details:", customerDetails);
+
+    // --------------------------------------------------
+    // 2. Get Flutterwave access token
+    // --------------------------------------------------
+
+    const accessToken = await getAccessToken();
+
+    // --------------------------------------------------
+    // 3. Verify OTP
+    // --------------------------------------------------
+
     const verifyOtp = await axios({
-      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
-      method : "PUT",
-      headers : {
-        Authorization : `Bearer ${accessToken}`,
+      url: `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+      method: "PUT",
+
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
         "X-Idempotency-Key": idempotencyKey,
         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
         "Content-Type": "application/json"
       },
-      data : {
-        "authorization" : {
-          "type" : "otp",
-          "otp" : {
-            "code" : otp
-          }
 
+      data: {
+        authorization: {
+          type: "otp",
+          otp: {
+            code: otp
+          }
         }
       }
-    })
+    });
 
-    const response = await verifyOtp.data;
+    const otpResponse = verifyOtp.data;
 
-    if (!response || response.status !== "success") {
+    console.log("OTP response:", otpResponse);
+
+    if (!otpResponse || otpResponse.status !== "success") {
       return res.status(400).json({
         success: false,
-        message: "Otp verification failed"
+        message: "OTP verification failed",
+        data: otpResponse
       });
-    }  
+    }
 
-
-
-  
+    // --------------------------------------------------
+    // 4. Get the final payment status from Flutterwave
+    // --------------------------------------------------
 
     const verifyPayment = await axios({
-      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
-      method : "GET",
-      headers : {
-        Authorization : `Bearer ${accessToken}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
+      url: `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+      method: "GET",
 
-    let verifyPaymentResponse = await verifyPayment.data
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json"
+      }
+    });
 
-    // API request failed
-    if (verifyPaymentResponse.status !== "success") {
-    return res.status(400).json({
+    const paymentResponse = verifyPayment.data;
+
+    console.log("Payment response:", paymentResponse);
+
+    // --------------------------------------------------
+    // 5. Make sure Flutterwave API request succeeded
+    // --------------------------------------------------
+
+    if (paymentResponse.status !== "success") {
+      return res.status(400).json({
         success: false,
         message: "Unable to verify payment",
-    });
+        data: paymentResponse
+      });
     }
 
-// Charge failed
-    if (verifyPaymentResponse.data.status !== "succeeded") {
-    return res.status(400).json({
+    const paymentData = paymentResponse.data;
+
+    // --------------------------------------------------
+    // 6. Make sure payment itself succeeded
+    // --------------------------------------------------
+
+    if (paymentData.status !== "succeeded") {
+      return res.status(400).json({
         success: false,
         message: "Payment was not successful",
-        paymentStatus: verifyPaymentResponse.data.status,
-    });
+        paymentStatus: paymentData.status
+      });
     }
 
-    console.log(verifyPaymentResponse);
+    // --------------------------------------------------
+    // 7. Get amount actually paid
+    // --------------------------------------------------
 
-    const payedAmount = Number(verifyPaymentResponse.data.amount || 0);
-    console.log({"cart": cart})
-    const subtotalAmount = Number(
-      amount ||
-      cart.reduce((sum, product) => {
-        const price = Number(product.productPrice || product.price || 0);
-        const quantity = Number(product.quantity || 0);
-        return sum + price * quantity;
-      }, 0)
-    );
+    const paidAmount = Number(paymentData.amount || 0);
 
-    if (payedAmount !== subtotalAmount) {
+    if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
       return res.status(400).json({
-        success : false,
-        message : "amount paid not equal to the required amount"
-      })
+        success: false,
+        message: "Invalid payment amount"
+      });
     }
+
+    console.log("Paid amount:", paidAmount);
+
+    // --------------------------------------------------
+    // 8. Check if transaction was already used
+    // --------------------------------------------------
+
+    const existingOrder = await Order.findOne({
+      transactionId: paymentData.id
+    });
+
+    if (existingOrder) {
+      return res.status(409).json({
+        success: false,
+        message: "This payment has already been processed",
+        order: existingOrder
+      });
+    }
+
+    // --------------------------------------------------
+    // 9. Calculate trusted subtotal from database
+    // --------------------------------------------------
+
+    let subtotalAmount = 0;
+
+    const orderProducts = [];
+    const orderItems = [];
+
+    for (const cartProduct of cart) {
+
+      // ----------------------------------------------
+      // Find product in database
+      // ----------------------------------------------
+
+      const productDetails = await Product.findById(cartProduct._id);
+
+      if (!productDetails) {
+        return res.status(404).json({
+          success: false,
+          message: `Product ${cartProduct._id} not found`
+        });
+      }
+
+      // ----------------------------------------------
+      // Validate quantity
+      // ----------------------------------------------
+
+      const quantity = Number(cartProduct.quantity);
+
+      if (!Number.isInteger(quantity) || quantity <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid quantity for ${productDetails.productName || productDetails.name}`
+        });
+      }
+
+      let price;
+      let variant = null;
+
+      // ----------------------------------------------
+      // Product has variants
+      // ----------------------------------------------
+
+      if (productDetails.hasVariants) {
+
+        /*
+          IMPORTANT:
+
+          This assumes cartProduct.itemId contains
+          the MongoDB _id of the selected variant.
+
+          If itemId is NOT the variant ID, change this
+          to whatever field in your cart contains the
+          variant ID.
+        */
+
+        if (!cartProduct.itemId) {
+          return res.status(400).json({
+            success: false,
+            message: `Variant ID missing for ${cartProduct.productName}`
+          });
+        }
+
+        variant = productDetails.variants.find(
+          v => v._id.toString() === cartProduct.itemId.toString()
+        );
+
+        if (!variant) {
+          return res.status(400).json({
+            success: false,
+            message: `Selected variant not found for ${cartProduct.productName}`
+          });
+        }
+
+        price = Number(variant.price);
+
+      }
+
+      // ----------------------------------------------
+      // Product has no variants
+      // ----------------------------------------------
+
+      else {
+        price = Number(productDetails.basePrice);
+      }
+
+      // ----------------------------------------------
+      // Validate price
+      // ----------------------------------------------
+
+      if (!Number.isFinite(price) || price < 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid price for ${productDetails.productName || productDetails.name}`
+        });
+      }
+
+      // ----------------------------------------------
+      // Calculate item total
+      // ----------------------------------------------
+
+      const itemTotal = price * quantity;
+
+      subtotalAmount += itemTotal;
+
+      // ----------------------------------------------
+      // Save product reference
+      // ----------------------------------------------
+
+      orderProducts.push({
+        productId: productDetails._id,
+        quantity
+      });
+
+      // ----------------------------------------------
+      // Save order item
+      // ----------------------------------------------
+
+      orderItems.push({
+        id: cartProduct.itemId || productDetails._id.toString(),
+
+        name:
+          cartProduct.productName ||
+          productDetails.productName ||
+          productDetails.name,
+
+        // IMPORTANT:
+        // Use database price, NOT frontend price
+        price,
+
+        quantity,
+
+        color: cartProduct.selectedColor || undefined,
+
+        size: cartProduct.selectedSize || undefined,
+
+        productId: productDetails._id.toString(),
+
+        status: "pending"
+      });
+    }
+
+    // --------------------------------------------------
+    // 10. Round subtotal
+    // --------------------------------------------------
+
+    subtotalAmount = Number(subtotalAmount.toFixed(2));
+
+    console.log("Trusted subtotal:", subtotalAmount);
+    console.log("Flutterwave paid:", paidAmount);
+
+    // --------------------------------------------------
+    // 11. Compare payment amount
+    // --------------------------------------------------
+
+    if (paidAmount.toFixed(2) !== subtotalAmount.toFixed(2)) {
+
+      console.log("AMOUNT MISMATCH:", {
+        paidAmount,
+        subtotalAmount
+      });
+
+      return res.status(400).json({
+        success: false,
+        message: "Amount paid is not equal to the required amount",
+        paidAmount,
+        requiredAmount: subtotalAmount
+      });
+    }
+
+    // --------------------------------------------------
+    // 12. Get customer information
+    // --------------------------------------------------
+
+    const customerEmail =
+      customerDetails?.email ||
+      auth?.email;
+
+    const customerName =
+      paymentData?.meta?.person_name ||
+      customerDetails?.name ||
+      `${customerDetails?.firstName || ""} ${customerDetails?.lastName || ""}`.trim();
+
+    const customerPhone =
+      customerDetails?.phoneNumber ||
+      customerDetails?.phone ||
+      "N/A";
+
+    const customerPaymentId =
+      paymentData?.customer?.id ||
+      paymentData?.customer_id ||
+      paymentData?.meta?.customer_id ||
+      "N/A";
+
+    // --------------------------------------------------
+    // 13. Validate required customer information
+    // --------------------------------------------------
+
+    if (!customerEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer email is required"
+      });
+    }
+
+    if (!auth?._id) {
+      return res.status(401).json({
+        success: false,
+        message: "Authenticated user ID is missing"
+      });
+    }
+
+    // --------------------------------------------------
+    // 14. Create order
+    // --------------------------------------------------
 
     const order = new Order({
-      orderNumber: `AmaniskyOrder-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
-      products: cart.map(product => ({
-        productId: product._id,
-        quantity: product.quantity,
-      })),
-      transactionId: verifyPaymentResponse.data.id,
-      amount: payedAmount,
+
+      orderNumber:
+        `AmaniskyOrder-${Date.now()}-${Math.random()
+          .toString(36)
+          .substring(2, 10)}`,
+
+      products: orderProducts,
+
+      transactionId: paymentData.id,
+
+      amount: paidAmount,
+
       subtotalAmount,
+
       paymentFee: 0,
-      amountPaid: payedAmount,
-      currency: verifyPaymentResponse.data.currency || "NGN",
-      paymentStatus: verifyPaymentResponse.data.status,
-      customerEmail: customerDetails?.email || auth.email || "unknown@example.com",
-      customerId: auth._id,
-      customerPaymentId: verifyPaymentResponse?.data?.customer?.id || verifyPaymentResponse?.data?.customer_id || verifyPaymentResponse?.data?.meta?.customer_id || "N/A",
-      customerName: verifyPaymentResponse?.data?.meta?.person_name || customerDetails?.name || `${customerDetails?.firstName || ""} ${customerDetails?.lastName || ""}`.trim() || "N/A",
-      customerPhone: customerDetails?.phoneNumber || "N/A",
-      items : cart.map(product => ({
-        id: product.itemId,
-        name: product.productName,
-        price: product.productPrice,
-        quantity: product.quantity,
-        color: product.selectedColor,
-        size: product.selectedSize,
-        productId: product._id,
-        status: "pending",
-      })),
+
+      amountPaid: paidAmount,
+
+      currency: paymentData.currency || "NGN",
+
+      // Your schema expects "successful",
+      // Flutterwave returns "succeeded"
+      paymentStatus: "successful",
+
+      customerEmail,
+
+      customerId: auth._id.toString(),
+
+      customerPaymentId,
+
+      customerName: customerName || "N/A",
+
+      customerPhone,
+
+      items: orderItems,
+
       orderStatus: "pending",
-      createdAt: new Date(),
+
+      createdAt: new Date()
     });
+
+    // --------------------------------------------------
+    // 15. Validate order BEFORE saving
+    // --------------------------------------------------
+
+    const validationError = order.validateSync();
+
+    if (validationError) {
+
+      console.error(
+        "ORDER VALIDATION ERROR:",
+        validationError.errors
+      );
+
+      return res.status(400).json({
+        success: false,
+        message: "Order validation failed",
+
+        errors: Object.fromEntries(
+          Object.entries(validationError.errors).map(
+            ([field, error]) => [
+              field,
+              error.message
+            ]
+          )
+        )
+      });
+    }
+
+    // --------------------------------------------------
+    // 16. Save order
+    // --------------------------------------------------
 
     console.log("Saving order:", order);
-    await order.save();
-    console.log("Order saved successfully:", order);
 
+    const savedOrder = await order.save();
 
-    
-    console.log(verifyPaymentResponse)
-    return res.status(200).json({
-        success: true,
-        data: verifyPaymentResponse,
-        cart : cart,
-        customerDetails : customerDetails,
-        message : "payment successful and Order saved"
-    });
-
-
-
-
-  }catch(error) {
-     console.log(
-        JSON.stringify(error.response?.data, null, 2)
+    console.log(
+      "ORDER SAVED SUCCESSFULLY:",
+      savedOrder._id
     );
 
-    return res.status(error.response?.status || 500).json({
+    // --------------------------------------------------
+    // 17. Return response
+    // --------------------------------------------------
+
+    return res.status(200).json({
+      success: true,
+
+      message: "Payment successful and order saved",
+
+      order: savedOrder,
+
+      payment: paymentResponse,
+
+      cart,
+
+      customerDetails
+    });
+
+  } catch (error) {
+
+    // --------------------------------------------------
+    // Axios error
+    // --------------------------------------------------
+
+    if (error.response) {
+
+      console.error(
+        "FLUTTERWAVE ERROR:",
+        JSON.stringify(
+          error.response.data,
+          null,
+          2
+        )
+      );
+
+      return res.status(
+        error.response.status || 500
+      ).json({
         success: false,
+
         message:
-            error.response?.data?.error?.message ||
-            error.message
+          error.response.data?.error?.message ||
+          error.response.data?.message ||
+          "Flutterwave request failed",
+
+        error: error.response.data
+      });
+    }
+
+    // --------------------------------------------------
+    // Mongoose validation error
+    // --------------------------------------------------
+
+    if (error.name === "ValidationError") {
+
+      console.error(
+        "MONGOOSE VALIDATION ERROR:",
+        error.errors
+      );
+
+      return res.status(400).json({
+        success: false,
+        message: "Order validation failed",
+
+        errors: Object.fromEntries(
+          Object.entries(error.errors).map(
+            ([field, err]) => [
+              field,
+              err.message
+            ]
+          )
+        )
+      });
+    }
+
+    // --------------------------------------------------
+    // Mongo duplicate key
+    // --------------------------------------------------
+
+    if (error.code === 11000) {
+
+      console.error(
+        "DUPLICATE KEY ERROR:",
+        error.keyValue
+      );
+
+      return res.status(409).json({
+        success: false,
+        message: "Order or transaction already exists",
+        duplicate: error.keyValue
+      });
+    }
+
+    // --------------------------------------------------
+    // Unknown error
+    // --------------------------------------------------
+
+    console.error(
+      "VERIFY OTP ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error"
     });
   }
-})
+});
 
 app.get("/customerOrders", verifyToken, async(req, res) => {
   const auth = req.user;
