@@ -2322,7 +2322,7 @@ console.log(customerDetails)
 
 
   }catch(error) {
-     console.error(
+     console.log(
         JSON.stringify(error.response?.data, null, 2)
     );
 
