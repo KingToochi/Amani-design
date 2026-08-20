@@ -565,7 +565,7 @@ if (req.files.proofOfAddress) {
       res.status(201).json({ success: true,  message: "User registered successfully" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, error: error.message });
+      res.status(500).json({ success: false, message : "sever error", error: error.message });
     }
       
 })
@@ -617,7 +617,7 @@ app.post("/users/login", async (req, res) => {
     res.json({ success: true, message: "User login successful"});
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -635,6 +635,9 @@ app.post("/logout", (req, res) => {
 
 app.post("/refresh", async (req, res) => {
   const token = req.cookies.refreshToken;
+  console.log("REFRESH REQUEST");
+  console.log("Cookies:", req.cookies);
+  console.log("Refresh token exists:", !!req.cookies?.refreshToken);
 
   if (!token) return res.status(401).json({ message: "No refresh token" });
 
@@ -687,7 +690,7 @@ app.post("/users/login/admin", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
     }));
 
-    res.json({ success: true, message: "Admin login successful", accessToken, refreshToken  });
+    res.json({ success: true, message: "Admin login successful" });
   }catch(error){
     res.status(500).json({ message: "Server error", error: error.message});
   }
