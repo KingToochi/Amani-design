@@ -613,7 +613,7 @@ app.post("/users/login", async (req, res) => {
 
     console.log("Setting access token cookie");
     console.log("Access token exists:", !!accessToken);
-    res.json({ success: true, message: "User login successful", tokenDetails: { accessToken, refreshToken, recoveryCode, hashedRecoveryToken } });
+    res.json({ success: true, message: "User login successful"});
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
