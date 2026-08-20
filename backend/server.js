@@ -616,7 +616,8 @@ app.post("/users/login", async (req, res) => {
     console.log("Access token exists:", !!accessToken);
     res.json({ success: true, message: "User login successful"});
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Login error:", err);
+    res.status(500).json({ message: err.message });
   }
 });
 
