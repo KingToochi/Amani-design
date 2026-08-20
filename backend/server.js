@@ -860,7 +860,7 @@ app.get("/userInfo", verifyToken, async(req, res) => {
 const generateToken = async (userIdentifier,  options = { expiresIn: "1h" }) => {
   const normalizedIdentifier = String(userIdentifier).trim().toLowerCase();
   const user = await User.findOne({
-    $or: [{ email: normalizedIdentifier }, { username: normalizedIdentifier }, {_id : normalizedIdentifier}],
+    $or: [{ email: normalizedIdentifier }, { username: normalizedIdentifier }],
   });
    if (!user) {
     throw new Error("User not found")
