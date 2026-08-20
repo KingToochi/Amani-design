@@ -2574,9 +2574,28 @@ app.post("/verifyOtp", verifyToken, async (req, res) => {
             message: `Variant ID missing for ${cartProduct.productName}`
           });
         }
+        console.log("PRODUCT:", {
+  productId: productDetails._id,
+  name: productDetails.productName,
+  hasVariants: productDetails.hasVariants
+});
+
+console.log("CART PRODUCT:", cartProduct);
+
+console.log(
+  "VARIANT IDS:",
+  productDetails.variants.map(v => ({
+    id: v._id?.toString(),
+    price: v.price,
+    color: v.color,
+    size: v.size
+  }))
+);
+
+console.log("CART ITEM ID:", cartProduct.itemId);
 
         variant = productDetails.variants.find(
-          v => v._id.toString() === cartProduct.itemId.toString()
+          v => v._id.toString() === string(cartProduct.itemId)
         );
 
         if (!variant) {
