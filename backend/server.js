@@ -2254,7 +2254,7 @@ console.log(customerDetails)
     console.log(verifyPaymentResponse);
 
     const payedAmount = Number(verifyPaymentResponse.data.amount || 0);
-    console.log(cart)
+    console.log({"cart": cart})
     const subtotalAmount = Number(
       amount ||
       cart.reduce((sum, product) => {
