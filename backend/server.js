@@ -2321,7 +2321,7 @@ console.log(customerDetails)
       customerEmail: customerDetails?.email || auth.email || "unknown@example.com",
       customerId: auth._id,
       customerPaymentId: verifyPaymentResponse?.data?.customer?.id || verifyPaymentResponse?.data?.customer_id || verifyPaymentResponse?.data?.meta?.customer_id || "N/A",
-      customerName: verifyPaymentResponse?.data?.meta?.name || customerDetails?.name || `${customerDetails?.firstName || ""} ${customerDetails?.lastName || ""}`.trim() || "N/A",
+      customerName: verifyPaymentResponse?.data?.meta?.person_name || customerDetails?.name || `${customerDetails?.firstName || ""} ${customerDetails?.lastName || ""}`.trim() || "N/A",
       customerPhone: customerDetails?.phoneNumber || "N/A",
       items : cart.map(product => ({
         id: product.itemId,
