@@ -2076,7 +2076,7 @@ app.post("/paymentFee", verifyToken, async (req, res) => {
     }
 });
   app.post("/payment-method", verifyToken, async (req, res) => {
-  const {paymentMethod, paymentDetails, customer, subtotal,subtotal,amount, paymentFee, totalAmount, currency} = req.body
+  const {paymentMethod, paymentDetails, customer,subtotal,amount, paymentFee, totalAmount, currency} = req.body
   console.log({"request" : req.body})
   if (!paymentMethod) {
     return res.status(400).json({
