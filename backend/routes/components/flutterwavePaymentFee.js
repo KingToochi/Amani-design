@@ -16,7 +16,7 @@ const getFlutterwavePaymentFees = async (
             "https://developersandbox-api.flutterwave.com/fees",
             {
                 headers: {
-                    // Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${accessToken}`,
                     Accept: "application/json",
                 },
 
