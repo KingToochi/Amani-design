@@ -1972,7 +1972,6 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
 
 app.post("/paymentFee", verifyToken, async (req, res) => {
     try {
-
         const {
             cart,
             payment_method,
@@ -2005,6 +2004,7 @@ app.post("/paymentFee", verifyToken, async (req, res) => {
 
         // Get Flutterwave access token
         const accessToken = await getAccessToken();
+        console.log(accessToken)
 
         // Calculate subtotal from database
         const subtotal = await calculateAmount(cart);
