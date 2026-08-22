@@ -1744,7 +1744,6 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
       city: city,
       state: state,
       phoneNumber: phoneNumber,
-      subtotal: amount,
       paymentMethod : paymentMethod
     }
 
