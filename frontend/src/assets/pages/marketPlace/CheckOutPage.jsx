@@ -162,7 +162,8 @@ const CheckOut = () => {
         return cart.reduce((sum, item) => {
             const price = item?.productPrice || 0;
             const quantity = item?.quantity || 0;
-            return sum + (price * quantity);
+            const subtotal = sum + (price * quantity);
+            return Number(subtotal.toFixed(2))
         }, 0);
     };
 
@@ -175,22 +176,20 @@ const CheckOut = () => {
     //     return calculateSubtotal() * 0.08;
     // };
 
-    const calculatePaymentFee = (subtotal = calculateSubtotal()) => {
-        const feeRate = Number(import.meta.env.VITE_PAYMENT_FEE_RATE || 0.029);
-        const feeFixed = Number(import.meta.env.VITE_PAYMENT_FEE_FIXED || 100);
-        return Number((subtotal * feeRate + feeFixed).toFixed(2));
-    };
+    // const calculatePaymentFee = (subtotal = calculateSubtotal()) => {
+    //     const feeRate = Number(import.meta.env.VITE_PAYMENT_FEE_RATE || 0.029);
+    //     const feeFixed = Number(import.meta.env.VITE_PAYMENT_FEE_FIXED || 100);
+    //     return Number((subtotal * feeRate + feeFixed).toFixed(2));
+    // };
 
-    const calculateTotal = () => {
-        const subtotal = calculateSubtotal();
-        const paymentFee = calculatePaymentFee(subtotal);
-        return Number((subtotal + paymentFee).toFixed(2));
-    };
+    // const calculateTotal = () => {
+    //     const subtotal = calculateSubtotal();
+    //     // const paymentFee = calculatePaymentFee(subtotal);
+    //     return Number((subtotal).toFixed(2));
+    // };
 
     const handlePlaceOrder = async () => {
-        const subtotal = calculateSubtotal();
-        const paymentFee = calculatePaymentFee(subtotal);
-        const amountToCharge = calculateTotal();
+        const subtotal = calculateSubtotal()
 
   try {
     const createCustomer = await CustomFetch(createFlutterwaveCustomerUrl, {
@@ -200,7 +199,7 @@ const CheckOut = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        amount: amountToCharge,
+        subtotal: subtotal,
         currency: "NGN",
         email: userInfo?.email || "",
         fname: userInfo?.fname || "",
@@ -226,7 +225,7 @@ const CheckOut = () => {
     navigate("/payment", {
         state: {
             customer,
-            amount: customerData.paymentInfo?.amount ?? amountToCharge,
+            subtotal: customerData.paymentInfo?.subtotal ?? subtotal,
             currency: "NGN",
             paymentMethod: customerData.paymentInfo?.paymentMethod ?? paymentMethod,
             cart,
@@ -537,14 +536,14 @@ const CheckOut = () => {
 
                             {/* Price Breakdown */}
                             <div className="space-y-3 py-4 border-t border-gray-100">
-                                <div className="flex justify-between text-sm">
+                                {/* <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Subtotal</span>
                                     <span className="font-medium flex items-center"><FaNairaSign/>{calculateSubtotal().toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between text-sm">
+                                </div> */}
+                                {/* <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Payment charge</span>
                                     <span className="font-medium flex items-center"><FaNairaSign/>{calculatePaymentFee().toFixed(2)}</span>
-                                </div>
+                                </div> */}
                                 {/* <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Shipping</span>
                                     {calculateShipping() === 0 ? (
@@ -558,8 +557,8 @@ const CheckOut = () => {
                                     <span className="font-medium">${calculateTax().toFixed(2)}</span>
                                 </div> */}
                                 <div className="flex justify-between text-lg font-semibold pt-3 border-t border-gray-200">
-                                    <span>Total</span>
-                                    <span className="flex items-center text-black"><FaNairaSign/>{calculateTotal().toFixed(2)}</span>
+                                    <span>Amount</span>
+                                    <span className="flex items-center text-black"><FaNairaSign/>{calculateSubtotal().toFixed(2)}</span>
                                 </div>
                             </div>
 

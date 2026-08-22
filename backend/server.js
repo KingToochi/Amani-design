@@ -23,6 +23,8 @@ import { getAccessToken } from "./services/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 import { encryptAES } from "./services/flutterwaveEncryption.js";
+import calculateAmount from "./routes/components/calculateAmount.js";
+import getFlutterwavePaymentFees from "./routes/components/flutterwavePaymentFee.js";
 
 
 
@@ -1693,7 +1695,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
     console.log("Create customer request body:", req.body);
 
     const {
-      amount,
+      subtotal,
       paymentMethod,
       email,
       fname,
@@ -1705,7 +1707,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!amount) {
+    if (!subtotal) {
       return res.status(400).json({
         success: false,
         message: "Amount is required",
@@ -1742,7 +1744,7 @@ app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
       city: city,
       state: state,
       phoneNumber: phoneNumber,
-      amount: amount,
+      subtotal: amount,
       paymentMethod : paymentMethod
     }
 
@@ -1973,8 +1975,108 @@ app.post("/verifyPayment", verifyToken, async(req, res) => {
     });
   }
 });
-app.post("/payment-method", verifyToken, async (req, res) => {
-  const {paymentMethod, paymentDetails, customer, amount, currency} = req.body
+
+app.post("/paymentFee", verifyToken, async (req, res) => {
+    try {
+
+        const {
+            cart,
+            payment_method,
+            currency
+        } = req.body;
+
+        // Validate cart
+        if (!Array.isArray(cart) || cart.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Cart is empty"
+            });
+        }
+
+        // Validate payment method
+        if (!payment_method) {
+            return res.status(400).json({
+                success: false,
+                message: "Payment method is required"
+            });
+        }
+
+        // Validate currency
+        if (!currency) {
+            return res.status(400).json({
+                success: false,
+                message: "Currency is required"
+            });
+        }
+
+        // Get Flutterwave access token
+        const accessToken = await getAccessToken();
+
+        // Calculate subtotal from database
+        const subtotal = await calculateAmount(cart);
+
+        console.log("Calculated subtotal:", subtotal);
+
+        if (!Number.isFinite(subtotal) || subtotal <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Unable to calculate total amount"
+            });
+        }
+
+        // Get Flutterwave fee
+        const paymentFee = await getFlutterwavePaymentFees(
+            subtotal,
+            currency,
+            payment_method,
+            accessToken
+        );
+
+        console.log("Payment fee:", paymentFee);
+
+        if (!Number.isFinite(paymentFee) || paymentFee < 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Unable to get payment fee"
+            });
+        }
+
+        // Calculate final amount
+        const totalAmount = Number(
+            (subtotal + paymentFee).toFixed(2)
+        );
+
+        console.log("Subtotal:", subtotal);
+        console.log("Payment fee:", paymentFee);
+        console.log("Total amount:", totalAmount);
+
+        return res.status(200).json({
+            success: true,
+            subtotal,
+            paymentFee,
+            totalAmount,
+            currency,
+            payment_method
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Payment fee error:",
+            error.response?.data || error.message
+        );
+
+        return res.status(500).json({
+            success: false,
+            message:
+                error.response?.data?.error?.message ||
+                error.message ||
+                "Unable to calculate payment fee"
+        });
+    }
+});
+  app.post("/payment-method", verifyToken, async (req, res) => {
+  const {paymentMethod, paymentDetails, customer, subtotal,subtotal,amount, paymentFee, totalAmount, currency} = req.body
   console.log({"request" : req.body})
   if (!paymentMethod) {
     return res.status(400).json({
@@ -2001,13 +2103,14 @@ app.post("/payment-method", verifyToken, async (req, res) => {
         });
       }
 
-      if (!currency || !amount) {
+      if (!currency || !totalAmount ) {
         return res.status(400).json({
           success : false,
           message: "currency and amount is required"
         });
       }
-  
+
+      
       try {
     const encryptedCard = {
         nonce,
@@ -2084,7 +2187,7 @@ app.post("/payment-method", verifyToken, async (req, res) => {
         "currency" : currency,
         customer_id : customer.id,
         "payment_method_id" : paymentMethodId,
-        "amount" : Number(amount),
+        "amount" : Number(totalAmount),
         "meta" : {
           person_name : customer.name.first + " " + customer.name.last,
         }

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import {
     CreditCard,
     Landmark,
@@ -18,6 +18,7 @@ const FlutterwavePaymentData = () => {
     const { state } = useLocation();
     const navigate = useNavigate()
     const url = `${BASE_URL}/payment-method`;
+    const paymentFeeUrl = `${BASE_URL}/paymentFee`
     const [paymentDetails, setPaymentDetails] = useState({
         card : {
             cardNumber : "",
@@ -33,11 +34,14 @@ const FlutterwavePaymentData = () => {
         },
 
     });
+    const [paymentFee, setPaymentFee] = useState(0);
+    const [amount, setAmount] = useState(0)
+    const [totalAmount, setTotalAmount] = useState(0);
     const [errors, setErrors] = useState({});
 
     const {
         customer,
-        amount,
+        subtotal,
         currency,
         paymentMethod,
         cart,
@@ -179,7 +183,10 @@ const FlutterwavePaymentData = () => {
 
         console.log({
             customer,
+            subtotal,
             amount,
+            paymentFee,
+            totalAmount,
             currency,
             paymentMethod,
             paymentDetails: payload,
@@ -193,7 +200,10 @@ const FlutterwavePaymentData = () => {
                     paymentMethod : paymentMethod,
                     paymentDetails : payload,
                     customer : customer,
+                    subtotal : subtotal,
                     amount : amount,
+                    paymentFee : paymentFee,
+                    totalAmount : totalAmount,
                     currency : currency
                 })
             })
@@ -217,7 +227,7 @@ const FlutterwavePaymentData = () => {
                         chargeId : chargeId,
                         customer : customer,
                         cart : cart,
-                        amount,
+                        subtotal,
                         currency,
                     }
                 })
@@ -232,6 +242,45 @@ const FlutterwavePaymentData = () => {
             setLoading(false)
         }
     }
+    useEffect(() => {
+    const createPaymentFee = async () => {
+        try {
+            if (!cart || cart.length === 0) return;
+            if (!currency || !paymentMethod) return;
+
+            const response = await CustomFetch(paymentFeeUrl, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    cart,
+                    currency,
+                    payment_method: paymentMethod
+                })
+            });
+
+            const data = await response.json();
+
+            console.log("Payment fee response:", data);
+
+            if (!response.ok || !data.success) {
+                console.error(data.message || "Unable to calculate payment fee");
+                return;
+            }
+
+            setPaymentFee(Number(data.paymentFee));
+            setTotalAmount(Number(data.totalAmount));
+            setAmount(Number(data.subtotal))
+
+        } catch (error) {
+            console.error("Error getting payment fee:", error);
+        }
+    };
+
+    createPaymentFee();
+}, [cart, currency, paymentMethod]);
 
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4">
@@ -468,14 +517,27 @@ const FlutterwavePaymentData = () => {
 
                         <hr />
 
-                        <div className="flex justify-between">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex justify-between">
+                                <span>Amount</span>
+                                <span className="font-bold">
+                                    {currency} {amount?.toLocaleString()}
+                                </span>
+                            </div>
 
-                            <span>Amount</span>
+                            <div className="flex justify-between">
+                                <span>transaction Fee</span>
+                                <span className="font-bold">
+                                    {currency} {paymentFee?.toLocaleString()}
+                                </span>
+                            </div>
 
-                            <span className="font-bold">
-                                {currency} {amount?.toLocaleString()}
-                            </span>
-
+                            <div className="flex justify-between">
+                                <span>Total Amount</span>
+                                <span className="font-bold">
+                                    {currency} {totalAmount?.toLocaleString()}
+                                </span>
+                            </div>
                         </div>
 
                         <div className="flex justify-between">
