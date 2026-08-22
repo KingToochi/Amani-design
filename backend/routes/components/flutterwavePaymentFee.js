@@ -1,5 +1,5 @@
 import axios from "axios";
-import crypto from "crypto";
+
 
 const getFlutterwavePaymentFees = async (
     subtotal,
@@ -16,9 +16,8 @@ const getFlutterwavePaymentFees = async (
             "https://developersandbox-api.flutterwave.com/fees",
             {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    // Authorization: `Bearer ${accessToken}`,
                     Accept: "application/json",
-                    "X-Trace-Id": crypto.randomUUID()
                 },
 
                 params: {
