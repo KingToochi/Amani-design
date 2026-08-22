@@ -1691,170 +1691,165 @@ app.get(
 );
 
 app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
-  try {
-    console.log("Create customer request body:", req.body);
-
-    const {
-      subtotal,
-      paymentMethod,
-      email,
-      fname,
-      lname,
-      shippingAddress,
-      city,
-      state,
-      phoneNumber,
-    } = req.body;
-
-    // Validate required fields
-    if (!subtotal) {
-      return res.status(400).json({
-        success: false,
-        message: "Amount is required",
-      });
-    }
-
-    if (!paymentMethod) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment method is required",
-      });
-    }
-
-    if (
-      !email ||
-      !fname ||
-      !lname ||
-      !shippingAddress ||
-      !city ||
-      !state ||
-      !phoneNumber
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required customer information",
-      });
-    }
-
-    const paymentInfo = {
-      email: email,
-      fname: fname,
-      lname: lname,
-      shippingAddress: shippingAddress,
-      city: city,
-      state: state,
-      phoneNumber: phoneNumber,
-      paymentMethod : paymentMethod
-    }
-
-    const formattedPhone = phoneNumber.startsWith("0")
-      ? phoneNumber.substring(1)
-      : phoneNumber;
-
-    const accessToken = await getAccessToken();
-
-    let flutterwaveCustomer;
-
-    // Try to find customer
     try {
-      const searchResponse = await axios.post(
-        "https://developersandbox-api.flutterwave.com/customers/search",
-        {
-          email,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        console.log("Create customer request body:", req.body);
 
-      const customers = searchResponse.data?.data;
-
-      if (Array.isArray(customers) && customers.length > 0) {
-        flutterwaveCustomer = customers[0];
-
-        console.log(
-          "Existing Flutterwave customer found:",
-          flutterwaveCustomer
-        );
-      } else {
-        console.log("Customer search returned no customer.");
-      }
-
-      if (!flutterwaveCustomer) {
-        throw new Error("Customer not found in search results.");
-      }
-
-    } catch (searchError) {
-      console.log("Customer not found. Creating a new customer...");
-      console.log("Customer search failed:", searchError.response?.data || searchError.message);
-
-      const idempotencyKey = uuidv4().replace(/-/g, "");
-
-      const createResponse = await axios.post(
-        "https://developersandbox-api.flutterwave.com/customers",
-        {
-          email,
-          name: {
-            first: fname,
-            last: lname,
-          },
-          address: {
-            line1: shippingAddress,
+        const {
+            paymentMethod,
+            email,
+            fname,
+            lname,
+            shippingAddress,
             city,
             state,
-            country: "NG",
-            postal_code: "480252",
-          },
-          phone: {
-            country_code: "234",
-            number: formattedPhone,
-          },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "X-Idempotency-Key": idempotencyKey,
-            "Content-Type": "application/json",
-          },
+            phoneNumber,
+        } = req.body;
+
+        // Validate payment method
+        if (!paymentMethod) {
+            return res.status(400).json({
+                success: false,
+                message: "Payment method is required",
+            });
         }
-      );
 
-      flutterwaveCustomer = createResponse.data.data;
+        // Validate customer information
+        if (
+            !email ||
+            !fname ||
+            !lname ||
+            !shippingAddress ||
+            !city ||
+            !state ||
+            !phoneNumber
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required customer information",
+            });
+        }
 
-      console.log(
-        "Flutterwave customer created:",
-        flutterwaveCustomer.id,
-        flutterwaveCustomer
-      );
+        const formattedPhone = phoneNumber.startsWith("0")
+            ? phoneNumber.substring(1)
+            : phoneNumber;
+
+        const accessToken = await getAccessToken();
+
+        let flutterwaveCustomer = null;
+
+        /*
+         * 1. Search for existing customer
+         */
+        const searchResponse = await axios.post(
+            "https://developersandbox-api.flutterwave.com/customers/search",
+            {
+                email,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        const customers = searchResponse.data?.data;
+
+        if (Array.isArray(customers) && customers.length > 0) {
+            flutterwaveCustomer = customers[0];
+
+            console.log(
+                "Existing Flutterwave customer found:",
+                flutterwaveCustomer
+            );
+        }
+
+        /*
+         * 2. Create customer only if one doesn't exist
+         */
+        if (!flutterwaveCustomer) {
+
+            const idempotencyKey = uuidv4().replace(/-/g, "");
+
+            const createResponse = await axios.post(
+                "https://developersandbox-api.flutterwave.com/customers",
+                {
+                    email,
+
+                    name: {
+                        first: fname,
+                        last: lname,
+                    },
+
+                    address: {
+                        line1: shippingAddress,
+                        city,
+                        state,
+                        country: "NG",
+                        postal_code: "480252",
+                    },
+
+                    phone: {
+                        country_code: "234",
+                        number: formattedPhone,
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "X-Idempotency-Key": idempotencyKey,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            flutterwaveCustomer = createResponse.data?.data;
+
+            console.log(
+                "Flutterwave customer created:",
+                flutterwaveCustomer?.id
+            );
+        }
+
+        /*
+         * 3. Information needed later for payment
+         */
+        const paymentInfo = {
+            email,
+            fname,
+            lname,
+            shippingAddress,
+            city,
+            state,
+            phoneNumber,
+            paymentMethod,
+        };
+
+        return res.status(200).json({
+            success: true,
+            message: "Customer ready",
+            data: flutterwaveCustomer,
+            paymentInfo,
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Create customer error:",
+            error.response?.data || error.message
+        );
+
+        return res.status(error.response?.status || 500).json({
+            success: false,
+            message:
+                error.response?.data?.error?.message ||
+                error.response?.data?.message ||
+                error.message ||
+                "Unable to create Flutterwave customer",
+
+            error: error.response?.data || null,
+        });
     }
-
-  
-
-    return res.status(200).json({
-      success: true,
-      message: "Customer ready",
-      data: flutterwaveCustomer,
-      paymentInfo
-
-    });
-  } catch (error) {
-    console.error(
-      "Create customer error:",
-      error.response?.data || error.message
-    );
-
-    return res.status(500).json({
-      success: false,
-      message:
-        error.response?.data?.error?.message ||
-        error.response?.data?.message ||
-        error.message,
-      error: error.response?.data || null,
-    });
-  }
 });
 
 
