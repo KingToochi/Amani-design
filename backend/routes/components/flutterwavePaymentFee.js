@@ -1,4 +1,5 @@
 import axios from "axios";
+import crypto from "crypto";
 
 const getFlutterwavePaymentFees = async (
     subtotal,
@@ -6,44 +7,54 @@ const getFlutterwavePaymentFees = async (
     payment_method,
     accessToken
 ) => {
-        console.log(accessToken)
-        console.log(payment_method)
-        console.log(currency)
-        console.log(subtotal)
-     
+
     try {
-        const amount = Number(subtotal.toFixed(2));
-        console.log(amount)
 
-        const getPaymentFee = await axios({
-            url: "https://developersandbox-api.flutterwave.com/fees",
-            method: "GET",
+        const amount = Number(Number(subtotal).toFixed(2));
 
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                Accept: "application/json",
-            },
+        const response = await axios.get(
+            "https://developersandbox-api.flutterwave.com/fees",
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    Accept: "application/json",
+                    "X-Trace-Id": crypto.randomUUID()
+                },
 
-            params: {
-                amount,
-                currency,
-                payment_method,
-            },
-        });
+                params: {
+                    amount,
+                    currency,
+                    payment_method,
+                    country: "NG"
+                }
+            }
+        );
 
-        if (getPaymentFee.data.status !== "success") {
-            throw new Error("Unable to generate payment fee");
+        console.log(
+            "Flutterwave fee response:",
+            JSON.stringify(response.data, null, 2)
+        );
+
+        if (response.data?.status !== "success") {
+            throw new Error(
+                response.data?.message ||
+                "Unable to generate payment fee"
+            );
         }
 
-        const fees = getPaymentFee.data.data.fee || [];
+        const fees = response.data?.data?.fee || [];
 
-        const paymentFee = fees.reduce((total, fee) => {
-        return total + Number(fee.amount || 0);
-        }, 0);
+        const paymentFee = fees.reduce(
+            (total, fee) => {
+                return total + Number(fee.amount || 0);
+            },
+            0
+        );
 
-        return paymentFee
+        return Number(paymentFee.toFixed(2));
 
     } catch (error) {
+
         console.error("STATUS:", error.response?.status);
 
         console.error(
@@ -64,5 +75,4 @@ const getFlutterwavePaymentFees = async (
         throw error;
     }
 };
-
 export default getFlutterwavePaymentFees;
