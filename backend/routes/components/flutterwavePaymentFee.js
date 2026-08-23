@@ -19,16 +19,12 @@ const getFlutterwavePaymentFees = async (
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     Accept: "application/json",
-                     "X-Trace-Id": crypto.randomUUID()
                 },
 
                 params: {
                     amount,
-                    card6 : "123456",
-                    network : "mtn",
                     currency,
                     payment_method,
-                    country: "NG"
                 }
             }
         );

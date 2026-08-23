@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../hooks/AuthProvider";
 import ServerError from "../components/ServerError";
+import BankList from "../components/BankList";
 
 
 const DesignerRegistration = () => {
@@ -40,6 +41,7 @@ const DesignerRegistration = () => {
     const [successMessage, setSuccessMessage] = useState({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const formInputValidation = async(event) => {
+        console.log(event)
         event.preventDefault()
         let {name, id, value, files, type, checked} = event.target
         const file = files?.[0]
@@ -543,10 +545,24 @@ const DesignerRegistration = () => {
                     <label htmlFor="bankName"
                     className="w-full font-semibold"
                     >Bank</label>
-                    <input type="text" id="bankName" value={formData.bankName} placeholder="Bank Name" onBlur={formInputValidation} onChange={formInputValidation}
+                    {/* <input type="text" id="bankName" value={formData.bankName} placeholder="Bank Name" onBlur={formInputValidation} onChange={formInputValidation}
                     className="w-full border-2 border-gray-900 rounded-lg px-2"
+                    /> */}
+                    <BankList id = "bankName" value={formData.bankName} formInputValidation={formInputValidation}
+                    onChange={(e)=>{
+                    const value = e.target.value
+                    setformData(prev => ({
+                    ...prev,
+                    bankName : value,
+                    }))
+                    setError(prev => {
+                    const newErr = { ...prev }
+                    delete newErr.bankName
+                    return newErr
+                    })
+                } }
                     />
-                    <h1 className="text-red-300">{error?.bankName}</h1>
+                    <h1 className="text-red-300" className="w-full border-2 border-gray-900 rounded-lg px-2">{error?.bankName}</h1>
             </div>
             <div
                 className="flex flex-col gap-2"

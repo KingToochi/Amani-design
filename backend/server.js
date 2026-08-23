@@ -433,8 +433,8 @@ app.post("/users/registration", async (req, res) => {
       joinedAt: new Date().toISOString(),
       fname,
       lname,
-      username : mainUsername,
-      email : mainEmail,
+      username : mainUsername.trim(),
+      email : mainEmail.trim(),
       phoneNumber: "",
       dob: "",
       profilePicture: "",
@@ -503,7 +503,7 @@ const mainEmail = email.toLowerCase()
 
 let profilePictureUrl = ""
 let proofOfAddressUrl = ""
-// let hashedPassword = await bcrypt.hash(password, 10)
+let hashedPassword = await bcrypt.hash(password, 10)
 
 if (req.files.profilePicture) {
   const cloudRes = await cloudinary.uploader.upload(req.files.profilePicture[0].path, {
@@ -525,8 +525,8 @@ if (req.files.proofOfAddress) {
        const newUser = new User({
         fname,
         lname,
-        email : mainEmail,
-        username : mainUsername,
+        email : mainEmail.trim(),
+        username : mainUsername.trim(),
         phoneNumber,
         dob,
         password: hashedPassword,
@@ -549,9 +549,7 @@ if (req.files.proofOfAddress) {
       await newUser.save();
       const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
       const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
-      // const hashedRecoveryToken = await bcrypt.hash(recoveryToken, 10);
 
-      // await storeToken(newUser._id, accessToken, refreshToken, hashedRecoveryToken)
 
 
       // Set access token in HTTP-only cookie
