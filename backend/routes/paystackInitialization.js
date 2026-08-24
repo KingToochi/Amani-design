@@ -2,10 +2,9 @@ import axios from "axios"
 import calculateAmount from "./components/calculateAmount.js";
 
 const paystackInitialization = async (email, cart) => {
-    
-
   try {
     console.log(cart)
+    const callBack = `${process.env.FRONTEND_URL}/payment/callback`
         if (!email){
             throw new Error("Email is required");
             return;
@@ -39,7 +38,7 @@ const paystackInitialization = async (email, cart) => {
         data : {
             email : email,
             amount : amount,
-            callBack :  `${process.env.FRONTEND_URL}/payment/callback`
+            callBack_url :  callBack
         }
     })
         console.log("Paystack initialization response:", JSON.stringify(response.data, null, 2));

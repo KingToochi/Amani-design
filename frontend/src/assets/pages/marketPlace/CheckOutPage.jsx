@@ -44,6 +44,7 @@ const CheckOut = () => {
     })
     const navigate = useNavigate();
     const location = useLocation();
+    const pathName = "/checkout";
     const createFlutterwaveCustomerUrl = `${BASE_URL}/createFlutterwaveCustomer`
     const initPaymentUrl = `${BASE_URL}/initiatePayment`
     const redirectUrl = `${window.location.origin}/payment-callback`;
@@ -193,56 +194,6 @@ const CheckOut = () => {
     const handlePlaceOrder = async () => {
         const subtotal = calculateSubtotal()
 
-//   try {
-//     const createCustomer = await CustomFetch(createFlutterwaveCustomerUrl, {
-//       method: "POST",
-//       credentials: "include", 
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-//       body: JSON.stringify({
-//         subtotal: subtotal,
-//         currency: "NGN",
-//         email: userInfo?.email || "",
-//         fname: userInfo?.fname || "",
-//         lname: userInfo?.lname || "",
-//         phoneNumber: userInfo?.phoneNumber || "",
-//         shippingAddress: userInfo?.shippingAddress || "",
-//         city: userInfo?.city || "",
-//         state: userInfo?.state || "",
-//         paymentMethod: paymentMethod
-//       })
-//     });
-
-//     if (!createCustomer?.ok) {
-//       const initError = await createCustomer?.json?.().catch(() => ({}));
-//       throw new Error(initError.message || "Unable to start payment");
-//     }
-
-//     const customerData = await createCustomer.json();
-
-//     if (customerData.success) {
-//     const customer = customerData.data;
-//     console.log("Customer Data:", customer);
-//     navigate("/payment", {
-//         state: {
-//             customer,
-//             subtotal: customerData.paymentInfo?.subtotal ?? subtotal,
-//             currency: "NGN",
-//             paymentMethod: customerData.paymentInfo?.paymentMethod ?? paymentMethod,
-//             cart,
-//         }
-//     });
-
-//     return;
-// }
-
-//     throw new Error(customerData.message || "Unable to create customer for payment");
-//   } catch (error) {
-//     console.error("Payment initialization error:", error);
-//     setError(error.message || "Payment initialization failed");
-//   }
-
         try {
 
         const response = await CustomFetch(initPaymentUrl, {
@@ -288,13 +239,13 @@ const CheckOut = () => {
         // Redirect customer to Paystack
         window.location.href = authorizationUrl;
 
-    } catch (error) {
+        } catch (error) {
 
-        console.error(
-            "Payment initialization error:",
-            error
-        );
-    }
+            console.error(
+                "Payment initialization error:",
+                error
+            );
+        }
 }
 
     // Show loading state
@@ -636,11 +587,11 @@ const CheckOut = () => {
 
                             {/* Desktop Place Order Button */}
                             <div className="bg-white rounded-xl shadow-md p-6">
-                                <h2 className="text-xl font-semibold mb-5">
+                                {/* <h2 className="text-xl font-semibold mb-5">
                                     Select Payment Method
-                            </h2>
+                            </h2> */}
 
-                            <div className="space-y-4">
+                            {/* <div className="space-y-4">
                                 {methods.map((method) => (
                                     <div
                                         key={method.id}
@@ -688,7 +639,7 @@ const CheckOut = () => {
                                         />
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
 
                             <button
                                 onClick={handlePlaceOrder}
