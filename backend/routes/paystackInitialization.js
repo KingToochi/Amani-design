@@ -4,7 +4,7 @@ import calculateAmount from "./components/calculateAmount.js";
 const paystackInitialization = async (email, cart) => {
   try {
     console.log(cart)
-    const callBack = `${process.env.FRONTEND_URL}/payment/callback`
+    const callBack = `${process.env.FRONTEND_URL}//payment-callback`
     console.log(callBack)
         if (!email){
             throw new Error("Email is required");

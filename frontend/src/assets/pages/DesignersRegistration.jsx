@@ -562,7 +562,7 @@ const DesignerRegistration = () => {
                     })
                 } }
                     />
-                    <h1 className="text-red-300" className="w-full border-2 border-gray-900 rounded-lg px-2">{error?.bankName}</h1>
+                    <h1 className="text-red-300">{error?.bankName}</h1>
             </div>
             <div
                 className="flex flex-col gap-2"
