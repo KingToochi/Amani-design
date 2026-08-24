@@ -5,6 +5,7 @@ const paystackInitialization = async (email, cart) => {
     
 
   try {
+    console.log(cart)
         if (!email){
             throw new Error("Email is required");
             return;
@@ -14,6 +15,7 @@ const paystackInitialization = async (email, cart) => {
             return;
         }
         const calculatedAmount = calculateAmount(cart);
+        console.log(calculateAmount)
         if (!Number.isFinite(calculatedAmount) || calculatedAmount <= 0) {
         throw new Error("A valid amount is required");
         return
