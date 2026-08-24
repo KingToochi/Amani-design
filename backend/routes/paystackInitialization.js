@@ -39,7 +39,7 @@ const paystackInitialization = async (email, cart) => {
         data : {
             email : email,
             amount : amount,
-            callBack_url :  callBack
+            callback_url :  callBack
         }
     })
         console.log("Paystack initialization response:", JSON.stringify(response.data, null, 2));
