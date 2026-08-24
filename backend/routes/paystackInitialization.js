@@ -14,7 +14,7 @@ const paystackInitialization = async (email, cart) => {
             throw new Error("Cart is required and must be a non-empty array");
             return;
         }
-        const calculatedAmount = calculateAmount(cart);
+        const calculatedAmount = await calculateAmount(cart);
         console.log(calculateAmount)
         if (!Number.isFinite(calculatedAmount) || calculatedAmount <= 0) {
         throw new Error("A valid amount is required");
