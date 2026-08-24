@@ -1728,6 +1728,7 @@ app.post("/initiatePayment", verifyToken, async (req, res) => {
 app.post("/verifyPayment", verifyToken, async (req, res) => {
     try {
         const auth = req.user
+        const user = await User.findById(auth._id)
           if (!user) {
           return res.status(404).json({
           success: false,
@@ -1738,7 +1739,7 @@ app.post("/verifyPayment", verifyToken, async (req, res) => {
 
         const verifiedPayment = await verifyPayment(reference);
         const calculatedAmount = await calculateAmount(cart)
-        const user = await User.findById(auth._id)
+
 
         if (verifiedPayment.status !== "success") {
           return res.status(400).json({

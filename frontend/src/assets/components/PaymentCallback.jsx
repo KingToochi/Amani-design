@@ -87,7 +87,7 @@ const PaymentCallback = () => {
                 setStatus("success");
 
                 // Clear cart if your CartContext supports it
-                // setCart([]);
+                setCart([]);
 
                 setTimeout(() => {
                     navigate("/customer-orders");
