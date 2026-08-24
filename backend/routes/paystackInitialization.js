@@ -55,3 +55,5 @@ const paystackInitialization = async (email, cart) => {
         );
   }
 }
+
+export default paystackInitialization
