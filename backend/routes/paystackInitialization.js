@@ -1,5 +1,5 @@
 import axios from "axios"
-import calculateAmount from "components/calculateAmount"
+import calculateAmount from "./components/calculateAmount";
 
 const paystackInitialization = async (email, cart) => {
     
