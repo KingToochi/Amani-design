@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {BASE_URL} from "../Url"
+import CustomFetch from "../hooks/UseFetch";
 
 import { CartContext } from "../hooks/CartContext";
 // import your CustomFetch
@@ -8,6 +10,7 @@ import { CartContext } from "../hooks/CartContext";
 const PaymentCallback = () => {
 
     const [status, setStatus] = useState("processing");
+    const verifyPaymentUrl = `${BASE_URL}/verifyPayment`
 
     const location = useLocation();
     const navigate = useNavigate();
