@@ -25,6 +25,7 @@ import crypto from "crypto";
 import { encryptAES } from "./services/flutterwaveEncryption.js";
 import calculateAmount from "./routes/components/calculateAmount.js";
 import getFlutterwavePaymentFees from "./routes/components/flutterwavePaymentFee.js";
+import paystackInitialization from "./routes/paystackInitialization.js";
 
 
 
@@ -1688,673 +1689,797 @@ app.get(
   }
 );
 
-app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
+app.post("/initiatePayment", verifyToken, async (req, res) => {
     try {
-        console.log("Create customer request body:", req.body);
+        const { email, cart } = req.body;
 
-        const {
-            paymentMethod,
+        const initPaystack = await paystackInitialization(
             email,
-            fname,
-            lname,
-            shippingAddress,
-            city,
-            state,
-            phoneNumber,
-        } = req.body;
-
-        // Validate payment method
-        if (!paymentMethod) {
-            return res.status(400).json({
-                success: false,
-                message: "Payment method is required",
-            });
-        }
-
-        // Validate customer information
-        if (
-            !email ||
-            !fname ||
-            !lname ||
-            !shippingAddress ||
-            !city ||
-            !state ||
-            !phoneNumber
-        ) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing required customer information",
-            });
-        }
-
-        const formattedPhone = phoneNumber.startsWith("0")
-            ? phoneNumber.substring(1)
-            : phoneNumber;
-
-        const accessToken = await getAccessToken();
-
-        let flutterwaveCustomer = null;
-
-        /*
-         * 1. Search for existing customer
-         */
-        const searchResponse = await axios.post(
-            "https://developersandbox-api.flutterwave.com/customers/search",
-            {
-                email,
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            }
+            cart
         );
 
-        const customers = searchResponse.data?.data;
-
-        if (Array.isArray(customers) && customers.length > 0) {
-            flutterwaveCustomer = customers[0];
-
-            console.log(
-                "Existing Flutterwave customer found:",
-                flutterwaveCustomer
-            );
+        if (!initPaystack.status) {
+          return res.status(400).json({
+            success : false,
+            message : "payment Failed",
+            data : initPaystack
+          })
         }
-
-        /*
-         * 2. Create customer only if one doesn't exist
-         */
-        if (!flutterwaveCustomer) {
-
-            const idempotencyKey = uuidv4().replace(/-/g, "");
-
-            const createResponse = await axios.post(
-                "https://developersandbox-api.flutterwave.com/customers",
-                {
-                    email,
-
-                    name: {
-                        first: fname,
-                        last: lname,
-                    },
-
-                    address: {
-                        line1: shippingAddress,
-                        city,
-                        state,
-                        country: "NG",
-                        postal_code: "480252",
-                    },
-
-                    phone: {
-                        country_code: "234",
-                        number: formattedPhone,
-                    },
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "X-Idempotency-Key": idempotencyKey,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            flutterwaveCustomer = createResponse.data?.data;
-
-            console.log(
-                "Flutterwave customer created:",
-                flutterwaveCustomer?.id
-            );
-        }
-
-        /*
-         * 3. Information needed later for payment
-         */
-        const paymentInfo = {
-            email,
-            fname,
-            lname,
-            shippingAddress,
-            city,
-            state,
-            phoneNumber,
-            paymentMethod,
-        };
 
         return res.status(200).json({
             success: true,
-            message: "Customer ready",
-            data: flutterwaveCustomer,
-            paymentInfo,
+            message: "Payment initialized successfully",
+            data: initPaystack
         });
 
     } catch (error) {
-
         console.error(
-            "Create customer error:",
-            error.response?.data || error.message
-        );
-
-        return res.status(error.response?.status || 500).json({
-            success: false,
-            message:
-                error.response?.data?.error?.message ||
-                error.response?.data?.message ||
-                error.message ||
-                "Unable to create Flutterwave customer",
-
-            error: error.response?.data || null,
-        });
-    }
-});
-
-
-app.post("/verifyPayment", verifyToken, async(req, res) => {
-  const auth = req.user
-  console.log(auth)
-  try {
-    const { transaction_id, cart, currency, amount, merchantAmount, paymentFee } = req.body;
-    console.log("Verify payment request body:", req.body);
-    console.log(cart)
-    if (!transaction_id) {
-      return res.status(400).json({
-        success: false,
-        message: "transaction_id is required"
-      });
-    }
-    const user = await User.findOne({_id : auth._id})
-
-    const existingTransaction = await Order.findOne({transactionId: transaction_id})
-    if (existingTransaction) {
-      return res.status(409).json({
-      success: false,
-      message: "Transaction already processed"
-      });
-    }
-
-    const accessToken = await getAccessToken();
-
-    const verificationResponse = await axios({
-      method: "get",
-      url: `https://api.flutterwave.com/v4/transactions/${transaction_id}/verify`,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json"
-      }
-    });
-
-    const verification = verificationResponse.data;
-
-    if (
-      verification.status !== "success" ||
-      verification.data.status !== "successful"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment verification failed"
-      });
-    }
-
-    const normalizedAmount = Number(amount || 0);
-    const normalizedMerchantAmount = Number(merchantAmount || 0);
-    const normalizedPaymentFee = Number(paymentFee || 0);
-    const expectedAmount = Number((normalizedMerchantAmount + normalizedPaymentFee).toFixed(2));
-
-    if (Number(verification.data.amount) !== normalizedAmount || Number(verification.data.amount) !== expectedAmount) {
-      return res.status(400).json({
-      success: false,
-      message: "Amount mismatch"
-      });
-    }
-    const rawEmail = verification.data.customer.email;
-    // Handle case where email might not have the prefix
-    const cleanEmail = rawEmail.includes('_') 
-      ? rawEmail.split('_').pop() 
-      : rawEmail;
-
-
-    const products = cart.map(product => ({
-      productId: product._id,
-      quantity: product.quantity
-    }));
-    const cartItems = cart.map(product => ({
-      id: product.itemId,
-      name: product.productName,
-      quantity: product.quantity,
-      color: product.selectedColor,
-      size: product.selectedSize,
-      price: product.productPrice,
-      productId: product._id,
-    }))
-
-    const newOrder = new Order({
-      orderNumber: `Amanisky-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
-      products: products,
-      transactionId: transaction_id,
-      amount: verification.data.amount,
-      subtotalAmount: normalizedMerchantAmount || Number(verification.data.amount),
-      paymentFee: normalizedPaymentFee || 0,
-      amountPaid: verification.data.amount,
-      currency: verification.data.currency,
-      paymentStatus: verification.data.status,
-      customerEmail: cleanEmail,
-      customerId : user?._id,
-      customerPaymentId: verification.data.customer.id,
-      customerName: verification.data.customer.name,
-      customerPhone: verification.data.customer.phone_number,
-      items: cartItems,
-    })
-
-    await newOrder.save()
-
-    return res.status(200).json({
-      success: true,
-      verification,
-      message: "Order saved successfully",
-      newOrder,
-      user
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-      user
-    });
-  }
-});
-
-app.post("/paymentFee", verifyToken, async (req, res) => {
-    try {
-        const {
-            cart,
-            payment_method,
-            currency
-        } = req.body;
-
-        // Validate cart
-        if (!Array.isArray(cart) || cart.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Cart is empty"
-            });
-        }
-
-        // Validate payment method
-        if (!payment_method) {
-            return res.status(400).json({
-                success: false,
-                message: "Payment method is required"
-            });
-        }
-
-        // Validate currency
-        if (!currency) {
-            return res.status(400).json({
-                success: false,
-                message: "Currency is required"
-            });
-        }
-
-        // Get Flutterwave access token
-        const accessToken = await getAccessToken();
-        console.log(accessToken)
-
-        // Calculate subtotal from database
-        const subtotal = await calculateAmount(cart);
-
-        console.log("Calculated subtotal:", subtotal);
-
-        if (!Number.isFinite(subtotal) || subtotal <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Unable to calculate total amount"
-            });
-        }
-
-        // Get Flutterwave fee
-        const paymentFee = await getFlutterwavePaymentFees(
-            subtotal,
-            currency,
-            payment_method,
-            accessToken
-        );
-
-        console.log("Payment fee:", paymentFee);
-
-        if (!Number.isFinite(paymentFee) || paymentFee < 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Unable to get payment fee"
-            });
-        }
-
-        // Calculate final amount
-        const totalAmount = Number(
-            (subtotal + paymentFee).toFixed(2)
-        );
-
-        console.log("Subtotal:", subtotal);
-        console.log("Payment fee:", paymentFee);
-        console.log("Total amount:", totalAmount);
-
-        return res.status(200).json({
-            success: true,
-            subtotal,
-            paymentFee,
-            totalAmount,
-            currency,
-            payment_method
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Payment fee error:",
-            error.response?.data || error.message
-        );
-
-        return res.status(500).json({
-            success: false,
-            message:
-                error.response?.data?.error?.message ||
-                error.message ||
-                "Unable to calculate payment fee"
-        });
-    }
-});
-  app.post("/payment-method", verifyToken, async (req, res) => {
-  const {paymentMethod, paymentDetails, customer,subtotal,amount, paymentFee, totalAmount, currency} = req.body
-  console.log({"request" : req.body})
-  if (!paymentMethod) {
-    return res.status(400).json({
-        success: false,
-        message: "payment method is required"
-      });
-  }
-  let paymentMethodId;
-  const nonce = generateNonce();
-  const accessToken = await getAccessToken();
-  if (paymentMethod === "card") {
-      const {cardNumber, expiryYear, expiryMonth,  cvv} = paymentDetails
-      if (!cardNumber || !expiryYear || !expiryMonth || !cvv) {
-        return res.status(400).json({
-          success: false,
-          message: "field is required"
-        });
-      }
-
-      if (!customer || !customer.id || !customer.name || !customer.address || !customer.phone) {
-        return res.status(400).json({
-          success: false,
-          message: "customer information is required"
-        });
-      }
-
-      if (!currency || !totalAmount ) {
-        return res.status(400).json({
-          success : false,
-          message: "currency and amount is required"
-        });
-      }
-
-      
-      try {
-    const encryptedCard = {
-        nonce,
-        encrypted_card_number: await encryptAES(
-            cardNumber,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        ),
-
-        encrypted_expiry_month: await encryptAES(
-            expiryMonth,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        ),
-
-        encrypted_expiry_year: await encryptAES(
-            expiryYear,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        ),
-
-        encrypted_cvv: await encryptAES(
-            cvv,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        )
-    };
-    console.log("Encrypted card details:", encryptedCard);
-    const generatePaymentMethod = await axios({
-      url :  'https://developersandbox-api.flutterwave.com/payment-methods',
-      method: "POST",
-
-      headers : {
-        Authorization : `Bearer ${accessToken}`,
-        "X-Idempotency-Key": idempotencyKey,
-        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-        "Content-Type": "application/json"
-      },
-      data : {
-        "type": "card",
-        "card": encryptedCard,
-      }
-    })
-    console.log(generatePaymentMethod)
-    let response = generatePaymentMethod.data;
-    paymentMethodId = response.data.id;
-    console.log("Payment method ID:", paymentMethodId);
-    console.log(response)
-     if (response.status !== "success") {
-      
-      return res.status(400).json({
-        success: false,
-        message: "Payment failed"
-      });
-    }
-  }catch(error){
-    console.error("Create payment error:", error?.response?.data || error.message);
-    return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
-  }
-  }
-
-  try {
-    const initateCustomerCharge = await axios ({
-      url : 'https://developersandbox-api.flutterwave.com/charges',
-      method : "POST",
-      headers : {
-        Authorization : `Bearer ${accessToken}`,
-        "X-Idempotency-Key": idempotencyKey,
-        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-        "Content-Type": "application/json"
-      },
-      data : {
-        "reference" : `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        "currency" : currency,
-        customer_id : customer.id,
-        "payment_method_id" : paymentMethodId,
-        "amount" : Number(totalAmount),
-        "meta" : {
-          person_name : customer.name.first + " " + customer.name.last,
-        }
-      }
-    })
-
-    let customerCharge  = await initateCustomerCharge.data;
-
-    if (!customerCharge || customerCharge.status !== "success") {
-      return res.status(400).json({
-        success: false,
-        message: "Customer charge failed"
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Customer charged successfully",
-      customerCharge
-    });
-  }catch(error){
-    console.error("Charge customer error:", error?.response?.data || error.message);
-    return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
-  }
-})
-
-app.post("/verifyPin", verifyToken, async(req, res) => {
-  const { pin, chargeId } = req.body;
-  if (!pin || !chargeId) {
-    return ({success : false, message: "pin and transaction id required"})
-  }
-
-  const accessToken = await getAccessToken()
-  const nonce = generateNonce()
-  const encrypted_pin = await encryptAES(
-            pin,
-            process.env.FLW_ENCRYPTION_KEY,
-            nonce
-        )
-
-  try {
-    const verifyPin = await axios({
-      url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
-      method : "PUT",
-      headers : {
-        Authorization : `Bearer ${accessToken}`,
-        "X-Idempotency-Key": idempotencyKey,
-        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-        "Content-Type": "application/json"
-      },
-      data : {
-        "authorization" : {
-          "type" : "pin",
-          pin : {
-            nonce,
-            encrypted_pin
-          }
-
-        }
-      }
-    })
-
-    const response = await verifyPin.data;
-    if (!response || response.status !== "success") {
-      return res.status(400).json({
-        success: false,
-        message: "pin verification failed"
-      });
-    }
-    return res.status(200).json({
-        success: true,
-        data: response
-    });
-  }catch(error) {
-     console.error(
-        JSON.stringify(error.response?.data, null, 2)
-    );
-
-    return res.status(error.response?.status || 500).json({
-        success: false,
-        message:
-            error.response?.data?.error?.message ||
+            "Payment initialization error:",
             error.message
-    });
-  }
-})
+        );
 
-app.post("/verifyOtp", verifyToken, async (req, res) => {
-  try {
-    const auth = req.user;
-
-    const {
-      otp,
-      chargeId,
-      customerDetails,
-      cart
-    } = req.body;
-
-    // --------------------------------------------------
-    // 1. Validate request
-    // --------------------------------------------------
-
-    if (!otp || !chargeId || !Array.isArray(cart) || cart.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP, charge ID, and cart are required"
-      });
+        return res.status(400).json({
+            success: false,
+            message: error.message || "Payment initialization failed"
+        });
     }
+});
 
-    console.log("Cart:", cart);
-    console.log("Customer details:", customerDetails);
+app.post("/verifyPayment", verifyToken, async (req, res) => {
+    try {
+        const auth = req.user
+          if (!user) {
+          return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+}
+        const { reference, cart } = req.body;
 
-    // --------------------------------------------------
-    // 2. Get Flutterwave access token
-    // --------------------------------------------------
+        const verifiedPayment = await verifyPayment(reference);
+        const calculatedAmount = await calculateAmount(cart)
+        const user = await User.findById(auth._id)
 
-    const accessToken = await getAccessToken();
-
-    // --------------------------------------------------
-    // 3. Verify OTP
-    // --------------------------------------------------
-
-    const verifyOtp = await axios({
-      url: `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
-      method: "PUT",
-
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-Idempotency-Key": idempotencyKey,
-        "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
-        "Content-Type": "application/json"
-      },
-
-      data: {
-        authorization: {
-          type: "otp",
-          otp: {
-            code: otp
-          }
+        if (verifiedPayment.status !== "success") {
+          return res.status(400).json({
+            success : false,
+            message: "unable to verify payment"
+          })
         }
-      }
-    });
 
-    const otpResponse = verifyOtp.data;
+        const calculatedAmountInKobo = Math.round(Number(calculatedAmount) * 100);
 
-    console.log("OTP response:", otpResponse);
+        if (Number(calculatedAmountInKobo) !== Number(verifiedPayment.requested_amount)) {
+          return res.status(400).json({
+            success : false,
+            message: "Amount paid not equal to total amount"
+          })
+        }
 
-    if (!otpResponse || otpResponse.status !== "success") {
-      return res.status(400).json({
-        success: false,
-        message: "OTP verification failed",
-        data: otpResponse
-      });
+  
+
+        const products = cart.map(product => ({
+          productId: product._id,
+          quantity: product.quantity
+        }));
+        const cartItems = cart.map(product => ({
+          id: product.itemId,
+          name: product.productName,
+          quantity: product.quantity,
+          color: product.selectedColor,
+          size: product.selectedSize,
+          price: product.productPrice,
+          productId: product._id,
+        }))
+
+        const newOrder = new Order({
+          orderNumber : `Amanisky-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
+          products : products,
+          transactionId : verifiedPayment.id,
+          amount : Number(verifiedPayment.requested_amount) / 100,
+          subtotalAmount : Number(verifiedPayment.requested_amount) / 100,
+          paymentFee : Number(verifiedPayment.fees) / 100,
+          amountPaid : Number(verifiedPayment.amount) / 100,
+          paymentStatus : "successful",
+          paymentReference : verifiedPayment.reference,
+          customerEmail : user.email,
+          customerId : user._id,
+          customerPaymentId : verifiedPayment.customer.id,
+          customerName: `${user.fName} ${user.lname}`,
+          customerPhone : user.phoneNumber,
+          items : cartItems,
+        })
+
+        await newOrder.save()
+    
+
+        return res.status(200).json({
+            success: true,
+            message: "Payment verified successfully",
+            data: verifiedPayment,
+            newOrder
+        });
+
+    } catch (error) {
+        console.error(
+            "Payment verification error:",
+            error.message
+        );
+
+        return res.status(400).json({
+            success: false,
+            message: error.message || "Payment verification failed"
+        });
     }
+});
 
-    return res.status(200).json({
-      success : true,
-      message : "OTP verified successfully",
-      data : otpResponse
-    })
+// app.post("/createFlutterwaveCustomer", verifyToken, async (req, res) => {
+//     try {
+//         console.log("Create customer request body:", req.body);
+
+//         const {
+//             paymentMethod,
+//             email,
+//             fname,
+//             lname,
+//             shippingAddress,
+//             city,
+//             state,
+//             phoneNumber,
+//         } = req.body;
+
+//         // Validate payment method
+//         if (!paymentMethod) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Payment method is required",
+//             });
+//         }
+
+//         // Validate customer information
+//         if (
+//             !email ||
+//             !fname ||
+//             !lname ||
+//             !shippingAddress ||
+//             !city ||
+//             !state ||
+//             !phoneNumber
+//         ) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Missing required customer information",
+//             });
+//         }
+
+//         const formattedPhone = phoneNumber.startsWith("0")
+//             ? phoneNumber.substring(1)
+//             : phoneNumber;
+
+//         const accessToken = await getAccessToken();
+
+//         let flutterwaveCustomer = null;
+
+//         /*
+//          * 1. Search for existing customer
+//          */
+//         const searchResponse = await axios.post(
+//             "https://developersandbox-api.flutterwave.com/customers/search",
+//             {
+//                 email,
+//             },
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${accessToken}`,
+//                     "Content-Type": "application/json",
+//                 },
+//             }
+//         );
+
+//         const customers = searchResponse.data?.data;
+
+//         if (Array.isArray(customers) && customers.length > 0) {
+//             flutterwaveCustomer = customers[0];
+
+//             console.log(
+//                 "Existing Flutterwave customer found:",
+//                 flutterwaveCustomer
+//             );
+//         }
+
+//         /*
+//          * 2. Create customer only if one doesn't exist
+//          */
+//         if (!flutterwaveCustomer) {
+
+//             const idempotencyKey = uuidv4().replace(/-/g, "");
+
+//             const createResponse = await axios.post(
+//                 "https://developersandbox-api.flutterwave.com/customers",
+//                 {
+//                     email,
+
+//                     name: {
+//                         first: fname,
+//                         last: lname,
+//                     },
+
+//                     address: {
+//                         line1: shippingAddress,
+//                         city,
+//                         state,
+//                         country: "NG",
+//                         postal_code: "480252",
+//                     },
+
+//                     phone: {
+//                         country_code: "234",
+//                         number: formattedPhone,
+//                     },
+//                 },
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${accessToken}`,
+//                         "X-Idempotency-Key": idempotencyKey,
+//                         "Content-Type": "application/json",
+//                     },
+//                 }
+//             );
+
+//             flutterwaveCustomer = createResponse.data?.data;
+
+//             console.log(
+//                 "Flutterwave customer created:",
+//                 flutterwaveCustomer?.id
+//             );
+//         }
+
+//         /*
+//          * 3. Information needed later for payment
+//          */
+//         const paymentInfo = {
+//             email,
+//             fname,
+//             lname,
+//             shippingAddress,
+//             city,
+//             state,
+//             phoneNumber,
+//             paymentMethod,
+//         };
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Customer ready",
+//             data: flutterwaveCustomer,
+//             paymentInfo,
+//         });
+
+//     } catch (error) {
+
+//         console.error(
+//             "Create customer error:",
+//             error.response?.data || error.message
+//         );
+
+//         return res.status(error.response?.status || 500).json({
+//             success: false,
+//             message:
+//                 error.response?.data?.error?.message ||
+//                 error.response?.data?.message ||
+//                 error.message ||
+//                 "Unable to create Flutterwave customer",
+
+//             error: error.response?.data || null,
+//         });
+//     }
+// });
+
+
+// app.post("/verifyPayment", verifyToken, async(req, res) => {
+//   const auth = req.user
+//   console.log(auth)
+//   try {
+//     const { transaction_id, cart, currency, amount, merchantAmount, paymentFee } = req.body;
+//     console.log("Verify payment request body:", req.body);
+//     console.log(cart)
+//     if (!transaction_id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "transaction_id is required"
+//       });
+//     }
+//     const user = await User.findOne({_id : auth._id})
+
+//     const existingTransaction = await Order.findOne({transactionId: transaction_id})
+//     if (existingTransaction) {
+//       return res.status(409).json({
+//       success: false,
+//       message: "Transaction already processed"
+//       });
+//     }
+
+//     const accessToken = await getAccessToken();
+
+//     const verificationResponse = await axios({
+//       method: "get",
+//       url: `https://api.flutterwave.com/v4/transactions/${transaction_id}/verify`,
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//         "Content-Type": "application/json"
+//       }
+//     });
+
+//     const verification = verificationResponse.data;
+
+//     if (
+//       verification.status !== "success" ||
+//       verification.data.status !== "successful"
+//     ) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Payment verification failed"
+//       });
+//     }
+
+//     const normalizedAmount = Number(amount || 0);
+//     const normalizedMerchantAmount = Number(merchantAmount || 0);
+//     const normalizedPaymentFee = Number(paymentFee || 0);
+//     const expectedAmount = Number((normalizedMerchantAmount + normalizedPaymentFee).toFixed(2));
+
+//     if (Number(verification.data.amount) !== normalizedAmount || Number(verification.data.amount) !== expectedAmount) {
+//       return res.status(400).json({
+//       success: false,
+//       message: "Amount mismatch"
+//       });
+//     }
+//     const rawEmail = verification.data.customer.email;
+//     // Handle case where email might not have the prefix
+//     const cleanEmail = rawEmail.includes('_') 
+//       ? rawEmail.split('_').pop() 
+//       : rawEmail;
+
+
+//     const products = cart.map(product => ({
+//       productId: product._id,
+//       quantity: product.quantity
+//     }));
+//     const cartItems = cart.map(product => ({
+//       id: product.itemId,
+//       name: product.productName,
+//       quantity: product.quantity,
+//       color: product.selectedColor,
+//       size: product.selectedSize,
+//       price: product.productPrice,
+//       productId: product._id,
+//     }))
+
+//     const newOrder = new Order({
+//       orderNumber: `Amanisky-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
+//       products: products,
+//       transactionId: transaction_id,
+//       amount: verification.data.amount,
+//       subtotalAmount: normalizedMerchantAmount || Number(verification.data.amount),
+//       paymentFee: normalizedPaymentFee || 0,
+//       amountPaid: verification.data.amount,
+//       currency: verification.data.currency,
+//       paymentStatus: verification.data.status,
+//       customerEmail: cleanEmail,
+//       customerId : user?._id,
+//       customerPaymentId: verification.data.customer.id,
+//       customerName: verification.data.customer.name,
+//       customerPhone: verification.data.customer.phone_number,
+//       items: cartItems,
+//     })
+
+//     await newOrder.save()
+
+//     return res.status(200).json({
+//       success: true,
+//       verification,
+//       message: "Order saved successfully",
+//       newOrder,
+//       user
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//       user
+//     });
+//   }
+// });
+
+// app.post("/paymentFee", verifyToken, async (req, res) => {
+//     try {
+//         const {
+//             cart,
+//             payment_method,
+//             currency
+//         } = req.body;
+
+//         // Validate cart
+//         if (!Array.isArray(cart) || cart.length === 0) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Cart is empty"
+//             });
+//         }
+
+//         // Validate payment method
+//         if (!payment_method) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Payment method is required"
+//             });
+//         }
+
+//         // Validate currency
+//         if (!currency) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Currency is required"
+//             });
+//         }
+
+//         // Get Flutterwave access token
+//         const accessToken = await getAccessToken();
+//         console.log(accessToken)
+
+//         // Calculate subtotal from database
+//         const subtotal = await calculateAmount(cart);
+
+//         console.log("Calculated subtotal:", subtotal);
+
+//         if (!Number.isFinite(subtotal) || subtotal <= 0) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Unable to calculate total amount"
+//             });
+//         }
+
+//         // Get Flutterwave fee
+//         const paymentFee = await getFlutterwavePaymentFees(
+//             subtotal,
+//             currency,
+//             payment_method,
+//             accessToken
+//         );
+
+//         console.log("Payment fee:", paymentFee);
+
+//         if (!Number.isFinite(paymentFee) || paymentFee < 0) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Unable to get payment fee"
+//             });
+//         }
+
+//         // Calculate final amount
+//         const totalAmount = Number(
+//             (subtotal + paymentFee).toFixed(2)
+//         );
+
+//         console.log("Subtotal:", subtotal);
+//         console.log("Payment fee:", paymentFee);
+//         console.log("Total amount:", totalAmount);
+
+//         return res.status(200).json({
+//             success: true,
+//             subtotal,
+//             paymentFee,
+//             totalAmount,
+//             currency,
+//             payment_method
+//         });
+
+//     } catch (error) {
+
+//         console.error(
+//             "Payment fee error:",
+//             error.response?.data || error.message
+//         );
+
+//         return res.status(500).json({
+//             success: false,
+//             message:
+//                 error.response?.data?.error?.message ||
+//                 error.message ||
+//                 "Unable to calculate payment fee"
+//         });
+//     }
+// });
+//   app.post("/payment-method", verifyToken, async (req, res) => {
+//   const {paymentMethod, paymentDetails, customer,subtotal,amount, paymentFee, totalAmount, currency} = req.body
+//   console.log({"request" : req.body})
+//   if (!paymentMethod) {
+//     return res.status(400).json({
+//         success: false,
+//         message: "payment method is required"
+//       });
+//   }
+//   let paymentMethodId;
+//   const nonce = generateNonce();
+//   const accessToken = await getAccessToken();
+//   if (paymentMethod === "card") {
+//       const {cardNumber, expiryYear, expiryMonth,  cvv} = paymentDetails
+//       if (!cardNumber || !expiryYear || !expiryMonth || !cvv) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "field is required"
+//         });
+//       }
+
+//       if (!customer || !customer.id || !customer.name || !customer.address || !customer.phone) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "customer information is required"
+//         });
+//       }
+
+//       if (!currency || !totalAmount ) {
+//         return res.status(400).json({
+//           success : false,
+//           message: "currency and amount is required"
+//         });
+//       }
+
+      
+//       try {
+//     const encryptedCard = {
+//         nonce,
+//         encrypted_card_number: await encryptAES(
+//             cardNumber,
+//             process.env.FLW_ENCRYPTION_KEY,
+//             nonce
+//         ),
+
+//         encrypted_expiry_month: await encryptAES(
+//             expiryMonth,
+//             process.env.FLW_ENCRYPTION_KEY,
+//             nonce
+//         ),
+
+//         encrypted_expiry_year: await encryptAES(
+//             expiryYear,
+//             process.env.FLW_ENCRYPTION_KEY,
+//             nonce
+//         ),
+
+//         encrypted_cvv: await encryptAES(
+//             cvv,
+//             process.env.FLW_ENCRYPTION_KEY,
+//             nonce
+//         )
+//     };
+//     console.log("Encrypted card details:", encryptedCard);
+//     const generatePaymentMethod = await axios({
+//       url :  'https://developersandbox-api.flutterwave.com/payment-methods',
+//       method: "POST",
+
+//       headers : {
+//         Authorization : `Bearer ${accessToken}`,
+//         "X-Idempotency-Key": idempotencyKey,
+//         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+//         "Content-Type": "application/json"
+//       },
+//       data : {
+//         "type": "card",
+//         "card": encryptedCard,
+//       }
+//     })
+//     console.log(generatePaymentMethod)
+//     let response = generatePaymentMethod.data;
+//     paymentMethodId = response.data.id;
+//     console.log("Payment method ID:", paymentMethodId);
+//     console.log(response)
+//      if (response.status !== "success") {
+      
+//       return res.status(400).json({
+//         success: false,
+//         message: "Payment failed"
+//       });
+//     }
+//   }catch(error){
+//     console.error("Create payment error:", error?.response?.data || error.message);
+//     return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
+//   }
+//   }
+
+//   try {
+//     const initateCustomerCharge = await axios ({
+//       url : 'https://developersandbox-api.flutterwave.com/charges',
+//       method : "POST",
+//       headers : {
+//         Authorization : `Bearer ${accessToken}`,
+//         "X-Idempotency-Key": idempotencyKey,
+//         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+//         "Content-Type": "application/json"
+//       },
+//       data : {
+//         "reference" : `AMANI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+//         "currency" : currency,
+//         customer_id : customer.id,
+//         "payment_method_id" : paymentMethodId,
+//         "amount" : Number(totalAmount),
+//         "meta" : {
+//           person_name : customer.name.first + " " + customer.name.last,
+//         }
+//       }
+//     })
+
+//     let customerCharge  = await initateCustomerCharge.data;
+
+//     if (!customerCharge || customerCharge.status !== "success") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Customer charge failed"
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Customer charged successfully",
+//       customerCharge
+//     });
+//   }catch(error){
+//     console.error("Charge customer error:", error?.response?.data || error.message);
+//     return res.status(500).json({ success: false, message: error?.response?.data?.message || error.message });
+//   }
+// })
+
+// app.post("/verifyPin", verifyToken, async(req, res) => {
+//   const { pin, chargeId } = req.body;
+//   if (!pin || !chargeId) {
+//     return ({success : false, message: "pin and transaction id required"})
+//   }
+
+//   const accessToken = await getAccessToken()
+//   const nonce = generateNonce()
+//   const encrypted_pin = await encryptAES(
+//             pin,
+//             process.env.FLW_ENCRYPTION_KEY,
+//             nonce
+//         )
+
+//   try {
+//     const verifyPin = await axios({
+//       url : `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+//       method : "PUT",
+//       headers : {
+//         Authorization : `Bearer ${accessToken}`,
+//         "X-Idempotency-Key": idempotencyKey,
+//         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+//         "Content-Type": "application/json"
+//       },
+//       data : {
+//         "authorization" : {
+//           "type" : "pin",
+//           pin : {
+//             nonce,
+//             encrypted_pin
+//           }
+
+//         }
+//       }
+//     })
+
+//     const response = await verifyPin.data;
+//     if (!response || response.status !== "success") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "pin verification failed"
+//       });
+//     }
+//     return res.status(200).json({
+//         success: true,
+//         data: response
+//     });
+//   }catch(error) {
+//      console.error(
+//         JSON.stringify(error.response?.data, null, 2)
+//     );
+
+//     return res.status(error.response?.status || 500).json({
+//         success: false,
+//         message:
+//             error.response?.data?.error?.message ||
+//             error.message
+//     });
+//   }
+// })
+
+// app.post("/verifyOtp", verifyToken, async (req, res) => {
+//   try {
+//     const auth = req.user;
+
+//     const {
+//       otp,
+//       chargeId,
+//       customerDetails,
+//       cart
+//     } = req.body;
+
+//     // --------------------------------------------------
+//     // 1. Validate request
+//     // --------------------------------------------------
+
+//     if (!otp || !chargeId || !Array.isArray(cart) || cart.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "OTP, charge ID, and cart are required"
+//       });
+//     }
+
+//     console.log("Cart:", cart);
+//     console.log("Customer details:", customerDetails);
+
+//     // --------------------------------------------------
+//     // 2. Get Flutterwave access token
+//     // --------------------------------------------------
+
+//     const accessToken = await getAccessToken();
+
+//     // --------------------------------------------------
+//     // 3. Verify OTP
+//     // --------------------------------------------------
+
+//     const verifyOtp = await axios({
+//       url: `https://developersandbox-api.flutterwave.com/charges/${chargeId}`,
+//       method: "PUT",
+
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//         "X-Idempotency-Key": idempotencyKey,
+//         "X-Scenario-Key": "scenario:auth_pin&issuer:approved",
+//         "Content-Type": "application/json"
+//       },
+
+//       data: {
+//         authorization: {
+//           type: "otp",
+//           otp: {
+//             code: otp
+//           }
+//         }
+//       }
+//     });
+
+//     const otpResponse = verifyOtp.data;
+
+//     console.log("OTP response:", otpResponse);
+
+//     if (!otpResponse || otpResponse.status !== "success") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "OTP verification failed",
+//         data: otpResponse
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success : true,
+//       message : "OTP verified successfully",
+//       data : otpResponse
+//     })
 
     
-  }catch(error) {
-     console.error(
-        JSON.stringify(error.response?.data, null, 2)
-    );
+//   }catch(error) {
+//      console.error(
+//         JSON.stringify(error.response?.data, null, 2)
+//     );
 
-    return res.status(error.response?.status || 500).json({
-        success: false,
-        message:
-            error.response?.data?.error?.message ||
-            error.message
-    });
-  }
-});
+//     return res.status(error.response?.status || 500).json({
+//         success: false,
+//         message:
+//             error.response?.data?.error?.message ||
+//             error.message
+//     });
+//   }
+// });
 
 app.get("/customerOrders", verifyToken, async(req, res) => {
   const auth = req.user;

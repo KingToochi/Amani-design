@@ -1,85 +1,63 @@
-// routes/verifyPayment.js
-import axios from "axios"
+import axios from "axios";
 import Order from "../models/Order.js";
 
-const verifyPayment = async (req, res) => {
-  try {
-    const { transaction_id, amount, customer_email, cart_items } = req.body;
+const verifyPaystackPayment = async (reference) => {
 
-    // Validate input
-    if (!transaction_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Transaction ID is required",
-      });
+    if (!reference) {
+        throw new Error("Payment reference is required");
     }
 
-    // Check if already verified
-    const existingOrder = await Order.findOne({ transactionId: transaction_id });
+    // Check if this Paystack reference has already been used
+    const existingOrder = await Order.findOne({
+        paymentReference: reference
+    });
+
     if (existingOrder) {
-      return res.json({
-        success: true,
-        message: "Payment already verified",
-        data: { orderId: existingOrder._id },
-      });
+
+        throw new Error(
+            "This payment reference has already been used"
+        );
     }
 
-    // Verify with Flutterwave
-    const response = await axios({
-      method: "get",
-      url: `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
-      headers: {
-        Authorization: `Bearer ${process.env.FLW_SECRET_KEY || process.env.FLUTTERWAVE_SECRET_KEY}`,
-      },
-    });
+    try {
 
-    const verification = response.data;
+        const response = await axios({
+            url: `https://api.paystack.co/transaction/verify/${reference}`,
+            method: "GET",
 
-    // Check verification status
-    if (verification.status === "success" && 
-        verification.data.status === "successful") {
-      
-      // Verify amount matches
-      if (verification.data.amount !== amount) {
-        return res.status(400).json({
-          success: false,
-          message: "Amount mismatch",
+            headers: {
+                Authorization:
+                    `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            },
         });
-      }
 
-      // Create order in database
-      const order = new Order({
-        orderNumber: `ORD-${Date.now()}`,
-        transactionId: transaction_id,
-        amount: verification.data.amount,
-        customerEmail: customer_email,
-        customerName: verification.data.customer.name,
-        customerPhone: verification.data.customer.phone_number,
-        items: cart_items || [],
-      });
+        const payment = response.data.data;
 
-      await order.save();
+        console.log(
+            "Paystack verification response:",
+            JSON.stringify(response.data, null, 2)
+        );
 
-      return res.json({
-        success: true,
-        message: "Payment verified successfully",
-        data: {
-          orderId: order._id,
-          orderNumber: order.orderNumber,
-        },
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Payment verification failed",
-      });
+        // Check whether Paystack says payment succeeded
+        if (payment.status !== "success") {
+            throw new Error("Payment was not successful");
+        }
+
+        return payment;
+
+    } catch (error) {
+
+        console.error(
+            "Paystack verification error:",
+            error.response?.data || error.message
+        );
+
+        throw new Error(
+            error.response?.data?.message ||
+            error.message ||
+            "Unable to verify Paystack payment"
+        );
     }
-  } catch (error) {
-    console.error("Verification error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error during verification",
-    });
-  }
 };
-export default verifyPayment;
+
+export default verifyPaystackPayment;

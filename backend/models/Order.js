@@ -25,7 +25,7 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  subtotalAmount: {
+  totalAmount: {
     type: Number,
     default: 0,
   },
@@ -45,6 +45,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ["processing", "pending", "successful", "failed"],
     default: "processing",
+  },
+  paymentReference : {
+    type : String,
+    required: true
   },
   customerEmail: {
     type: String,
