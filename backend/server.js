@@ -26,6 +26,7 @@ import { encryptAES } from "./services/flutterwaveEncryption.js";
 import calculateAmount from "./routes/components/calculateAmount.js";
 import getFlutterwavePaymentFees from "./routes/components/flutterwavePaymentFee.js";
 import paystackInitialization from "./routes/paystackInitialization.js";
+import verifyPaystackPayment from "./routes/verifyPayment.js"
 
 
 
@@ -1737,7 +1738,7 @@ app.post("/verifyPayment", verifyToken, async (req, res) => {
 }
         const { reference, cart } = req.body;
 
-        const verifiedPayment = await verifyPayment(reference);
+        const verifiedPayment = await verifyPaystackPayment(reference);
         const calculatedAmount = await calculateAmount(cart)
 
 
