@@ -1787,7 +1787,7 @@ app.post("/verifyPayment", verifyToken, async (req, res) => {
           customerEmail : user.email,
           customerId : user._id,
           customerPaymentId : verifiedPayment.customer.id,
-          customerName: `${user.fName} ${user.lname}`,
+          customerName: `${user.fname} ${user.lname}`,
           customerPhone : user.phoneNumber,
           items : cartItems,
         })
