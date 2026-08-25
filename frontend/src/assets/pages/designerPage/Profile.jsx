@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import CustomFetch from "../../hooks/UseFetch"
 import { BASE_URL } from "../../Url"
 import ServerError from "../../components/ServerError"
+import LogoutButton from "../../components/LogoutButton"
 
 const InfoRow = ({ label, value }) => (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3 py-2">
@@ -120,6 +121,7 @@ const Profile = () => {
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold">Profile</h1>
                     <div className="flex items-center gap-3">
+                        <LogoutButton />
                         <button onClick={() => setEditProfile(prev => !prev)} className="px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700">
                             {editProfile ? 'Cancel' : 'Edit Profile'}
                         </button>

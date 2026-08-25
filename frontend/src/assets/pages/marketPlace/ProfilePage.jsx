@@ -6,6 +6,7 @@ import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react
 import { MdVerified } from "react-icons/md";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/UseFetch";
+import LogoutButton from "../../components/LogoutButton";
 
 const ProfilePage = () => {
     const {setAuth, logout} = useContext(AuthContext)
@@ -111,17 +112,19 @@ const ProfilePage = () => {
                                 <p className="text-gray-500 text-sm mt-1">Member since {new Date().getFullYear()}</p>
                             </div>
                             
-                            {/* Edit Profile Toggle */}
-                            <button 
-                                onClick={() => setEditProfile(!editProfile)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    editProfile 
-                                        ? 'bg-gray-800 text-white' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
-                            >
-                                {editProfile ? 'Editing Mode' : 'Edit Profile'}
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <LogoutButton />
+                                <button 
+                                    onClick={() => setEditProfile(!editProfile)}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                        editProfile 
+                                            ? 'bg-gray-800 text-white' 
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {editProfile ? 'Editing Mode' : 'Edit Profile'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
