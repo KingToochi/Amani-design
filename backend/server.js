@@ -1750,8 +1750,10 @@ app.post("/verifyPayment", verifyToken, async (req, res) => {
         }
 
         const calculatedAmountInKobo = Math.round(Number(calculatedAmount) * 100);
+        console.log(calculatedAmountInKobo)
+        console.log(verifiedPayment.requested_amount)
 
-        if (Number(calculatedAmountInKobo) !== Number(verifiedPayment.requested_amount)) {
+        if ( Number(calculatedAmountInKobo) !== Number(verifiedPayment.requested_amount)) {
           return res.status(400).json({
             success : false,
             message: "Amount paid not equal to total amount"

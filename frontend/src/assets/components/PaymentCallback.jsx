@@ -83,6 +83,8 @@ const PaymentCallback = () => {
                     return;
                 }
 
+                console.log(responseData)
+
                 // Payment successfully verified
                 setStatus("success");
 
