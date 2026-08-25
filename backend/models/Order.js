@@ -137,6 +137,10 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
       },
+      receivedItem : {
+        type : Boolean,
+        default : false
+      },
 
       productId: {
         type: mongoose.Schema.Types.ObjectId,
