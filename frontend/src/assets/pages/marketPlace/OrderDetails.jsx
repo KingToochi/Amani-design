@@ -29,6 +29,9 @@ const OrderDetails = () => {
     const [receivedQuantities, setReceivedQuantities] = useState({});
     const [submittingItemId, setSubmittingItemId] = useState(null);
     const [submitError, setSubmitError] = useState(null);
+    const [complaints, setComplaints] = useState({});
+    const [submittingComplaintId, setSubmittingComplaintId] = useState(null);
+    const [complaintMessage, setComplaintMessage] = useState(null);
     
 
     const { id } = useParams();
@@ -79,6 +82,46 @@ const OrderDetails = () => {
         }));
     };
 
+    const handleComplaintChange = (itemId, complaint) => {
+        setComplaints((previous) => ({
+            ...previous,
+            [itemId]: complaint
+        }));
+    };
+
+    const handleSubmitComplaint = async (event, item) => {
+        event.preventDefault();
+        const complaint = complaints[item._id]?.trim();
+
+        if (!complaint) {
+            setComplaintMessage({ type: "error", text: "Please describe the problem before submitting." });
+            return;
+        }
+
+        setComplaintMessage(null);
+        setSubmittingComplaintId(item._id);
+
+        try {
+            const response = await CustomFetch(`${BASE_URL}/complaints`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId: id, itemId: item._id, complaint })
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || "Unable to submit complaint");
+            }
+
+            setComplaints((previous) => ({ ...previous, [item._id]: "" }));
+            setComplaintMessage({ type: "success", text: "Complaint submitted successfully." });
+        } catch (error) {
+            setComplaintMessage({ type: "error", text: error.message });
+        } finally {
+            setSubmittingComplaintId(null);
+        }
+    };
+
     const handleItemReceived = async (item) => {
         const itemId = item._id;
         const receivedQuantity = Number(receivedQuantities[itemId]);
@@ -91,6 +134,11 @@ const OrderDetails = () => {
 
         setSubmitError(null);
         setSubmittingItemId(itemId);
+        console.log(id)
+        console.log(itemId)
+        console.log(item.productId)
+        console.log(orderedQuantity)
+        console.log(receivedQuantity)
 
         try {
             const response = await CustomFetch(confirmingItemUrl, {
@@ -400,6 +448,39 @@ const OrderDetails = () => {
                                                     </h1>
                                                 </div>
                                             )}
+
+                                            <form onSubmit={(event) => handleSubmitComplaint(event, item)} className="mt-5 border-t border-gray-100 pt-4">
+                                                <label
+                                                    htmlFor={`complaint-${item._id || index}`}
+                                                    className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2"
+                                                >
+                                                    <AlertCircle className="h-4 w-4 text-orange-500" />
+                                                    Report a problem with this item
+                                                </label>
+                                                <textarea
+                                                    id={`complaint-${item._id || index}`}
+                                                    value={complaints[item._id] || ""}
+                                                    onChange={(event) => handleComplaintChange(item._id, event.target.value)}
+                                                    placeholder="Describe any issue with this item..."
+                                                    rows="3"
+                                                    maxLength="5000"
+                                                    className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                                                />
+                                                <div className="mt-2 flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+                                                    <button
+                                                        type="submit"
+                                                        disabled={submittingComplaintId === item._id}
+                                                        className="inline-flex items-center justify-center rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                                    >
+                                                        {submittingComplaintId === item._id ? "Submitting..." : "Submit complaint"}
+                                                    </button>
+                                                    {complaintMessage && (
+                                                        <p className={`text-sm ${complaintMessage.type === "success" ? "text-green-600" : "text-red-600"}`} role="status">
+                                                            {complaintMessage.text}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

@@ -17,6 +17,7 @@ import Sales from "./models/Sales.js";
 import Orders from "./models/Order.js"
 import bcrypt from "bcryptjs";
 import Rating from "./models/Rating.js";
+import Complaint from "./models/Complaint.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
 import { getAccessToken } from "./services/flutterwave.js";
@@ -2615,6 +2616,62 @@ app.put("/confirmItemReceived", verifyToken, async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.post("/complaints", verifyToken, async (req, res) => {
+  const auth = req.user;
+  const { orderId, itemId, complaint } = req.body;
+
+  if (!orderId || !itemId || !complaint?.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "orderId, itemId, and complaint are required",
+    });
+  }
+
+  try {
+    const order = await Order.findOne({ _id: orderId, customerId: auth._id }).lean();
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const item = order.items.find((orderItem) => orderItem._id?.toString() === itemId.toString());
+
+    if (!item) {
+      return res.status(404).json({ success: false, message: "Item not found in this order" });
+    }
+
+    const product = await Product.findById(item.productId).select("_id vendorId").lean();
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    const savedComplaint = await Complaint.create({
+      orderId: order._id,
+      orderNumber: order.orderNumber,
+      itemId: item._id,
+      productId: product._id,
+      vendorId: product.vendorId,
+      customerId: auth._id,
+      complaint: complaint.trim(),
+      itemName: item.name,
+      itemQuantity: item.quantity,
+      itemPrice: item.price,
+      itemColor: item.color,
+      itemSize: item.size,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Complaint submitted successfully",
+      complaint: savedComplaint,
+    });
+  } catch (error) {
+    console.error("Complaint submission error:", error);
+    return res.status(500).json({ success: false, message: "Unable to submit complaint" });
   }
 });
 
