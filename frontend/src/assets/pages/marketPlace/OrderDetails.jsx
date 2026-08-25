@@ -24,6 +24,7 @@ const OrderDetails = () => {
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [shippingDetails, setShippingDetails] = useState(null)
 
     const { id } = useParams();
     const url = `${BASE_URL}/customerOrderDetails/${id}`;
@@ -42,6 +43,7 @@ const OrderDetails = () => {
                 // Fix: Your API returns {success: true, order: {...}}
                 // NOT {success: true, data: {order, products}}
                 setOrderDetails(details.order);
+                setShippingDetails(details.user)
                 setError(null);
             } else {
                 setError({ message: "Unable to fetch order details" });
@@ -246,6 +248,7 @@ const OrderDetails = () => {
                                     <div className="flex flex-col sm:flex-row gap-6">
                                         {/* Product Image Placeholder */}
                                         <div className="flex-shrink-0">
+                                            <Link key={item.productId} to={`/product-details/${item.productId}`}>
                                             <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
                                                 {item.image ? (
                                                     <img 
@@ -257,6 +260,7 @@ const OrderDetails = () => {
                                                     <Package className="h-8 w-8 text-gray-400" />
                                                 )}
                                             </div>
+                                            </Link>
                                         </div>
                                         
                                         {/* Product Details */}
@@ -269,7 +273,7 @@ const OrderDetails = () => {
                                                     )}
                                                 </div>
                                                 <p className="text-2xl font-bold text-indigo-600">
-                                                    {orderDetails.currency || 'NGN'} {item.price * item.quantity?.toLocaleString()}
+                                                    {orderDetails.currency || 'NGN'} {(item.price * item.quantity).toLocaleString()}
                                                 </p>
                                             </div>
                                             
@@ -346,7 +350,8 @@ const OrderDetails = () => {
                             <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                             <div>
                                 <p className="text-gray-700">
-                                    {orderDetails.shippingAddress || "Delivery address will be updated soon"}
+                                    {/* {`${shippingDetails.houseNumber}, + "" + ${shippingDetails.streetName}, +"" + ${shippingDetails.city}, + "" + ${shippingDetails.state}`} */}
+                                    {shippingDetails.shippingAddress}
                                 </p>
                                 <p className="text-sm text-gray-500 mt-2">
                                     Estimated delivery: {orderDetails.orderStatus === 'delivered' ? 'Delivered' : '2-3 business days'}

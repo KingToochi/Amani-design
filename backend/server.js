@@ -2521,7 +2521,7 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
   const orderId = req.params.id
   try {
      // Verify user exists in database
-    const user = await User.findById(auth._id).select("_id");
+    const user = await User.findById(auth._id).select("_id houseNumber streetName city state shippingAddress");
     
     if (!user) {
       return res.status(404).json({
@@ -2530,14 +2530,25 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
       });
     }
 
-    const order = await Order.findById(orderId)
+    const order = await Order.findOne({
+      _id: orderId,
+      customerId: auth._id
+    })
     .select("products paymentStatus currency amount items orderStatus")
     .populate('products.productId', 'productImages')
     .lean();
 
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
+
     return res.json({
       success: true,
-      order
+      order,
+      user
     });
     
   } catch(error) {
