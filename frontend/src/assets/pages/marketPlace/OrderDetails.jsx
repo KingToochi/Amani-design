@@ -25,10 +25,15 @@ const OrderDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [shippingDetails, setShippingDetails] = useState(null)
+    const [receivingItemId, setReceivingItemId] = useState(null);
+    const [receivedQuantities, setReceivedQuantities] = useState({});
+    const [submittingItemId, setSubmittingItemId] = useState(null);
+    const [submitError, setSubmitError] = useState(null);
+    
 
     const { id } = useParams();
     const url = `${BASE_URL}/customerOrderDetails/${id}`;
-    const confirmingItemUrl = `${BASE_URL}/confirmItemReceived`
+    const confirmingItemUrl = `${BASE_URL}/confirmItemReceived`;
 
     const fetchOrderDetails = async () => {
         try {
@@ -67,30 +72,50 @@ const OrderDetails = () => {
     };
     });
 
-    const handleItemReceived = async (itemId) => {
+    const handleReceivedQuantityChange = (itemId, quantity) => {
+        setReceivedQuantities((previous) => ({
+            ...previous,
+            [itemId]: quantity
+        }));
+    };
 
-        const data = {itemId, id};
-        console.log(data)
-        console.log(itemsWithImages)
+    const handleItemReceived = async (item) => {
+        const itemId = item._id;
+        const receivedQuantity = Number(receivedQuantities[itemId]);
+        const orderedQuantity = Number(item.quantity);
+
+        if (!Number.isInteger(receivedQuantity) || receivedQuantity < 0 || receivedQuantity > orderedQuantity) {
+            setSubmitError(`Enter a quantity from 0 to ${orderedQuantity}.`);
+            return;
+        }
+
+        setSubmitError(null);
+        setSubmittingItemId(itemId);
 
         try {
-            let response = await CustomFetch(confirmingItemUrl, {
+            const response = await CustomFetch(confirmingItemUrl, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    orderId: id,
+                    itemId,
+                    productId: item.productId,
+                    orderedQuantity,
+                    receivedQuantity
+                })
             });
-
             const result = await response.json();
-            if (response.ok) {
-                fetchOrderDetails()
 
+            if (!response.ok) {
+                throw new Error(result.message || "Unable to confirm item receipt");
             }
-            console.log(result);
 
+            setOrderDetails(result.order);
+            setReceivingItemId(null);
         } catch (error) {
-            console.error(error);
+            setSubmitError(error.message);
+        } finally {
+            setSubmittingItemId(null);
         }
     };
 
@@ -239,6 +264,11 @@ const OrderDetails = () => {
                             Order Items
                         </h2>
                     </div>
+                    {submitError && (
+                        <p className="px-6 py-3 text-sm text-red-700 bg-red-50 border-b border-red-100" role="alert">
+                            {submitError}
+                        </p>
+                    )}
                     
                     <div className="divide-y divide-gray-100">
                         {/* Use items array from your API response */}
@@ -310,13 +340,54 @@ const OrderDetails = () => {
                                             
                                             {/* Action Button */}
                                           { item.status !== "delivered" ? (
+                                            receivingItemId === item._id ? (
+                                            <form onSubmit={(event) => {
+                                                event.preventDefault();
+                                                handleItemReceived(item);
+                                            }} className="flex flex-col sm:flex-row sm:items-end gap-3">
+                                                <label className="flex flex-col gap-1 text-sm font-medium text-gray-700">
+                                                    Quantity received
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        max={item.quantity}
+                                                        step="1"
+                                                        value={receivedQuantities[item._id] ?? ""}
+                                                        onChange={(event) => handleReceivedQuantityChange(item._id, event.target.value)}
+                                                        className="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                        required
+                                                        autoFocus
+                                                    />
+                                                </label>
+                                                <button
+                                                    type="submit"
+                                                    disabled={submittingItemId === item._id}
+                                                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    <PackageCheck className="h-4 w-4" />
+                                                    {submittingItemId === item._id ? "Saving..." : "Submit quantity"}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setReceivingItemId(null)}
+                                                    className="px-4 py-2 text-gray-600 hover:text-gray-900"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                            ) : (
                                             <button
-                                            onClick={() => handleItemReceived(item.id)}
+                                            onClick={() => {
+                                                setSubmitError(null);
+                                                setReceivingItemId(item._id);
+                                                handleReceivedQuantityChange(item._id, item.quantity);
+                                            }}
                                             className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
+                                            >
                                                 <PackageCheck className="h-4 w-4" />
                                                 Confirm Item Received
                                             </button>
+                                            )
                                             ) : (
                                             <div>
                                                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white       rounded-lg">
@@ -350,11 +421,17 @@ const OrderDetails = () => {
                             <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                             <div>
                                 <p className="text-gray-700">
-                                    {/* {`${shippingDetails.houseNumber}, + "" + ${shippingDetails.streetName}, +"" + ${shippingDetails.city}, + "" + ${shippingDetails.state}`} */}
-                                    {shippingDetails.shippingAddress}
+                                    {[
+                                        shippingDetails.shippingAddress,
+                                        shippingDetails.city,
+                                        shippingDetails.state
+                                        ]
+                                        .filter(Boolean)
+                                        .join(", ")
+                                        || "No shipping address, add shipping address in your profile"}
                                 </p>
                                 <p className="text-sm text-gray-500 mt-2">
-                                    Estimated delivery: {orderDetails.orderStatus === 'delivered' ? 'Delivered' : '2-3 business days'}
+                                    Estimated delivery: {orderDetails.orderStatus === 'delivered' ? 'Delivered' : '3-7 business days'}
                                 </p>
                             </div>
                         </div>

@@ -25,7 +25,7 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  subtotalAmount: {
+  totalAmount: {
     type: Number,
     default: 0,
   },
@@ -131,6 +131,48 @@ const orderSchema = new mongoose.Schema({
     enum: ["pending","partially_verified", "verified", "in_transit", "delivered", "completed", "cancelled", "returned"],
     default: "pending",
   },
+  customerOrderReceivedDetails: [
+    {
+      itemId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+      },
+
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true
+      },
+
+      orderedQuantity: {
+        type: Number,
+        required: true,
+        min: 1
+      },
+
+      receivedQuantity: {
+        type: Number,
+        required: true,
+        min: 0
+      },
+
+      itemStatus: {
+        type: String,
+        enum: ["pending", "partially_received", "received", "issue_reported"],
+        default: "pending"
+      },
+
+      satisfaction: {
+        type: Boolean,
+        default: null
+      },
+
+      receivedAt: {
+        type: Date,
+        default: null
+      }
+    }
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

@@ -2534,7 +2534,7 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
       _id: orderId,
       customerId: auth._id
     })
-    .select("products paymentStatus currency amount items orderStatus")
+    .select("products paymentStatus currency amount items orderStatus customerOrderReceivedDetails")
     .populate('products.productId', 'productImages')
     .lean();
 
@@ -2560,6 +2560,63 @@ app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
   }
 
 })
+
+app.put("/confirmItemReceived", verifyToken, async (req, res) => {
+  const auth = req.user;
+  const { orderId, itemId, productId, orderedQuantity, receivedQuantity } = req.body;
+
+  try {
+    const order = await Order.findOne({ _id: orderId, customerId: auth._id });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const item = order.items.find((orderItem) => orderItem._id?.toString() === itemId?.toString());
+
+    if (!item) {
+      return res.status(404).json({ success: false, message: "Item not found in this order" });
+    }
+
+    const expectedQuantity = Number(item.quantity);
+    const requestedQuantity = Number(receivedQuantity);
+
+    if (!Number.isInteger(requestedQuantity) || requestedQuantity < 0 || requestedQuantity > expectedQuantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Received quantity must be between 0 and ${expectedQuantity}`
+      });
+    }
+
+    const detail = {
+      itemId: item._id,
+      productId: productId || item.productId,
+      orderedQuantity: expectedQuantity,
+      receivedQuantity: requestedQuantity,
+      itemStatus: requestedQuantity === expectedQuantity ? "received" : "partially_received",
+      satisfaction: requestedQuantity === expectedQuantity,
+      receivedAt: new Date()
+    };
+    const detailIndex = order.customerOrderReceivedDetails.findIndex((entry) => entry.itemId?.toString() === itemId?.toString());
+
+    if (detailIndex === -1) {
+      order.customerOrderReceivedDetails.push(detail);
+    } else {
+      order.customerOrderReceivedDetails[detailIndex] = detail;
+    }
+
+    if (requestedQuantity === expectedQuantity) {
+      item.status = "delivered";
+    }
+    order.orderStatus = updateOrderStatusFromItems(order);
+    await order.save();
+
+    return res.json({ success: true, message: "Item receipt saved", order });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 
 app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
   const auth = req.user;
