@@ -1,0 +1,270 @@
+import { useEffect, useState} from "react";
+import { MdOutlineDashboard  } from "react-icons/md"
+import { FcSalesPerformance } from "react-icons/fc"
+import { Link } from "react-router-dom";
+import { IoChatboxOutline, IoSettingsOutline } from "react-icons/io5";
+import { IoMenuOutline } from "react-icons/io5";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import logo from "../../assets/images/mainLogo.jpg"
+import { FiSearch } from "react-icons/fi";
+import { FaPalette } from "react-icons/fa6";
+import { BsTag } from "react-icons/bs";
+import { FaStore } from "react-icons/fa6";
+import {BASE_URL} from "../../Url"
+import ServerError from "../../components/ServerError";
+
+
+
+
+const Header = ({userData}) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+    const [showMenu, setShowMenu] = useState(false)
+    const [showSearchBar, setShowSearchBar] = useState(false)
+    const [serverError, setServerError] = useState(null)
+
+
+    useEffect(() => {
+        const handleResize = () =>setIsMobile(window.innerWidth < 768)
+        window.addEventListener("resize", handleResize)
+
+        return () => window.removeEventListener("resize", handleResize)
+    },[])
+
+    const onClickMenuBar = () => setShowMenu((prev) => !prev)
+    const onClickSearchIcon  = () =>  setShowSearchBar((prev) => !prev)
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+    }
+
+    {serverError && <h1 className="w-full min-h-screen flex items-center justify-center"><ServerError error={serverError} /></h1>}
+
+    return(
+        <header className="w-full sticky top-0 z-40 shadow-md">
+            {isMobile
+            ?
+            <div
+            className="w-full flex items-center gap-6 bg-stone-800 px-3 py-3 min-h-16 border-b border-stone-700"
+            >
+                <div
+                className="w-[10%] flex justify-center"
+                >
+                    <IoMenuOutline 
+                    className={`${showMenu ? "hidden" : "block"} text-lg text-gray-50 sm:text-2xl`}
+                    onClick={onClickMenuBar}
+                    />
+                    {
+                        showMenu &&
+                        <div
+                        className="min-w-screen min-h-screen z-50 bg-gray-50 fixed inset-0 flex flex-col items-center px-4 py-4 gap-6"
+                        >
+                            <button onClick={onClickMenuBar}
+                            className="w-full flex justify-end"
+                            >
+                                <h1
+                                className="text-2xl font-bold text-red-600"
+                                >X</h1>
+                            </button>
+                            <div
+                            className="w-full flex flex-col items-center"
+                            >
+                                <Link to="/designer/profile" onClick={onClickMenuBar}
+                                className="flex flex-col items-center gap-2"
+                                >
+                                    <img src={userData?.profilePicture} alt="Vendor Profile Picture"
+                                    className="w-[40px] h-[40px] rounded-full
+                                    sm:w-[80px] sm:h-[80px]"
+                                    />
+                                </Link>
+                                <div
+                                className="flex flex-col items-center"
+                                >
+                                    <h1
+                                    className="font-[abril] font-normal text-base
+                                    sm:text-xl
+                                    "
+                                    >{userData?.fname + " " + userData?.lname}</h1>
+                                    <h1
+                                    className="font-[abril] font-light text-gray-400 text-lg
+                                    sm:text-xl
+                                    "
+                                    >{userData?.typeOfRole}</h1>
+                                </div>
+                            </div>
+                            <ul
+                            className="w-full flex flex-col gap-6 px-6 px-2"
+                            >
+                                <li>
+                                    <Link to="/designer" 
+                                    onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril] 
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <MdOutlineDashboard />
+                                        <h2>Dashboard</h2>
+                                    </Link>
+                                </li>
+                                {/* <li>
+                                    <Link to="/designer/analytics" 
+                                    onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <FcSalesPerformance/>
+                                        <h2>Analytics</h2>
+                                    </Link>
+                                </li> */}
+
+                                <li>
+                                    <Link to="/products" 
+                                    onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <FaStore />
+                                        <h2>Store</h2>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/designer/products" onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <FaPalette/>
+                                        <h2>My Products</h2>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="orders" 
+                                    onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <FcSalesPerformance/>
+                                        <h2>Orders</h2>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/designer/sales" onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <BsTag/>
+                                        <h2>Sales</h2>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/designer/messages" onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <IoChatboxOutline/>
+                                        <h2>Message</h2>
+                                    </Link>
+                                </li>
+                                {/* <li>
+                                    <Link to="/designer/profile" onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <IoSettingsOutline/>
+                                        <h2>Settings</h2>
+                                    </Link>
+                                </li> */}
+                            </ul>
+                        </div>
+                    }
+                </div>
+                    <div className="w-[65%] flex gap-2 items-center">
+                        <img src={logo} alt="amaniSky logo"
+                        className="w-[50px] h-[50px] rounded-[50%]"
+                    />
+                    <h1 className="text-lg font-semibold text-gray-50 sm:text-xl">{userData?.username}</h1>
+                    </div>
+                <div
+                className="w-[25%] flex gap-6 justify-around items-center"
+                >
+                    <FiSearch 
+                    className={`text-lg" ${showSearchBar? "hidden" : "flex"} text-gray-50 sm:text-2xl`}
+                    onClick={onClickSearchIcon}
+                    />
+                    <IoMdNotificationsOutline
+                    className="text-lg text-gray-50 sm:text-2xl"
+                    />
+                </div>
+                {showSearchBar &&
+                <form onSubmit={onSubmit}
+                className="min-w-screen absolute right-0 left-0 top-0 flex flex-col px-2 py-2  bg-white gap-2"
+                >
+                    <h1
+                    onClick={onClickSearchIcon}
+                    className="flex justify-end text-2xl font-bold text-red-600"
+                    >X</h1>
+                    <input type="search" placeholder="search"
+                    className="w-full h-[50px] border-2 border-gray-900 rounded-lg px-2 text-2xl font-medium font-[abril] focus:outline-none"
+                    />
+                </form>
+                }
+            </div>
+            :
+            <div
+            className="w-full flex bg-stone-800 py-4 min-h-16 border-b border-stone-700 "
+            >
+                <div
+                className="w-[40%] flex items-center justify-start px-4 gap-4 
+                lg:w-[30%]
+                "
+                >
+                    <img src={logo} alt="amaniSky logo"
+                        className="w-[50px] h-[50px] rounded-[50%]
+                        "
+                    />
+                    <h1 className="text-xl font-bold font-[abril] text-gray-50">{userData?.username}</h1>
+                </div>
+                <div
+                    className="w-[60%] flex items-center justify-center px-2 gap-4
+                    lg:w-[70%]"
+                    >
+                        <form onSubmit={onSubmit}
+                        className="w-[90%] flex items-center pl-2 bg-gray-400/50 rounded-lg"
+                        >
+                            <button
+                            >
+                                <FiSearch 
+                                className="text-xl text-gray-300"
+                                />
+                            </button>
+                            <input type="search" placeholder="search"
+                            className="w-full h-[30px]  pl-2 px-2 py-4 text-2xl text-gray-100 font-medium font-[abril] focus:outline-none focus:text-gray-50"
+                            />
+                        </form>
+                        <IoMdNotificationsOutline
+                        className="text-xl text-gray-50"
+                        />
+                    </div>
+            </div>
+            }
+        </header>
+    )
+
+}
+
+export default Header;
+
+

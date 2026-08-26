@@ -1,4 +1,4 @@
-import { getAccessToken } from "./services/flutterwave.js";
+import { getAccessToken } from "./src/integrations/flutterwave/flutterwave.js";
 
 app.get("/test-token", async(req,res)=>{
 
