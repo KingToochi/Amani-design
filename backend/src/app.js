@@ -35,6 +35,7 @@ import cloudinary from "./config/cloudinary.js";
 
 dotenv.config();
 const app = express();
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -81,14 +82,12 @@ const parseBooleanFlag = (value) => {
 };
 
 const getCookieOptions = (req, options = {}) => {
-  const origin = (req.headers.origin || "").toLowerCase();
-  const isLocalOrigin = origin.includes("localhost") || origin.includes("127.0.0.1") || req.hostname === "localhost" || req.hostname === "127.0.0.1";
-  // Only set the Secure flag in production for non-local origins.
-  // const secure = isProduction && !isLocalOrigin;
-  // console.log("Cookie options - Secure:", secure, "Origin:", origin, "Hostname:", req.hostname);                  
-  // const sameSite = secure ? "none" : "lax";
-  const secure = true
-  const sameSite = "none"
+  const forwardedProtocol = req.headers["x-forwarded-proto"]?.split(",")[0]?.trim();
+  const isHttps = forwardedProtocol === "https" || req.secure;
+  // SameSite=None is required for cross-site requests, and Secure is required with it.
+  // Local HTTP uses first-party-compatible cookies so private browsing can retain them.
+  const secure = isHttps && (isProduction || forwardedProtocol === "https");
+  const sameSite = secure ? "none" : "lax";
 
 
   return {
