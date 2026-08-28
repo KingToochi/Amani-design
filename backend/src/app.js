@@ -3,8 +3,12 @@ import cors from "cors";
 import multer from "multer";
 import dotenv from "dotenv";
 import axios from "axios";
+import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import http from "http";
+import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
+import connectDB from "./db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
 import Likes from "./models/Likes.js";
@@ -16,15 +20,16 @@ import Rating from "./models/Rating.js";
 import Complaint from "./models/Complaint.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
-import { getAccessToken } from "./integrations/flutterwave/flutterwave.js";
+import { getAccessToken } from "./services/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
-import { encryptAES } from "./integrations/flutterwave/encryption.js";
-import calculateAmount from "./modules/payments/calculateAmount.js";
-import getFlutterwavePaymentFees from "./integrations/flutterwave/paymentFee.js";
-import paystackInitialization from "./integrations/paystack/initialize.js";
-import verifyPaystackPayment from "./integrations/paystack/verify.js"
-import cloudinary from "./config/cloudinary.js";
+import { encryptAES } from "./services/flutterwaveEncryption.js";
+import calculateAmount from "./routes/components/calculateAmount.js";
+import getFlutterwavePaymentFees from "./routes/components/flutterwavePaymentFee.js";
+import paystackInitialization from "./routes/paystackInitialization.js";
+import verifyPaystackPayment from "./routes/verifyPayment.js"
+import errorMidlleware from "./middleware/error.middleware.js"
+import productRoutes from "./modules/products/product.route.js"
 
 
 
@@ -35,7 +40,6 @@ import cloudinary from "./config/cloudinary.js";
 
 dotenv.config();
 const app = express();
-app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -63,6 +67,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+connectDB();
+app.use(errorMidlleware)
+
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
 const clientId = process.env.FLW_CLIENT_ID;
@@ -82,12 +89,14 @@ const parseBooleanFlag = (value) => {
 };
 
 const getCookieOptions = (req, options = {}) => {
-  const forwardedProtocol = req.headers["x-forwarded-proto"]?.split(",")[0]?.trim();
-  const isHttps = forwardedProtocol === "https" || req.secure;
-  // SameSite=None is required for cross-site requests, and Secure is required with it.
-  // Local HTTP uses first-party-compatible cookies so private browsing can retain them.
-  const secure = isHttps && (isProduction || forwardedProtocol === "https");
-  const sameSite = secure ? "none" : "lax";
+  const origin = (req.headers.origin || "").toLowerCase();
+  const isLocalOrigin = origin.includes("localhost") || origin.includes("127.0.0.1") || req.hostname === "localhost" || req.hostname === "127.0.0.1";
+  // Only set the Secure flag in production for non-local origins.
+  // const secure = isProduction && !isLocalOrigin;
+  // console.log("Cookie options - Secure:", secure, "Origin:", origin, "Hostname:", req.hostname);                  
+  // const sameSite = secure ? "none" : "lax";
+  const secure = true
+  const sameSite = "none"
 
 
   return {
@@ -124,6 +133,9 @@ const updateOrderStatusFromItems = (order) => {
   return "verified";
 };
 
+// ---- Socket.IO Setup ----
+const server = http.createServer(app);
+
 const verifyToken = async(req, res, next) => {
   let token;
   console.log("Cookies:", req.cookies);
@@ -133,32 +145,6 @@ const verifyToken = async(req, res, next) => {
   if (authHeader && authHeader.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];
   } 
-  // else if (authHeader === "auth") {
-  //   const userId = authHeader._id
-  //   const getTheToken = await getToken(userId)
-
-  //   if (getTheToken.message === "tokens found") {
-  //     token = getTheToken.accessToken
-  //   }
-
-  //   else if (getTheToken.message === "user exist but token is not found") {
-  //     const accessToken = generateToken(userId, {expiresIn : "30mins"})
-  //     const refreshAccessToken = generateToken(userId, {expiresIn : "7 days"})
-
-  //     res.cookie("accessToken", accessToken, getCookieOptions(req, {
-  //       maxAge: 30 * 60 * 1000  // 30 minutes
-  //     }));
-
-  //     res.cookie("refreshAccessToken", refreshAccessToken, getCookieOptions(req, {
-  //       maxAge : 7 * 24 * 60 * 60 * 1000 // 7 days
-  //     }))
-
-  //     await storeToken(userId, accessToken, refreshAccessToken)
-
-  //     token = accessToken
-  //   }
-  // }
-  // Fall back to cookie if header not present
   else if (req.cookies.accessToken) {
     token = req.cookies.accessToken;
   }
@@ -196,13 +182,21 @@ function generateNonce() {
 const uploadProduct = multer({ dest: "./products" });
 const uploadImage = multer({dest: "./images"})
 
+// ---- Cloudinary ----
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // ---- PRODUCTS ROUTES ----
 
 // GET all products
-app.get("/products", async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
-});
+// app.get("/products", async (req, res) => {
+//   const products = await Product.find();
+//   res.json(products);
+// });
+app.use("/products", productRoutes)
 app.get("/categories", async (req, res) => {
   try {
     const fetchMenProduct = await Product.findOne({
@@ -2896,4 +2890,4 @@ app.put("/markItemAsSent", verifyToken, async (req, res) => {
     }
 });
 
-export default app;
+server.listen(4000, () => console.log("Server running on port 4000"));
