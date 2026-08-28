@@ -20,14 +20,14 @@ import Rating from "./models/Rating.js";
 import Complaint from "./models/Complaint.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
-import { getAccessToken } from "./services/flutterwave.js";
+import { getAccessToken } from "./integration/flutterwave/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
-import { encryptAES } from "./services/flutterwaveEncryption.js";
-import calculateAmount from "./routes/components/calculateAmount.js";
-import getFlutterwavePaymentFees from "./routes/components/flutterwavePaymentFee.js";
-import paystackInitialization from "./routes/paystackInitialization.js";
-import verifyPaystackPayment from "./routes/verifyPayment.js"
+import { encryptAES } from "./integration/flutterwave/encryption.js";
+import calculateAmount from "./modules/payments/calculateAmount.js";
+import getFlutterwavePaymentFees from "./integration/flutterwave/paymentFee.js";
+import paystackInitialization from "./integration/paystack/initialization.js";
+import verifyPaystackPayment from "./integration/paystack/verify.js"
 import errorMidlleware from "./middleware/error.middleware.js"
 import productRoutes from "./modules/products/product.route.js"
 
