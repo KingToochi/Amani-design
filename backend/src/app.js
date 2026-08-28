@@ -8,7 +8,7 @@ import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
-import connectDB from "./db.js";
+import connectDB from "./config/db.js";
 import User from "./models/User.js";
 import Product from "./models/Product.js";
 import Likes from "./models/Likes.js";
