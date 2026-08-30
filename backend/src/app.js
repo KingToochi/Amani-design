@@ -20,21 +20,14 @@ import Rating from "./models/Rating.js";
 import Complaint from "./models/Complaint.js";
 import cookieParser from "cookie-parser";
 import Order from "./models/Order.js";
-import { getAccessToken } from "./integration/flutterwave/flutterwave.js";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
-import { encryptAES } from "./integration/flutterwave/encryption.js";
 import calculateAmount from "./modules/payments/calculateAmount.js";
-import getFlutterwavePaymentFees from "./integration/flutterwave/paymentFee.js";
 import paystackInitialization from "./integration/paystack/initialization.js";
 import verifyPaystackPayment from "./integration/paystack/verify.js"
 import errorMidlleware from "./middleware/error.middleware.js"
 import productRoutes from "./modules/products/product.route.js"
-
-
-
-
-
+import categoryRoute from ".modules/categories/category.route.js"
 
 
 
@@ -197,24 +190,25 @@ cloudinary.config({
 //   res.json(products);
 // });
 app.use("/products", productRoutes)
-app.get("/categories", async (req, res) => {
-  try {
-    const fetchMenProduct = await Product.findOne({
-      productSubCategory: { $regex: "\\bmen\\b", $options: "i" },
-    });
+app.use("/categories", categoryRoute)
+// app.get("/categories", async (req, res) => {
+//   try {
+//     const fetchMenProduct = await Product.findOne({
+//       productSubCategory: { $regex: "\\bmen\\b", $options: "i" },
+//     });
 
-  const fetchWomenProduct = await Product.findOne({
-    productSubCategory: { $regex: "\\bwomen\\b", $options: "i" },
-  });
+//   const fetchWomenProduct = await Product.findOne({
+//     productSubCategory: { $regex: "\\bwomen\\b", $options: "i" },
+//   });
 
-  const fetchAccessories = await Product.findOne({
-    productSubCategory: { $regex: "\\baccessory\\b", $options: "i" },
-  });
-    return res.status(200).json({success:true, fetchAccessories, fetchMenProduct, fetchWomenProduct})
-  }catch(error){
-    res.status(500).json({ success: false, message: "Error fetching categories", error: error.message });
-  }
-})
+//   const fetchAccessories = await Product.findOne({
+//     productSubCategory: { $regex: "\\baccessory\\b", $options: "i" },
+//   });
+//     return res.status(200).json({success:true, fetchAccessories, fetchMenProduct, fetchWomenProduct})
+//   }catch(error){
+//     res.status(500).json({ success: false, message: "Error fetching categories", error: error.message });
+//   }
+// })
 
 // get products by designer id 
 
