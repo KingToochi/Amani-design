@@ -27,7 +27,7 @@ import paystackInitialization from "./integrations/paystack/initialize.js";
 import verifyPaystackPayment from "./integrations/paystack/verify.js"
 import errorMidlleware from "./middleware/error.middleware.js"
 import productRoutes from "./modules/products/product.route.js"
-import categoryRoute from ".modules/categories/category.route.js"
+import categoryRoute from "./modules/categories/category.route.js"
 
 
 
