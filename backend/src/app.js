@@ -23,7 +23,7 @@ import Order from "./models/Order.js";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 import calculateAmount from "./modules/payments/calculateAmount.js";
-import paystackInitialization from "./integrations/paystack/initialization.js";
+import paystackInitialization from "./integrations/paystack/initialize.js";
 import verifyPaystackPayment from "./integrations/paystack/verify.js"
 import errorMidlleware from "./middleware/error.middleware.js"
 import productRoutes from "./modules/products/product.route.js"
