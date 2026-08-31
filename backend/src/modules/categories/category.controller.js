@@ -1,5 +1,5 @@
 import { getCategory } from "./category.service.js"
-export const fetchCategory = async() => {
+const fetchCategory = async() => {
     try {
         return await getCategory()
 
@@ -8,3 +8,5 @@ export const fetchCategory = async() => {
         next(error)
     }
 }
+
+export default fetchCategory;
