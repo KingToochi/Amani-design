@@ -26,7 +26,7 @@ import calculateAmount from "./modules/payments/calculateAmount.js";
 import paystackInitialization from "./integrations/paystack/initialize.js";
 import verifyPaystackPayment from "./integrations/paystack/verify.js"
 import errorMidlleware from "./middleware/error.middleware.js"
-import productRoutes from "./modules/products/product.route.js"
+// import productRoutes from "./modules/products/product.route.js"
 import categoryRoute from "./modules/categories/category.route.js"
 
 
@@ -185,11 +185,11 @@ cloudinary.config({
 // ---- PRODUCTS ROUTES ----
 
 // GET all products
-// app.get("/products", async (req, res) => {
-//   const products = await Product.find();
-//   res.json(products);
-// });
-app.use("/products", productRoutes)
+app.get("/products", async (req, res) => {
+  const products = await Product.find();
+  res.json(products);
+});
+// app.use("/products", productRoutes)
 app.use("/categories", categoryRoute)
 // app.get("/categories", async (req, res) => {
 //   try {
