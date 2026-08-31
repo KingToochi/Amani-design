@@ -1,4 +1,4 @@
-
+import Products from "../../models/Product.js"
 export const getCategory = async() => {
         const fetchMenProduct = await Product.findOne({
           productSubCategory: { $regex: "\\bmen\\b", $options: "i" },

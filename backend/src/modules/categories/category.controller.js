@@ -1,4 +1,4 @@
-import { getCategory } from "./category.service"
+import { getCategory } from "./category.service.js"
 export const fetchCategory = async() => {
     try {
         return await getCategory()
