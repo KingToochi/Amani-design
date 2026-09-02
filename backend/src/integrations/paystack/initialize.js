@@ -1,5 +1,5 @@
 import axios from "axios"
-import calculateAmount from "../../modules/payments/calculateAmount.js";
+import calculateAmount from "../../utils/calculateAmount.js";
 
 const paystackInitialization = async (email, cart) => {
   try {

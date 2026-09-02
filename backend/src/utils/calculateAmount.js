@@ -1,4 +1,4 @@
-import Product from "../../models/Product.js";
+import Product from "../models/Product.js";
 
 const calculateAmount = async (cart) => {
     let subTotal = 0;

@@ -3,6 +3,6 @@ import fetchCategory from "./category.controller.js"
 
 const route = express.Router()
 
-route.get("/categories", fetchCategory)
+route.get("/", fetchCategory)
 
 export default route

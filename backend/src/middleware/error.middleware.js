@@ -1,5 +1,5 @@
 
-const errorMiddleware = (error, req, res) => {
+export const errorMiddleware = (error, req, res) => {
     console.log(error)
 
     return res.status(error.statusCode || 500).jaon({
