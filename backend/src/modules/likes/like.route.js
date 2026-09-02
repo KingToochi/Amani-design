@@ -4,4 +4,6 @@ import { getLikes, postLike } from "./like.controller.js"
 
 const route = express.Router()
 route.post ("/", verifyToken, postLike)
-router.get("/", verifyToken, getLikes)
+route.get("/", verifyToken, getLikes)
+
+export default route
