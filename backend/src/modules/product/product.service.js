@@ -1,4 +1,4 @@
-import Product from "../../../models/Product.js";
+import Product from "../../models/Product.js";
 
 export const fetchAllProducts = async() => {
     const products = await Product.find()
