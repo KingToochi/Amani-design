@@ -1,5 +1,5 @@
 import express from "express"
-import {getUsername, getEmail, getUser, updateUser, getUserInfo, registration, vendorRegistration, userLogin, userLogout} from "./users.controller"
+import {getUsername, getEmail, getUser, updateUser, getUserInfo, registration, vendorRegistration, userLogin, userLogout} from "./users.controller.js"
 import verifyToken from "../../middleware/verifyToken"
 import multer from "multer"
 
