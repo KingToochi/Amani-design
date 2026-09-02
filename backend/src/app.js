@@ -38,7 +38,7 @@ import refreshToken from "./modules/refresh/refresh.route.js"
 
 
 dotenv.config();
-const app = express();
+export const app = express();
 // Configure CORS to accept credentials from the live frontend domain and local development
 app.use(cors({
   origin(origin, callback) {
