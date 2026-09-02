@@ -1,5 +1,5 @@
-import { validateRefreshToken } from "./refresh.validate";
-import { getNewToken } from "./refresh.service";
+import { validateRefreshToken } from "./refresh.validate.js";
+import { getNewToken } from "./refresh.service.js";
 export const refresh = async(req, res, next) => {
     try {
         const token = req.cookies.refreshToken;

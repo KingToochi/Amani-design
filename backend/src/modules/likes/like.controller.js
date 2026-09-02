@@ -1,4 +1,4 @@
-import { fetchUser } from "../users/users.service"
+import { fetchUser } from "../users/users.service.js"
 import Likes from "../../models/Likes"
 
 export const postLike = async(req, res, next) => {

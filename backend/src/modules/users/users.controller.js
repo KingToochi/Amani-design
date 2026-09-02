@@ -1,6 +1,6 @@
-import { fetchUsername, fetchEmail, fetchUser, registerVendor, registerUser, loginUser, logUserOut, loginAdmin} from "./users.service";
-import { validateUserUpdatedInfo, userValidation, registrationValidation, validateVendorRegistration, validateLoginData } from "./users.validation";
-import { parseBooleanFlag } from "../../utils/booleanFlag"
+import { fetchUsername, fetchEmail, fetchUser, registerVendor, registerUser, loginUser, logUserOut, loginAdmin} from "./users.service.js";
+import { validateUserUpdatedInfo, userValidation, registrationValidation, validateVendorRegistration, validateLoginData } from "./users.validation.js";
+import { parseBooleanFlag } from "../../utils/booleanFlag.js"
 
 export const getUsername = async(req, res, next) => {
     try {

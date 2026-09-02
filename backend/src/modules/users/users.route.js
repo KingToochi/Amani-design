@@ -1,6 +1,6 @@
 import express from "express"
 import {getUsername, getEmail, getUser, updateUser, getUserInfo, registration, vendorRegistration, userLogin, userLogout} from "./users.controller.js"
-import verifyToken from "../../middleware/verifyToken"
+import verifyToken from "../../middleware/verifyToken.js"
 import multer from "multer"
 
 const route = express.Router()

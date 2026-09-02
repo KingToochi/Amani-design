@@ -1,7 +1,7 @@
 import User from "../../models/User"
 import bcrypt from "bcryptjs";
-import {generateToken} from "../../utils/generateToken"
-import { getCookieOptions } from "../../utils/getCookieOptions";
+import {generateToken} from "../../utils/generateToken.js"
+import { getCookieOptions } from "../../utils/getCookieOptions.js";
 
 
 export const fetchUsername = async(username) => {
