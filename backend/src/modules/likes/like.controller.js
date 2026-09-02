@@ -1,5 +1,5 @@
 import { fetchUser } from "../users/users.service.js"
-import Likes from "../../models/Likes"
+import Likes from "../../models/Likes.js"
 
 export const postLike = async(req, res, next) => {
     try {

@@ -1,5 +1,5 @@
-import User from "../../models/User"
-import Product from "../../models/Product"
+import User from "../../models/User.js"
+import Product from "../../models/Product.js"
 
 export const userValidation = async(auth) => {
         const user = await User.findById(auth._id)
