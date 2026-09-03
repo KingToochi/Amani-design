@@ -33,7 +33,7 @@ const Orders = () => {
   const [totalOrder, setTotalOrder] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
-  const url = `${BASE_URL}/orders`
+  const url = `${BASE_URL}/vendor/orders`
 
   useEffect(() => {
     const fetchOrder = async () => {

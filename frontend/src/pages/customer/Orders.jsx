@@ -8,7 +8,7 @@ import { Loader, ShoppingBag, AlertCircle } from "lucide-react";
 const CustomerOrder = () => {
     const [ordersData, setOrdersData] = useState([])
     const [orders, setOrders] = useState([])
-    const url = `${BASE_URL}/customerOrders`
+    const url = `${BASE_URL}/customer/orders`
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [orderStatus, setOrderStatus] = useState([])

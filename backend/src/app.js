@@ -34,7 +34,10 @@ import {parseBooleanFlag} from "./utils/booleanFlag.js"
 import { allowedOrigins } from "./utils/allowedOrigin.js";
 import { getCookieOptions } from "./utils/getCookieOptions.js";
 import refreshToken from "./modules/refresh/refresh.route.js"
-
+import searchRoute from "./modules/search/search.route.js"
+import adminRoute from "./modules/admin/admin.route.js"
+import vendorRoute from "./modules/vendors/vendors.route.js"
+import customerRoute from "./modules/customer/customer.route.js"
 
 
 dotenv.config();
@@ -107,66 +110,11 @@ app.use("/categories", categoryRoute)
 app.use("/users", userRoute)
 app.use("/likes", likesRoute)
 app.use("/refresh", refreshToken)
+app.use("/search", searchRoute)
+app.use("/admin", adminRoute)
+app.use("/vendor", vendorRoute)
+app.use("/customer", customerRoute)
 
-app.get("/search", async (req, res) => {
-  try {
-    const { q } = req.query
-    console.log(q)
-    if (!q || !q.trim()) return res.json({ message: "empty field", products: [] })
-
-    // Split input into words
-    const inputValue = q.trim().split(/\s+/)
-    console.log(inputValue)
-
-    // Build MongoDB query: each word should match at least one field
-    const mongoQuery = {
-      $and: inputValue.map(word => ({
-        $or: [
-          { productCategory: { $regex: word, $options: "i" } },
-          { productDescription: { $regex: word, $options: "i" } },
-          {color: { $regex: word, $options: "i" }},
-          {size: {$regex: word, $options: "i"}}
-        ]
-      }))
-    }
-
-    // Query MongoDB
-    const products = await Product.find(mongoQuery)
-    // Send results
-    res.json({success:true, products })
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: "Server error" })
-  }
-})
-
-app.get("/admin/details", verifyToken, async(req, res) => {
-  const auth = req.user
-
-  try {
-    const user = await User.findOne({_id: auth._id})
-
-    if (!user || user.role !== "admin") {
-      return res.status(403).json({ success: false, message: "Access denied" });
-    }
-
-    const adminDetails = {
-      fname: user.fname,
-      lname: user.lname,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      dob: user.dob,
-      profilePicture: user.profilePicture,
-      joinedAt: user.joinedAt,
-    }
-
-    return res.json({ success: true, admin: adminDetails })
-
-  } catch(error){
-    console.error("Error fetching admin details:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-})
 
 
 app.get("/data", verifyToken, async(req, res) => {
@@ -284,609 +232,123 @@ app.get("/data", verifyToken, async(req, res) => {
 
 })
 
-app.get("/admin/vendors", verifyToken, async(req, res) => {
-  const auth = req.user
 
-  const user = await User.findOne({_id: auth._id})
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Access denied" });
-  }
 
-  try {
-    const vendors = await User.find({role: "vendor"}).select("id fname lname username email phoneNumber typeOfVendor status subscriber subscriptionDetails.plan subscriptionDetails.status joinedAt")
-
-    return res.json({ success: true, vendors });
-  }catch(error) {
-    console.log(error)
-    res.status(500).json({ success: false, message: "Server error", error });
-  }
-
-})
-
-app.get("/admin/customers", verifyToken, async(req, res) => {
-  const auth = req.user
-
-  const user = await User.findOne({_id: auth._id})
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Access denied" });
-  }
-
-  try {
-    const customers = await User.find({role: "user"}).select("id fname lname username dob email phoneNumber joinedAt")
-    return res.json({ success: true, customers });
-  }catch(error) {
-    console.log(error)
-    res.status(500).json({ success: false, message: "Server error", error });
-  }
-})
-
-app.get("/admin/products", verifyToken, async(req, res) => {
-  const auth = req.user
-  const user = await User.findOne({_id: auth._id})
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Access denied" });
-  }
-
-  try {
-    const products = await Product.find()
-    .select("_id vendorId productName")
-    .sort({_id: -1})
-    return res.json({ success: true, products });
-  }catch(error){
-    console.log(error)
-    res.status(500).json({ success: false, message: "Server error", error });
-  }
-})
-
-app.get("/admin/orders", verifyToken, async(req, res) => {
-  const auth = req.user
-  const user = await User.findOne({_id: auth._id})
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Access denied" });
-  }
-
-  try {
-    const totalOrder = await Order.aggregate([
-      {
-        $project: {
-          orderNumber: 1,
-          amount: 1,
-          currency: 1,
-          paymentStatus: 1,
-          customerName: 1,
-          customerEmail: 1,
-          customerPhone: 1,
-          orderStatus: 1,
-          createdAt: 1,
-          items: 1,
-          products: 1,
-        },
-      },
-      {
-        $group: {
-          _id: "$orderStatus",
-          count: { $sum: 1 },
-          orders: { $push: "$$ROOT" },
-        },
-      },
-      {
-        $sort: { _id: 1 },
-      },
-    ])
-
-    return res.json({
-      success: true,
-      totalOrder,
-    })
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error,
-    })
-  }
-})
-
-app.get("/orders", verifyToken, async(req, res) => {
-  const auth = req.user;
-  try {
-    const user = await User.findById({_id : auth._id}).select("_id role")
-
-    //  check if the user exist
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-    
-    // check if the user is a vendor
-    if (user.role !== "vendor") {
-      return res.status(403).json({
-         success: false,
-        message: "Access denied"
-      })
-    }
-
-    // get the orders of product link to the user
-    const products = await Product.find({vendorId : user._id}).select("_id");
-
-    // get the product Id
-    const productIds = products.map((item) => item._id.toString());
-    let totalOrder;
-
-    if (productIds.length === 0) {
-        return res.json({
-          success: true,
-          message: "No products found for this vendor",
-          totalOrder: [],
-        });
-      }
-
-    // get the list of orders of each product
-    totalOrder = await Order.aggregate([
-      {
-        $match: {
-          $or: [
-            { "products.productId": { $in: productIds } },
-            { "items.productId": { $in: productIds } },
-          ],
-        },
-      },
-
-      {
-        $project: {
-          products: {
-            $filter: {
-              input: "$products",
-              as: "product",
-              cond: {
-                $in: ["$$product.productId", productIds],
-              },
-            },
-          },
-          amount: 1,
-          orderStatus: 1,
-          createdAt: 1,
-          paymentStatus: 1,
-          currency: 1,
-          items: {
-            $filter: {
-              input: "$items",
-              as: "item",
-              cond: {
-                $in: ["$$item.productId", productIds],
-              },
-            },
-          },
-        },
-      },
-
-      {
-    $group: {
-      _id: "$orderStatus",
-      count: { $sum: 1 },
-      orders: { $push: "$$ROOT" }
-    }
-  }
-    ])
-
-    return res.json({
-        success: true,
-        totalOrder
-      });
-
-  }catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-      });
-    }
-})
-
-
-app.get("/sales", verifyToken, async(req, res) => {
-  const auth = req.user;
-  try {
-    const user = await User.findById({_id : auth._id}).select("_id role")
-
-    //  check if the user exist
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-    
-    // check if the user is a vendor
-    if (user.role !== "vendor") {
-      return res.status(403).json({
-         success: false,
-        message: "Access denied"
-      })
-    }
-
-    // get the orders of product link to the user
-    const products = await Product.find({vendorId : user._Id})
-
-    // get the product Id
-
-    const productIds = products.map((items) => items._id)
-    let  totalSales;
-
-    if (productIds.length === 0) {
-        return res.json({
-          success: true,
-          message: "No products found for this vendor",
-          totalSales: [],
-        });
-      }
-
-    // get the list of orders of each product
-    totalSales = await Sales.aggregate([
-      {
-        $match :{ 
-          productId : {$in : productIds}}
-      },
-
-      {
-        $project :{
-          productId :1,
-          productName: 1,
-          quantity: 1,
-          totalAmount: 1,
-          tax: 1,
-          finalAmount: 1,
-          createdAt: 1,
-          currency: 1,
-        }
-      },
-
-      {
-        $sort: { createdAt: -1 }
-      },
-      {
-        $group: {
-          _id: "$productId",
-          totalSales: { $sum: "$quantity" },
-          totalRevenue: { $sum: "$finalAmount" },
-        }
-      }
-    ])
-
-    return res.json({
-        success: true,
-        totalSales
-      });
-
-  }catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-      });
-    }
-})
-
-app.get("/viewProduct/:id", verifyToken, async(req, res) => {
-  const auth = req.user
-  const user = await User.findOne({_id: auth._id})
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Access denied" });
-  }
-  try {
-    const product = await Product.findOne({_id: req.params.id}).populate("vendorId", "fname lname username email")
-    if (!product) return res.status(404).json({ success: false, message: "Product not found" })
-    return res.json({ success: true, product });
-  } catch(error) {
-    console.log(error)
-    res.status(500).json({ success: false, message: "Server error", error });
-  }
-})
-
-app.get("/viewVendor/:id", verifyToken, async(req, res) => {
-  const auth = req.user
-  const user = await User.findOne({_id: auth._id})
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Access denied" });
-  }
-  try {
-    const vendor = await User.findOne({_id: req.params.id})
-    if (!vendor) return res.status(404).json({ success: false, message: "Vendor not found" })
-    return res.json({ success: true, vendor });
-  } catch(error) {
-    console.log(error)
-    res.status(500).json({ success: false, message: "Server error", error });
-  }
-})
-
-app.get("/viewCustomer/:id", verifyToken, async(req, res) => {
-  const auth = req.user
-  const user = await User.findOne({_id: auth._id})
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Access denied" });
-  }
-  try {
-    const customer = await User.findOne({_id: req.params.id})
-    if (!customer) return res.status(404).json({ success: false, message: "Customer not found" })
-    return res.json({ success: true, customer });
-  } catch(error) {
-    console.log(error)
-    res.status(500).json({ success: false, message: "Server error", error });
-  }
-})
-
-app.get("/designer/productAnalytics", verifyToken, async (req, res) => {
-  try {
-    const auth = req.user;
-
-    const user = await User.findById(auth._id).select("_id role");
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-
-    if (user.role !== "vendor") {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied"
-      });
-    }
-
-    // get all vendor products
-    const products = await Product.find(
-      { vendorId: user._id },
-      { _id: 1 }
-    );
-
-    const productIds = products.map(item => item._id);
-
-    if (productIds.length === 0) {
-      return res.json({
-        success: true,
-        sales: {
-          totalSales: 0,
-          totalRevenue: 0
-        },
-        orders: {
-          totalOrders: 0
-        },
-        comments: {
-          totalComments: 0
-        },
-        ratings: {
-          totalRatings: 0,
-          averageRating: 0
-        }
-      });
-    }
-
-    const [
-      salesData,
-      ordersData,
-      commentsData,
-      ratingsData
-    ] = await Promise.all([
-
-      // SALES
-      Sales.aggregate([
-        {
-          $match: {
-            productId: { $in: productIds }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            totalSales: { $sum: 1 },
-            totalRevenue: { $sum: "$amount" }
-          }
-        }
-      ]),
-
-      // ORDERS
-      Orders.aggregate([
-        {
-          $match: {
-            "products.productId": { $in: productIds }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            totalOrders: { $sum: 1 }
-          }
-        }
-      ]),
-
-      // COMMENTS
-      Comments.aggregate([
-        {
-          $match: {
-            targetId: { $in: productIds }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            totalComments: { $sum: 1 }
-          }
-        }
-      ]),
-
-      // RATINGS
-      Rating.aggregate([
-        {
-          $match: {
-            productId: { $in: productIds }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            totalRatings: { $sum: 1 },
-            averageRating: { $avg: "$rating" }
-          }
-        }
-      ])
-    ]);
-
-    res.json({
-      success: true,
-
-      sales: salesData[0] || {
-        totalSales: 0,
-        totalRevenue: 0
-      },
-
-      orders: ordersData[0] || {
-        totalOrders: 0
-      },
-
-      comments: commentsData[0] || {
-        totalComments: 0
-      },
-
-      ratings: ratingsData[0] || {
-        totalRatings: 0,
-        averageRating: 0
-      }
-    });
-
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
-app.get(
-  "/designer/vendorProductAnalytics",
-  verifyToken,
-  async (req, res) => {
-    const auth = req.user;
-
-    try {
-      // check user
-      const user = await User.findById(auth._id).select("_id role");
-
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
-
-      // check role
-      if (user.role !== "vendor") {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied",
-        });
-      }
-
-      // vendor products
-      const vendorProducts = await Product.find({
-        vendorId: auth._id,
-      }).sort({ createdAt: -1 });
-
-      const productIds = vendorProducts.map(
-        (item) => item._id
-      );
-
-      // no products
-      if (productIds.length === 0) {
-        return res.json({
-          success: true,
-          message: "No products found for this vendor",
-          data: [],
-        });
-      }
-
-      // analytics
-      const [
-        sales,
-        orders,
-        comments,
-        ratings,
-        likes,
-      ] = await Promise.all([
-        Sales.aggregate([
-          {
-            $match: {
-              productId: { $in: productIds },
-            },
-          },
-        ]),
-
-        Orders.aggregate([
-          {
-            $match: {
-              "products.productId": {
-                $in: productIds,
-              },
-            },
-          },
-        ]),
-
-        Comments.aggregate([
-          {
-            $match: {
-              targetId: { $in: productIds },
-            },
-          },
-        ]),
-
-        Rating.aggregate([
-          {
-            $match: {
-              productId: { $in: productIds },
-            },
-          },
-        ]),
-
-        Likes.aggregate([
-          {
-            $match: {
-              productId: { $in: productIds },
-            },
-          },
-        ]),
-      ]);
-
-      return res.json({
-        success: true,
-        analytics: {
-          sales,
-          orders,
-          comments,
-          ratings,
-          likes,
-        },
-      });
-
-    } catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-);
+// app.get(
+//   "/designer/vendorProductAnalytics",
+//   verifyToken,
+//   async (req, res) => {
+//     const auth = req.user;
+
+//     try {
+//       // check user
+//       const user = await User.findById(auth._id).select("_id role");
+
+//       if (!user) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "User not found",
+//         });
+//       }
+
+//       // check role
+//       if (user.role !== "vendor") {
+//         return res.status(403).json({
+//           success: false,
+//           message: "Access denied",
+//         });
+//       }
+
+//       // vendor products
+//       const vendorProducts = await Product.find({
+//         vendorId: auth._id,
+//       }).sort({ createdAt: -1 });
+
+//       const productIds = vendorProducts.map(
+//         (item) => item._id
+//       );
+
+//       // no products
+//       if (productIds.length === 0) {
+//         return res.json({
+//           success: true,
+//           message: "No products found for this vendor",
+//           data: [],
+//         });
+//       }
+
+//       // analytics
+//       const [
+//         sales,
+//         orders,
+//         comments,
+//         ratings,
+//         likes,
+//       ] = await Promise.all([
+//         Sales.aggregate([
+//           {
+//             $match: {
+//               productId: { $in: productIds },
+//             },
+//           },
+//         ]),
+
+//         Orders.aggregate([
+//           {
+//             $match: {
+//               "products.productId": {
+//                 $in: productIds,
+//               },
+//             },
+//           },
+//         ]),
+
+//         Comments.aggregate([
+//           {
+//             $match: {
+//               targetId: { $in: productIds },
+//             },
+//           },
+//         ]),
+
+//         Rating.aggregate([
+//           {
+//             $match: {
+//               productId: { $in: productIds },
+//             },
+//           },
+//         ]),
+
+//         Likes.aggregate([
+//           {
+//             $match: {
+//               productId: { $in: productIds },
+//             },
+//           },
+//         ]),
+//       ]);
+
+//       return res.json({
+//         success: true,
+//         analytics: {
+//           sales,
+//           orders,
+//           comments,
+//           ratings,
+//           likes,
+//         },
+//       });
+
+//     } catch (error) {
+//       console.log(error);
+
+//       res.status(500).json({
+//         success: false,
+//         message: error.message,
+//       });
+//     }
+//   }
+// );
 
 app.post("/initiatePayment", verifyToken, async (req, res) => {
     try {
@@ -1683,81 +1145,6 @@ app.post("/verifyPayment", verifyToken, async (req, res) => {
 //   }
 // });
 
-app.get("/customerOrders", verifyToken, async(req, res) => {
-  const auth = req.user;
-
-  try {
-    // Verify user exists in database
-    const user = await User.findById(auth._id).select("_id");
-    
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-
-    const orders = await Order.find({ customerId: auth._id })
-      .select("orderNumber transactionId currency amount items orderStatus deliverydate paymentStatus createdAt")
-      .sort({ createdAt: -1 });
-
-    return res.json({
-      success: true,
-      orders
-    });
-
-  } catch(error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-});
-app.get("/customerOrderDetails/:id", verifyToken, async(req, res) => {
-  const auth = req.user
-  const orderId = req.params.id
-  try {
-     // Verify user exists in database
-    const user = await User.findById(auth._id).select("_id houseNumber streetName city state shippingAddress");
-    
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-
-    const order = await Order.findOne({
-      _id: orderId,
-      customerId: auth._id
-    })
-    .select("products paymentStatus currency amount items orderStatus customerOrderReceivedDetails")
-    .populate('products.productId', 'productImages')
-    .lean();
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found"
-      });
-    }
-
-    return res.json({
-      success: true,
-      order,
-      user
-    });
-    
-  } catch(error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-
-})
 
 app.put("/confirmItemReceived", verifyToken, async (req, res) => {
   const auth = req.user;
@@ -1872,93 +1259,6 @@ app.post("/complaints", verifyToken, async (req, res) => {
   }
 });
 
-app.get("/vendorOrderDetails/:id", verifyToken, async (req, res) => {
-  const auth = req.user;
-  const orderId = req.params.id;
-
-  try {
-    const user = await User.findById(auth._id).select("_id role");
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-
-    if (user.role !== "vendor") {
-      return res.status(403).json({
-        success: false,
-        message: "User not authorized"
-      });
-    }
-
-    const products = await Product.find({
-      vendorId: user._id
-    }).select("_id");
-
-    const productIds = products.map(item => item._id);
-
-    const order = await Order.findById(orderId);
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found"
-      });
-    }
-
-    const vendorItems = (order.items || []).filter(item => {
-      const itemProductId = item?.productId?.toString?.();
-      return productIds.some((id) => id.toString() === itemProductId);
-    });
-
-    if (vendorItems.length === 0) {
-      return res.status(403).json({
-        success: false,
-        message: "This order does not contain your products"
-      });
-    }
-
-
-    const vendorItemId = vendorItems.map(item => item.productId)
-    const vendorItemImage = await Product.find(
-      {_id : {$in : vendorItemId}}
-    ).select("_id productImages")
-    const amount = order.amount
-    const customerDetails = await User.findById(order.customerId).select("fname lname phoneNumber shippingAddress city state")
-    const customerName = [customerDetails?.fname, customerDetails?.lname].filter(Boolean).join(" ") || order.customerName || "N/A"
-
-    const vendorOrder = {
-      _id: order._id,
-      orderNumber: order.orderNumber,
-      orderStatus: order.orderStatus,
-      currency: order.currency,
-      amount,
-      createdAt: order.createdAt,
-      paymentStatus: order.paymentStatus,
-      customerName,
-      customerPhone: customerDetails?.phoneNumber || order.customerPhone || "N/A",
-      shippingAddress: customerDetails?.shippingAddress || "No shipping address provided",
-      item: vendorItems,
-      image: vendorItemImage,
-      customerDetails,
-    }
-
-    return res.json({
-      success: true,
-      vendorOrder,
-    });
-
-  } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
-  }
-});
 
 app.post("/confirmItemAvailability", verifyToken, async (req, res) => {
   const auth = req.user;

@@ -17,7 +17,7 @@ const ViewProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { id } = useParams();
-  const url = `${BASE_URL}/viewProduct/${id}`;
+  const url = `${BASE_URL}/admin/viewProduct/${id}`;
 
   useEffect(() => {
     const fetchProduct = async () => {

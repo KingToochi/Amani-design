@@ -35,7 +35,7 @@ const VendorOrderDetails = () => {
     const [sendingItem, setSendingItem] = useState(null);
 
     const { id } = useParams();
-    const url = `${BASE_URL}/vendorOrderDetails/${id}`;
+    const url = `${BASE_URL}/vendor/OrderDetails/${id}`;
     const confirmItemAvailableUrl = `${BASE_URL}/confirmItemAvailable`
 
     const fetchOrderDetails = async () => {

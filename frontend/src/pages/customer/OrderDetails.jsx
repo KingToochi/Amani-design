@@ -35,7 +35,7 @@ const OrderDetails = () => {
     
 
     const { id } = useParams();
-    const url = `${BASE_URL}/customerOrderDetails/${id}`;
+    const url = `${BASE_URL}/customer/orderDetails/${id}`;
     const confirmingItemUrl = `${BASE_URL}/confirmItemReceived`;
 
     const fetchOrderDetails = async () => {

@@ -5,7 +5,7 @@ import ServerError from "../../components/ServerError";
 import CustomFetch from "../../hooks/UseFetch";
 
 const Dashboard = () => {
-    const url = `${BASE_URL}/designer/productAnalytics`;
+    const url = `${BASE_URL}/vendor/productAnalytics`;
     const { auth } = useContext(AuthContext);
     const [sales, setSales] = useState({});
     const [orders, setOrders] = useState({});

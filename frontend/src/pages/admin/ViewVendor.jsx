@@ -17,7 +17,7 @@ const ViewVendor = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { id } = useParams();
-  const url = `${BASE_URL}/viewVendor/${id}`;
+  const url = `${BASE_URL}/admin/viewVendor/${id}`;
 
   useEffect(() => {
     const fetchVendor = async () => {

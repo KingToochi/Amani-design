@@ -17,7 +17,7 @@ const ViewCustomer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { id } = useParams();
-  const url = `${BASE_URL}/viewCustomer/${id}`;
+  const url = `${BASE_URL}/admin/viewCustomer/${id}`;
 
   useEffect(() => {
     const fetchCustomer = async () => {

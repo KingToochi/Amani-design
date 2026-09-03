@@ -17,7 +17,7 @@ const Sales = () => {
   const [salesData, setSalesData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
-  const url = `${BASE_URL}/sales`
+  const url = `${BASE_URL}/vendor/sales`
 
   useEffect(() => {
     const fetchSales = async () => {
