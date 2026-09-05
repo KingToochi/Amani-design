@@ -26,7 +26,7 @@ const PDetails = () => {
             let response = await fetch(`${url}/products/${_id}`)
             let data = await response.json()
             console.log(data)
-            setProductDetails(data.product)
+            setProductDetails(data)
             setProductPrice(data.basePrice) // Set price from fetched data
             addColors(data) // Populate colors based on product data
             addSizes(data) // Populate sizes based on product data

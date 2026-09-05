@@ -4,16 +4,17 @@ import Likes from "../../models/Likes.js"
 export const postLike = async(req, res, next) => {
     try {
         const auth = req.user
+        const {productId} = req.body
         const user = await fetchUser(auth)
         if (user) {
-            const exist = await Likes.findOne({userId: id, productId: productId })
+            const exist = await Likes.findOne({userId: auth._id, productId: productId })
             if (exist) {
-                await Likes.deleteOne({userId: id, productId: productId  }) 
+                await Likes.deleteOne({userId: auth._id, productId: productId }) 
                 res.json({status: "success", message: "product deleted "})
                 return
             } else {
                 const newLike = new Likes ({
-                userId : id,
+                userId : auth._id,
                 productId: productId
                 })
                 await newLike.save()

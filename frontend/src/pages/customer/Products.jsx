@@ -83,7 +83,7 @@ const Products = () => {
         }
 
        try {
-            let response = await fetch(`${url}/like`, {
+            let response = await fetch(`${url}/likes`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

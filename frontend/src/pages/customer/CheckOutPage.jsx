@@ -27,6 +27,7 @@ import logo from "../../assets/images/mainLogo.jpg"
 import CustomFetch from "../../hooks/UseFetch"
 import PaymentCallback from '../../features/payments/components/PaymentCallback';
 
+
 const CheckOut = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -328,7 +329,7 @@ const CheckOut = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                            <ShoppingBag className="h-6 w-6" />
+                            <img src={logo} alt="AmaniSky Logo" className="h-10 w-10 rounded-full object-cover" />
                             <h1 className="font-semibold text-lg text-center flex flex-col tracking-tight">AmaniSky <span>Fashion World</span></h1>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
