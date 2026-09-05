@@ -35,8 +35,7 @@ export const getProductById = async(req, res, next) => {
         const product = await fetchProductById(productId)
         const validatedProduct = await productValidation(product)
         return res.status(200).json({
-            success : true,
-            product : validatedProduct
+            validatedProduct
         })
 
     } catch(error) {
