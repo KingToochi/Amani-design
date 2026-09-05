@@ -4,7 +4,6 @@ import Product from "../../models/Product.js";
 import Order from "../../models/Order.js";
 
 export const fetchProductAnalytics = async(auth) => {
-    const auth = req.user;
     const user = await User.findById(auth._id).select("_id role");
 
     const validate = validateVendor(user)
@@ -19,7 +18,6 @@ export const fetchProductAnalytics = async(auth) => {
 }
 
 export const fetchVendorProduct = async(auth) => {
-    const auth = req.user;
     const user = await User.findById(auth._id).select("_id role");
 
     const validate = validateVendor(user)
