@@ -3,6 +3,7 @@ import User from "../../models/User.js"
 import verifyPaystackPayment from "../../integrations/paystack/verify.js"
 import calculateAmount from "../../utils/calculateAmount.js"
 import { verifyPaymentStatus } from "./payment.validation.js"
+import Order from "../../models/Order.js"
 
 export const paymentVerification = async({auth, reference, cart}) => {
     const user = await User.findById(auth._id)

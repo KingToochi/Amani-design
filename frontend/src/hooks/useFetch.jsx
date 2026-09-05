@@ -14,7 +14,7 @@ const CustomFetch = async(url, options = {}) => {
             })
 
             if (refreshTokenResponse.ok) {
-                const userInfoResponse = await fetch(`${BASE_URL}/userInfo`, {
+                const userInfoResponse = await fetch(`${BASE_URL}/users/info`, {
                     method: "GET",
                     credentials: "include"
                 })
