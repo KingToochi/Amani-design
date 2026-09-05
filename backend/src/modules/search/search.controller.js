@@ -1,6 +1,6 @@
 import { getSearchResult } from "./search.service.js"
 
-export const search = async(req, resizeBy, next) => {
+export const search = async(req, res, next) => {
     try {
         const { q } = req.query
         const result = await getSearchResult(q)
