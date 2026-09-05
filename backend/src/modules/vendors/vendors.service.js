@@ -1,5 +1,5 @@
 import User from "../../models/User.js"
-import { validateVendor, validateVendor } from "./vendors.validation.js"
+import { validateVendor } from "./vendors.validation.js"
 import Product from "../../models/Product.js";
 import Order from "../../models/Order.js";
 
