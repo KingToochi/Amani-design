@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { getCookieOptions } from "../../utils/getCookieOptions.js";
+import generateToken from "../../utils/generateToken.js";
 
 export const getNewToken = async(token) => {
     const JWT_SECRET  = process.env.JWT_SECRET;
