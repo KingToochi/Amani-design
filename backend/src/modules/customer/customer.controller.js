@@ -1,4 +1,4 @@
-import { fetchCustomerOrder, fetchCustomerOrderById } from "./customer.service.js";
+import { confirmRecievedItem, fetchCustomerOrder, fetchCustomerOrderById } from "./customer.service.js";
 
 
 export const getCustomerOrderDetails = async(req, res, next) => {
@@ -33,7 +33,7 @@ export const confirmItemRecieved = async(req, res, next) => {
     try {
         const auth = req.user;
         const { orderId, itemId, productId, orderedQuantity, receivedQuantity } = req.body;
-        const order = await confirmItemRecieved({auth, orderId, itemId, productId, orderedQuantity, receivedQuantity})
+        const order = await confirmRecievedItem({auth, orderId, itemId, productId, orderedQuantity, receivedQuantity})
         return res.json({ success: true, message: "Item receipt saved", order });
     }catch(error) {
         next(error)
