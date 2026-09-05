@@ -62,12 +62,6 @@ app.use(express.json());
 app.use(cookieParser());
 connectDB();
 
-const JWT_SECRET  = process.env.JWT_SECRET;
-const isProduction = process.env.NODE_ENV === "production";
-const clientId = process.env.FLW_CLIENT_ID;
-const clientSecret = process.env.FLW_CLIENT_SECRET;
-const encryptionKey = process.env.FLW_ENCRYPTION_KEY;
-
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
 
