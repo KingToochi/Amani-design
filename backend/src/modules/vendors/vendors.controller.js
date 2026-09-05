@@ -1,4 +1,4 @@
-import { fetchProductAnalytics, fetchVendorProduct, fetchVendorProductById } from "./vendors.service.js"
+import { confirmItemAvailability, fetchProductAnalytics, fetchVendorProduct, fetchVendorProductById } from "./vendors.service.js"
 
 export const getProductAnalytics =  async(req, res, next) => {
     try{
@@ -312,4 +312,21 @@ export const getOrderDetailsById = async(req, res, next) => {
     }catch(error) {
         next(error)
     }
+}
+
+export const confirmItem = async(req, res, next) => {
+  try{
+    const auth = req.user;
+    const { orderId, items = [] } = req.body;
+
+    const order = await confirmItemAvailability({auth, orderId, items})
+    return res.json({
+      success: true,
+      message: "Item availability confirmations saved",
+      order
+    });
+
+  }catch(error){
+    next(error)
+  }
 }

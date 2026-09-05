@@ -34,3 +34,52 @@ export const fetchCustomerOrderById = async(auth, orderId) => {
     return order
 
 }
+
+export const confirmRecievedItem = async({auth, orderId, itemId, productId, orderedQuantity, receivedQuantity}) => {
+  const order = await Order.findOne({ _id: orderId, customerId: auth._id });
+  if (!order) {
+      const error = new Error("Order not found")
+      error.statusCode = 404
+      throw error
+    }
+
+    const item = order.items.find((orderItem) => orderItem._id?.toString() === itemId?.toString());
+
+    if (!item) {
+      const error = new Error("Item not found in this order")
+      error.statusCode = 404
+      throw error
+    }
+
+    const expectedQuantity = Number(item.quantity);
+    const requestedQuantity = Number(receivedQuantity);
+
+    if (!Number.isInteger(requestedQuantity) || requestedQuantity < 0 || requestedQuantity > expectedQuantity) {
+      const error = new Error(`Received quantity must be between 0 and ${expectedQuantity}`)
+      error.statusCode = 400
+      throw error
+    }
+
+    const detail = {
+      itemId: item._id,
+      productId: productId || item.productId,
+      orderedQuantity: expectedQuantity,
+      receivedQuantity: requestedQuantity,
+      itemStatus: requestedQuantity === expectedQuantity ? "received" : "partially_received",
+      satisfaction: requestedQuantity === expectedQuantity,
+      receivedAt: new Date()
+    };
+    const detailIndex = order.customerOrderReceivedDetails.findIndex((entry) => entry.itemId?.toString() === itemId?.toString());
+
+    if (detailIndex === -1) {
+      order.customerOrderReceivedDetails.push(detail);
+    } else {
+      order.customerOrderReceivedDetails[detailIndex] = detail;
+    }
+
+    if (requestedQuantity === expectedQuantity) {
+      item.status = "delivered";
+    }
+    order.orderStatus = updateOrderStatusFromItems(order);
+    await order.save();
+}

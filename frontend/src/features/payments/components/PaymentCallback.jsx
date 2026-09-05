@@ -10,7 +10,7 @@ import { CartContext } from "../../../context/CartContext";
 const PaymentCallback = () => {
 
     const [status, setStatus] = useState("processing");
-    const verifyPaymentUrl = `${BASE_URL}/verifyPayment`
+    const verifyPaymentUrl = `${BASE_URL}/payment/verify`
 
     const location = useLocation();
     const navigate = useNavigate();
