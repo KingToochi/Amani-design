@@ -10,9 +10,11 @@ export const validateUserUpdatedInfo = (updates) => {
 }
 
 export const userValidation = (auth)=> {
+  console.log(auth)
     if (!auth._id) {
      throw new Error("Invalid authentication")
     }
+    return
 }
 
 export const registrationValidation = async ({fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms}) => {

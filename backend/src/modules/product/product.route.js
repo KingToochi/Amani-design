@@ -15,7 +15,7 @@ router.get("/", getAllProducts)
 router.get("/designer", verifyToken, getVendorProducts)
 router.get("/:_id", getProductById)
 
-router.post("/", uploadProduct.array("productImages"), postProduct)
+router.post("/",verifyToken, uploadProduct.array("productImages"), postProduct)
 
 router.put("/:id", verifyToken, editProduct)
 

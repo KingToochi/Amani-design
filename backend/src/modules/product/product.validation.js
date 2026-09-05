@@ -17,10 +17,10 @@ export const userValidation = async(auth) => {
 export const userPutAndDeleteAuthorisation = async(productId, user) => {
     const product = await Product.findById(productId).select("vendorId")
     const vendorId = product.vendorId
-    if(product.vendorId.toString() !== user._id.toString()) {
+    if(vendorId.toString() !== user._id.toString()) {
         throw new Error("unauthorized")
     }
-    return true
+    return
 }
 
 export const productValidation = async(product) => {
