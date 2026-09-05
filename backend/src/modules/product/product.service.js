@@ -35,7 +35,7 @@ export const fetchVendorProducts = async (user) => {
     return products
 }
 
-export const createNewProduct = async({files, body}) => {
+export const createNewProduct = async({files, body, vendorId}) => {
     let productImageUrls = [];
           
         if (files && files.length > 0) {
@@ -50,6 +50,16 @@ export const createNewProduct = async({files, body}) => {
         
         productImageUrls = await Promise.all(uploadPromises);
         }
+
+        const {
+            productDescription,
+            productName,
+            productCategory,
+            productSubCategory,
+            productPrice,
+            color,
+            size
+        } = body;
 
         // 5️⃣ Extract variants from form data
       const variants = [];

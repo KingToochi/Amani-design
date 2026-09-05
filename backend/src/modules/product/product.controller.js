@@ -94,7 +94,7 @@ export const postProduct = async(req, res, next) => {
             productPrice, 
             color,        
             size,} ) 
-        const newProduct =  await createNewProduct(files, body)
+        const newProduct =  await createNewProduct({files, body, vendorId})
         res.status(201).json({
         message: "Product created successfully",
         product: newProduct,
