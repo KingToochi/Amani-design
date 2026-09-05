@@ -17,7 +17,7 @@ const AdminDashboard = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const url = `${BASE_URL}/data`;
+    const url = `${BASE_URL}/admin/data-analytics`;
     const { auth, isLoggedIn } = useContext(AuthContext);
     const navigate = useNavigate();
 

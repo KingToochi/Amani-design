@@ -38,7 +38,7 @@ const ProfilePage = () => {
     useEffect(()  =>{
         const checkAuth = async () => {
             try {
-                const response = await CustomFetch(`${url}/userInfo`, {
+                const response = await CustomFetch(`${url}/users/info`, {
                     method: "GET",
                     credentials: "include"
                 });

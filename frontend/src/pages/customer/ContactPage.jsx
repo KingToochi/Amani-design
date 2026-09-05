@@ -22,11 +22,11 @@ const ContactPage = () => {
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <Phone className="h-5 w-5 text-amber-600" />
-                <span>+234 800 000 0000</span>
+                <span>+234 9031183272</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <MapPin className="h-5 w-5 text-amber-600" />
-                <span>Lagos, Nigeria</span>
+                <span>Ebonyi, Nigeria</span>
               </div>
             </div>
           </div>

@@ -57,8 +57,8 @@ const CheckOut = () => {
     const authContext = useContext(AuthContext);
     const user = authContext?.user;
     
-    const url = `${BASE_URL}/userInfo`;
-    const updateUrl = `${BASE_URL}/user/update`
+    const url = `${BASE_URL}/users/info`;
+    const updateUrl = `${BASE_URL}/users/update`
     console.log(cart)
 
     useEffect(() => {

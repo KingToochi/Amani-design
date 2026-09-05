@@ -20,7 +20,7 @@ const handleSubmit = async (e) => {
     setIsLoading(true);
 
     try {
-        const response = await fetch(`${BASE_URL}/users/login/admin`, {
+        const response = await fetch(`${BASE_URL}/admin/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

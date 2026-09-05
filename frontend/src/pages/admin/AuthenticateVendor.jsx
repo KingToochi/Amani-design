@@ -7,7 +7,7 @@ const AuthenticateVendor = () => {
     const {vendorDetails, setVendorDetails} = useState()
 
     const {_id} = useParams()
-    const url = `${BASE_URL}/autheticatedVendor/${_id}`
+    const url = `${BASE_URL}/admin/autheticatedVendor/${_id}`
 
     const fetchVendor = async() => {
 

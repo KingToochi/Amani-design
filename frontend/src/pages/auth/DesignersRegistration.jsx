@@ -280,7 +280,7 @@ const DesignerRegistration = () => {
             if (!hasError) {
                 setIsSubmitting(true)
                 try {
-                    let response = await fetch(`${url}/users/registration/designers`, {
+                    let response = await fetch(`${url}/users/registration/vendor`, {
                         method: "POST",
                         credentials: "include",
                         body : form
