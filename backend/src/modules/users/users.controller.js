@@ -147,8 +147,20 @@ export const userLogin = async(req, res, next) => {
         const { email, password } = req.body;
         const validate = validateLoginData({email, password})
         const login = await loginUser({email, password})
+        const { accessToken, refreshToken, user } = login;
+         // Set access token in HTTP-only cookie
+        res.cookie("accessToken", accessToken, getCookieOptions(req, {
+            maxAge: 30 * 60 * 1000  // 30 minutes
+        }));
+    
+        // Set refresh token in HTTP-only cookie
+        res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
+            path: "/refresh",
+            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+        }));
+        
 
-        if (login === "success") res.json({ success: true, message: "User login successful"});
+       return res.json({ success: true, message: "User login successful"});
     }catch(error) {
         next(error)
     }

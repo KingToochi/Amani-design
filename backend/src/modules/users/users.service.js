@@ -146,18 +146,8 @@ export const loginUser = async({email, password}) => {
         const accessToken = await generateToken(loginIdentifier, { expiresIn: "30m" })
         const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
         
-        // Set access token in HTTP-only cookie
-        res.cookie("accessToken", accessToken, getCookieOptions(req, {
-          maxAge: 30 * 60 * 1000  // 30 minutes
-        }));
-    
-        // Set refresh token in HTTP-only cookie
-        res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
-          path: "/refresh",
-          maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-        }));
-
-        return success
+       
+        return { accessToken, refreshToken, user }
     
 }
 
