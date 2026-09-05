@@ -12,15 +12,39 @@ export const fetchProductById = async(productId) => {
     return product
 }
 
-export const editProduct = async({productId, productDetails}) => {
-    const updatedProduct = await Product.findOneAndUpdate(
-        { _id: productId },
-        { $set: productDetails },
-        { new: true }
+export const editProduct = async ({ productId, productDetails }) => {
+
+    const {
+        productName,
+        productDescription,
+        productCategory,
+        productSubCategory,
+        productPrice,
+        color,
+        size
+    } = productDetails;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+        productId,
+        {
+            $set: {
+                productName,
+                productDescription,
+                productCategory,
+                productSubCategory,
+                basePrice: productPrice,
+                baseColor: color,
+                baseSize: size
+            }
+        },
+        {
+            new: true,
+            runValidators: true
+        }
     );
 
-    return updatedProduct
-}
+    return updatedProduct;
+};
 
 export const deleteProduct = async({productId}) => {
     const deleted = await Product.findOneAndDelete({ _id: productId });

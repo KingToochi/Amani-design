@@ -41,26 +41,35 @@ export const getProductById = async(req, res, next) => {
     }
 }
 
-export const editProduct = async(req, res, next) => {
+export const editProduct = async (req, res, next) => {
     try {
-        const auth = req.user
-        const productDetails = req.body
-        console.log(productDetails)
-        console.log(auth)
-        console.log(req.params)
-        const productId = req.params.id
-        const user = await userValidation(auth)
-        const validatedUser = await userPutAndDeleteAuthorisation(productId, user)
-        const product = await editProductService({productDetails, productId})
-        const validatedProduct = await productValidation(product)
-        return res.status(200).json({
-            updatedProduct : validatedProduct
-        })
-    }catch(error) {
-        next(error)
-    }
 
-}
+        const auth = req.user;
+        const productDetails = req.body;
+        const productId = req.params.id;
+
+        const user = userValidation(auth);
+
+        await userPutAndDeleteAuthorisation(
+            productId,
+            user
+        );
+
+        const product = await editProductService({
+            productDetails,
+            productId
+        });
+
+        const validatedProduct = await productValidation(product);
+
+        return res.status(200).json({
+            updatedProduct: validatedProduct
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const deleteProduct = async(req,res, next) => {
     const productId = req.params.id

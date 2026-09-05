@@ -14,14 +14,22 @@ export const userValidation = async(auth) => {
 
 }
 
-export const userPutAndDeleteAuthorisation = async(productId, user) => {
-    const product = await Product.findById(productId).select("vendorId")
-    const vendorId = product.vendorId
-    if(vendorId.toString() !== user._id.toString()) {
-        throw new Error("unauthorized")
+export const userPutAndDeleteAuthorisation = async (productId, user) => {
+
+    const product = await Product
+        .findById(productId)
+        .select("vendorId");
+
+    if (!product) {
+        throw new Error("Product not found");
     }
-    return
-}
+
+    if (product.vendorId.toString() !== user._id.toString()) {
+        throw new Error("Unauthorized");
+    }
+
+    return product;
+};
 
 export const productValidation = async(product) => {
     if (!product) throw new Error("product not found")

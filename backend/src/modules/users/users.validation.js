@@ -14,7 +14,7 @@ export const userValidation = (auth)=> {
     if (!auth._id) {
      throw new Error("Invalid authentication")
     }
-    return
+    return auth
 }
 
 export const registrationValidation = async ({fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms}) => {
