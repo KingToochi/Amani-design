@@ -5,7 +5,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { FaNairaSign } from "react-icons/fa6";
 import { BASE_URL } from "../../Url";
-import { AuthContext } from "../../hooks/AuthProvider";
+import { AuthContext } from "../../context/AuthContext";
 import ServerError from "../../components/common/ServerError";
 import Slide from "../../components/product/SlideShow";
 import CustomFetch from "../../hooks/useFetch";

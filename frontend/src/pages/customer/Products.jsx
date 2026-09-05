@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext} from "react";
 import { FaHeart, FaMessage } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import { WishiListContext } from "../../hooks/WishListContext";
+import { WishiListContext } from "../../context/WishListContext";
 import { BASE_URL} from "../../Url";  
 import { BiSolidLike } from "react-icons/bi";
-import { LikeContext } from "../../hooks/Like";
+import { LikeContext } from "../../context/LikeContext";
 import {AuthContext} from "../../context/AuthContext"
 import Slide from "../../components/product/SlideShow";
 import { matchesCategory } from "../../utils/categoryMatcher";

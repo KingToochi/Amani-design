@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { BASE_URL } from "../../Url";
-import { AuthContext } from "../../hooks/AuthProvider";
+import { AuthContext } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faShoppingCart, faCheckCircle, faClock, faDollarSign, faTrophy } from "@fortawesome/free-solid-svg-icons";
