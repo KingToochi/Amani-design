@@ -7,8 +7,6 @@ export const getNewToken = async(token) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     
         const newAccessToken = await generateToken(decoded.email, { expiresIn: "30m" });
-        res.cookie("accessToken", newAccessToken, getCookieOptions(req, {
-              maxAge: 30 * 60 * 1000  // 30 minutes
-        }));
+    
         return newAccessToken
 }
