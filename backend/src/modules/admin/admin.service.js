@@ -3,7 +3,7 @@ import Product from "../../models/Product.js"
 import { validateAdmin } from "./admin.validation.js"
 import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"
-import { getCookieOptions } from "../../utils/getCookieOptions.js";
+
 
 
 
@@ -41,17 +41,7 @@ export const loginAdmin = async({email, password}) => {
       } 
       const accessToken = await generateToken(loginIdentifier, { expiresIn: "15m" })
       const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
-  
-      // Set access token in HTTP-only cookie
-      res.cookie("accessToken", accessToken, getCookieOptions(req, {
-        maxAge: 15 * 60 * 1000  // 15 minutes
-      }));
-  
-      // Set refresh token in HTTP-only cookie
-      res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
-        path: "/refresh",
-        maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-      }));
+      return {accessToken, refreshToken, user: user}
 }
 
 export const fetchVendorDetails = async(auth) => {

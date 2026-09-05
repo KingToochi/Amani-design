@@ -1,5 +1,6 @@
 import { fetchAdmin,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics} from "./admin.service.js"
 import { validateAdminLoginData } from "./admin.validation.js"
+import { getCookieOptions } from "../../utils/getCookieOptions.js";
 export const adminDetails = async(req, res, next) => {
     try {
         const auth = req.user
@@ -25,6 +26,17 @@ export const adminLogin = async(req, res, next)=> {
           const { email, password } = req.body;
           const validate = validateAdminLoginData({email, password})
           const logAdminIn = await loginAdmin({email, password})
+          const { accessToken, refreshToken, user } = logAdminIn
+            // Set access token in HTTP-only cookie
+            res.cookie("accessToken", accessToken, getCookieOptions(req, {
+                maxAge: 15 * 60 * 1000  // 15 minutes
+            }));
+        
+            // Set refresh token in HTTP-only cookie
+            res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
+                path: "/refresh",
+                maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+            }));
           res.json({ success: true, message: "Admin login successful" });
 
     }catch(error){
