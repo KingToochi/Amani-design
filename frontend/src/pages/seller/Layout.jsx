@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import SideBar from "./SideBar";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/useFetch";
+import CustomFetch from "../../hooks/UseFetch";
 const Layout = () => {
     
     const url = `${BASE_URL}/users`

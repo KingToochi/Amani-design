@@ -1,6 +1,7 @@
 import { validateCustomer } from "./customer.validation.js";
 import User from "../../models/User.js";
 import Order from "../../models/Order.js";
+import {updateOrderStatusFromItems} from "../../utils/updateOrderStatusFromItems.js";
 
 export const fetchCustomerOrder = async(auth) => {
     const user = await User.findById(auth._id).select("_id");
@@ -81,4 +82,6 @@ export const confirmRecievedItem = async({auth, orderId, itemId, productId, orde
     }
     order.orderStatus = updateOrderStatusFromItems(order);
     await order.save();
+
+    return order;
 }
