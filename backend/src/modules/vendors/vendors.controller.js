@@ -3,6 +3,7 @@ import Sales from "../../models/Sales.js"
 import Orders from "../../models/Order.js"
 import Comments from "../../models/Comment.js"
 import Rating from "../../models/Rating.js"
+import Order from "../../models/Order.js"
 export const getProductAnalytics =  async(req, res, next) => {
     try{
             const auth = req.user
