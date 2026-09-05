@@ -1,6 +1,6 @@
 import express from "express"
 import verifyToken from "../../middleware/verifyToken.js"
-import { adminDetails, getCustomers, getOrders, getProducts, getVendors, getProductById, getVendorById, getCustomerById, adminLogin } from "./admin.controller.js"
+import { adminDetails, getCustomers, getOrders, getProducts, getVendors, getProductById, getVendorById, getCustomerById,dataAnalytics, adminLogin } from "./admin.controller.js"
 const route = express.Router()
 route.post ("/login", adminLogin)
 route.get("/details",verifyToken, adminDetails)
