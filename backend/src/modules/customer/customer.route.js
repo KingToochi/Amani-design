@@ -6,6 +6,6 @@ const route = express.Router()
 
 route.get("/orders", verifyToken, getCustomerOrderDetails)
 route.get("/orderDetails/:id", verifyToken, getCustomerOrderDetailsById)
-route.post("/confirmItemReceived", verifyToken, confirmItemRecieved)
+route.put("/confirmItemReceived", verifyToken, confirmItemRecieved)
 
 export default route
