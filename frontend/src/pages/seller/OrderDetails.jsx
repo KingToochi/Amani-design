@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/UseFetch";
-import ServerError from "../../components/ServerError";
+import ServerError from "../../components/common/ServerError";
 import { 
   Loader, 
   ShoppingBag, 

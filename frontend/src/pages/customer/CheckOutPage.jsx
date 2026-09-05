@@ -25,7 +25,7 @@ import {
 import { FaNairaSign } from "react-icons/fa6"
 import logo from "../../assets/images/mainLogo.jpg"
 import CustomFetch from "../../hooks/UseFetch"
-import PaymentCallback from '../../components/PaymentCallback';
+import PaymentCallback from '../../features/payments/components/PaymentCallback';
 
 const CheckOut = () => {
     const [userInfo, setUserInfo] = useState(null);

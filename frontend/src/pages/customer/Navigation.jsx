@@ -12,7 +12,7 @@ import {AuthContext} from "../../hooks/AuthProvider"
 import { BASE_URL } from "../../Url";
 import Search from "./SearchPage";
 import { TbLayoutGridAdd } from "react-icons/tb";
-import SearchBar from "../../components/SearchBar";
+import SearchBar from "../../components/product/SearchBar";
 
 const Navigation = ()=> {
     const [showSearchBar, setShowSearchBar] = useState(false)

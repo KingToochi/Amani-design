@@ -1,7 +1,7 @@
 ﻿import {useState, useEffect} from 'react';
 import CustomFetch from '../../hooks/UseFetch';
 import {BASE_URL} from '../../Url';
-import ServerError from '../../components/ServerError';
+import ServerError from '../../components/common/ServerError';
 import { useNavigate } from 'react-router-dom';
 
 const Vendors = () => {

@@ -5,7 +5,7 @@ import { BASE_URL } from "../../Url";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import ServerError from "../../components/ServerError"
+import ServerError from "../../components/common/ServerError";
 
 const Login = () => {
     // this component takes in data from the user, crosscheck with data in the database and return a progress or errors message

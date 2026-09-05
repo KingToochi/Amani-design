@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../hooks/AuthProvider";  
 import {BASE_URL} from "../../Url";
-import ServerError from "../../components/ServerError";
+import ServerError from "../../components/common/ServerError";
 import CustomFetch from "../../hooks/UseFetch";
 
 const Dashboard = () => {

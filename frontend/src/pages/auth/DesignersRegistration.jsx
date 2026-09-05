@@ -3,8 +3,8 @@ import { BASE_URL } from "../../Url"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import ServerError from "../../components/ServerError";
-import BankList from "../../components/BankList";
+import ServerError from "../../components/common/ServerError";
+import BankList from "../../components/common/BankList";
 
 
 const DesignerRegistration = () => {

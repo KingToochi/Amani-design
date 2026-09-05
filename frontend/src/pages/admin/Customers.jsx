@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
 import {BASE_URL} from "../../Url";
 import CustomFetch from "../../hooks/UseFetch";
-import ServerError from "../../components/ServerError";
+import ServerError from "../../components/common/ServerError";
 
 const Customers = () => {
     const [customers, setCustomers] = useState([]);

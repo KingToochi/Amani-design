@@ -6,8 +6,8 @@ import { MdDeleteForever } from "react-icons/md";
 import { FaNairaSign } from "react-icons/fa6";
 import { BASE_URL } from "../../Url";
 import { AuthContext } from "../../hooks/AuthProvider";
-import ServerError from "../../components/ServerError";
-import Slide from "../../components/SlideShow";
+import ServerError from "../../components/common/ServerError";
+import Slide from "../../components/product/SlideShow";
 import CustomFetch from "../../hooks/UseFetch";
 
 

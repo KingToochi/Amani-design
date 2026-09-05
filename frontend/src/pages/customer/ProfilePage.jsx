@@ -6,7 +6,7 @@ import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react
 import { MdVerified } from "react-icons/md";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/UseFetch";
-import LogoutButton from "../../components/LogoutButton";
+import LogoutButton from "../../components/common/LogoutButton";
 
 const ProfilePage = () => {
     const {setAuth, logout} = useContext(AuthContext)

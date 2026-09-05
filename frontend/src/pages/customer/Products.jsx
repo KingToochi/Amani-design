@@ -6,7 +6,7 @@ import { BASE_URL} from "../../Url";
 import { BiSolidLike } from "react-icons/bi";
 import { LikeContext } from "../../hooks/Like";
 import {AuthContext} from "../../hooks/AuthProvider"
-import Slide from "../../components/SlideShow";
+import Slide from "../../components/product/SlideShow";
 import { matchesCategory } from "../../utils/categoryMatcher";
 
 

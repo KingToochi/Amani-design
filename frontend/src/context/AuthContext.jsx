@@ -33,7 +33,7 @@ const AuthProvider = ({ children }) => {
   const verifyAndFetchAuth = async () => {
     setLoading(true);
     try {
-      let response = await fetch(`${BASE_URL}/userInfo`, {
+      let response = await fetch(`${BASE_URL}/users/info`, {
         method: "GET",
         credentials: "include", // Include HTTP-only cookies
       });
@@ -41,7 +41,7 @@ const AuthProvider = ({ children }) => {
       if (!response.ok && response.status === 401) {
         const refreshed = await refreshAuthToken();
         if (refreshed) {
-          response = await fetch(`${BASE_URL}/userInfo`, {
+          response = await fetch(`${BASE_URL}/users/info`, {
             method: "GET",
             credentials: "include",
           });

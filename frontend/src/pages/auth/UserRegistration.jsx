@@ -6,7 +6,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
-import ServerError from "../../components/ServerError";
+import ServerError from "../../components/common/ServerError";
 
 const UserRegistration = () => {
     const url = BASE_URL

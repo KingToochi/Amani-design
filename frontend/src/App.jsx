@@ -5,7 +5,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import DesignerLayout from "./pages/seller/Layout";
 import Product from "./pages/seller/Products";
-import Profile from "./pages/seller/Profile";
+// import Profile from "./pages/seller/Profile";
 import ProductDetails from "./pages/seller/ProductDetails";
 import Layout from "./pages/customer/MarketPlaceLayout";
 import Products from "./pages/customer/Products";
@@ -75,10 +75,10 @@ function App() {
           <Route path="terms" element={<TermsPage />} />
         </Route>
         <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
-        <Route path="/designer" element={<DesignerLayout/>}>
+        <Route path="/vendor" element={<DesignerLayout/>}>
           <Route index element={<Dashboard />} />
           <Route path="products" element={<Product/>} />
-          <Route path="profile" element={<Profile />} />
+          {/* <Route path="profile" element={<Profile />} /> */}
           <Route path="productdetails/:id" element={<ProductDetails />} />
           <Route path="orders" element={<Orders />} />
           <Route path="sales" element={<Sales />} />

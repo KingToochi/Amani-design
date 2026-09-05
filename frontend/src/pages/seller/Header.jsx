@@ -11,7 +11,7 @@ import { FaPalette } from "react-icons/fa6";
 import { BsTag } from "react-icons/bs";
 import { FaStore } from "react-icons/fa6";
 import {BASE_URL} from "../../Url"
-import ServerError from "../../components/ServerError";
+import ServerError from "../../components/common/ServerError";
 
 
 

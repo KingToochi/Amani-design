@@ -1,10 +1,10 @@
-import Header from "../../components/Header";
-import HeroBanner from "../../components/HeroBanner";
-import Categories from "../../components/Categories";
+import Header from "../../components/layout/Header";
+import HeroBanner from "../../components/product/HeroBanner";
+import Categories from "../../components/product/Categories";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../../Url";
-import Footer from "../../components/Footer";
-import NewArrival from "../../components/NewArrival";
+import Footer from "../../components/layout/Footer";
+import NewArrival from "../../components/product/NewArrival";
 import { Link } from "react-router-dom";
 
 
