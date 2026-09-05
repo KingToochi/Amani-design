@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../hooks/AuthProvider";  
 import {BASE_URL} from "../../Url";
 import ServerError from "../../components/common/ServerError";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 
 const Dashboard = () => {
     const url = `${BASE_URL}/vendor/productAnalytics`;

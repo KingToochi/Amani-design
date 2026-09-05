@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 
 const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) => {
     const [fileName, setFileName] = useState("");

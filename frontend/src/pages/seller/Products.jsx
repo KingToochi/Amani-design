@@ -8,7 +8,7 @@ import { BASE_URL } from "../../Url";
 import { AuthContext } from "../../hooks/AuthProvider";
 import ServerError from "../../components/common/ServerError";
 import Slide from "../../components/product/SlideShow";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 
 
 const Products = () => {
