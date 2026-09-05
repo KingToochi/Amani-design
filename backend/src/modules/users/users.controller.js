@@ -79,7 +79,7 @@ export const updateUser = async(req, res, next) => {
 
 export const getUserInfo = async(req, res, next) => {
 try {
-    const auth = req.body
+    const auth = req.user
     const validate = userValidation(auth)
     const user = await fetchUser(auth)
     //  Explicitly define which fields to return
