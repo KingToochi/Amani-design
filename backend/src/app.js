@@ -61,7 +61,6 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 connectDB();
-app.use(errorMidlleware)
 
 const JWT_SECRET  = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
@@ -106,6 +105,17 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Request logger
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.originalUrl}`);
+
+  res.on("finish", () => {
+    console.log(`[RESPONSE] ${res.statusCode} ${req.method} ${req.originalUrl}`);
+  });
+
+  next();
+});
+
 
 app.use("/products", productRoute)
 app.use("/categories", categoryRoute)
@@ -118,6 +128,17 @@ app.use("/vendor", vendorRoute)
 app.use("/customer", customerRoute)
 app.use("/payment", paymentRoute)
 app.use("/order", orderRoute)
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route not found: ${req.method} ${req.originalUrl}`,
+  });
+});
+
+
+
+app.use(errorMidlleware)
 
 
 
