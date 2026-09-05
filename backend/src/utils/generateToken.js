@@ -1,4 +1,6 @@
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
+const JWT_SECRET  = process.env.JWT_SECRET;
 
 export const generateToken = async (userIdentifier,  options = { expiresIn: "1h" }) => {
   const normalizedIdentifier = String(userIdentifier).trim().toLowerCase();
