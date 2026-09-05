@@ -1,4 +1,4 @@
-import { fetchUsername, fetchEmail, fetchUser, registerVendor, registerUser, loginUser, logUserOut, loginAdmin} from "./users.service.js";
+import { fetchUsername, fetchEmail, fetchUser, registerVendor, registerUser, loginUser, logUserOut} from "./users.service.js";
 import { validateUserUpdatedInfo, userValidation, registrationValidation, validateVendorRegistration, validateLoginData } from "./users.validation.js";
 import { parseBooleanFlag } from "../../utils/booleanFlag.js"
 
@@ -159,18 +159,6 @@ export const userLogout = async(req, res, next) => {
         const logout = await logUserOut()
         res.json({ success: true, message: "Logged out successfully" });
     }catch(error) {
-        next(error)
-    }
-}
-
-export const adminLogin = async(req, res, next)=> {
-    try {
-          const { email, password } = req.body;
-          const validate = validateLoginData({email, password})
-          const logAdminIn = await loginAdmin({email, password})
-          res.json({ success: true, message: "Admin login successful" });
-
-    }catch(error){
         next(error)
     }
 }

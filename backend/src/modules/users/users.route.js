@@ -17,7 +17,7 @@ route.post("/registration/vendor",uploadImage.fields([
   {name: "profilePicture", maxCount: 1},
   {name: "proofOfAddress", maxCount: 1}
 ]), vendorRegistration)
-route.post ("/login/admin", )
+
 
 route.post("/login", userLogin)
 route.post("/logout", userLogout)

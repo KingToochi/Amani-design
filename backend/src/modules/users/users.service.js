@@ -172,30 +172,3 @@ export const logUserOut = () => {
   return success
 
 }
-
-export const loginAdmin = async({email, password}) => {
-   const loginIdentifier = String(email).trim().toLowerCase();
-      const user = await User.findOne({ $or: [{ email: loginIdentifier }, { username: loginIdentifier }] });
-      if (!user) return res.status(404).json({ success: false, message: "User not found" });
-      const hashedPassword = user.password
-      console.log(hashedPassword)
-      console.log(password)
-      console.log(user)
-      const ismatch = bcrypt.compare(password, hashedPassword)
-      if (!ismatch) return res.status(401).json({ success: false, message: "Incorrect password" });
-      if (user.role !== "admin") return res.status(403).json({ success: false, message: "Access denied" });
-  
-      const accessToken = await generateToken(loginIdentifier, { expiresIn: "15m" })
-      const refreshToken = await generateToken(loginIdentifier, { expiresIn: "7d" })
-  
-      // Set access token in HTTP-only cookie
-      res.cookie("accessToken", accessToken, getCookieOptions(req, {
-        maxAge: 15 * 60 * 1000  // 15 minutes
-      }));
-  
-      // Set refresh token in HTTP-only cookie
-      res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
-        path: "/refresh",
-        maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-      }));
-}

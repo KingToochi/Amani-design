@@ -7,3 +7,13 @@ export const validateAdmin = (user) => {
 
     return user
 }
+
+
+export const validateAdminLoginData = ({email, password}) => {
+    if (!email || !password) {
+      throw new Error("Email and password are required")
+    }
+    
+
+    return
+}

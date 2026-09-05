@@ -1,4 +1,4 @@
-import { getAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById} from "./admin.service"
+import { getAdmin,validateAdminLoginData,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics} from "./admin.service"
 
 export const adminDetails = async(req, res, next) => {
     try {
@@ -18,6 +18,18 @@ export const getVendors = async(req, res, next) => {
     }catch(error){
         next(error)
     } 
+}
+
+export const adminLogin = async(req, res, next)=> {
+    try {
+          const { email, password } = req.body;
+          const validate = validateAdminLoginData({email, password})
+          const logAdminIn = await loginAdmin({email, password})
+          res.json({ success: true, message: "Admin login successful" });
+
+    }catch(error){
+        next(error)
+    }
 }
 
 
@@ -80,3 +92,15 @@ export const getCustomerById = async(req, res, next) => {
         next(error)
     }
 }
+export const dataAnalytics = async(req, res, next) => {
+    try {
+        const auth = req.user
+        const analytics = await fetchDataAnalytics(auth)
+        const { totalUsers, totalSales, totalOrders, totalProducts, topSeller, topBuyer, pendingApprovals, pendingOrders, deliveredOrders } = analytics
+        return res.json({success: true, totalUsers, totalSales, totalOrders, totalProducts, topSeller, topBuyer, pendingApprovals, pendingOrders, deliveredOrders})
+    }catch(error) {
+        next(error)
+    }
+
+}
+    
