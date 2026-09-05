@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../../Url";
-import CustomFetch from "../../../hooks/useFetch";
+import CustomFetch from "../../../hooks/UseFetch";
 
 import { CartContext } from "../../../context/CartContext";
 // import your CustomFetch
