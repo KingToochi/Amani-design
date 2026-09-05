@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 import { useState, useEffect } from "react";
 
 const AuthenticateVendor = () => {

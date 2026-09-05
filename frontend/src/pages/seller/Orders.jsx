@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { BASE_URL } from "../../Url"
-import CustomFetch from "../../hooks/UseFetch"
+import CustomFetch from "../../hooks/useFetch"
 import { Link } from "react-router-dom";
 
 const statusColors = {

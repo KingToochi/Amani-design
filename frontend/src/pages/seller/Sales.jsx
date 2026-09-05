@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import {BASE_URL} from "../../Url"
-import CustomFetch from "../../hooks/UseFetch"
+import CustomFetch from "../../hooks/useFetch"
 
 const formatDate = (dateString) => {
   if (!dateString) return "-"

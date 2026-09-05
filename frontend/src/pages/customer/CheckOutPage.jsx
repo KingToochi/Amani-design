@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { FaNairaSign } from "react-icons/fa6"
 import logo from "../../assets/images/mainLogo.jpg"
-import CustomFetch from "../../hooks/UseFetch"
+import CustomFetch from "../../hooks/useFetch"
 import PaymentCallback from '../../features/payments/components/PaymentCallback';
 
 

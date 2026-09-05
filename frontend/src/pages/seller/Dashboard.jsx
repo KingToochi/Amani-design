@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../hooks/AuthProvider";  
+import { AuthContext } from "../../context/AuthContext";  
 import {BASE_URL} from "../../Url";
 import ServerError from "../../components/common/ServerError";
 import CustomFetch from "../../hooks/useFetch";

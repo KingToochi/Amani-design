@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 
 const formatDate = (value) => {
   if (!value) return "-";

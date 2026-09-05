@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 
 const statusColors = {
   pending: "bg-amber-100 text-amber-700",

@@ -4,7 +4,7 @@ import { AuthContext } from "../../hooks/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faShoppingCart, faCheckCircle, faClock, faDollarSign, faTrophy } from "@fortawesome/free-solid-svg-icons";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 const AdminDashboard = () => {
     const [totalUsers, setTotalUsers] = useState(0);
     const [topSellers, setTopSellers] = useState([]);

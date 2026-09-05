@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 import ServerError from "../../components/common/ServerError";
 import { 
   Loader, 

@@ -1,5 +1,5 @@
 import { BASE_URL } from "../../Url";
-import CustomFetch from "../../hooks/UseFetch";
+import CustomFetch from "../../hooks/useFetch";
 import { useState, useEffect } from "react";
 import ServerError from "../../components/common/ServerError";
 import { useNavigate } from "react-router-dom";
