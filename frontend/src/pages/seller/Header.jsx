@@ -68,7 +68,7 @@ const Header = ({userData}) => {
                             <div
                             className="w-full flex flex-col items-center"
                             >
-                                <Link to="/designer/profile" onClick={onClickMenuBar}
+                                <Link to="/vendor/profile" onClick={onClickMenuBar}
                                 className="flex flex-col items-center gap-2"
                                 >
                                     <img src={userData?.profilePicture} alt="Vendor Profile Picture"
@@ -95,7 +95,7 @@ const Header = ({userData}) => {
                             className="w-full flex flex-col gap-6 px-6 px-2"
                             >
                                 <li>
-                                    <Link to="/designer" 
+                                    <Link to="/vendor" 
                                     onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril] 
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
@@ -132,7 +132,7 @@ const Header = ({userData}) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/designer/products" onClick={menubar}
+                                    <Link to="/vendor/products" onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
                                     sm:text-xl
@@ -143,7 +143,7 @@ const Header = ({userData}) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="orders" 
+                                    <Link to="/vendor/orders" 
                                     onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
@@ -155,7 +155,7 @@ const Header = ({userData}) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/designer/sales" onClick={menubar}
+                                    <Link to="/vendor/sales" onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
                                     sm:text-xl
@@ -166,7 +166,7 @@ const Header = ({userData}) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/designer/messages" onClick={menubar}
+                                    <Link to="/vendor/messages" onClick={menubar}
                                     className="flex gap-6 items-center text-lg font-semibold font-[abril]
                                     focus:bg-purple-800/50 px-2 focus:rounded-lg
                                     sm:text-xl

@@ -1,5 +1,8 @@
 import { confirmItemAvailability, fetchProductAnalytics, fetchVendorProduct, fetchVendorProductById } from "./vendors.service.js"
-
+import Sales from "../../models/sales.model.js"
+import Orders from "../../models/order.model.js"
+import Comments from "../../models/comments.model.js"
+import Rating from "../../models/rating.model.js"
 export const getProductAnalytics =  async(req, res, next) => {
     try{
             const auth = req.user

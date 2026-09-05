@@ -174,7 +174,7 @@ const Navigation = ()=> {
                 <li>
                     {isLoggedIn &&( auth.role === "designer" || auth.role === "vendor")
                     ? 
-                    <Link to="/designer"
+                    <Link to="/vendor"
                     className="flex flex-col gap-2 items-center"
                     >
                         <FaUser />
