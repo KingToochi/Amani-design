@@ -1,7 +1,6 @@
 import User from "../../models/User.js"
 import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"
-import { getCookieOptions } from "../../utils/getCookieOptions.js";
 
 
 export const fetchUsername = async(username) => {
@@ -46,20 +45,8 @@ export const registerUser = async(exists) => {
         await newUser.save();
         const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
         const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
-        //  const hashedRecoveryToken = crypto.createHash("sha256").update(recoveryToken).digest("hex");
-    
-        // Set access token in HTTP-only cookie
-        res.cookie("accessToken", accessToken, getCookieOptions(req, {
-            maxAge: 30 * 60 * 1000  // 30 minutes
-        }));
-    
-        // Set refresh token in HTTP-only cookie
-        res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
-            path: "/refresh",
-            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-        }));
 
-        return success
+        return {accessToken, refreshToken, user: newUser}
     
 }
 
@@ -117,21 +104,9 @@ export const registerVendor = async(exists) => {
           await newUser.save();
           const accessToken = await generateToken(mainEmail, { expiresIn: "30m" })
           const refreshToken = await generateToken(mainEmail, { expiresIn: "7d" })
+
     
-    
-    
-          // Set access token in HTTP-only cookie
-          res.cookie("accessToken", accessToken, getCookieOptions(req, {
-            maxAge: 30 * 60 * 1000  // 30 minutes
-          }));
-    
-          // Set refresh token in HTTP-only cookie
-          res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
-            path: "/refresh",
-            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-          }));
-    
-         return success
+         return {accessToken, refreshToken, user: newUser}
 }
 
 export const loginUser = async({email, password}) => {

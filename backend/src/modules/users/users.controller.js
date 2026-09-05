@@ -1,6 +1,7 @@
 import { fetchUsername, fetchEmail, fetchUser, registerVendor, registerUser, loginUser, logUserOut} from "./users.service.js";
 import { validateUserUpdatedInfo, userValidation, registrationValidation, validateVendorRegistration, validateLoginData } from "./users.validation.js";
 import { parseBooleanFlag } from "../../utils/booleanFlag.js"
+import { getCookieOptions } from "../../utils/getCookieOptions.js";
 
 export const getUsername = async(req, res, next) => {
     try {
@@ -118,9 +119,19 @@ export const registration = async(req, res, next) => {
         const validateData = await registrationValidation({fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms})
         const exists = validateData
         const saveUser = await registerUser(exists)
-        if (saveUser === "success") {
-            res.status(201).json({ success: true, message: "User registered successfully"});
-        } 
+        const {accessToken, refreshToken, user} = saveUser
+
+        // Set access token in HTTP-only cookie
+        res.cookie("accessToken", accessToken, getCookieOptions(req, {
+            maxAge: 30 * 60 * 1000  // 30 minutes
+        }));
+    
+        // Set refresh token in HTTP-only cookie
+        res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
+            path: "/refresh",
+            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+        }));
+        res.status(201).json({ success: true, message: "User registered successfully"});
     }catch(error) {
         next(error)
     }
@@ -133,9 +144,19 @@ export const vendorRegistration = async(req, res, next) => {
         const validate = await validateVendorRegistration({fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
         const exists = validate
         const saveUser = await registerVendor(exists)
-        if (saveUser === "success") {
-            res.status(201).json({ success: true,  message: "User registered successfully" });
-        } 
+        const {accessToken, refreshToken, user} = saveUser
+
+        // Set access token in HTTP-only cookie
+        res.cookie("accessToken", accessToken, getCookieOptions(req, {
+        maxAge: 30 * 60 * 1000  // 30 minutes
+        }));
+
+        // Set refresh token in HTTP-only cookie
+        res.cookie("refreshToken", refreshToken, getCookieOptions(req, {
+        path: "/refresh",
+        maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+        }));
+        res.status(201).json({ success: true,  message: "User registered successfully" });
         
     }catch(error){
             next(error)
