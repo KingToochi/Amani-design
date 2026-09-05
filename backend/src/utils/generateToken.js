@@ -1,3 +1,5 @@
+import User from "../models/User.js";
+
 export const generateToken = async (userIdentifier,  options = { expiresIn: "1h" }) => {
   const normalizedIdentifier = String(userIdentifier).trim().toLowerCase();
   const user = await User.findOne({
