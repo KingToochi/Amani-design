@@ -1,5 +1,5 @@
-import { fetchAdmin,validateAdminLoginData,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics} from "./admin.service.js"
-
+import { fetchAdmin,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics} from "./admin.service.js"
+import { validateAdminLoginData } from "./admin.validation.js"
 export const adminDetails = async(req, res, next) => {
     try {
         const auth = req.user
