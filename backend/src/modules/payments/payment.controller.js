@@ -1,6 +1,6 @@
 import paystackInitialization from "../../integrations/paystack/initialize.js";
 import { validatePaymentInitiation } from "./payment.validation.js";
-import { paymentVerification } from "./payment..service.js";
+import { paymentVerification } from "./payment.service.js";
 
 export const initiatePayment = async(req, res, next) => {
     try {

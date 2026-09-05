@@ -1,7 +1,7 @@
 import { validateCustomer } from "../customer/customer.validation.js"
 import User from "../../models/User.js"
 import verifyPaystackPayment from "../../integrations/paystack/verify.js"
-import calculateAmount from "../../utils/calculateAmount"
+import calculateAmount from "../../utils/calculateAmount.js"
 import { verifyPaymentStatus } from "./payment.validation.js"
 
 export const paymentVerification = async({auth, reference, cart}) => {
