@@ -26,12 +26,11 @@ export const fetchCustomerOrderById = async(auth, orderId) => {
         .lean();
     
         if (!order) {
-          return res.status(404).json({
-            success: false,
-            message: "Order not found"
-          });
+          const error = new Error("Order not found")
+          error.statusCode = 404
+          throw error
         }
-    return order
+    return {order, user}
 
 }
 

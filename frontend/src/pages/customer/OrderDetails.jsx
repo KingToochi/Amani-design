@@ -49,7 +49,7 @@ const OrderDetails = () => {
                 console.log("API Response:", details);
                 
                 // Fix: Your API returns {success: true, order: {...}}
-                // NOT {success: true, data: {order, products}}
+        
                 setOrderDetails(details.order);
                 setShippingDetails(details.user)
                 setError(null);
@@ -503,9 +503,9 @@ const OrderDetails = () => {
                             <div>
                                 <p className="text-gray-700">
                                     {[
-                                        shippingDetails.shippingAddress,
-                                        shippingDetails.city,
-                                        shippingDetails.state
+                                        shippingDetails?.shippingAddress,
+                                        shippingDetails?.city,
+                                        shippingDetails?.state
                                         ]
                                         .filter(Boolean)
                                         .join(", ")
