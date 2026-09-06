@@ -53,7 +53,7 @@ const handleSubmit = async (e) => {
             // Redirect to admin dashboard
             navigate('/admin');
         } else {
-            setError(result.error || 'Login failed');
+            setError(result.message || 'Login failed');
         }
     } catch (err) {
         console.error('Login error:', err);

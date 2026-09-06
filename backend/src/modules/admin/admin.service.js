@@ -27,13 +27,19 @@ export const fetchAdmin = async(auth) => {
 
 export const loginAdmin = async({email, password}) => {
    const loginIdentifier = String(email).trim().toLowerCase();
-      const user = await User.findOne({ $or: [{ email: loginIdentifier }, { username: loginIdentifier }] });
+   console.log(loginIdentifier)
+      const user = await User.findOne({
+        $or: [
+                { email: { $regex: `^${loginIdentifier}$`, $options: "i" } },
+                { username: { $regex: `^${loginIdentifier}$`, $options: "i" } }
+            ]
+        });
       const validate = validateAdmin(user)
       const hashedPassword = user.password
       console.log(hashedPassword)
       console.log(password)
       console.log(user)
-      const ismatch = bcrypt.compare(password, hashedPassword)
+      const ismatch = await bcrypt.compare(password, hashedPassword)
       if (!ismatch){
         const error = new Error("Incorrect password")
         error.statusCode = 401

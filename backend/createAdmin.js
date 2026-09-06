@@ -14,7 +14,7 @@ const createAdmin = async () => {
         return;
     }
 
-    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+    const hashedPassword = bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
     const adminUser = new User({
         fname: "Toochukwu",
         lname: "Umoke",
