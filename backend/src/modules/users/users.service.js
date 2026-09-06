@@ -7,9 +7,6 @@ import {getCookieOptions} from "../../utils/getCookieOptions.js"
 
 export const fetchUsername = async(username) => {
     const user = await User.findOne({ username: username.toLowerCase() });
-    // if (!user) {
-    //   throw new Error("User does not exist")
-    // }
     return user
 }
 
