@@ -136,6 +136,6 @@ export const logUserOut = ({req,res}) => {
     path: "/refresh"
   }));
 
-  return success
+  return 
 
 }
