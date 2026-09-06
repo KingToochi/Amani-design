@@ -82,7 +82,7 @@ const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       // Call logout endpoint (you'll need to create this in backend)
-      await fetch(`${BASE_URL}/logout`, {
+      await fetch(`${BASE_URL}/users/logout`, {
         method: "POST",
         credentials: "include",
       });

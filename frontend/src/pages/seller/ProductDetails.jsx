@@ -152,7 +152,7 @@ const ProductDetails = () => {
                 setProductList(prev => prev.filter(product => product.id !== id))
                 if (response.ok) {
                     setMessage("Product deleted successfully")
-                    Navigate("/designer/products")
+                    Navigate("/vendor/products")
                 }
             }catch(error){
                 console.log(error)
@@ -173,7 +173,7 @@ useEffect(()=> {
     return () => clearTimeout(timer)
 }, [message])
     
-  const handleGoBack = () => Navigate("/designer/products")
+  const handleGoBack = () => Navigate("/vendor/products")
 
     return(
                <div className="w-full flex flex-col gap-10 pt-4 text-gray-900">

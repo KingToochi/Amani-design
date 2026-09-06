@@ -127,7 +127,7 @@ export const loginUser = async({email, password}) => {
     
 }
 
-export const logUserOut = () => {
+export const logUserOut = (res) => {
     // Clear HTTP-only cookies
   res.clearCookie("accessToken", getCookieOptions(req));
 
