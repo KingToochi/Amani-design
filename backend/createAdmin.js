@@ -6,6 +6,7 @@ import connectDB from "./src/config/db.js"
 
 dotenv.config();    
 connectDB();
+console.log("MONGO_URI:", process.env.MONGO_URI);
 const createAdmin = async () => {
     const existingUsername = await User.findOne({ username: process.env.ADMIN_USERNAME.toLowerCase()});
     const existingEmail = await User.findOne({ email: process.env.ADMIN_EMAIL.toLowerCase() });
@@ -14,7 +15,7 @@ const createAdmin = async () => {
         return;
     }
 
-    const hashedPassword = bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
     const adminUser = new User({
         fname: "Toochukwu",
         lname: "Umoke",
@@ -23,7 +24,7 @@ const createAdmin = async () => {
         dob: new Date("1996-05-22"),
         email: process.env.ADMIN_EMAIL.toLowerCase(),
         password: hashedPassword,
-        status: "admin",
+        role: "admin",
         joinedAt: new Date(),
     });
 
