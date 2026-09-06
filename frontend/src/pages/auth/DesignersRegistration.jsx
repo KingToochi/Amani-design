@@ -301,7 +301,7 @@ const DesignerRegistration = () => {
                 if (response.ok && data.success) {
                     const authVerified = await verifyAndFetchAuth();
                     if (authVerified) {
-                        navigate("/designer")
+                        navigate("/vendor")
                         return
                     }
 

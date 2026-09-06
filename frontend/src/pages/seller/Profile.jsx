@@ -62,6 +62,7 @@ const Profile = () => {
             }
 
             const data = await response.json();
+            console.log(data)
             if (data.success) {
                 setUserDetails(data.user);
                 setForm({ ...emptyForm, ...data.user });
@@ -211,7 +212,7 @@ const Profile = () => {
 
                     <aside className="space-y-6">
                         <div className="rounded-[1.5rem] bg-amber-400 p-6 text-stone-900 shadow-sm"><div className="mb-8 flex items-start justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-stone-700">Membership</p><h2 className="mt-1 text-2xl font-semibold">{userDetails.subscriptionPlan || "Free plan"}</h2></div><CreditCard size={25} /></div><div className="mb-3 flex items-center justify-between text-sm"><span>Subscription</span><span className={`rounded-full px-2.5 py-1 text-xs font-bold capitalize ${subscription.isActive ? "bg-stone-900 text-amber-300" : "bg-white/50 text-stone-700"}`}>{subscription.status}</span></div><div className="h-2 overflow-hidden rounded-full bg-stone-900/15"><div className={`h-full rounded-full ${subscription.isActive ? "w-full bg-stone-900" : "w-1/3 bg-stone-700"}`} /></div><p className="mt-4 text-xs text-stone-700">Expires {formatDate(userDetails.subscriptionExpiryDate)}</p></div>
-                        <div className="rounded-[1.5rem] border border-stone-200 bg-white p-6 shadow-sm"><div className="mb-5 flex items-center gap-3"><div className="rounded-xl bg-stone-100 p-2.5"><ShieldCheck size={19} className="text-stone-700" /></div><div><h2 className="font-semibold">Account security</h2><p className="text-xs text-stone-500">Your account is protected</p></div></div><div className="flex items-center justify-between border-t border-stone-100 pt-4 text-sm"><span className="text-stone-500">Member since</span><span className="flex items-center gap-1.5 font-semibold"><CalendarDays size={15} /> {formatDate(userDetails.createdAt) === "Not set" ? "2025" : formatDate(userDetails.createdAt)}</span></div></div>
+                        <div className="rounded-[1.5rem] border border-stone-200 bg-white p-6 shadow-sm"><div className="mb-5 flex items-center gap-3"><div className="rounded-xl bg-stone-100 p-2.5"><ShieldCheck size={19} className="text-stone-700" /></div><div><h2 className="font-semibold">Account security</h2><p className="text-xs text-stone-500">Your account is protected</p></div></div><div className="flex items-center justify-between border-t border-stone-100 pt-4 text-sm"><span className="text-stone-500">Member since</span><span className="flex items-center gap-1.5 font-semibold"><CalendarDays size={15} /> {formatDate(userDetails.joinedAt) === "Not set" ? "2025" : formatDate(userDetails.joinedAt)}</span></div></div>
                     </aside>
                 </div>
             </div>

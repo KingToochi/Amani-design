@@ -70,7 +70,10 @@ const userSchema = new mongoose.Schema({
       default: "none",
     }
   },
-  joinedAt: Date,
+  joinedAt: {
+    type : Date,
+    default: Date.now,
+  }
 });
 
 export default mongoose.model("User", userSchema);

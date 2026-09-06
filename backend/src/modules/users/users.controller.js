@@ -102,6 +102,7 @@ try {
       subscriptionStatus: user?.subscriptionDetails?.status,
       subscriptionStartDate: user?.subscriptionDetails?.startDate,
       subscriptionExpiryDate: user?.subscriptionDetails?.expiryDate,
+      joinedAt: user?.joinedAt,
       // Add any other non-sensitive fields here
     }
     
