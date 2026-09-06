@@ -319,6 +319,7 @@ const DesignerRegistration = () => {
         } else {
             setIsSubmitting(false)
         }
+    }
 
         if (serverError) {
             return(
