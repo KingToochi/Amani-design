@@ -65,7 +65,6 @@ function App() {
           <Route path="initiate-payment" element={<InitiatePayment/>} />
           <Route path="payment-callback" element={<PaymentCallback />} />
           <Route path="customer-orders" element={<CustomerOrder />} />
-          <Route path="admin-login" element={<AdminLogin />} />
           <Route path="order-details/:id" element={<OrderDetails/>} />
           <Route path="collection/:slug" element={<CollectionPage />} />
           <Route path="about" element={<AboutPage />} />
@@ -74,6 +73,9 @@ function App() {
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="terms" element={<TermsPage />} />
         </Route>
+
+        <Route path="/admin-login" element={<AdminLogin />} />
+
         <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
         <Route path="/vendor" element={<DesignerLayout/>}>
           <Route index element={<Dashboard />} />

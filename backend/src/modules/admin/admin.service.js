@@ -1,5 +1,7 @@
 import User from "../../models/User.js"
 import Product from "../../models/Product.js"
+import Sales from "../../models/Sales.js"
+import Order from "../../models/Order.js"
 import { validateAdmin } from "./admin.validation.js"
 import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"

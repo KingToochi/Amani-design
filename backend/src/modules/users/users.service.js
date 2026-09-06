@@ -115,9 +115,9 @@ export const loginUser = async({email, password}) => {
     const loginIdentifier = String(email).trim().toLowerCase();
         const user = await User.findOne({ $or: [{ email: loginIdentifier }, { username: loginIdentifier }] });
         if (!user) throw new Error("User not found")
-        if(user.role !== "user" && user.role !== "vendor") throw new error( "Access denied")
+        if(user.role !== "user" && user.role !== "vendor") throw new Error( "Access denied")
         const hashedPassword = user.password
-        const ismatch = bcrypt.compare(password, hashedPassword)
+        const ismatch = await bcrypt.compare(password, hashedPassword)
         if (!ismatch)  throw new Error("Incorrect password")
     
         const accessToken = await generateToken(loginIdentifier, { expiresIn: "30m" })
