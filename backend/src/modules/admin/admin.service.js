@@ -108,7 +108,7 @@ export const fetchOrders = async(auth) => {
      return totalOrder
 }
 
-export const fetchProductDetailsById = async(auth) => {
+export const fetchProductDetailsById = async({auth, req}) => {
      const user = await User.findOne({_id: auth._id})
      const validate = validateAdmin(user)
      const product = await Product.findOne({_id: req.params.id}).populate("vendorId", "fname lname username email")
@@ -120,7 +120,7 @@ export const fetchProductDetailsById = async(auth) => {
 }
 
 
-export const fetchVendorDetailsById = async(auth) => {
+export const fetchVendorDetailsById = async({auth, req}) => {
      const user = await User.findOne({_id: auth._id})
      const validate = validateAdmin(user)
      const vendor = await User.findOne({_id: req.params.id})
@@ -131,12 +131,12 @@ export const fetchVendorDetailsById = async(auth) => {
      return vendor
 }
  
-export const fetchCustomerDetailsById = async(auth) => {
+export const fetchCustomerDetailsById = async({auth, req}) => {
      const user = await User.findOne({_id: auth._id})
      const validate = validateAdmin(user)
      const customer = await User.findOne({_id: req.params.id})
      if (!customer) {
-      const  error = new Error("vendor not found")
+      const  error = new Error("customer not found")
       error.statusCode = 404
      } 
      return customer

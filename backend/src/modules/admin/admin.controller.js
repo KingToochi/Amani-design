@@ -78,7 +78,7 @@ export const getOrders = async(req, res, next) => {
 export const getProductById = async(req, res, next) => {
     try {
         const auth = req.user
-        const product = await fetchProductDetailsById(auth)
+        const product = await fetchProductDetailsById({ auth, req})
         return res.json({ success: true, product });
     }catch(error) {
         next(error)
@@ -88,7 +88,7 @@ export const getProductById = async(req, res, next) => {
 export const getVendorById = async(req, res, next) => {
     try {
         const auth = req.user
-        const vendor = await fetchVendorDetailsById(auth)
+        const vendor = await fetchVendorDetailsById({ auth, req })
         return res.json({ success: true, vendor });
     }catch(error) {
         next(error)
@@ -98,7 +98,7 @@ export const getVendorById = async(req, res, next) => {
 export const getCustomerById = async(req, res, next) => {
     try {
         const auth = req.user
-        const customer = await fetchCustomerDetailsById(auth)
+        const customer = await fetchCustomerDetailsById({ auth, req })
         return res.json({ success: true, customer });
     }catch(error) {
         next(error)
