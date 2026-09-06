@@ -189,7 +189,7 @@ export const userLogin = async(req, res, next) => {
 
 export const userLogout = async(req, res, next) => {
     try {
-        const logout = await logUserOut(res)
+        const logout = await logUserOut({req, res})
         res.json({ success: true, message: "Logged out successfully" });
     }catch(error) {
         next(error)
