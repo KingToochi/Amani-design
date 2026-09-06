@@ -230,92 +230,94 @@ const DesignerRegistration = () => {
         }
     }
     const handleSubmit = async(event) => {
-            event.preventDefault()
-            setIsSubmitting(true)
-            let hasError = false
-            const form = new FormData()
-            console.log("Form data before validation:", formData);
-    
-            const validateForm = () => {
-                for (let id in formData) {
-                    const formValue = formData[id]
-                    if (id === "termsAndCondition") {
-                        if (!formValue) {
-                            hasError = true
-                            setError(prev => ({...prev, terms: "You must accept the terms and conditions"}))
-                            setIsSubmitting(false)
-                        }
-                        continue
-                    }
-                    if (!formValue) {
-                        hasError = true
-                        setError(prev => ({...prev, [id]:"field required"}))
-                        setIsSubmitting(false)
-                    } else {
-                        setError(prev => {
-                            const newErr = {...prev}
-                            delete newErr[id]
-                            return newErr
-                        })
-                    }
-                }
-                return hasError
-            }
-    
-            validateForm()
+        event.preventDefault()
+        setIsSubmitting(true)
+        const validationErrors = {}
 
-            if (!hasError) {
-                for (const [key, value] of Object.entries(formData)) {
-                    if (value === undefined || value === null) continue
-                    if (key === "termsAndCondition") {
-                        form.append("termsAndCondition", value ? "true" : "false")
-                    } else {
-                        form.append(key, value)
-                    }
+        for (const [id, formValue] of Object.entries(formData)) {
+            if (id === "termsAndCondition") {
+                if (!formValue) validationErrors.terms = "You must accept the terms and conditions"
+                continue
+            }
+            if (!formValue || (typeof formValue === "string" && formValue.trim() === "")) {
+                validationErrors[id] = "field required"
+            }
+        }
+
+        if (formData.username && !/^[A-Za-z][A-Za-z0-9]*$/.test(formData.username)) {
+            validationErrors.username = "username must start with a letter and contain only letters or numbers"
+        }
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            validationErrors.email = "Invalid email format"
+        }
+        if (formData.cpassword && formData.cpassword !== formData.password) {
+            validationErrors.cpassword = "Passwords do not match"
+        }
+
+        try {
+            if (!validationErrors.username && formData.username) {
+                const response = await fetch(`${url}/users/username`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: formData.username })
+                })
+                const data = await response.json()
+                if (data.status === "exists") validationErrors.username = data.message
+            }
+            if (!validationErrors.email && formData.email) {
+                const response = await fetch(`${url}/users/email`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: formData.email })
+                })
+                const data = await response.json()
+                if (data.status === "exist") validationErrors.email = data.message
+            }
+        } catch (validationError) {
+            setServerError(validationError)
+            setIsSubmitting(false)
+            return
+        }
+
+        setError(validationErrors)
+
+        if (Object.keys(validationErrors).length === 0) {
+            const form = new FormData()
+            for (const [key, value] of Object.entries(formData)) {
+                if (key === "termsAndCondition") {
+                    form.append(key, value ? "true" : "false")
+                } else {
+                    form.append(key, value)
                 }
             }
-    
-            console.log(form)
-    
-            if (!hasError) {
-                setIsSubmitting(true)
-                try {
-                    let response = await fetch(`${url}/users/registration/vendor`, {
+
+            try {
+                const response = await fetch(`${url}/users/registration/vendor`, {
                         method: "POST",
                         credentials: "include",
                         body : form
                     })
-                    let data = await response.json()
-                    console.log(data)
-                    if (response.ok && data.success) {
-                        const authVerified = await verifyAndFetchAuth();
-                        if (authVerified) {
-                            navigate("/designer")
-                            return
-                        }
-
-                        throw new Error("Registration succeeded, but your session could not be verified.")
-                    } else {
-                        setIsSubmitting(false)
-                        setServerError(data.message || "Registration failed")
-                        setTimeout(() => {
-                            setServerError(null)
-                        }, 5000)
+                const data = await response.json()
+                if (response.ok && data.success) {
+                    const authVerified = await verifyAndFetchAuth();
+                    if (authVerified) {
+                        navigate("/designer")
+                        return
                     }
+
+                    throw new Error("Registration succeeded, but your session could not be verified.")
+                }
+
+                setIsSubmitting(false)
+                setServerError(data.message || "Registration failed")
+                setTimeout(() => setServerError(null), 5000)
                 } catch(error){
                     console.log(error)
                     setServerError(error)
                     setIsSubmitting(false)
                 }
-            }else {
-                console.log("Form has errors:", error);
-                setIsSubmitting(false)
-                console.log(error)
-                setServerError(error)
-                setTimeout(() => {
-                    setServerError(null)
-                }, 5000)
-            }
+        } else {
+            setIsSubmitting(false)
         }
 
         if (serverError) {

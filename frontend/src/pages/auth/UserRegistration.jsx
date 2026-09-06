@@ -35,6 +35,7 @@ const UserRegistration = () => {
         username: "",
         email: "",
         password: "",
+        cpassword: "",
         termsAndCondition: false,
     })
 
@@ -190,42 +191,62 @@ const UserRegistration = () => {
     const handleSubmit = async(event) => {
         event.preventDefault()
         setIsSubmitting(true)
-        let hasError = false
+        const validationErrors = {}
 
-        const validateForm = () => {
-            for (let id in formData) {
-                const formValue = formData[id]
-                if (id === "termsAndCondition") {
-                    if (!formValue) {
-                        hasError = true
-                        setError(prev => ({...prev, terms: "You must accept the terms and conditions"}))
-                        setShowMessage(prev => ({...prev, terms: true}))
-                    }
-                    continue
-                }
-                if (formValue.length === 0) {
-                    hasError = true
-                    setError(prev => ({...prev, [id]:"field required"}))
-                    setShowMessage(prev => ({...prev, [id] : true}))
-                    setIsSubmitting(false)
-                } else {
-                    setError(prev => {
-                        const newErr = {...prev}
-                        delete newErr[id]
-                        return newErr
-                    })
-                }
+        for (const [id, formValue] of Object.entries(formData)) {
+            if (id === "termsAndCondition") {
+                if (!formValue) validationErrors.terms = "You must accept the terms and conditions"
+                continue
             }
-            return hasError
+            if (typeof formValue !== "string" || formValue.trim() === "") {
+                validationErrors[id] = "field required"
+            }
         }
 
+        if (formData.username && !/^[A-Za-z][A-Za-z0-9]*$/.test(formData.username)) {
+            validationErrors.username = "username must start with a letter and contain only letters or numbers"
+        }
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            validationErrors.email = "Invalid email format"
+        }
+        if (formData.cpassword && formData.cpassword !== formData.password) {
+            validationErrors.cpassword = "Passwords do not match"
+        }
 
-        validateForm()
+        try {
+            if (!validationErrors.username && formData.username) {
+                const response = await fetch(`${url}/users/username`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: formData.username })
+                })
+                const data = await response.json()
+                if (data.status === "exists") validationErrors.username = data.message
+            }
+            if (!validationErrors.email && formData.email) {
+                const response = await fetch(`${url}/users/email`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: formData.email })
+                })
+                const data = await response.json()
+                if (data.status === "exist") validationErrors.email = data.message
+            }
+        } catch (validationError) {
+            setServerError(validationError)
+            setIsSubmitting(false)
+            return
+        }
 
-        if (Object.keys(error).length === 0 && !hasError) {
-            setIsSubmitting(true)
+        setError(validationErrors)
+        setShowMessage(prev => ({
+            ...prev,
+            ...Object.fromEntries(Object.keys(validationErrors).map(id => [id, true]))
+        }))
+
+        if (Object.keys(validationErrors).length === 0) {
             try {
-                let response = await fetch(`${url}/users/registration`, {
+                const response = await fetch(`${url}/users/registration`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -233,8 +254,7 @@ const UserRegistration = () => {
                     credentials: "include",
                     body : JSON.stringify({ ...formData, termsAndCondition: Boolean(formData.termsAndCondition) })
                 })
-                let data = await response.json()
-                console.log(data)
+                const data = await response.json()
                 if (data.success) {
                     await verifyAndFetchAuth();
                     navigate("/")
@@ -249,9 +269,9 @@ const UserRegistration = () => {
             } catch(error){
                 console.log(error)
                 setServerError(error)
-                         }
-        }else {
-            console.log("Form has errors:", error);
+                setIsSubmitting(false)
+            }
+        } else {
             setIsSubmitting(false)
         }
     }
@@ -369,7 +389,7 @@ const UserRegistration = () => {
                 <div
                 className="flex items-center gap-2"
                 >
-                    <input type={showCPassword ? "text" : "password"} name="confirm password" id="cpassword" placeholder="confirm password" onBlur={validateFormInput} 
+                    <input type={showCPassword ? "text" : "password"} name="confirm password" id="cpassword" value={formData.cpassword} placeholder="confirm password" onChange={validateFormInput} onBlur={validateFormInput} 
                     className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
                     />
                     {showCPassword ? 
