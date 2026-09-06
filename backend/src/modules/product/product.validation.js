@@ -25,6 +25,9 @@ export const userPutAndDeleteAuthorisation = async (productId, user) => {
         throw new Error("Product not found");
     }
 
+    console.log("Product Vendor ID:", product.vendorId);
+    console.log("User ID:", user._id);
+
     if (product.vendorId.toString() !== user._id.toString()) {
         throw new Error("Unauthorized");
     }

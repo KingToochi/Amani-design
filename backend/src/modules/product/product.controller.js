@@ -51,7 +51,7 @@ export const editProduct = async (req, res, next) => {
         console.log("Product Details:", productDetails);
         console.log("Authenticated User:", auth);
 
-        const user = userValidation(auth);
+        const user = await userValidation(auth);
         console.log("Validated User:", user);
 
         await userPutAndDeleteAuthorisation(

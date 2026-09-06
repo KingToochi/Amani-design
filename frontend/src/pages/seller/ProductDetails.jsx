@@ -8,6 +8,7 @@ import { GoPlus} from "react-icons/go";
 import { FiMinus } from "react-icons/fi";
 import { FaArrowLeft } from "react-icons/fa";
 import { BASE_URL } from "../../Url";
+import CustomFetch from "../../hooks/useFetch";
 
 const ProductDetails = () => {
     const [editPrice, setEditPrice] = useState(false)
@@ -120,7 +121,8 @@ const ProductDetails = () => {
         let response = await fetch (url, {
             "method" : "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(productDetails)
+            body: JSON.stringify(productDetails),
+            credentials: 'include',
         })
 
         if(response.ok) {
