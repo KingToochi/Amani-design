@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"
 import fs from "fs";
 import cloudinary from "../../config/cloudinary.js";
+import {getCookieOptions} from "../../utils/getCookieOptions.js"
 
 export const fetchUsername = async(username) => {
     const user = await User.findOne({ username: username.toLowerCase() });
