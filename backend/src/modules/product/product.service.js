@@ -46,7 +46,7 @@ export const editProduct = async ({ productId, productDetails }) => {
     return updatedProduct;
 };
 
-export const deleteProduct = async({productId}) => {
+export const productDelete = async({productId}) => {
     const deleted = await Product.findOneAndDelete({ _id: productId });
     if (!deleted) throw new Error("Product not found")
         return deleted

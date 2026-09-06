@@ -5,7 +5,7 @@ import { fetchProductById } from "./product.service.js"
 import { productValidation } from "./product.validation.js"
 import { editProduct as editProductService } from "./product.service.js"
 import { userPutAndDeleteAuthorisation } from "./product.validation.js"
-import { deleteProduct as removeProduct } from "./product.service.js"
+import { productDelete } from "./product.service.js"
 import { validatePostProduct } from "./product.validation.js"
 import { createNewProduct } from "./product.service.js"
 
@@ -47,12 +47,8 @@ export const editProduct = async (req, res, next) => {
         const auth = req.user;
         const productDetails = req.body;
         const productId = req.params.id;
-        console.log("Product ID:", productId);
-        console.log("Product Details:", productDetails);
-        console.log("Authenticated User:", auth);
-
+        
         const user = await userValidation(auth);
-        console.log("Validated User:", user);
 
         await userPutAndDeleteAuthorisation(
             productId,
@@ -80,7 +76,10 @@ export const deleteProduct = async(req,res, next) => {
     const auth = req.user
     const user = await userValidation(auth)
     const validatedUser = await userPutAndDeleteAuthorisation(productId, user)
-    const removeProduct = await removeProduct(productId)
+    const removeProduct = await productDelete({productId})
+    return res.status(200).json({
+            message : "Product deleted successfully",
+        });
 
 }
 

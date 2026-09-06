@@ -139,6 +139,7 @@ const ProductDetails = () => {
     try {
         let response = await fetch (url, {
             "method": "GET",
+            credentials: 'include',
         })
         let data = await response.json()
         setProductList(data)
@@ -146,6 +147,7 @@ const ProductDetails = () => {
             try {
                 let response = await fetch(url, {
                 "method": "DELETE",
+                credentials: 'include',
                 })
                 setProductList(prev => prev.filter(product => product.id !== id))
                 if (response.ok) {
