@@ -3,6 +3,7 @@ import Product from "../../models/Product.js"
 
 export const userValidation = async(auth) => {
         const user = await User.findById(auth._id)
+        console.log(user)
         if (!user) {
             throw new Error("user not found")
         }
