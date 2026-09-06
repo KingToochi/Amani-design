@@ -143,7 +143,7 @@ export const vendorRegistration = async(req, res, next) => {
         const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
         const validate = await validateVendorRegistration({fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
         const exists = validate
-        const saveUser = await registerVendor({exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
+        const saveUser = await registerVendor({req, exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
         const {accessToken, refreshToken, user} = saveUser
 
         // Set access token in HTTP-only cookie

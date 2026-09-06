@@ -21,7 +21,11 @@ export const fetchUser = async(auth) => {
 }
 
 export const registerUser = async({exists, fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms}) => {
-    if (exists) return res.status(400).json({success: false, message: "Email or username already exists" });
+    if (exists) {
+      const error = new Error("Email or username already exists")
+      error.statusCode = 400
+      throw error
+    }
 
         const mainUsername = username.toLowerCase()
         const mainEmail = email.toLowerCase()
@@ -49,9 +53,11 @@ export const registerUser = async({exists, fname, lname, username, email, passwo
     
 }
 
-export const registerVendor = async({exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms}) => {
+export const registerVendor = async({req, exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms}) => {
     if (exists) {
-      throw new Error("Email or username already exists")
+      const error = new Error("Email or username already exists")
+      error.statusCode = 400
+      throw error
     }
     const mainUsername = username.toLowerCase()
     const mainEmail = email.toLowerCase()
