@@ -135,7 +135,7 @@ const UserRegistration = () => {
                     })
                     let data = await response.json()
 
-                    if (data.status === "exist") {
+                    if (data.status === "exists") {
                         setError(prev => ({...prev, [id]: data.message}))
                         setShowMessage(prev => ({...prev, [id]: true}))
                     } else {
@@ -230,7 +230,7 @@ const UserRegistration = () => {
                     body: JSON.stringify({ email: formData.email })
                 })
                 const data = await response.json()
-                if (data.status === "exist") validationErrors.email = data.message
+                if (data.status === "exists") validationErrors.email = data.message
             }
         } catch (validationError) {
             setServerError(validationError)

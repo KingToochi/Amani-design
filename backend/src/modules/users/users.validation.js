@@ -1,4 +1,4 @@
-import User from "./users.model.js";
+import User from "../../models/User.js";
 
 export const validateUserUpdatedInfo = (updates) => {
     if (!updates || Object.keys(updates).length === 0) {
