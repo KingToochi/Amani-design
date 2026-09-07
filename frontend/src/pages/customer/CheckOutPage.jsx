@@ -43,6 +43,8 @@ const CheckOut = () => {
         city: "",
         state: ""
     })
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [paymentError, setPaymentError] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
     const pathName = "/checkout";
@@ -193,6 +195,13 @@ const CheckOut = () => {
 
     const handlePlaceOrder = async () => {
         const subtotal = calculateSubtotal()
+        if (!userInfo.phoneNumber || !userInfo.shippingAddress || !userInfo.city || !userInfo.state) {
+            alert("Please complete your shipping information before proceeding to payment.");
+            return;
+        }
+
+        setPaymentLoading(true);
+        
 
         try {
 
@@ -245,6 +254,8 @@ const CheckOut = () => {
                 "Payment initialization error:",
                 error
             );
+        }finally {
+            setPaymentLoading(false);
         }
 }
 
@@ -651,16 +662,9 @@ const CheckOut = () => {
                                         : "bg-gray-300 text-gray-600 cursor-not-allowed"
                                 }`}
                             >
-                                Continue Payment
+                                {paymentLoading ? "Processing..." : "Continue Payment"}
                             </button>
                         </div>
-                            {/* <button 
-                                onClick={handlePlaceOrder}
-                                className="w-full flex flex-row hidden lg:flex justify-center gap-4 bg-black text-white py-4 rounded-xl hover:bg-gray-800 transition font-semibold"
-                            >
-                                Pay Now • 
-                                <span className='flex items-center'><FaNairaSign/>{calculateTotal().toFixed(2)}</span>
-                            </button> */}
                         </div>
                     </motion.div>
                 </div>

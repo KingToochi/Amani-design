@@ -65,7 +65,9 @@ console.log(cart)
             {
                 cart.length < 1
                 ?
-                <h1>No item in Cart</h1>
+                <div className="w-full h-[400px] flex justify-center items-center">
+                    <h1 className="text-xl font-semibold">No item in Cart</h1>
+                </div>
                 :
                 <div
                 className="w-full pt-4 px-2 

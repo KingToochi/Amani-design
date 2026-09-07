@@ -14,7 +14,9 @@ const removeFromWishList = (_id) => {
 
 
 if (wishList.length == 0) return (
-    <div className="text-gray-500">No item added yet</div>
+    <div className="w-full h-[400px] flex justify-center items-center">
+        <h1 className="text-xl font-semibold">No item added yet</h1>
+    </div>
 )
 
 return(
