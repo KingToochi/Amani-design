@@ -54,6 +54,10 @@ export const paymentVerification = async({auth, reference, cart}) => {
               customerName: `${user.fname} ${user.lname}`,
               customerPhone : user.phoneNumber,
               items : cartItems,
+              deliveryCompany : user.deliveryCompany,
+              shippingAddress : user.shippingAddress,
+              city : user.city,
+              state : user.state
             })
     
             await newOrder.save()

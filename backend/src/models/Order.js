@@ -123,6 +123,19 @@ const orderSchema = new mongoose.Schema({
       default: Date.now,
     },
   }],
+  deliveryCompany: {
+    type: String,
+    default: "other",
+  },
+  shippingAddress: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
   deliveryDate: {
     type: Date
   },

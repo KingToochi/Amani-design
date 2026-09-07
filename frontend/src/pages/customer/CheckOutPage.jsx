@@ -198,7 +198,7 @@ const CheckOut = () => {
 
     const handlePlaceOrder = async () => {
         const subtotal = calculateSubtotal()
-        if (!userInfo.phoneNumber || !userInfo.shippingAddress || !userInfo.city || !userInfo.state) {
+        if (!userInfo.phoneNumber || !userInfo.shippingAddress || !userInfo.city || !userInfo.state || !userInfo.deliveryCompany) {
             alert("Please complete your shipping information before proceeding to payment.");
             return;
         }
