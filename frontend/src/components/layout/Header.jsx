@@ -116,7 +116,7 @@ const Header = () => {
 
                 {/* User & Cart Icons */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                    <Link to={(auth.role === "vendor") ? "/designer" : "/profile"}><FaRegUser className="text-base sm:text-lg cursor-pointer" /></Link>
+                    <Link to={(auth.role === "vendor") ? "/vendor" : "/profile"}><FaRegUser className="text-base sm:text-lg cursor-pointer" /></Link>
                     <div className="relative">
                         <Link to="/cart"><MdOutlineShoppingBag className="text-base sm:text-lg cursor-pointer" /></Link>
                         <span className={`${cart.length == 0 && "hidden" } absolute -top-2 -right-2 bg-amber-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center`}>{cart.length}</span>
@@ -135,7 +135,7 @@ const Header = () => {
                         <div className="absolute top-10 right-0 w-48 bg-white rounded-lg shadow-xl py-2 z-[60] border border-gray-200">
                             <ul className="flex flex-col">
                                 <li className="px-4 py-3 border-b border-gray-100">
-                                    <Link to="/products" className="block w-full" onClick={() => setDropDown(false)}>Store</Link>
+                                    <Link to="/products" className="block w-full" onClick={() => setDropDown(false)}>All Product</Link>
                                 </li>
                                 <li className="px-4 py-3 border-b border-gray-100">
                                     <Link to="/collection/women" className="block w-full" onClick={() => setDropDown(false)}>Women</Link>
