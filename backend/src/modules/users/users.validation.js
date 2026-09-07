@@ -18,7 +18,7 @@ export const userValidation = (auth)=> {
     return auth
 }
 
-export const registrationValidation = async ({fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms}) => {
+export const registrationValidation = async ({fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms, deliveryRoute}) => {
     
     if (!fname || !lname || !username || !email || !password) {
       throw new Error("All fields are required")                                                    

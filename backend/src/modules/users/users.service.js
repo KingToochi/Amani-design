@@ -20,7 +20,7 @@ export const fetchUser = async(auth) => {
     return user
 }
 
-export const registerUser = async({exists, fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms}) => {
+export const registerUser = async({exists, fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms, deliveryRoute}) => {
     if (exists) {
       const error = new Error("Email or username already exists")
       error.statusCode = 400
@@ -40,6 +40,7 @@ export const registerUser = async({exists, fname, lname, username, email, passwo
             dob: "",
             profilePicture: "",
             password: hashedPassword,
+            deliveryCompany: deliveryRoute,
             termsAndCondition: acceptedTerms,
             status: "approved",
             role: "user",

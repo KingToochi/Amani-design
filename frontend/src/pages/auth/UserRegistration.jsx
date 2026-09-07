@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
 import ServerError from "../../components/common/ServerError";
+import deliveryRoute from "../../components/common/deliveryRoute";
 
 const UserRegistration = () => {
     const url = BASE_URL
@@ -36,6 +37,7 @@ const UserRegistration = () => {
         email: "",
         password: "",
         cpassword: "",
+        deliveryRoute: "",
         termsAndCondition: false,
     })
 
@@ -403,6 +405,38 @@ const UserRegistration = () => {
                     className="text-red-300"
                     >{error.cpassword}</h1>
                 }
+            </div>
+
+            <div className="flex flex-col w-full">
+                <label htmlFor="deliveryRoute">Delivery Company</label>
+                <select
+                    id="deliveryRoute"
+                    name="delivery company"
+                    value={formData.deliveryRoute}
+                    onChange={validateFormInput}
+                    onBlur={validateFormInput}
+                    className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
+                >
+                    <option value="">Select delivery company</option>
+                    <optgroup label="Courier and logistics">
+                        {deliveryRoute
+                            .filter(({ category }) => category === "Courier and logistics")
+                            .map(({ value, label }) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
+                    </optgroup>
+                    <optgroup label="Interstate transport and cargo">
+                        {deliveryRoute
+                            .filter(({ category }) => category === "Interstate transport and cargo")
+                            .map(({ value, label }) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
+                    </optgroup>
+                    <option value="other">Other</option>
+                </select>
+                {showMessage.deliveryRoute && error.deliveryRoute && (
+                    <h1 className="text-red-300">{error.deliveryRoute}</h1>
+                )}
             </div>
             <label className="flex items-start gap-3 rounded-lg border border-gray-300 p-3 text-sm text-gray-700">
                 <input

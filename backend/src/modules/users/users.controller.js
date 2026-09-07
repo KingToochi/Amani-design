@@ -98,6 +98,7 @@ try {
       typeOfVendor: user.typeOfVendor,
       status: user.status,
       subscriber: user.subscriber,
+      deliveryCompany: user?.deliveryCompany,
       subscriptionPlan: user?.subscriptionDetails?.plan,
       subscriptionStatus: user?.subscriptionDetails?.status,
       subscriptionStartDate: user?.subscriptionDetails?.startDate,
@@ -115,11 +116,11 @@ try {
 
 export const registration = async(req, res, next) => {
     try {
-        const { fname, lname, username, email, password, termsAndCondition, termsAccepted } = req.body;
+        const { fname, lname, username, email, password, termsAndCondition, termsAccepted, deliveryRoute } = req.body;
         const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
-        const validateData = await registrationValidation({fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms})
+        const validateData = await registrationValidation({fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms, deliveryRoute})
         const exists = validateData
-        const saveUser = await registerUser({exists, fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms})
+        const saveUser = await registerUser({exists, fname, lname, username, email, password, termsAndCondition, termsAccepted, acceptedTerms, deliveryRoute})
         const {accessToken, refreshToken, user} = saveUser
 
         // Set access token in HTTP-only cookie

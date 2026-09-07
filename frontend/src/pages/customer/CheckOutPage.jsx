@@ -26,6 +26,7 @@ import { FaNairaSign } from "react-icons/fa6"
 import logo from "../../assets/images/mainLogo.jpg"
 import CustomFetch from "../../hooks/useFetch"
 import PaymentCallback from '../../features/payments/components/PaymentCallback';
+import deliveryRoute from '../../components/common/deliveryRoute';
 
 
 const CheckOut = () => {
@@ -41,7 +42,8 @@ const CheckOut = () => {
         phoneNumber : "",
         shippingAddress: "",
         city: "",
-        state: ""
+        state: "",
+        deliveryCompany: ""
     })
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [paymentError, setPaymentError] = useState(null);
@@ -124,7 +126,8 @@ const CheckOut = () => {
             phoneNumber: userInfo.phoneNumber || "",
             shippingAddress: userInfo.shippingAddress || "",
             city: userInfo.city || "",
-            state: userInfo.state || ""
+            state: userInfo.state || "",
+            deliveryCompany: userInfo.deliveryCompany || ""
         });
 
         setEditMode(prev => !prev);
@@ -484,6 +487,44 @@ const CheckOut = () => {
                                         ) : (
                                             <p className="text-gray-900">
                                                 {userInfo.shippingAddress}, {userInfo.city}, {userInfo.state}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="deliveryCompany" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                                            <Truck className="h-4 w-4 mr-1" /> Delivery Company
+                                        </label>
+                                        {editMode ? (
+                                            <select
+                                                id="deliveryCompany"
+                                                value={formData.deliveryCompany}
+                                                onChange={(e) => setFormData(prev => ({
+                                                    ...prev,
+                                                    deliveryCompany: e.target.value
+                                                }))}
+                                                className="w-full border rounded-xl px-4 py-2 bg-white focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
+                                            >
+                                                <option value="">Select delivery company</option>
+                                                <optgroup label="Courier and logistics">
+                                                    {deliveryRoute
+                                                        .filter(({ category }) => category === "Courier and logistics")
+                                                        .map(({ value, label }) => (
+                                                            <option key={value} value={value}>{label}</option>
+                                                        ))}
+                                                </optgroup>
+                                                <optgroup label="Interstate transport and cargo">
+                                                    {deliveryRoute
+                                                        .filter(({ category }) => category === "Interstate transport and cargo")
+                                                        .map(({ value, label }) => (
+                                                            <option key={value} value={value}>{label}</option>
+                                                        ))}
+                                                </optgroup>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        ) : (
+                                            <p className="text-gray-900">
+                                                {deliveryRoute.find(({ value }) => value === userInfo.deliveryCompany)?.label || userInfo.deliveryCompany || "Not selected"}
                                             </p>
                                         )}
                                     </div>
