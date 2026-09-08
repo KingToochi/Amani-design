@@ -43,7 +43,7 @@ export const fetchVendorProductById = async(auth) => {
 
 export const confirmItemAvailability = async({auth, orderId, items}) => {
   const user = await User.findById(auth._id).select("_id role");
-  const validateVendor = validateVendor(user)
+   validateVendor(user)
   const order = await Order.findById(orderId);
   if (!order) {
     const error = new Error("Order not found")

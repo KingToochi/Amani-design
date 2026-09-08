@@ -90,7 +90,7 @@ const VendorOrderDetails = () => {
             [itemId]: {
                 ...prev[itemId],
                 availableQuantity: quantity,
-                confirmed: false
+                confirmed: true
             }
         }));
     };
@@ -117,7 +117,7 @@ const VendorOrderDetails = () => {
                 hasProduct: true,
                 fullQuantityAvailable: false,
                 availableQuantity: 0,
-                confirmed: true
+                confirmed: false
             }
         }));
     };
@@ -158,9 +158,11 @@ const VendorOrderDetails = () => {
             })
         };
 
+        console.log("Submitting data:", submissionData);
+
         try {
             const response = await CustomFetch(
-                `${BASE_URL}/confirmItemAvailability`,
+                `${BASE_URL}/vendor/confirmItemAvailability`,
                 {
                     method: "POST",
                     headers: {
@@ -218,7 +220,7 @@ const VendorOrderDetails = () => {
         setSendingItem(itemId);
 
         try {
-            const response = await CustomFetch(`${BASE_URL}/markItemAsSent`, {
+            const response = await CustomFetch(`${BASE_URL}/order/markItemSent`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -646,6 +648,11 @@ const VendorOrderDetails = () => {
                                                     </div>
                                                 )}
                                             </div>
+                                            {!availability?.confirmed && (<div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                                <p className="text-sm text-yellow-800 font-medium">
+                                                    Please confirm the availability of this item before proceeding.
+                                                </p>
+                                            
 
                                             {/* Availability Confirmation Section */}
                                             {!itemAvailability[item._id]?.hasProduct && (
@@ -783,6 +790,8 @@ const VendorOrderDetails = () => {
                                                     <span className="text-sm font-medium">Item has been sent to customer</span>
                                                 </div>
                                             )}
+
+                                            </div>)}
                                             
                                             {/* Payment Required Message
                                             {itemAvailable && item.paymentStatus !== 'paid' && item.sentStatus !== 'sent' && (
