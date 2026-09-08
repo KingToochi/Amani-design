@@ -21,7 +21,10 @@ import {
   Clock,
   Check,
   XCircle,
-  RotateCcw
+    RotateCcw,
+    User,
+    Building2,
+    Phone
 } from "lucide-react";
 
 const VendorOrderDetails = () => {
@@ -67,7 +70,6 @@ const VendorOrderDetails = () => {
             [itemId]: {
                 ...prev[itemId],
                 hasProduct: available,
-                availableQuantity: originalQuantity,
                 confirmed: false
             }
         }));
@@ -775,13 +777,6 @@ const VendorOrderDetails = () => {
                                                 </div>
                                             )}
 
-                                            {/* Payment Required Message
-                                            {itemAvailable && item.paymentStatus !== 'paid' && item.sentStatus !== 'sent' && (
-                                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
-                                                    <Clock className="h-4 w-4" />
-                                                    <span className="text-sm font-medium">Awaiting payment confirmation</span>
-                                                </div>
-                                            )} */}
                                         </div>
                                     </div>
                                 </div>
@@ -800,15 +795,24 @@ const VendorOrderDetails = () => {
                     </div>
                     <div className="p-6">
                         <div>
-                                <p className="text-sm text-gray-500">Name</p>
+                                <p className="text-sm text-gray-500 flex items-center gap-2">
+                                    <User className="h-4 w-4" />
+                                    Name
+                                </p>
                                 <p className="font-medium text-gray-900">{orderDetails.customerName || 'N/A'}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-500">Phone</p>
+                                <p className="text-sm text-gray-500 flex items-center gap-2">
+                                    <Phone className="h-4 w-4" />
+                                    Phone
+                                </p>
                                 <p className="font-medium text-gray-900">{orderDetails.customerPhone || 'N/A'}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-500">Delivery Company</p>
+                                <p className="text-sm text-gray-500 flex items-center gap-2">
+                                    <Building2 className="h-4 w-4" />
+                                    Delivery Company
+                                </p>
                                 <p className="font-medium text-gray-900">{orderDetails.deliveryCompany || 'N/A'}</p>
                             </div>
                         </div>
@@ -862,7 +866,6 @@ const VendorOrderDetails = () => {
                     </div>
                 )}
             </div>
-        </div>
     );
 };
 

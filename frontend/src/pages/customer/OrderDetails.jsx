@@ -102,7 +102,7 @@ const OrderDetails = () => {
         setSubmittingComplaintId(item._id);
 
         try {
-            const response = await CustomFetch(`${BASE_URL}/complaints`, {
+            const response = await CustomFetch(`${BASE_URL}/order/complaints`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ orderId: id, itemId: item._id, complaint })

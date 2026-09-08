@@ -5,6 +5,6 @@ import { confirmItemSent, postOrderComplaint } from "./orders.controller.js"
 const route = express.Router()
 
 route.get("/complaints", verifyToken, postOrderComplaint)
-route.put("/markItemSent", verifyToken, confirmItemSent)
+route.post("/markItemSent", verifyToken, confirmItemSent)
 
 export default route
