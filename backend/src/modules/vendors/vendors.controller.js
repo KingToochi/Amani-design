@@ -292,7 +292,7 @@ export const getOrderDetailsById = async(req, res, next) => {
               {_id : {$in : vendorItemId}}
             ).select("_id productImages")
             const amount = order.amount
-            const customerDetails = await User.findById(order.customerId).select("fname lname phoneNumber shippingAddress city state")
+            const customerDetails = await User.findById(order.customerId).select("fname lname phoneNumber shippingAddress city state deliveryCompany")
             const customerName = [customerDetails?.fname, customerDetails?.lname].filter(Boolean).join(" ") || order.customerName || "N/A"
         
             const vendorOrder = {

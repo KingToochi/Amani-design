@@ -451,25 +451,6 @@ const VendorOrderDetails = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Customer Information */}
-                    <div className="p-6 border-b border-gray-100 bg-gray-50">
-                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Customer Information</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <p className="text-sm text-gray-500">Name</p>
-                                <p className="font-medium text-gray-900">{orderDetails.customerName || 'N/A'}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Phone</p>
-                                <p className="font-medium text-gray-900">{orderDetails.customerPhone || 'N/A'}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Shipping Address</p>
-                                <p className="font-medium text-gray-900">{orderDetails.shippingAddress || 'No shipping address provided'}</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Items Section */}
@@ -818,6 +799,19 @@ const VendorOrderDetails = () => {
                         </h2>
                     </div>
                     <div className="p-6">
+                        <div>
+                                <p className="text-sm text-gray-500">Name</p>
+                                <p className="font-medium text-gray-900">{orderDetails.customerName || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Phone</p>
+                                <p className="font-medium text-gray-900">{orderDetails.customerPhone || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Delivery Company</p>
+                                <p className="font-medium text-gray-900">{orderDetails.deliveryCompany || 'N/A'}</p>
+                            </div>
+                        </div>
                         <div className="flex items-start gap-3">
                             <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                             <div className="flex-1">
@@ -831,12 +825,7 @@ const VendorOrderDetails = () => {
                                         .filter(Boolean)
                                         .join(", ") || "No shipping address provided"}
                                 </p>
-                                {/* {orderDetails.trackingNumber && (
-                                    <div className="mt-3 pt-3 border-t border-gray-100">
-                                        <p className="text-sm text-gray-500">Tracking Number:</p>
-                                        <p className="text-sm font-mono text-indigo-600">{orderDetails.trackingNumber}</p>
-                                    </div>
-                                )} */}
+    
                             </div>
                         </div>
                     </div>
