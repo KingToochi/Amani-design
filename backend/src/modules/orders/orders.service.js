@@ -6,7 +6,12 @@ import { validateOrder } from "./orders.validation.js";
 import { updateOrderStatusFromItems } from "../../utils/updateOrderStatus.js";
 
 export const postComplaint = async(auth, itemId, orderId) => {
+    console.log("postComplaint called with:", { auth, itemId, orderId });
     const order = await Order.findOne({ _id: orderId, customerId: auth._id }).lean();
+    console.log(order._id, order.customerId, auth._id);
+    console.log("Order found:", order);
+
+
     
         if (!order) {
             const error = new Error("Order not found")
