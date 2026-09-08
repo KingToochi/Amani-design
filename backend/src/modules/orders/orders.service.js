@@ -49,9 +49,9 @@ export const postComplaint = async(auth, itemId, orderId) => {
 
 export const markItemSent = async({auth, orderId, itemId}) => {
     const user = await User.findById(auth._id).select("_id role");
-    const validateVendor = validateVendor(user)
+    validateVendor(user)
     const order = await Order.findById(orderId);
-    const validateOrder = validateOrder(order)
+    validateOrder(order)
     const itemIndex = order.items.findIndex((item) => {
         const candidateId = itemId?.toString();
         return item._id?.toString() === candidateId || item.id?.toString() === candidateId || item.productId?.toString() === candidateId;

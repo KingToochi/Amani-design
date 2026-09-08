@@ -67,6 +67,7 @@ const VendorOrderDetails = () => {
             [itemId]: {
                 ...prev[itemId],
                 hasProduct: available,
+                availableQuantity: originalQuantity,
                 confirmed: false
             }
         }));
@@ -382,7 +383,7 @@ const VendorOrderDetails = () => {
             <div className="max-w-4xl mx-auto">
                 {/* Back Button */}
                 <Link 
-                    to="/designer/orders" 
+                    to="/vendor/orders" 
                     className="inline-flex items-center gap-2 text-gray-600 hover:text-indigo-600 mb-6 transition-colors group"
                 >
                     <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -763,6 +764,8 @@ const VendorOrderDetails = () => {
                                                     </button>
                                                 </div>
                                             )}
+
+                                            </div>)}
                                             
                                             {availability?.confirmed && availability?.hasProduct !== false && !["in_transit", "delivered", "completed", "unavailable", "returned"].includes(item.status) && (
                                                 <button
@@ -791,8 +794,6 @@ const VendorOrderDetails = () => {
                                                 </div>
                                             )}
 
-                                            </div>)}
-                                            
                                             {/* Payment Required Message
                                             {itemAvailable && item.paymentStatus !== 'paid' && item.sentStatus !== 'sent' && (
                                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
@@ -822,14 +823,20 @@ const VendorOrderDetails = () => {
                             <div className="flex-1">
                                 <p className="text-gray-700 font-medium">Delivery Address:</p>
                                 <p className="text-gray-600 mt-1">
-                                    {orderDetails.shippingAddress || "No shipping address provided"}
+                                    {[
+                                        orderDetails?.shippingAddress,
+                                        orderDetails?.city,
+                                        orderDetails?.state,
+                                    ]
+                                        .filter(Boolean)
+                                        .join(", ") || "No shipping address provided"}
                                 </p>
-                                {orderDetails.trackingNumber && (
+                                {/* {orderDetails.trackingNumber && (
                                     <div className="mt-3 pt-3 border-t border-gray-100">
                                         <p className="text-sm text-gray-500">Tracking Number:</p>
                                         <p className="text-sm font-mono text-indigo-600">{orderDetails.trackingNumber}</p>
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         </div>
                     </div>
