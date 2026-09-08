@@ -4,6 +4,7 @@ import User from "../../models/User.js";
 import { validateVendor } from "../vendors/vendors.validation.js";
 import { validateOrder } from "./orders.validation.js";
 import { updateOrderStatusFromItems } from "../../utils/updateOrderStatus.js";
+import Complaint from "../../models/Complaint.js";
 
 export const postComplaint = async({auth, itemId, orderId, complaint}) => {      
     console.log("postComplaint called with:", { auth, itemId, orderId, complaint });
