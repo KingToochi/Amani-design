@@ -124,6 +124,7 @@ const OrderDetails = () => {
 
     const handleItemReceived = async (item) => {
         const itemId = item._id;
+        console.log("Handling item received for itemId:", item, "with receivedQuantities:", receivedQuantities);
         const receivedQuantity = Number(receivedQuantities[itemId]);
         const orderedQuantity = Number(item.quantity);
 
