@@ -5,11 +5,9 @@ import { validateOrderComplaint } from "./orders.validation.js";
 export const postOrderComplaint = async(req, res, next) => {
     try {
         const auth = req.user;
-        console.log("postOrderComplaint called with:", { auth, body: req.body });
         const { orderId, itemId, complaint } = req.body;
-        console.log("Received complaint data:", { orderId, itemId, complaint });
-        const validateComplaint = validateOrderComplaint({ orderId, itemId, complaint })
-        const savedComplaint = await postComplaint({auth, itemId, orderId})
+        validateOrderComplaint({ orderId, itemId, complaint })
+        const savedComplaint = await postComplaint({auth, itemId, orderId, complaint})
         return res.status(201).json({
             success: true,
             message: "Complaint submitted successfully",

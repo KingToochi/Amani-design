@@ -5,8 +5,8 @@ import { validateVendor } from "../vendors/vendors.validation.js";
 import { validateOrder } from "./orders.validation.js";
 import { updateOrderStatusFromItems } from "../../utils/updateOrderStatus.js";
 
-export const postComplaint = async(auth, itemId, orderId) => {
-    console.log("postComplaint called with:", { auth, itemId, orderId });
+export const postComplaint = async(auth, itemId, orderId, complaint) => {      
+    console.log("postComplaint called with:", { auth, itemId, orderId, complaint });
     const order = await Order.findOne({ _id: orderId, customerId: auth._id }).lean();
     console.log(order._id, order.customerId, auth._id);
     console.log("Order found:", order);
@@ -50,7 +50,7 @@ export const postComplaint = async(auth, itemId, orderId) => {
           itemSize: item.size,
         });
 
-        return
+        return savedComplaint;
 }
 
 export const markItemSent = async({auth, orderId, itemId}) => {
