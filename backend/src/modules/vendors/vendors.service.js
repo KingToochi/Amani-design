@@ -37,7 +37,7 @@ export const fetchVendorProductById = async(auth) => {
      // get all vendor products
         const products = await Product.find(
           { vendorId: user._id }
-        ).select(_id)
+        ).select("_id")
         return products
 }
 
