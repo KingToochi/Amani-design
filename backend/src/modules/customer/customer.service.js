@@ -67,7 +67,7 @@ export const confirmRecievedItem = async({auth, orderId, itemId, productId, orde
       receivedQuantity: requestedQuantity,
       itemStatus: requestedQuantity === expectedQuantity ? "received" : "partially_received",
       satisfaction: requestedQuantity === expectedQuantity,
-      recievedItem : true,
+      receivedItem : true,
       receivedAt: new Date()
     };
     const detailIndex = order.customerOrderReceivedDetails.findIndex((entry) => entry.itemId?.toString() === itemId?.toString());
