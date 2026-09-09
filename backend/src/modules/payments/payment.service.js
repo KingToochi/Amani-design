@@ -59,6 +59,9 @@ export const paymentVerification = async({auth, reference, cart}) => {
               city : user.city,
               state : user.state
             })
+
+            console.log("cart", cartItems)
+            console.log("newOrder", newOrder)
     
             await newOrder.save()
         return newOrder
