@@ -36,6 +36,7 @@ const VendorOrderDetails = () => {
     const [submitError, setSubmitError] = useState(null);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [sendingItem, setSendingItem] = useState(null);
+    const [customerDetails, setCustomerDetails] = useState(null);
 
     const { id } = useParams();
     const url = `${BASE_URL}/vendor/OrderDetails/${id}`;
@@ -52,6 +53,7 @@ const VendorOrderDetails = () => {
                 console.log("API Response:", details);
                 
                 setOrderDetails(details.vendorOrder);
+                setCustomerDetails(details.customerDetails);
                 setError(null);
             } else {
                 setError({ message: "Unable to fetch order details" });
@@ -830,7 +832,7 @@ const VendorOrderDetails = () => {
                                         .filter(Boolean)
                                         .join(", ") || "No shipping address provided"} */}
 
-                                        {orderDetails?.shippingAddress}, {orderDetails?.city}, {orderDetails?.state}
+                                        {customerDetails?.shippingAddress}, {customerDetails?.city}, {customerDetails?.state}
                                 </p>
     
                             </div>
