@@ -100,6 +100,7 @@ const VendorOrderDetails = () => {
 
     // Handle "No" for product availability
     const handleItemNotAvailable = (itemId) => {
+        console.log(`Item with ID ${itemId} is marked as not available.`);
         setItemAvailability(prev => ({
             ...prev,
             [itemId]: {
@@ -821,13 +822,15 @@ const VendorOrderDetails = () => {
                             <div className="flex-1">
                                 <p className="text-gray-700 font-medium">Delivery Address:</p>
                                 <p className="text-gray-600 mt-1">
-                                    {[
+                                    {/* {[
                                         orderDetails?.shippingAddress,
                                         orderDetails?.city,
                                         orderDetails?.state,
                                     ]
                                         .filter(Boolean)
-                                        .join(", ") || "No shipping address provided"}
+                                        .join(", ") || "No shipping address provided"} */}
+
+                                        {orderDetails?.shippingAddress}, {orderDetails?.city}, {orderDetails?.state}
                                 </p>
     
                             </div>
