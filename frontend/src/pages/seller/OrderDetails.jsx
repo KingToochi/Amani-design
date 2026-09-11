@@ -53,7 +53,7 @@ const VendorOrderDetails = () => {
                 console.log("API Response:", details);
                 
                 setOrderDetails(details.vendorOrder);
-                setCustomerDetails(details.orderDetails.customerDetails);
+                setCustomerDetails(details.vendorOrder.customerDetails);
                 setError(null);
             } else {
                 setError({ message: "Unable to fetch order details" });
