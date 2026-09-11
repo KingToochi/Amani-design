@@ -816,7 +816,7 @@ const VendorOrderDetails = () => {
                                     <Building2 className="h-4 w-4" />
                                     Delivery Company
                                 </p>
-                                <p className="font-medium text-gray-900">{orderDetails.deliveryCompany || 'N/A'}</p>
+                                <p className="font-medium text-gray-900">{customerDetails?.deliveryCompany || 'N/A'}</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
