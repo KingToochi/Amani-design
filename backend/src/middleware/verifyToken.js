@@ -19,6 +19,11 @@ const verifyToken = (req, res, next) => {
     token = req.cookies.accessToken;
   }
 
+  // Support token-based access for email links
+  if (!token && req.query?.token) {
+    token = req.query.token;
+  }
+
   // No token
   if (!token) {
     return res.status(401).json({

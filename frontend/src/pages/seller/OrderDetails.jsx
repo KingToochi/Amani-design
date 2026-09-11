@@ -39,7 +39,8 @@ const VendorOrderDetails = () => {
     const [customerDetails, setCustomerDetails] = useState(null);
 
     const { id } = useParams();
-    const url = `${BASE_URL}/vendor/OrderDetails/${id}`;
+    const token = new URLSearchParams(window.location.search).get("token");
+    const url = `${BASE_URL}/vendor/OrderDetails/${id}${token ? `?token=${encodeURIComponent(token)}` : ""}`;
     const confirmItemAvailableUrl = `${BASE_URL}/vendor/confirmItemAvailable`
 
     const fetchOrderDetails = async () => {
