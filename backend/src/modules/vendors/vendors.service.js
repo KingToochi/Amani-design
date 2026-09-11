@@ -52,38 +52,47 @@ export const confirmItemAvailability = async({auth, orderId, items}) => {
     }
 
     items.forEach((itemUpdate) => {
+      const rawItemId = itemUpdate.itemId?.toString() || itemUpdate.id?.toString();
+
       const itemIndex = order.items.findIndex((item) => {
-        const itemId = itemUpdate.itemId?.toString();
-        return (
-          item._id?.toString() === itemId ||
-          item.id?.toString() === itemId ||
-          item.productId?.toString() === itemUpdate.productId?.toString()
-        );
+        const currentItemId = item._id?.toString() || item.id?.toString();
+
+        if (rawItemId) {
+          return currentItemId === rawItemId;
+        }
+
+        return item.productId?.toString() === itemUpdate.productId?.toString();
       });
 
       if (itemIndex === -1) return;
 
+      const currentItem = order.items[itemIndex];
       const hasProduct = itemUpdate.hasProduct === true;
       const fullQuantityAvailable = itemUpdate.fullQuantityAvailable === true;
       const availableQuantity = Number(itemUpdate.availableQuantity || 0);
 
-      order.items[itemIndex].availabilityConfirmed = true;
-      order.items[itemIndex].availability = {
+      currentItem.availabilityConfirmed = true;
+      currentItem.availability = {
         hasProduct,
         fullQuantityAvailable,
         availableQuantity,
-        originalQuantity: itemUpdate.originalQuantity || order.items[itemIndex].quantity || 0,
+        originalQuantity: itemUpdate.originalQuantity || currentItem.quantity || 0,
       };
 
       const detailIndex = order.vendorOrderQuantityDetails.findIndex((detail) => {
         const detailItemId = detail.itemId?.toString();
-        return detailItemId === itemUpdate.itemId?.toString() || detail.productId?.toString() === itemUpdate.productId?.toString();
+
+        if (rawItemId) {
+          return detailItemId === rawItemId;
+        }
+
+        return detail.productId?.toString() === itemUpdate.productId?.toString();
       });
 
       const vendorDetail = {
-        itemId: order.items[itemIndex]._id?.toString() || itemUpdate.itemId,
+        itemId: currentItem._id?.toString() || rawItemId,
         productId: itemUpdate.productId,
-        originalQuantity: itemUpdate.originalQuantity || order.items[itemIndex].quantity || 0,
+        originalQuantity: itemUpdate.originalQuantity || currentItem.quantity || 0,
         availableQuantity,
         hasProduct,
         fullQuantityAvailable,
@@ -98,9 +107,9 @@ export const confirmItemAvailability = async({auth, orderId, items}) => {
       }
 
       if (!hasProduct) {
-        order.items[itemIndex].status = "unavailable";
+        currentItem.status = "unavailable";
       } else {
-        order.items[itemIndex].status = "confirmed";
+        currentItem.status = "confirmed";
       }
     });
 
