@@ -4,6 +4,7 @@ import verifyPaystackPayment from "../../integrations/paystack/verify.js"
 import calculateAmount from "../../utils/calculateAmount.js"
 import { verifyPaymentStatus } from "./payment.validation.js"
 import Order from "../../models/Order.js"
+import createVendorOrderNotifications from "../notification/notice.js"
 
 export const paymentVerification = async({auth, reference, cart}) => {
     const user = await User.findById(auth._id)
@@ -64,5 +65,6 @@ export const paymentVerification = async({auth, reference, cart}) => {
             console.log("newOrder", newOrder)
     
             await newOrder.save()
+            await createVendorOrderNotifications(newOrder)
         return newOrder
 }  
