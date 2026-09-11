@@ -1,7 +1,7 @@
 import { useEffect, useState} from "react";
 import { MdOutlineDashboard  } from "react-icons/md"
 import { FcSalesPerformance } from "react-icons/fc"
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoChatboxOutline, IoSettingsOutline } from "react-icons/io5";
 import { IoMenuOutline } from "react-icons/io5";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -12,6 +12,7 @@ import { BsTag } from "react-icons/bs";
 import { FaStore } from "react-icons/fa6";
 import {BASE_URL} from "../../Url"
 import ServerError from "../../components/common/ServerError";
+import CustomFetch from "../../hooks/useFetch";
 
 
 
@@ -21,6 +22,8 @@ const Header = ({userData}) => {
     const [showMenu, setShowMenu] = useState(false)
     const [showSearchBar, setShowSearchBar] = useState(false)
     const [serverError, setServerError] = useState(null)
+    const [unreadNotificationCount, setUnreadNotificationCount] = useState(0)
+    const location = useLocation()
 
 
     useEffect(() => {
@@ -29,6 +32,34 @@ const Header = ({userData}) => {
 
         return () => window.removeEventListener("resize", handleResize)
     },[])
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const response = await CustomFetch(`${BASE_URL}/vendor/notifications`)
+
+                if (!response) {
+                    return
+                }
+
+                const result = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(result.message || "Unable to load notifications")
+                }
+
+                setUnreadNotificationCount(result.unreadCount || 0)
+            } catch (error) {
+                console.error("Unable to fetch vendor notifications", error)
+            }
+        }
+
+        fetchNotifications()
+
+        const intervalId = setInterval(fetchNotifications, 15000)
+
+        return () => clearInterval(intervalId)
+    }, [location.pathname, userData?._id])
 
     const onClickMenuBar = () => setShowMenu((prev) => !prev)
     const onClickSearchIcon  = () =>  setShowSearchBar((prev) => !prev)
@@ -204,9 +235,16 @@ const Header = ({userData}) => {
                     className={`text-lg" ${showSearchBar? "hidden" : "flex"} text-gray-50 sm:text-2xl`}
                     onClick={onClickSearchIcon}
                     />
-                    <IoMdNotificationsOutline
-                    className="text-lg text-gray-50 sm:text-2xl"
-                    />
+                    <Link to="/vendor/messages" className="relative inline-flex items-center">
+                        <IoMdNotificationsOutline
+                        className="text-lg text-gray-50 sm:text-2xl"
+                        />
+                        {unreadNotificationCount > 0 && (
+                            <span className="absolute -top-2 -right-2 min-w-5 h-5 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center px-1">
+                                {unreadNotificationCount}
+                            </span>
+                        )}
+                    </Link>
                 </div>
                 {showSearchBar &&
                 <form onSubmit={onSubmit}
@@ -254,9 +292,16 @@ const Header = ({userData}) => {
                             className="w-full h-[30px]  pl-2 px-2 py-4 text-2xl text-gray-100 font-medium font-[abril] focus:outline-none focus:text-gray-50"
                             />
                         </form>
-                        <IoMdNotificationsOutline
-                        className="text-xl text-gray-50"
-                        />
+                        <Link to="/vendor/messages" className="relative inline-flex items-center">
+                            <IoMdNotificationsOutline
+                            className="text-xl text-gray-50"
+                            />
+                            {unreadNotificationCount > 0 && (
+                                <span className="absolute -top-2 -right-2 min-w-5 h-5 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center px-1">
+                                    {unreadNotificationCount}
+                                </span>
+                            )}
+                        </Link>
                     </div>
             </div>
             }

@@ -27,6 +27,7 @@ import AdminLogin from "./pages/admin/AdmniLogin";
 import Dashboard from "./pages/seller/Dashboard";
 import Orders from "./pages/seller/Orders";
 import Sales from "./pages/seller/Sales";
+import Message from "./pages/seller/message";
 import Order from "./pages/admin/Order";
 import Vendors from "./pages/admin/Vendors";
 import ViewVendor from "./pages/admin/ViewVendor";
@@ -84,6 +85,7 @@ function App() {
           <Route path="productdetails/:id" element={<ProductDetails />} />
           <Route path="orders" element={<Orders />} />
           <Route path="sales" element={<Sales />} />
+          <Route path="messages" element={<Message />} />
           <Route path="orders/vendor_order/:id" element={<VendorOrderDetails/>}/>
         </Route> 
         </Route>

@@ -6,6 +6,7 @@ import Rating from "../../models/Rating.js"
 import Order from "../../models/Order.js"
 import Product from "../../models/Product.js"
 import User from "../../models/User.js"
+import Notification from "../../models/Notification.js"
 export const getProductAnalytics =  async(req, res, next) => {
     try{
             const auth = req.user
@@ -336,3 +337,52 @@ export const confirmItem = async(req, res, next) => {
     next(error)
   }
 }
+
+export const getVendorNotifications = async(req, res, next) => {
+  try {
+    const auth = req.user;
+
+    const notifications = await Notification.find({
+      recipient: auth._id,
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const unreadCount = notifications.filter((notification) => !notification.read).length;
+
+    return res.json({
+      success: true,
+      notifications,
+      unreadCount,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const markNotificationRead = async(req, res, next) => {
+  try {
+    const auth = req.user;
+    const { id } = req.params;
+
+    const notification = await Notification.findOneAndUpdate(
+      { _id: id, recipient: auth._id },
+      { read: true },
+      { new: true }
+    );
+
+    if (!notification) {
+      return res.status(404).json({
+        success: false,
+        message: "Notification not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      notification,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
