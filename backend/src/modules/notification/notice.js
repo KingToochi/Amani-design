@@ -3,7 +3,6 @@ import Notification from "../../models/Notification.js";
 import User from "../../models/User.js";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../../integrations/email/email.service.js";
-import mainLogo from "../../assets/image/mainLogo.jpg"
 
 const createVendorOrderNotifications = async (order) => {
     const orderItems = Array.isArray(order?.items) && order.items.length
