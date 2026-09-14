@@ -65,31 +65,6 @@ connectDB();
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
 
-const verifyToken = async(req, res, next) => {
-  let token;
-  console.log("Cookies:", req.cookies);
-  
-  // Try to get token from Authorization header first
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.split(" ")[1];
-  } 
-  else if (req.cookies.accessToken) {
-    token = req.cookies.accessToken;
-  }
-  
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token", err });
-  }
-};
 
 
 
