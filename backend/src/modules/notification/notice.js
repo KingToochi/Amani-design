@@ -3,6 +3,7 @@ import Notification from "../../models/Notification.js";
 import User from "../../models/User.js";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../../integrations/email/email.service.js";
+import mainLogo from "../../assets/image/mainLogo.jpg"
 
 const createVendorOrderNotifications = async (order) => {
     const orderItems = Array.isArray(order?.items) && order.items.length
@@ -197,7 +198,7 @@ const createVendorOrderNotifications = async (order) => {
                             </p>
 
                             <p style="margin: 0; color: #6b7280; font-size: 13px;">
-                                This secure link is authorized by the backend and will expire in 24 hours.
+                                This secure link will expire in 24 hours.
                             </p>
                         </div>
                     </div>
