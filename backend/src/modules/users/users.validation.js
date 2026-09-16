@@ -1,15 +1,49 @@
 import User from "../../models/User.js";
+import { fetchEmail } from "./users.service.js";
+import { fetchUsername } from "./users.service.js";
 
-export const validateUserUpdatedInfo = (updates) => {
+export const validateUserUpdatedInfo = async (updates) => {
     if (!updates || Object.keys(updates).length === 0) {
-        throw new Error( "No data provided for update")
+        throw new Error("No data provided for update");
     }
-    if (Object.keys(updates).includes("role") || Object.keys(updates).includes("status") ||Object.keys(updates).includes("phoneNumberVerified") ||Object.keys(updates).includes("emailVerified") || Object.keys(updates).includes("password") || Object.keys(updates).includes("subscription") || Object.keys(updates).includes("subscriber") || Object.keys(updates).includes("subscriptionDetails")) {
-        throw new Error("Unauthorized to update certain fields")
-    }
-    return
-}
 
+    const restrictedFields = [
+        "role",
+        "status",
+        "phoneNumberVerified",
+        "emailVerified",
+        "password",
+        "subscription",
+        "subscriber",
+        "subscriptionDetails",
+    ];
+
+    const hasRestrictedField = Object.keys(updates).some(
+        (field) => restrictedFields.includes(field)
+    );
+
+    if (hasRestrictedField) {
+        throw new Error("Unauthorized to update certain fields");
+    }
+
+    if (updates.email) {
+        const user = await fetchEmail(updates.email);
+
+        if (user) {
+            throw new Error("This email has been used");
+        }
+    }
+
+    if (updates.username) {
+        const user = await fetchUsername(updates.username);
+
+        if (user) {
+            throw new Error("This username has been used");
+        }
+    }
+
+    return true;
+};
 export const userValidation = (auth)=> {
   console.log(auth)
     if (!auth._id) {

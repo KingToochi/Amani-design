@@ -57,7 +57,7 @@ export const updateUser = async(req, res, next) => {
         const auth = req.user
         const updates = req.body
 
-        const validateData = await validateUserUpdatedInfo(updates)
+        await validateUserUpdatedInfo(updates)
         const user = await fetchUser(auth)
         if (!user) {
             return res.status(404).json({success: false, message: "User not found" })
@@ -66,6 +66,12 @@ export const updateUser = async(req, res, next) => {
         Object.keys(updates).forEach(key => {
             if (key !== "_id") {
                 user[key] = updates[key]
+            }
+            if(key === "email") {
+                user.emailVerified = false
+            }
+            if(key === "phoneNumber") {
+                user.phoneNumberVerified = false
             }
         })
 
