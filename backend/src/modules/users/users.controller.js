@@ -56,8 +56,9 @@ export const updateUser = async(req, res, next) => {
     try {
         const auth = req.user
         const updates = req.body
+        const userId = auth._id
 
-        await validateUserUpdatedInfo(updates)
+        await validateUserUpdatedInfo({updates, userId})
         const user = await fetchUser(auth)
         if (!user) {
             return res.status(404).json({success: false, message: "User not found" })

@@ -2,7 +2,7 @@ import User from "../../models/User.js";
 import { fetchEmail } from "./users.service.js";
 import { fetchUsername } from "./users.service.js";
 
-export const validateUserUpdatedInfo = async (updates) => {
+export const validateUserUpdatedInfo = async ({updates, userId}) => {
     if (!updates || Object.keys(updates).length === 0) {
         throw new Error("No data provided for update");
     }
@@ -29,7 +29,7 @@ export const validateUserUpdatedInfo = async (updates) => {
     if (updates.email) {
         const user = await fetchEmail(updates.email);
 
-        if (user) {
+        if (user && user._id.toString() !== userId.toString()) {
             throw new Error("This email has been used");
         }
     }
@@ -37,7 +37,7 @@ export const validateUserUpdatedInfo = async (updates) => {
     if (updates.username) {
         const user = await fetchUsername(updates.username);
 
-        if (user) {
+        if (user &&  user._id.toString() !== userId.toString()) {
             throw new Error("This username has been used");
         }
     }
