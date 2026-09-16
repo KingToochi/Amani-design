@@ -13,30 +13,25 @@ export const fetchProductById = async(productId) => {
 }
 
 export const editProduct = async ({ productId, productDetails }) => {
-
-    const {
-        productName,
-        productDescription,
-        productCategory,
-        productSubCategory,
-        productPrice,
-        color,
-        size
-    } = productDetails;
+  const editableFields = [
+    "productName",
+    "productDescription",
+    "productCategory",
+    "productSubCategory",
+    "basePrice",
+    "baseColor",
+    "baseSize",
+    "variants"
+  ];
+  const updates = Object.fromEntries(
+    editableFields
+      .filter(field => productDetails[field] !== undefined)
+      .map(field => [field, productDetails[field]])
+  );
 
     const updatedProduct = await Product.findByIdAndUpdate(
         productId,
-        {
-            $set: {
-                productName,
-                productDescription,
-                productCategory,
-                productSubCategory,
-                basePrice: productPrice,
-                baseColor: color,
-                baseSize: size
-            }
-        },
+    { $set: updates },
         {
             new: true,
             runValidators: true

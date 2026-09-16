@@ -117,6 +117,7 @@ const ProductDetails = () => {
     setEditBaseSize(false)
     setEditPrice(false)
     setEditVariant(false)
+    console.log(productDetails)
     try {
         let response = await fetch (url, {
             "method" : "PUT",
@@ -126,8 +127,13 @@ const ProductDetails = () => {
         })
 
         if(response.ok) {
+            const data = await response.json()
+            setProductDetails(data.updatedProduct || productDetails)
             setMessage("Product updated successfully")
-            console.log(`${productDetails} submitted successfully`)
+            console.log("Product submitted successfully")
+        } else {
+            const data = await response.json()
+            setMessage(data.message || "Failed to update product")
         }
 
     } catch(error){
