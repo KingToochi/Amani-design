@@ -98,6 +98,8 @@ try {
       typeOfVendor: user.typeOfVendor,
       status: user.status,
       subscriber: user.subscriber,
+      phoneNumberVerified: user.phoneNumberVerified,
+      emailVerified: user.emailVerified,
       deliveryCompany: user?.deliveryCompany,
       subscriptionPlan: user?.subscriptionDetails?.plan,
       subscriptionStatus: user?.subscriptionDetails?.status,
