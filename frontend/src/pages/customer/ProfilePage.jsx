@@ -17,20 +17,20 @@ const ProfilePage = () => {
 
     const navigate = useNavigate()
 
-    const fetchUserData = async() => {
-        try{
-            let response = await CustomFetch(`${url}/users`, {
-                method: "GET",
-                credentials: "include"
-            })
-            let data = await response.json()
-            console.log(data)
-            setUserDetails(data.userData)
+    // const fetchUserData = async() => {
+    //     try{
+    //         let response = await CustomFetch(`${url}/users`, {
+    //             method: "GET",
+    //             credentials: "include"
+    //         })
+    //         let data = await response.json()
+    //         console.log(data)
+    //         setUserDetails(data.userData)
 
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     console.log(userDetails)
 
@@ -66,7 +66,7 @@ const ProfilePage = () => {
 
 
     return(
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8 mb-16">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-2 sm:px-6 lg:px-8 mb-16">
             <div className="max-w-4xl mx-auto">
                 {/* Profile Header */}
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
@@ -74,7 +74,7 @@ const ProfilePage = () => {
                     <div className="h-32 bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900"></div>
                     
                     {/* Profile Info */}
-                    <div className="relative px-6 pb-6">
+                    <div className="relative px-1 pb-6">
                         {/* Profile Picture */}
                         <div className="flex items-end gap-6">
                             <div className="relative -mt-16">
@@ -85,9 +85,6 @@ const ProfilePage = () => {
                                             alt="Profile" 
                                             className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl"
                                         />
-                                        <button className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <CiEdit className="text-white text-2xl" />
-                                        </button>
                                     </div>
                                 ) : (
                                     <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-white shadow-xl flex items-center justify-center">
@@ -99,15 +96,9 @@ const ProfilePage = () => {
                             {/* User Name and Status */}
                             <div className="flex-1 pb-2">
                                 <div className="flex items-center gap-2">
-                                    <h1 className="text-2xl font-bold text-gray-800">
+                                    <h1 className="text-xl font-bold text-gray-800">
                                         {userDetails?.username || "User"}
                                     </h1>
-                                    {userDetails?.status === "designer" && (
-                                        <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                                            <MdVerified className="text-amber-500" />
-                                            Designer
-                                        </span>
-                                    )}
                                 </div>
                                 <p className="text-gray-500 text-sm mt-1">Member since {new Date().getFullYear()}</p>
                             </div>
@@ -116,7 +107,7 @@ const ProfilePage = () => {
                                 <LogoutButton />
                                 <button 
                                     onClick={() => setEditProfile(!editProfile)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    className={`px-2 py-2 rounded-lg text-sm font-medium transition-all ${
                                         editProfile 
                                             ? 'bg-gray-800 text-white' 
                                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -173,7 +164,7 @@ const ProfilePage = () => {
                         {/* Status */}
                         <ProfileField 
                             label="Account Type" 
-                            value={userDetails?.status}
+                            value={userDetails?.role === "user" ? "Customer" : userDetails?.role === "admin" ? "Administrator" : "Vendor"}
                             icon={<FaTag className="text-gray-400" />}
                             editMode={editProfile}
                             badge={userDetails?.status === "designer"}

@@ -70,6 +70,14 @@ const userSchema = new mongoose.Schema({
       default: "none",
     }
   },
+  phoneNumberVerified: {
+    type: Boolean,
+    default: false, 
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
   joinedAt: {
     type : Date,
     default: Date.now,
