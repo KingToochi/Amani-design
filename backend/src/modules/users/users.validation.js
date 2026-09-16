@@ -4,7 +4,7 @@ export const validateUserUpdatedInfo = (updates) => {
     if (!updates || Object.keys(updates).length === 0) {
         throw new Error( "No data provided for update")
     }
-    if (Object.keys(updates).includes("role") || Object.keys(updates).includes("status") || Object.keys(updates).includes("password") || Object.keys(updates).includes("subscription") || Object.keys(updates).includes("subscriber") || Object.keys(updates).includes("subscriptionDetails")) {
+    if (Object.keys(updates).includes("role") || Object.keys(updates).includes("status") ||Object.keys(updates).includes("phoneNumberVerified") ||Object.keys(updates).includes("emailVerified") || Object.keys(updates).includes("password") || Object.keys(updates).includes("subscription") || Object.keys(updates).includes("subscriber") || Object.keys(updates).includes("subscriptionDetails")) {
         throw new Error("Unauthorized to update certain fields")
     }
     return

@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {AuthContext} from "../../context/AuthContext"
 import { CiEdit } from "react-icons/ci";
-import { FaUserCircle, FaEnvelope, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
+import { FaUserCircle, FaEnvelope, FaPhone, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/useFetch";
@@ -13,6 +13,8 @@ const ProfilePage = () => {
     const [userDetails, setUserDetails] = useState({})
     const [editProfile, setEditProfile] = useState(false)
     const [updateDetails, setUpdateDetails] = useState({})
+    const [updateError, setUpdateError] = useState("")
+    const [isUpdating, setIsUpdating] = useState(false)
     const url = BASE_URL
 
     const navigate = useNavigate()
@@ -31,8 +33,60 @@ const ProfilePage = () => {
     //         console.log(error)
     //     }
     // }
+    const handleUpdateUser = async () => {
+        setIsUpdating(true)
+        setUpdateError("")
 
-    console.log(userDetails)
+        try {
+            const response = await CustomFetch(`${url}/users/update`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updateDetails)
+            })
+
+            if (!response) return
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.message || "Unable to update profile")
+            }
+
+            setUserDetails(prev => ({
+                ...prev,
+                ...updateDetails
+            }))
+            setEditProfile(false)
+        } catch (error) {
+            setUpdateError(error.message || "Unable to update profile")
+        } finally {
+            setIsUpdating(false)
+        }
+    }
+
+    const handleEditProfile = () => {
+        setUpdateDetails({
+            fname: userDetails.fname || "",
+            lname: userDetails.lname || "",
+            username: userDetails.username || "",
+            email: userDetails.email || "",
+            phoneNumber: userDetails.phoneNumber || "",
+            shippingAddress: userDetails.shippingAddress || "",
+            city: userDetails.city || "",
+            state: userDetails.state || ""
+        })
+        setUpdateError("")
+        setEditProfile(prev => !prev)
+    }
+
+    const handleFieldChange = (field, value) => {
+        setUpdateDetails(prev => ({
+            ...prev,
+            [field]: value
+        }))
+    }
 
 
     useEffect(()  =>{
@@ -106,7 +160,7 @@ const ProfilePage = () => {
                             <div className="flex items-center gap-2">
                                 <LogoutButton />
                                 <button 
-                                    onClick={() => setEditProfile(!editProfile)}
+                                    onClick={handleEditProfile}
                                     className={`px-2 py-2 rounded-lg text-sm font-medium transition-all ${
                                         editProfile 
                                             ? 'bg-gray-800 text-white' 
@@ -131,34 +185,54 @@ const ProfilePage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <ProfileField 
                                 label="First Name" 
-                                value={userDetails?.fname}
                                 icon={<FaUserCircle className="text-gray-400" />}
                                 editMode={editProfile}
+                                field="fname"
+                                value={editProfile ? updateDetails.fname : userDetails?.fname}
+                                onChange={handleFieldChange}
                             />
                             
                             <ProfileField 
                                 label="Last Name" 
-                                value={userDetails?.lname}
                                 icon={<FaUserCircle className="text-gray-400" />}
                                 editMode={editProfile}
+                                field="lname"
+                                value={editProfile ? updateDetails.lname : userDetails?.lname}
+                                onChange={handleFieldChange}
                             />
                         </div>
 
                         {/* Username */}
                         <ProfileField 
                             label="Username" 
-                            value={userDetails?.username}
+                            value={editProfile ? updateDetails.username : userDetails?.username}
                             icon={<FaTag className="text-gray-400" />}
                             editMode={editProfile}
+                            field="username"
+                            onChange={handleFieldChange}
                         />
 
                         {/* Email */}
                         <ProfileField 
                             label="Email Address" 
-                            value={userDetails?.email}
+                            value={editProfile ? updateDetails.email : userDetails?.email}
                             icon={<FaEnvelope className="text-gray-400" />}
                             editMode={editProfile}
                             type="email"
+                            verified={userDetails?.emailVerified}
+                            field="email"
+                            onChange={handleFieldChange}
+                        />
+
+                        {/* Phone Number */}
+                        <ProfileField
+                            label="Phone Number"
+                            value={editProfile ? updateDetails.phoneNumber : userDetails?.phoneNumber}
+                            icon={<FaPhone className="text-gray-400" />}
+                            editMode={editProfile}
+                            verified={userDetails?.phoneNumberVerified}
+                            field="phoneNumber"
+                            onChange={handleFieldChange}
                         />
 
                         {/* Status */}
@@ -167,7 +241,6 @@ const ProfilePage = () => {
                             value={userDetails?.role === "user" ? "Customer" : userDetails?.role === "admin" ? "Administrator" : "Vendor"}
                             icon={<FaTag className="text-gray-400" />}
                             editMode={editProfile}
-                            badge={userDetails?.status === "designer"}
                         />
 
                         {/* Identification */}
@@ -182,26 +255,59 @@ const ProfilePage = () => {
 
                         {/* Shipping Address */}
                         {userDetails?.shippingAddress && (
-                            <ProfileField 
-                                label="Shipping Address" 
-                                value={userDetails.shippingAddress}
-                                icon={<FaMapMarkerAlt className="text-gray-400" />}
-                                editMode={editProfile}
-                            />
+                            editProfile ? (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <ProfileField
+                                        label="Shipping Address"
+                                        value={updateDetails.shippingAddress}
+                                        icon={<FaMapMarkerAlt className="text-gray-400" />}
+                                        editMode={editProfile}
+                                        field="shippingAddress"
+                                        onChange={handleFieldChange}
+                                    />
+                                    <ProfileField
+                                        label="City"
+                                        value={updateDetails.city}
+                                        icon={<FaMapMarkerAlt className="text-gray-400" />}
+                                        editMode={editProfile}
+                                        field="city"
+                                        onChange={handleFieldChange}
+                                    />
+                                    <ProfileField
+                                        label="State"
+                                        value={updateDetails.state}
+                                        icon={<FaMapMarkerAlt className="text-gray-400" />}
+                                        editMode={editProfile}
+                                        field="state"
+                                        onChange={handleFieldChange}
+                                    />
+                                </div>
+                            ) : (
+                                <ProfileField
+                                    label="Shipping Address"
+                                    value={userDetails.shippingAddress + ", " + userDetails.city + ", " + userDetails.state}
+                                    icon={<FaMapMarkerAlt className="text-gray-400" />}
+                                    editMode={editProfile}
+                                />
+                            )
                         )}
                     </div>
 
                     {/* Action Buttons when in edit mode */}
                     {editProfile && (
                         <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                            {updateError && <p className="mr-auto self-center text-sm text-red-600">{updateError}</p>}
                             <button 
-                                onClick={() => setEditProfile(false)}
+                                onClick={() => {
+                                    setEditProfile(false)
+                                    setUpdateError("")
+                                }}
                                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
                             >
                                 Cancel
                             </button>
-                            <button className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors">
-                                Save Changes
+                            <button className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50" onClick={handleUpdateUser} disabled={isUpdating}>
+                                {isUpdating ? "Saving..." : "Save Changes"}
                             </button>
                         </div>
                     )}
@@ -220,7 +326,7 @@ const ProfilePage = () => {
 }
 
 // Reusable Profile Field Component
-const ProfileField = ({ label, value, icon, editMode, type = "text", badge = false }) => (
+const ProfileField = ({ label, value, icon, editMode, type = "text", verified, field, onChange }) => (
     <div className="group relative bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors">
         <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -230,22 +336,22 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", badge = fal
                 </div>
                 
                 {editMode ? (
-                    <input 
-                        type={type}
-                        defaultValue={value || ''}
-                        placeholder={`Enter ${label.toLowerCase()}`}
-                        className="w-full bg-transparent border-b-2 border-gray-200 focus:border-gray-800 outline-none py-1 text-gray-800 font-medium"
-                    />
+                    <div className="flex items-center gap-3">
+                        <input 
+                            type={type}
+                            value={value || ''}
+                            onChange={event => onChange?.(field, event.target.value)}
+                            placeholder={`Enter ${label.toLowerCase()}`}
+                            className="min-w-0 flex-1 bg-transparent border-b-2 border-gray-200 focus:border-gray-800 outline-none py-1 text-gray-800 font-medium"
+                        />
+                        <VerificationStatus verified={verified} />
+                    </div>
                 ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <p className="text-gray-800 font-medium">
                             {value || 'Not provided'}
                         </p>
-                        {badge && (
-                            <span className="px-2 py-0.5 bg-amber-100 text-amber-600 rounded-full text-xs font-medium">
-                                Verified
-                            </span>
-                        )}
+                        <VerificationStatus verified={verified} />
                     </div>
                 )}
             </div>
@@ -256,6 +362,13 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", badge = fal
         </div>
     </div>
 );
+
+const VerificationStatus = ({ verified }) => verified !== undefined ? (
+    <span className={`flex items-center gap-1 whitespace-nowrap text-xs font-medium ${verified ? 'text-green-600' : 'text-red-500'}`}>
+        <MdVerified />
+        {verified ? 'Verified' : 'Not verified'}
+    </span>
+) : null;
 
 // Stat Card Component
 const StatCard = ({ label, value }) => (
