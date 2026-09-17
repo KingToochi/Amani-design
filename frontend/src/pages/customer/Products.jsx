@@ -9,7 +9,7 @@ import {AuthContext} from "../../context/AuthContext"
 import Slide from "../../components/product/SlideShow";
 import { matchesCategory } from "../../utils/categoryMatcher";
 import { useNavigate} from "react-router-dom";
-import ProductLikes from "../../components/common/productLikes"
+import ProductLikes from "../../components/common/ProductLikes"
 
 
 
