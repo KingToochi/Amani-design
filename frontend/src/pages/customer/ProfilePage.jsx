@@ -20,6 +20,8 @@ const ProfilePage = () => {
     const [verificationError, setVerificationError] = useState("")
     const [isSendingCode, setIsSendingCode] = useState(false)
     const [isVerifyingPhone, setIsVerifyingPhone] = useState(false)
+    const [isSendingEmail, setIsSendingEmail] = useState(false)
+    const [verificationNotice, setVerificationNotice] = useState("")
     const url = BASE_URL
 
     const navigate = useNavigate()
@@ -107,6 +109,29 @@ const ProfilePage = () => {
             setVerificationError(error.message || "Unable to send verification code")
         } finally {
             setIsSendingCode(false)
+        }
+    }
+
+    const handleResendEmailVerification = async () => {
+        setIsSendingEmail(true)
+        setVerificationNotice("")
+        setVerificationError("")
+
+        try {
+            const response = await CustomFetch(`${url}/users/resend-email-verification`, {
+                method: "POST",
+            })
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.message || "Unable to send verification email")
+            }
+
+            setVerificationNotice("Verification email sent. Check your inbox.")
+        } catch (error) {
+            setVerificationError(error.message || "Unable to send verification email")
+        } finally {
+            setIsSendingEmail(false)
         }
     }
 
@@ -269,6 +294,7 @@ const ProfilePage = () => {
                             type="email"
                             verified={userDetails?.emailVerified}
                             canEdit={!userDetails?.emailVerified}
+                            onVerify={isSendingEmail ? undefined : handleResendEmailVerification}
                             field="email"
                             onChange={handleFieldChange}
                         />
@@ -371,6 +397,12 @@ const ProfilePage = () => {
                     <StatCard label="Reviews" value="0" />
                     <StatCard label="Points" value="0" />
                 </div>
+
+                {(verificationNotice || verificationError) && (
+                    <p className={`mt-4 text-center text-sm ${verificationError ? "text-red-600" : "text-green-600"}`}>
+                        {verificationError || verificationNotice}
+                    </p>
+                )}
 
                 {showPhoneVerification && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">

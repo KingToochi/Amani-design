@@ -5,7 +5,7 @@ import { getCookieOptions } from "../../utils/getCookieOptions.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import PhoneVerification from "../../models/PhoneVerification.js";
-import { sendRegistrationEmails } from "../../integrations/email/email.service.js";
+import { sendRegistrationEmails, sendVerificationEmail } from "../../integrations/email/email.service.js";
 
 export const getUsername = async(req, res, next) => {
     try {
@@ -200,6 +200,29 @@ export const verifyEmail = async(req, res, next) => {
         user.emailVerified = true
         await user.save()
         return res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/profile`)
+    } catch(error) {
+        next(error)
+    }
+}
+
+export const resendEmailVerification = async(req, res, next) => {
+    try {
+        const user = await fetchUser(req.user)
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" })
+        }
+        if (user.emailVerified) {
+            return res.status(400).json({ success: false, message: "Email is already verified" })
+        }
+
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" })
+        await sendVerificationEmail({
+            email: user.email,
+            verificationUrl: `${req.protocol}://${req.get("host")}/users/verify-email?token=${token}`,
+        })
+
+        return res.json({ success: true, message: "Verification email sent" })
     } catch(error) {
         next(error)
     }
