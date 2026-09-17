@@ -104,6 +104,7 @@ const ProfilePage = () => {
                 throw new Error(data.message || "Unable to send verification code")
             }
 
+            setVerificationNotice(data.message || "Verification code sent")
             setShowPhoneVerification(true)
         } catch (error) {
             setVerificationError(error.message || "Unable to send verification code")
@@ -409,6 +410,7 @@ const ProfilePage = () => {
                         <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
                             <h2 className="text-lg font-semibold text-gray-800">Verify phone number</h2>
                             <p className="mt-2 text-sm text-gray-500">Enter the six-digit code sent to your phone.</p>
+                            {verificationNotice && <p className="mt-2 text-sm text-green-600">{verificationNotice}</p>}
                             <input
                                 type="text"
                                 inputMode="numeric"

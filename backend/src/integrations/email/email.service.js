@@ -55,3 +55,4 @@ export const sendVerificationEmail = async ({ email, verificationUrl }) => {
         html: `<h1>Verify your email address</h1><p>Please confirm that this email address belongs to you by clicking the link below:</p><p><a href="${verificationUrl}">Verify my email address</a></p><p>This link expires in 24 hours.</p>`,
     });
 };
+

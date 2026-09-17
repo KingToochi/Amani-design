@@ -236,10 +236,6 @@ export const sendPhoneVerificationCode = async(req, res, next) => {
         if (!user || !phoneNumber) {
             return res.status(400).json({ success: false, message: "A phone number is required" })
         }
-        if (!process.env.TERMII_API_KEY) {
-            return res.status(503).json({ success: false, message: "Phone verification is not configured" })
-        }
-
         const code = crypto.randomInt(100000, 1000000).toString()
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
 
@@ -249,25 +245,35 @@ export const sendPhoneVerificationCode = async(req, res, next) => {
             { upsert: true, new: true, setDefaultsOnInsert: true }
         )
 
-        const smsResponse = await fetch("https://api.ng.termii.com/api/sms/send", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                api_key: process.env.TERMII_API_KEY,
-                to: phoneNumber,
-                from: process.env.TERMII_SENDER_ID || "AmaniSky",
-                sms: `Your AmaniSky verification code is ${code}. It expires in 10 minutes.`,
-                type: "plain",
-                channel: "generic",
-            }),
-        })
+        let smsSent = false
 
-        if (!smsResponse.ok) {
-            await PhoneVerification.deleteOne({ userId: user._id })
-            return res.status(502).json({ success: false, message: "Unable to send verification code" })
+        if (process.env.TERMII_API_KEY) {
+            try {
+                const smsResponse = await fetch("https://api.ng.termii.com/api/sms/send", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        api_key: process.env.TERMII_API_KEY,
+                        to: phoneNumber,
+                        from: process.env.TERMII_SENDER_ID || "AmaniSky",
+                        sms: `Your AmaniSky verification code is ${code}. It expires in 10 minutes.`,
+                        type: "plain",
+                        channel: "generic",
+                    }),
+                })
+                smsSent = smsResponse.ok
+                if (!smsSent) console.error("Termii rejected phone verification request")
+            } catch (error) {
+                console.error("Termii phone verification request failed:", error)
+            }
         }
 
-        return res.json({ success: true, message: "Verification code sent" })
+        if (smsSent) {
+            return res.json({ success: true, message: "Verification code sent by SMS" })
+        }
+
+        await PhoneVerification.deleteOne({ userId: user._id })
+        return res.status(503).json({ success: false, message: "Unable to send SMS verification code. Please try again later" })
     } catch(error) {
         next(error)
     }
