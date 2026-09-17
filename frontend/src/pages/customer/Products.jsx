@@ -9,6 +9,7 @@ import {AuthContext} from "../../context/AuthContext"
 import Slide from "../../components/product/SlideShow";
 import { matchesCategory } from "../../utils/categoryMatcher";
 import { useNavigate} from "react-router-dom";
+import ProductLikes from "../../components/common/productLikes";
 
 
 
@@ -21,7 +22,7 @@ const Products = () => {
     const [wishList, setWishList] = useContext(WishiListContext)
     const [like, setLike] = useContext(LikeContext)
     const {auth, isLoggedIn} = useContext(AuthContext) 
-    const [productLikes, setProductLikes] = useState()
+    const [productLikes, setProductLikes] = useState([])
     const navigate = useNavigate()
     
 
@@ -136,6 +137,7 @@ const Products = () => {
     ];
 
     const filteredDesigns = designs.filter((design) => matchesCategory(design, activeCategory));
+    const formattedProductLikes = ProductLikes(productLikes);
 
     return (
         <div 
@@ -186,12 +188,15 @@ const Products = () => {
                             className="text-xl mx-auto"
                             />
                         </button>
-
+                        
                         <button  onClick={() => likeProduct(design)}
-                        className={`${like.some(product => product.productId === design._id) ? "text-blue-500" : "text-gray-50"} block bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
+                        className={`${like.some(product => product.productId === design._id) ? "text-blue-500" : "text-gray-50"} flex items-center justify-center gap-1 bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
                         >
                             <BiSolidLike
-                            className="text-xl mx-auto" />                  
+                            className="text-xl" />
+                            <sup className={`${like.some(product => product.productId === design._id) ? "text-blue-100" : "text-gray-100"} text-[10px]`}>
+                                {formattedProductLikes.find(like => like._id === design._id)?.displayLikes ?? 0}
+                            </sup>
                         </button>
                     </div>
                     
