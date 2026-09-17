@@ -15,6 +15,11 @@ const ProfilePage = () => {
     const [updateDetails, setUpdateDetails] = useState({})
     const [updateError, setUpdateError] = useState("")
     const [isUpdating, setIsUpdating] = useState(false)
+    const [showPhoneVerification, setShowPhoneVerification] = useState(false)
+    const [verificationCode, setVerificationCode] = useState("")
+    const [verificationError, setVerificationError] = useState("")
+    const [isSendingCode, setIsSendingCode] = useState(false)
+    const [isVerifyingPhone, setIsVerifyingPhone] = useState(false)
     const url = BASE_URL
 
     const navigate = useNavigate()
@@ -79,6 +84,56 @@ const ProfilePage = () => {
             ...prev,
             [field]: value
         }))
+    }
+
+    const handleStartPhoneVerification = async () => {
+        setIsSendingCode(true)
+        setVerificationError("")
+
+        try {
+            const response = await CustomFetch(`${url}/users/phone/send-code`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phoneNumber: userDetails.phoneNumber }),
+            })
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.message || "Unable to send verification code")
+            }
+
+            setShowPhoneVerification(true)
+        } catch (error) {
+            setVerificationError(error.message || "Unable to send verification code")
+        } finally {
+            setIsSendingCode(false)
+        }
+    }
+
+    const handleVerifyPhone = async () => {
+        setIsVerifyingPhone(true)
+        setVerificationError("")
+
+        try {
+            const response = await CustomFetch(`${url}/users/phone/verify-code`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: verificationCode }),
+            })
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.message || "Unable to verify phone number")
+            }
+
+            setUserDetails(prev => ({ ...prev, phoneNumberVerified: true }))
+            setShowPhoneVerification(false)
+            setVerificationCode("")
+        } catch (error) {
+            setVerificationError(error.message || "Unable to verify phone number")
+        } finally {
+            setIsVerifyingPhone(false)
+        }
     }
 
 
@@ -225,6 +280,7 @@ const ProfilePage = () => {
                             icon={<FaPhone className="text-gray-400" />}
                             editMode={editProfile}
                             verified={userDetails?.phoneNumberVerified}
+                            onVerify={isSendingCode ? undefined : handleStartPhoneVerification}
                             field="phoneNumber"
                             onChange={handleFieldChange}
                         />
@@ -315,13 +371,49 @@ const ProfilePage = () => {
                     <StatCard label="Reviews" value="0" />
                     <StatCard label="Points" value="0" />
                 </div>
+
+                {showPhoneVerification && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                        <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+                            <h2 className="text-lg font-semibold text-gray-800">Verify phone number</h2>
+                            <p className="mt-2 text-sm text-gray-500">Enter the six-digit code sent to your phone.</p>
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={6}
+                                value={verificationCode}
+                                onChange={event => setVerificationCode(event.target.value.replace(/\D/g, ""))}
+                                className="mt-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-800 outline-none focus:border-gray-800"
+                                placeholder="000000"
+                            />
+                            {verificationError && <p className="mt-2 text-sm text-red-600">{verificationError}</p>}
+                            <div className="mt-5 flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPhoneVerification(false)}
+                                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleVerifyPhone}
+                                    disabled={isVerifyingPhone || verificationCode.length !== 6}
+                                    className="rounded-lg bg-gray-800 px-4 py-2 text-sm text-white disabled:opacity-50"
+                                >
+                                    {isVerifyingPhone ? "Verifying..." : "Verify"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )
 }
 
 // Reusable Profile Field Component
-const ProfileField = ({ label, value, icon, editMode, type = "text", verified, canEdit = true, field, onChange }) => (
+const ProfileField = ({ label, value, icon, editMode, type = "text", verified, canEdit = true, field, onChange, onVerify }) => (
     <div className="group relative bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors">
         <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -348,7 +440,7 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", verified, c
                         <p className="text-gray-800 font-medium">
                             {value || 'Not provided'}
                         </p>
-                        <VerificationStatus verified={verified} />
+                        <VerificationStatus verified={verified} onVerify={onVerify} />
                     </div>
                 )}
             </div>
@@ -360,7 +452,7 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", verified, c
     </div>
 );
 
-const VerificationStatus = ({ verified }) => verified !== undefined ? (
+const VerificationStatus = ({ verified, onVerify }) => verified !== undefined ? (
     verified ? (
     <span className="flex items-center gap-1 whitespace-nowrap text-xs font-medium text-green-600">
         <MdVerified />
@@ -369,6 +461,8 @@ const VerificationStatus = ({ verified }) => verified !== undefined ? (
 ) : (
     <button
         type="button"
+        onClick={onVerify}
+        disabled={!onVerify}
         className="flex items-center gap-1 whitespace-nowrap text-xs font-medium text-red-500 hover:text-red-700 hover:underline"
     >
         <MdVerified />
