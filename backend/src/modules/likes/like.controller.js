@@ -40,3 +40,21 @@ export const getLikes =async(req, res, next) => {
         next(error)
       }
 }
+
+export const getProductLikes = async(req, res, next) => {
+    try {
+        const productLikes = await Likes.aggregate([
+            {
+                $group : {
+                    _id : "$productId",
+                    likes : {$sum : 1}
+                }
+            }
+        ])
+
+        return res.status(200).json(productLikes)
+        
+    }catch(error) {
+        next(error)
+    }
+}

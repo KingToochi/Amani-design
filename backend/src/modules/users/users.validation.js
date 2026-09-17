@@ -27,6 +27,10 @@ export const validateUserUpdatedInfo = async ({updates, userId}) => {
     }
 
     if (updates.email) {
+        const currentEmail = await User.findById(userId).select("emailVerified")
+        if(currentEmail && currentEmail.emailVerified === "verified") {
+          throw new Error("This email cannot be changed")
+        }
         const user = await fetchEmail(updates.email);
 
         if (user && user._id.toString() !== userId.toString()) {
