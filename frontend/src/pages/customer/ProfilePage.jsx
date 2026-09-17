@@ -25,12 +25,18 @@ const ProfilePage = () => {
         setUpdateError("")
 
         try {
+            const updates = { ...updateDetails }
+
+            if (userDetails.emailVerified || updates.email === userDetails.email) {
+                delete updates.email
+            }
+
             const response = await CustomFetch(`${url}/users/update`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(updateDetails)
+                body: JSON.stringify(updates)
             })
 
             if (!response) return
@@ -43,7 +49,7 @@ const ProfilePage = () => {
 
             setUserDetails(prev => ({
                 ...prev,
-                ...updateDetails
+                ...updates
             }))
             setEditProfile(false)
         } catch (error) {
@@ -229,6 +235,7 @@ const ProfilePage = () => {
                             value={userDetails?.role === "user" ? "Customer" : userDetails?.role === "admin" ? "Administrator" : "Vendor"}
                             icon={<FaTag className="text-gray-400" />}
                             editMode={editProfile}
+                            canEdit = {false}
                         />
 
                         {/* Identification */}
@@ -332,7 +339,9 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", verified, c
                             placeholder={`Enter ${label.toLowerCase()}`}
                             className="min-w-0 flex-1 bg-transparent border-b-2 border-gray-200 focus:border-gray-800 outline-none py-1 text-gray-800 font-medium"
                         />
-                        <VerificationStatus verified={verified} />
+                        {field !== "email" && field !== "phoneNumber" && (
+                            <VerificationStatus verified={verified} />
+                        )}
                     </div>
                 ) : (
                     <div className="flex flex-wrap items-center gap-2">
