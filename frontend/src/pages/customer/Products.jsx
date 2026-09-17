@@ -8,6 +8,7 @@ import { LikeContext } from "../../context/LikeContext";
 import {AuthContext} from "../../context/AuthContext"
 import Slide from "../../components/product/SlideShow";
 import { matchesCategory } from "../../utils/categoryMatcher";
+import { useNavigate} from "react-router-dom";
 
 
 
@@ -20,6 +21,8 @@ const Products = () => {
     const [wishList, setWishList] = useContext(WishiListContext)
     const [like, setLike] = useContext(LikeContext)
     const {auth, isLoggedIn} = useContext(AuthContext) 
+    const [productLikes, setProductLikes] = useState()
+    const navigate = useNavigate()
     
 
 
@@ -52,9 +55,23 @@ const Products = () => {
             console.log(error)
         }
     }
+    const fetchProductLikes = async() => {
+      try{
+          let response = await fetch(`${url}/likes/product`,{
+            method : "GET"
+            })
+
+            const likes = await response.json()
+            setProductLikes(likes)
+            console.log(likes)
+        }catch(error){
+            console.error("Error fetching product likes:", error);
+        }
+    }
 
     useEffect(() => {
         fetchDesigns()
+        fetchProductLikes()
     }, [])
     useEffect(() => {
         if (isLoggedIn) {
@@ -75,6 +92,10 @@ const Products = () => {
     }
 
     const likeProduct = async (design) => {
+        if (!isLoggedIn) {
+            navigate("/login")
+            return
+        }
         const exist = like.some(item => item.productId === design._id)
         if (exist) {
             setLike(prev => prev.filter(item => item.productId !== design._id))
@@ -167,7 +188,7 @@ const Products = () => {
                         </button>
 
                         <button  onClick={() => likeProduct(design)}
-                        className={`${like.some(product => product.productId === design._id) ? "text-blue-500" : "text-gray-50"} ${isLoggedIn ? "block" : "hidden"} bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
+                        className={`${like.some(product => product.productId === design._id) ? "text-blue-500" : "text-gray-50"} block bg-zinc-500  w-[40px] h-[40px] mx-1 mt-2 rounded-full cursor-pointer`}
                         >
                             <BiSolidLike
                             className="text-xl mx-auto" />                  
