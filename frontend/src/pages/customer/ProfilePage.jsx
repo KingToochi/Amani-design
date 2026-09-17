@@ -19,20 +19,7 @@ const ProfilePage = () => {
 
     const navigate = useNavigate()
 
-    // const fetchUserData = async() => {
-    //     try{
-    //         let response = await CustomFetch(`${url}/users`, {
-    //             method: "GET",
-    //             credentials: "include"
-    //         })
-    //         let data = await response.json()
-    //         console.log(data)
-    //         setUserDetails(data.userData)
 
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
     const handleUpdateUser = async () => {
         setIsUpdating(true)
         setUpdateError("")
@@ -220,6 +207,7 @@ const ProfilePage = () => {
                             editMode={editProfile}
                             type="email"
                             verified={userDetails?.emailVerified}
+                            canEdit={!userDetails?.emailVerified}
                             field="email"
                             onChange={handleFieldChange}
                         />
@@ -326,7 +314,7 @@ const ProfilePage = () => {
 }
 
 // Reusable Profile Field Component
-const ProfileField = ({ label, value, icon, editMode, type = "text", verified, field, onChange }) => (
+const ProfileField = ({ label, value, icon, editMode, type = "text", verified, canEdit = true, field, onChange }) => (
     <div className="group relative bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors">
         <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -335,7 +323,7 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", verified, f
                     {label}
                 </div>
                 
-                {editMode ? (
+                {editMode && canEdit ? (
                     <div className="flex items-center gap-3">
                         <input 
                             type={type}
@@ -356,7 +344,7 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", verified, f
                 )}
             </div>
             
-            {editMode && (
+            {editMode && canEdit && (
                 <CiEdit className="text-gray-400 group-hover:text-gray-600 transition-colors ml-2" />
             )}
         </div>
@@ -364,10 +352,20 @@ const ProfileField = ({ label, value, icon, editMode, type = "text", verified, f
 );
 
 const VerificationStatus = ({ verified }) => verified !== undefined ? (
-    <span className={`flex items-center gap-1 whitespace-nowrap text-xs font-medium ${verified ? 'text-green-600' : 'text-red-500'}`}>
+    verified ? (
+    <span className="flex items-center gap-1 whitespace-nowrap text-xs font-medium text-green-600">
         <MdVerified />
-        {verified ? 'Verified' : 'Not verified'}
+        Verified
     </span>
+) : (
+    <button
+        type="button"
+        className="flex items-center gap-1 whitespace-nowrap text-xs font-medium text-red-500 hover:text-red-700 hover:underline"
+    >
+        <MdVerified />
+        Not verified (click to verify)
+    </button>
+)
 ) : null;
 
 // Stat Card Component
