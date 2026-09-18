@@ -3,7 +3,7 @@ import fs from "fs";
 import cloudinary from "../../config/cloudinary.js";
 
 export const fetchAllProducts = async() => {
-    const products = await Product.find()
+    const products = await Product.find().lean()
     return products
 }
 

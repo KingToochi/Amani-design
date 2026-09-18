@@ -18,7 +18,7 @@ export const getSearchResult = async(q) => {
         }
     
         // Query MongoDB
-        const products = await Product.find(mongoQuery)
+        const products = await Product.find(mongoQuery).lean()
 
         return products
 }
