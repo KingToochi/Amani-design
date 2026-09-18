@@ -8,6 +8,7 @@ import { userPutAndDeleteAuthorisation } from "./product.validation.js"
 import { productDelete } from "./product.service.js"
 import { validatePostProduct } from "./product.validation.js"
 import { createNewProduct } from "./product.service.js"
+import { sortProducts } from "../../utils/sortProducts.js"
 
 
 export const getVendorProducts = async(req, res, next) => {
@@ -119,7 +120,8 @@ export const postProduct = async(req, res, next) => {
 
 const getAllProducts = async(req, res, next) =>{
     try {
-        const products = await fetchAllProducts()
+        const allProducts = await fetchAllProducts()
+        const products = await sortProducts(allProducts)
         res.status(200).json({
             success: true,
             products

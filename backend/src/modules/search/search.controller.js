@@ -1,10 +1,11 @@
 import { getSearchResult } from "./search.service.js"
+import { sortProducts } from "../../utils/sortProducts.js"
 
 export const search = async(req, res, next) => {
     try {
         const { q } = req.query
         const result = await getSearchResult(q)
-        const products = result
+        const products = await sortProducts(result)
         res.json({success:true, products })
         
 
