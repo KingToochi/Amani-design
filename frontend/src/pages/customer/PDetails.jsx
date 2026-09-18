@@ -5,6 +5,7 @@ import { FaNairaSign } from "react-icons/fa6"
 import { TbCurrencyNaira } from "react-icons/tb"
 import { CartContext } from "../../context/CartContext"
 import { BASE_URL } from "../../Url"
+import Popup from "../../components/common/Popup"
 
 const PDetails = () => {
     const url = BASE_URL
@@ -20,6 +21,17 @@ const PDetails = () => {
     const [colors, setColors] = useState([])
     const [sizes, setSizes] = useState([])
     const [message, setMessage] = useState(null)
+    const [popupMessage, setPopupMessage] = useState("")
+
+    useEffect(() => {
+        if (!popupMessage) return undefined
+
+        const timeoutId = setTimeout(() => {
+            setPopupMessage("")
+        }, 2500)
+
+        return () => clearTimeout(timeoutId)
+    }, [popupMessage])
 
     const fetchProduct = async() => {
         try {
@@ -102,6 +114,7 @@ const PDetails = () => {
 
         // Reset quantity to 1 after adding
         setQuantity(1)
+        setPopupMessage("Item added to cart")
     }
 
     const addColors = (data) => {
@@ -210,6 +223,11 @@ const PDetails = () => {
     }
 
     return(
+        <>
+        <Popup
+            message={popupMessage}
+            onClose={() => setPopupMessage("")}
+        />
         <div className="flex flex-col gap-4 pt-2 px-2 w-full min-h-screen text-gray-500 text-lg font-[abril] mb-[75px]
         sm:text-xl
         md:text-2xl
@@ -351,6 +369,7 @@ const PDetails = () => {
                     )}
                 </div>
         </div>
+            </>
     )
 }
 
