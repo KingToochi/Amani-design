@@ -21,4 +21,6 @@ const ratingSchema = new mongoose.Schema({
   timestamps: true
 });
 
+ratingSchema.index({ productId: 1, userId: 1 }, { unique: true });
+
 export default mongoose.model('Rating', ratingSchema);

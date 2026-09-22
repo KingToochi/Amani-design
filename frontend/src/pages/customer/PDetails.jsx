@@ -360,7 +360,7 @@ const PDetails = () => {
                         {reviewData.reviews?.length ? reviewData.reviews.map(review => (
                             <article key={review._id} className="border-b border-gray-100 pb-4 last:border-0">
                                 <div className="flex items-center justify-between gap-3">
-                                    <p className="font-medium">{review.authorId?.fname || review.authorId?.username || "Customer"}</p>
+                                    <p className="font-medium">{review.userId?.fname || review.userId?.username || "Customer"}</p>
                                     {review.rating && <div className="flex items-center gap-1 text-sm text-amber-500"><FaStar /> {review.rating}/5</div>}
                                 </div>
                                 {review.content && <p className="mt-2 text-sm leading-6 text-gray-600">{review.content}</p>}
