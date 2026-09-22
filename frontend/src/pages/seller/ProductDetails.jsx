@@ -7,6 +7,7 @@ import { IoHandLeft } from "react-icons/io5";
 import { GoPlus} from "react-icons/go";
 import { FiMinus } from "react-icons/fi";
 import { FaArrowLeft } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/useFetch";
 
@@ -26,6 +27,7 @@ const ProductDetails = () => {
     const [variantToEdit, setVariantToEdit] = useState({})
     const [editingField, setEditingField] = useState(null)
     const [message, setMessage] = useState("")
+    const [reviewData, setReviewData] = useState({ reviews: [], averageRating: 0, totalRatings: 0 })
     const {id} = useParams()
     const Navigate = useNavigate()
     const url = `${BASE_URL}/products/${id}`
@@ -49,7 +51,20 @@ const ProductDetails = () => {
 
     useEffect(() => {
         fetchProductDetail(id)
+        fetchReviews()
     }, [id])
+
+    const fetchReviews = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/reviews/products/${id}`)
+            const data = await response.json()
+            if (response.ok) {
+                setReviewData(data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const handleEditPrice = () => {
         setEditPrice(true)
@@ -413,6 +428,30 @@ useEffect(()=> {
                         </button>
                     </div>
                     </div>
+                    <section className="mt-8 w-full rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm">
+                        <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 className="text-xl font-semibold">Product reviews</h2>
+                                <p className="text-sm text-gray-500">Customer feedback for this product</p>
+                            </div>
+                            <div className="flex items-center gap-2 text-amber-500">
+                                <FaStar />
+                                <span className="font-semibold text-gray-800">{Number(reviewData.averageRating || 0).toFixed(1)}</span>
+                                <span className="text-sm text-gray-500">({reviewData.totalRatings || 0} ratings)</span>
+                            </div>
+                        </div>
+                        <div className="mt-5 space-y-4">
+                            {reviewData.reviews?.length ? reviewData.reviews.map(review => (
+                                <article key={review._id} className="border-b border-gray-100 pb-4 last:border-0">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <p className="font-medium">{review.authorId?.fname || review.authorId?.username || "Customer"}</p>
+                                        {review.rating && <div className="flex items-center gap-1 text-sm text-amber-500"><FaStar /> {review.rating}/5</div>}
+                                    </div>
+                                    {review.content && <p className="mt-2 text-sm leading-6 text-gray-600">{review.content}</p>}
+                                </article>
+                            )) : <p className="text-sm text-gray-500">No reviews yet.</p>}
+                        </div>
+                    </section>
         </div>
         {/* {
                             productDetails.productImages?.map((image, index) => (

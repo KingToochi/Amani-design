@@ -40,6 +40,7 @@ import vendorRoute from "./modules/vendors/vendors.route.js"
 import customerRoute from "./modules/customer/customer.route.js"
 import paymentRoute from "./modules/payments/payment.route.js"
 import orderRoute from "./modules/orders/orders.route.js"
+import reviewsRoute from "./modules/reviews/reviews.route.js"
 
 
 dotenv.config();
@@ -92,6 +93,7 @@ app.use("/vendor", vendorRoute)
 app.use("/customer", customerRoute)
 app.use("/payment", paymentRoute)
 app.use("/order", orderRoute)
+app.use("/reviews", reviewsRoute)
 
 app.use((req, res) => {
   res.status(404).json({

@@ -6,6 +6,40 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import PhoneVerification from "../../models/PhoneVerification.js";
 import { sendRegistrationEmails, sendVerificationEmail } from "../../integrations/email/email.service.js";
+import cloudinary from "../../config/cloudinary.js";
+import fs from "fs";
+
+export const updateProfilePicture = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "A profile picture is required" });
+        }
+
+        const user = await fetchUser(req.user);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const cloudRes = await cloudinary.uploader.upload(req.file.path, {
+            folder: "my_website_users",
+        });
+
+        user.profilePicture = cloudRes.secure_url;
+        await user.save();
+
+        return res.json({
+            success: true,
+            message: "Profile picture updated successfully",
+            profilePicture: user.profilePicture,
+        });
+    } catch (error) {
+        next(error);
+    } finally {
+        if (req.file?.path) {
+            fs.unlink(req.file.path, () => {});
+        }
+    }
+};
 
 export const getUsername = async(req, res, next) => {
     try {

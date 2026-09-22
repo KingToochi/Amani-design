@@ -1,12 +1,13 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {AuthContext} from "../../context/AuthContext"
 import { CiEdit } from "react-icons/ci";
-import { FaUserCircle, FaEnvelope, FaPhone, FaTag, FaMapMarkerAlt, FaIdCard } from "react-icons/fa";
+import { FaUserCircle, FaEnvelope, FaPhone, FaTag, FaMapMarkerAlt, FaIdCard, FaCamera } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/useFetch";
 import LogoutButton from "../../components/common/LogoutButton";
+import Popup from "../../components/common/Popup";
 
 const ProfilePage = () => {
     const {setAuth, logout} = useContext(AuthContext)
@@ -22,6 +23,10 @@ const ProfilePage = () => {
     const [isVerifyingPhone, setIsVerifyingPhone] = useState(false)
     const [isSendingEmail, setIsSendingEmail] = useState(false)
     const [verificationNotice, setVerificationNotice] = useState("")
+    const [isUploadingPicture, setIsUploadingPicture] = useState(false)
+    const [profilePictureError, setProfilePictureError] = useState("")
+    const [popup, setPopup] = useState({ message: "", type: "success" })
+    const profilePictureInputRef = useRef(null)
     const url = BASE_URL
 
     const navigate = useNavigate()
@@ -36,6 +41,10 @@ const ProfilePage = () => {
 
             if (userDetails.emailVerified || updates.email === userDetails.email) {
                 delete updates.email
+            }
+
+            if (Object.values(updates).some(value => !String(value ?? "").trim())) {
+                throw new Error("Please fill in all profile fields")
             }
 
             const response = await CustomFetch(`${url}/users/update`, {
@@ -59,6 +68,7 @@ const ProfilePage = () => {
                 ...updates
             }))
             setEditProfile(false)
+            setPopup({ message: "Update successful", type: "success" })
         } catch (error) {
             setUpdateError(error.message || "Unable to update profile")
         } finally {
@@ -82,10 +92,57 @@ const ProfilePage = () => {
     }
 
     const handleFieldChange = (field, value) => {
-        setUpdateDetails(prev => ({
-            ...prev,
-            [field]: value
-        }))
+        setUpdateDetails(prev => {
+            const nextDetails = {
+                ...prev,
+                [field]: value
+            }
+
+            if (!Object.values(nextDetails).some(fieldValue => !String(fieldValue ?? "").trim())) {
+                setUpdateError("")
+            }
+
+            return nextDetails
+        })
+    }
+
+    const handleProfilePictureChange = async (event) => {
+        const file = event.target.files?.[0]
+        event.target.value = ""
+
+        if (!file) return
+        if (!file.type.startsWith("image/")) {
+            setProfilePictureError("Please select an image file")
+            return
+        }
+
+        setIsUploadingPicture(true)
+        setProfilePictureError("")
+
+        try {
+            const formData = new FormData()
+            formData.append("profilePicture", file)
+
+            const response = await CustomFetch(`${url}/users/profile-picture`, {
+                method: "POST",
+                body: formData
+            })
+            const data = await response?.json()
+
+            if (!response?.ok) {
+                throw new Error(data?.message || "Unable to update profile picture")
+            }
+
+            setUserDetails(prev => ({
+                ...prev,
+                profilePicture: data.profilePicture
+            }))
+            setPopup({ message: "Update successful", type: "success" })
+        } catch (error) {
+            setProfilePictureError(error.message || "Unable to update profile picture")
+        } finally {
+            setIsUploadingPicture(false)
+        }
     }
 
     const handleStartPhoneVerification = async () => {
@@ -105,6 +162,7 @@ const ProfilePage = () => {
             }
 
             setVerificationNotice(data.message || "Verification code sent")
+            setPopup({ message: "Verification message sent.", type: "success" })
             setShowPhoneVerification(true)
         } catch (error) {
             setVerificationError(error.message || "Unable to send verification code")
@@ -129,6 +187,7 @@ const ProfilePage = () => {
             }
 
             setVerificationNotice("Verification email sent. Check your inbox.")
+            setPopup({ message: "Verification message sent.", type: "success" })
         } catch (error) {
             setVerificationError(error.message || "Unable to send verification email")
         } finally {
@@ -195,6 +254,11 @@ const ProfilePage = () => {
 
     return(
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-2 sm:px-6 lg:px-8 mb-16">
+            <Popup
+                message={popup.message}
+                type={popup.type}
+                onClose={() => setPopup({ message: "", type: "success" })}
+            />
             <div className="max-w-4xl mx-auto">
                 {/* Profile Header */}
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
@@ -219,6 +283,24 @@ const ProfilePage = () => {
                                         <FaUserCircle className="text-gray-400 text-6xl" />
                                     </div>
                                 )}
+                                <label
+                                    htmlFor="profile-picture-upload"
+                                    title="Change profile picture"
+                                    className="absolute bottom-1 right-1 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-4 border-white bg-gray-800 text-white shadow-md transition hover:bg-gray-700"
+                                >
+                                    <FaCamera />
+                                    <span className="sr-only">Change profile picture</span>
+                                </label>
+                                <input
+                                    ref={profilePictureInputRef}
+                                    id="profile-picture-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleProfilePictureChange}
+                                    disabled={isUploadingPicture}
+                                    className="hidden"
+                                />
+                                {isUploadingPicture && <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-gray-500">Uploading...</span>}
                             </div>
                             
                             {/* User Name and Status */}
@@ -245,6 +327,7 @@ const ProfilePage = () => {
                                 </button>
                             </div>
                         </div>
+                        {profilePictureError && <p className="mt-2 text-center text-sm text-red-600">{profilePictureError}</p>}
                     </div>
                 </div>
 

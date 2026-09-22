@@ -2,9 +2,12 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useState, useEffect, useContext } from "react"
 import { FiArrowLeft } from "react-icons/fi"
 import { FaNairaSign } from "react-icons/fa6"
+import { FaStar } from "react-icons/fa"
 import { TbCurrencyNaira } from "react-icons/tb"
 import { CartContext } from "../../context/CartContext"
+import { AuthContext } from "../../context/AuthContext"
 import { BASE_URL } from "../../Url"
+import CustomFetch from "../../hooks/useFetch"
 import Popup from "../../components/common/Popup"
 
 const PDetails = () => {
@@ -13,6 +16,7 @@ const PDetails = () => {
     const navigate = useNavigate()
     const [productDetails, setProductDetails] = useState(null) // Start with null, not empty array
     const [cart, setCart] = useContext(CartContext);
+    const { auth } = useContext(AuthContext)
     const [quantity, setQuantity] = useState(1)
     const [loading, setLoading] = useState(true)
     const [selectedSize, setSelectedSize] = useState(null)
@@ -22,6 +26,11 @@ const PDetails = () => {
     const [sizes, setSizes] = useState([])
     const [message, setMessage] = useState(null)
     const [popupMessage, setPopupMessage] = useState("")
+    const [reviewData, setReviewData] = useState({ reviews: [], averageRating: 0, totalRatings: 0 })
+    const [reviewContent, setReviewContent] = useState("")
+    const [reviewRating, setReviewRating] = useState(0)
+    const [reviewSubmitting, setReviewSubmitting] = useState(false)
+    const [reviewError, setReviewError] = useState("")
 
     useEffect(() => {
         if (!popupMessage) return undefined
@@ -53,6 +62,50 @@ const PDetails = () => {
     useEffect(() => {
         fetchProduct()
     }, [_id]) // Add _id as dependency
+
+    const fetchReviews = async () => {
+        try {
+            const response = await fetch(`${url}/reviews/products/${_id}`)
+            const data = await response.json()
+            if (response.ok) {
+                setReviewData(data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchReviews()
+    }, [_id])
+
+    const handleSubmitReview = async (event) => {
+        event.preventDefault()
+        setReviewSubmitting(true)
+        setReviewError("")
+
+        try {
+            const response = await CustomFetch(`${url}/reviews/products/${_id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: reviewContent, rating: reviewRating || null })
+            })
+            const data = await response?.json()
+
+            if (!response?.ok) {
+                throw new Error(data?.message || "Unable to save your review")
+            }
+
+            setReviewData(data)
+            setReviewContent("")
+            setReviewRating(0)
+            setPopupMessage("Review submitted successfully")
+        } catch (error) {
+            setReviewError(error.message || "Unable to save your review")
+        } finally {
+            setReviewSubmitting(false)
+        }
+    }
 
     const handleCart = () => {
         if (!productDetails) return;
@@ -258,6 +311,63 @@ const PDetails = () => {
                     {/* Size Selection */}
                     <div>
                         <h1 className="mb-2">Size:</h1>
+                <section className="w-full mt-8 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm">
+                    <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 className="text-xl font-semibold">Reviews and ratings</h2>
+                            <p className="text-sm text-gray-500">{reviewData.totalReviews || 0} reviews from customers</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-amber-500">
+                            <FaStar />
+                            <span className="font-semibold text-gray-800">{Number(reviewData.averageRating || 0).toFixed(1)}</span>
+                            <span className="text-sm text-gray-500">({reviewData.totalRatings || 0} ratings)</span>
+                        </div>
+                    </div>
+
+                    {auth?._id ? (
+                        <form onSubmit={handleSubmitReview} className="mt-5 rounded-lg bg-gray-50 p-4">
+                            <h3 className="font-medium">Share your experience</h3>
+                            <div className="mt-3 flex items-center gap-1" aria-label="Select a rating">
+                                {[1, 2, 3, 4, 5].map(value => (
+                                    <button
+                                        key={value}
+                                        type="button"
+                                        onClick={() => setReviewRating(value)}
+                                        aria-label={`${value} star${value > 1 ? "s" : ""}`}
+                                        className={value <= reviewRating ? "text-amber-500" : "text-gray-300"}
+                                    >
+                                        <FaStar />
+                                    </button>
+                                ))}
+                            </div>
+                            <textarea
+                                value={reviewContent}
+                                onChange={event => setReviewContent(event.target.value)}
+                                placeholder="Write a review"
+                                rows="3"
+                                className="mt-3 w-full rounded-lg border border-gray-200 bg-white p-3 text-sm outline-none focus:border-gray-700"
+                            />
+                            {reviewError && <p className="mt-2 text-sm text-red-600">{reviewError}</p>}
+                            <button type="submit" disabled={reviewSubmitting || (!reviewContent.trim() && !reviewRating)} className="mt-3 rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50">
+                                {reviewSubmitting ? "Submitting..." : "Submit review"}
+                            </button>
+                        </form>
+                    ) : (
+                        <p className="mt-5 text-sm text-gray-500">Sign in to leave a review or rating.</p>
+                    )}
+
+                    <div className="mt-6 space-y-4">
+                        {reviewData.reviews?.length ? reviewData.reviews.map(review => (
+                            <article key={review._id} className="border-b border-gray-100 pb-4 last:border-0">
+                                <div className="flex items-center justify-between gap-3">
+                                    <p className="font-medium">{review.authorId?.fname || review.authorId?.username || "Customer"}</p>
+                                    {review.rating && <div className="flex items-center gap-1 text-sm text-amber-500"><FaStar /> {review.rating}/5</div>}
+                                </div>
+                                {review.content && <p className="mt-2 text-sm leading-6 text-gray-600">{review.content}</p>}
+                            </article>
+                        )) : <p className="mt-6 text-sm text-gray-500">No reviews yet.</p>}
+                    </div>
+                </section>
                         <div className="flex gap-2">
                             {sizes.map(size => (
                                 <button

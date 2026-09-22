@@ -1,10 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     ArrowRight,
     AtSign,
     BadgeCheck,
     Building2,
+    Camera,
     CalendarDays,
     Check,
     CreditCard,
@@ -21,6 +22,7 @@ import {
 import { AuthContext } from "../../context/AuthContext";
 import CustomFetch from "../../hooks/useFetch";
 import { BASE_URL } from "../../Url";
+import Popup from "../../components/common/Popup";
 
 const emptyForm = {
     fname: "",
@@ -52,6 +54,9 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [feedback, setFeedback] = useState({ type: "", message: "" });
+    const [isUploadingPicture, setIsUploadingPicture] = useState(false);
+    const [popup, setPopup] = useState({ message: "", type: "success" });
+    const profilePictureInputRef = useRef(null);
 
     const loadProfile = async () => {
         try {
@@ -68,7 +73,7 @@ const Profile = () => {
                 setForm({ ...emptyForm, ...data.user });
                 setAuth(data.user);
             }
-        } catch (error) {
+        } catch {
             setFeedback({ type: "error", message: "We could not load your profile." });
         } finally {
             setLoading(false);
@@ -99,19 +104,29 @@ const Profile = () => {
         setSaving(true);
         setFeedback({ type: "", message: "" });
         try {
+            const updates = {
+                fname: form.fname,
+                lname: form.lname,
+                username: form.username,
+                email: form.email,
+                phoneNumber: form.phoneNumber,
+                city: form.city,
+                state: form.state,
+                typeOfVendor: form.typeOfVendor,
+            };
+
+            if (userDetails.emailVerified || updates.email === userDetails.email) {
+                delete updates.email;
+            }
+
+            if (Object.values(updates).some((value) => !String(value ?? "").trim())) {
+                throw new Error("Please fill in all profile fields.");
+            }
+
             const response = await CustomFetch(`${BASE_URL}/users/update`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    fname: form.fname,
-                    lname: form.lname,
-                    username: form.username,
-                    email: form.email,
-                    phoneNumber: form.phoneNumber,
-                    city: form.city,
-                    state: form.state,
-                    typeOfVendor: form.typeOfVendor,
-                }),
+                body: JSON.stringify(updates),
             });
             const data = await response.json();
             if (!response.ok || !data.success) throw new Error(data.message || "Unable to save changes.");
@@ -122,10 +137,50 @@ const Profile = () => {
             localStorage.setItem("user", JSON.stringify(updatedUser));
             setIsEditing(false);
             setFeedback({ type: "success", message: "Profile updated successfully." });
+            setPopup({ message: "Update successful", type: "success" });
         } catch (error) {
             setFeedback({ type: "error", message: error.message || "Unable to save changes." });
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleProfilePictureChange = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            setFeedback({ type: "error", message: "Please select an image file." });
+            return;
+        }
+
+        setIsUploadingPicture(true);
+        setFeedback({ type: "", message: "" });
+
+        try {
+            const formData = new FormData();
+            formData.append("profilePicture", file);
+
+            const response = await CustomFetch(`${BASE_URL}/users/profile-picture`, {
+                method: "POST",
+                body: formData,
+            });
+            const data = await response?.json();
+
+            if (!response?.ok || !data?.success) {
+                throw new Error(data?.message || "Unable to update profile picture.");
+            }
+
+            const updatedUser = { ...userDetails, profilePicture: data.profilePicture };
+            setUserDetails(updatedUser);
+            setAuth(updatedUser);
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+            setPopup({ message: "Update successful", type: "success" });
+        } catch (error) {
+            setFeedback({ type: "error", message: error.message || "Unable to update profile picture." });
+        } finally {
+            setIsUploadingPicture(false);
         }
     };
 
@@ -146,6 +201,11 @@ const Profile = () => {
 
     return (
         <main className="min-h-screen bg-[#f5f1eb] px-4 py-6 text-stone-900 sm:px-8 lg:px-12 lg:py-10">
+            <Popup
+                message={popup.message}
+                type={popup.type}
+                onClose={() => setPopup({ message: "", type: "success" })}
+            />
             <div className="mx-auto max-w-6xl">
                 <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                     <div>
@@ -164,11 +224,31 @@ const Profile = () => {
                         <div className="absolute -bottom-40 left-1/3 -z-10 h-80 w-80 rounded-full border-[48px] border-rose-300/10" />
                         <div className="relative flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-center gap-5">
-                                {userDetails.profilePicture ? (
-                                    <img src={userDetails.profilePicture} alt="Vendor profile" className="h-24 w-24 rounded-3xl object-cover ring-4 ring-white/10" />
-                                ) : (
-                                    <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-amber-400 text-3xl font-bold text-stone-900 ring-4 ring-white/10">{getInitials(userDetails)}</div>
-                                )}
+                                <div className="relative">
+                                    {userDetails.profilePicture ? (
+                                        <img src={userDetails.profilePicture} alt="Vendor profile" className="h-24 w-24 rounded-3xl object-cover ring-4 ring-white/10" />
+                                    ) : (
+                                        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-amber-400 text-3xl font-bold text-stone-900 ring-4 ring-white/10">{getInitials(userDetails)}</div>
+                                    )}
+                                    <label
+                                        htmlFor="vendor-profile-picture-upload"
+                                        title="Change profile picture"
+                                        className="absolute -bottom-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-4 border-stone-900 bg-amber-400 text-stone-900 shadow-md transition hover:bg-amber-300"
+                                    >
+                                        <Camera size={16} />
+                                        <span className="sr-only">Change profile picture</span>
+                                    </label>
+                                    <input
+                                        ref={profilePictureInputRef}
+                                        id="vendor-profile-picture-upload"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleProfilePictureChange}
+                                        disabled={isUploadingPicture}
+                                        className="hidden"
+                                    />
+                                    {isUploadingPicture && <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-stone-300">Uploading...</span>}
+                                </div>
                                 <div>
                                     <div className="mb-2 flex flex-wrap items-center gap-2">
                                         <h2 className="text-2xl font-semibold">{userDetails.fname || userDetails.username || "Vendor"} {userDetails.lname || ""}</h2>

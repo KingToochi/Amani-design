@@ -7,6 +7,14 @@ export const validateUserUpdatedInfo = async ({updates, userId}) => {
         throw new Error("No data provided for update");
     }
 
+    const hasEmptyField = Object.values(updates).some(
+      (value) => value === null || value === undefined || (typeof value === "string" && !value.trim())
+    );
+
+    if (hasEmptyField) {
+      throw new Error("All update fields are required");
+    }
+
     const restrictedFields = [
         "role",
         "status",
