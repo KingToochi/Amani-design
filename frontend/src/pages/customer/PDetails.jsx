@@ -84,8 +84,12 @@ const PDetails = () => {
 
     const handleSubmitReview = async (event) => {
         event.preventDefault()
+        
+        if(reviewRating === 0) return
+
         setReviewSubmitting(true)
         setReviewError("")
+
 
         try {
             const response = await CustomFetch(`${url}/reviews/products/${_id}`, {
@@ -426,7 +430,7 @@ const PDetails = () => {
                 </div>
         </div>
 
-          <section className="w-full mt-8 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm mb-[75px]">
+          <section className="w-full mt-8 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm mb-[75px] md:mb-[80px]">
                     <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 className="text-xl font-semibold">Reviews and ratings</h2>
