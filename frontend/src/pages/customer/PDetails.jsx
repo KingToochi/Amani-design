@@ -16,7 +16,7 @@ const PDetails = () => {
     const navigate = useNavigate()
     const [productDetails, setProductDetails] = useState(null) // Start with null, not empty array
     const [cart, setCart] = useContext(CartContext);
-    const { auth } = useContext(AuthContext)
+    const { auth, isLoggedIn } = useContext(AuthContext)
     const [quantity, setQuantity] = useState(1)
     const [loading, setLoading] = useState(true)
     const [selectedSize, setSelectedSize] = useState(null)
@@ -31,6 +31,7 @@ const PDetails = () => {
     const [reviewRating, setReviewRating] = useState(0)
     const [reviewSubmitting, setReviewSubmitting] = useState(false)
     const [reviewError, setReviewError] = useState("")
+    
 
     useEffect(() => {
         if (!popupMessage) return undefined
@@ -311,63 +312,6 @@ const PDetails = () => {
                     {/* Size Selection */}
                     <div>
                         <h1 className="mb-2">Size:</h1>
-                <section className="w-full mt-8 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm">
-                    <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 className="text-xl font-semibold">Reviews and ratings</h2>
-                            <p className="text-sm text-gray-500">{reviewData.totalReviews || 0} reviews from customers</p>
-                        </div>
-                        <div className="flex items-center gap-2 text-amber-500">
-                            <FaStar />
-                            <span className="font-semibold text-gray-800">{Number(reviewData.averageRating || 0).toFixed(1)}</span>
-                            <span className="text-sm text-gray-500">({reviewData.totalRatings || 0} ratings)</span>
-                        </div>
-                    </div>
-
-                    {auth?._id ? (
-                        <form onSubmit={handleSubmitReview} className="mt-5 rounded-lg bg-gray-50 p-4">
-                            <h3 className="font-medium">Share your experience</h3>
-                            <div className="mt-3 flex items-center gap-1" aria-label="Select a rating">
-                                {[1, 2, 3, 4, 5].map(value => (
-                                    <button
-                                        key={value}
-                                        type="button"
-                                        onClick={() => setReviewRating(value)}
-                                        aria-label={`${value} star${value > 1 ? "s" : ""}`}
-                                        className={value <= reviewRating ? "text-amber-500" : "text-gray-300"}
-                                    >
-                                        <FaStar />
-                                    </button>
-                                ))}
-                            </div>
-                            <textarea
-                                value={reviewContent}
-                                onChange={event => setReviewContent(event.target.value)}
-                                placeholder="Write a review"
-                                rows="3"
-                                className="mt-3 w-full rounded-lg border border-gray-200 bg-white p-3 text-sm outline-none focus:border-gray-700"
-                            />
-                            {reviewError && <p className="mt-2 text-sm text-red-600">{reviewError}</p>}
-                            <button type="submit" disabled={reviewSubmitting || (!reviewContent.trim() && !reviewRating)} className="mt-3 rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50">
-                                {reviewSubmitting ? "Submitting..." : "Submit review"}
-                            </button>
-                        </form>
-                    ) : (
-                        <p className="mt-5 text-sm text-gray-500">Sign in to leave a review or rating.</p>
-                    )}
-
-                    <div className="mt-6 space-y-4">
-                        {reviewData.reviews?.length ? reviewData.reviews.map(review => (
-                            <article key={review._id} className="border-b border-gray-100 pb-4 last:border-0">
-                                <div className="flex items-center justify-between gap-3">
-                                    <p className="font-medium">{review.userId?.fname || review.userId?.username || "Customer"}</p>
-                                    {review.rating && <div className="flex items-center gap-1 text-sm text-amber-500"><FaStar /> {review.rating}/5</div>}
-                                </div>
-                                {review.content && <p className="mt-2 text-sm leading-6 text-gray-600">{review.content}</p>}
-                            </article>
-                        )) : <p className="mt-6 text-sm text-gray-500">No reviews yet.</p>}
-                    </div>
-                </section>
                         <div className="flex gap-2">
                             {sizes.map(size => (
                                 <button
@@ -479,7 +423,65 @@ const PDetails = () => {
                     )}
                 </div>
         </div>
-            </>
+
+          <section className="w-full mt-8 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm">
+                    <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 className="text-xl font-semibold">Reviews and ratings</h2>
+                            <p className="text-sm text-gray-500">{reviewData.totalReviews || 0} reviews from customers</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-amber-500">
+                            <FaStar />
+                            <span className="font-semibold text-gray-800">{Number(reviewData.averageRating || 0).toFixed(1)}</span>
+                            <span className="text-sm text-gray-500">({reviewData.totalRatings || 0} ratings)</span>
+                        </div>
+                    </div>
+
+                    {isLoggedIn ? (
+                        <form onSubmit={handleSubmitReview} className="mt-5 rounded-lg bg-gray-50 p-4">
+                            <h3 className="font-medium">Share your experience</h3>
+                            <div className="mt-3 flex items-center gap-1" aria-label="Select a rating">
+                                {[1, 2, 3, 4, 5].map(value => (
+                                    <button
+                                        key={value}
+                                        type="button"
+                                        onClick={() => setReviewRating(value)}
+                                        aria-label={`${value} star${value > 1 ? "s" : ""}`}
+                                        className={value <= reviewRating ? "text-amber-500" : "text-gray-300"}
+                                    >
+                                        <FaStar />
+                                    </button>
+                                ))}
+                            </div>
+                            <textarea
+                                value={reviewContent}
+                                onChange={event => setReviewContent(event.target.value)}
+                                placeholder="Write a review"
+                                rows="3"
+                                className="mt-3 w-full rounded-lg border border-gray-200 bg-white p-3 text-sm outline-none focus:border-gray-700"
+                            />
+                            {reviewError && <p className="mt-2 text-sm text-red-600">{reviewError}</p>}
+                            <button type="submit" disabled={reviewSubmitting || (!reviewContent.trim() && !reviewRating)} className="mt-3 rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50">
+                                {reviewSubmitting ? "Submitting..." : "Submit review"}
+                            </button>
+                        </form>
+                    ) : (
+                        <p className="mt-5 text-sm text-gray-500">Sign in to leave a review or rating.</p>
+                    )}
+
+                    <div className="mt-6 space-y-4">
+                        {reviewData.reviews?.length ? reviewData.reviews.map(review => (
+                            <article key={review._id} className="border-b border-gray-100 pb-4 last:border-0">
+                                <div className="flex items-center justify-between gap-3">
+                                    <p className="font-medium">{review.userId?.fname || review.userId?.username || "Customer"}</p>
+                                    {review.rating && <div className="flex items-center gap-1 text-sm text-amber-500"><FaStar /> {review.rating}/5</div>}
+                                </div>
+                                {review.content && <p className="mt-2 text-sm leading-6 text-gray-600">{review.content}</p>}
+                            </article>
+                        )) : <p className="mt-6 text-sm text-gray-500">No reviews yet.</p>}
+                    </div>
+                </section>
+        </>
     )
 }
 
