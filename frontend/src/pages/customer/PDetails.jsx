@@ -31,6 +31,8 @@ const PDetails = () => {
     const [reviewRating, setReviewRating] = useState(0)
     const [reviewSubmitting, setReviewSubmitting] = useState(false)
     const [reviewError, setReviewError] = useState("")
+
+    console.log(isLoggedIn, auth)
     
 
     useEffect(() => {
@@ -282,7 +284,7 @@ const PDetails = () => {
             message={popupMessage}
             onClose={() => setPopupMessage("")}
         />
-        <div className="flex flex-col gap-4 pt-2 px-2 w-full min-h-screen text-gray-500 text-lg font-[abril] mb-[75px]
+        <div className="flex flex-col gap-4 pt-2 px-2 w-full min-h-screen text-gray-500 text-lg font-[abril] 
         sm:text-xl
         md:text-2xl
         ">
@@ -424,7 +426,7 @@ const PDetails = () => {
                 </div>
         </div>
 
-          <section className="w-full mt-8 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm">
+          <section className="w-full mt-8 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm mb-[75px]">
                     <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 className="text-xl font-semibold">Reviews and ratings</h2>
