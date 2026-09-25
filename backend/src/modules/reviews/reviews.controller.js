@@ -55,9 +55,6 @@ export const getProductReviews = async (req, res, next) => {
 export const saveProductReview = async (req, res, next) => {
     try {
         const { content, rating } = req.body;
-        if(rating === 0) {
-            throw new Error("no rating")
-        }
         const product = await Product.findById(req.params.productId).select("_id");
         if (!product) {
             return res.status(404).json({ success: false, message: "Product not found" });

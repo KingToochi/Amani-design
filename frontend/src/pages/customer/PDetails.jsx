@@ -85,7 +85,7 @@ const PDetails = () => {
     const handleSubmitReview = async (event) => {
         event.preventDefault()
         
-        if(reviewRating === 0) return
+        if(reviewRating === 0 || reviewRating === "0") return
 
         setReviewSubmitting(true)
         setReviewError("")
