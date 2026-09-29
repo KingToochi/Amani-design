@@ -28,15 +28,15 @@ export const UseEmailAddress = () => {
     const [email, setEmail] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [popup, setPopup] = useState({
-        message,
-        type,
+        message: "",
+        type: "suceess"
     })
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (!email.trim()) {
-            Popup({ message: "Please enter your email address", type: "error" });
+            setopup({ message: "Please enter your email address", type: "error" });
             return;
         }
 
@@ -49,14 +49,14 @@ export const UseEmailAddress = () => {
         try {
             setIsSubmitting(true);
             await submitRecoveryRequest({ email });
-            Popup({
+            setPopup({
                 message: "A verification link has been sent to your email address",
                 type: "success"
             });
             setEmail("");
         } catch (error) {
             console.error(error);
-            Popup({ message: error.message, type: "error" });
+            setPopup({ message: error.message, type: "error" });
         } finally {
             setIsSubmitting(false);
         }
@@ -70,8 +70,8 @@ export const UseEmailAddress = () => {
                     type={popup.type}
                     onClose={() =>
                         setPopup({
-                            message,
-                            type
+                            message:"",
+                            type: "sucess"
                         })
                     }
                 />

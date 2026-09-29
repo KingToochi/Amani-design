@@ -173,7 +173,7 @@ const ResetPassword = () => {
             navigate("/login");
         } catch (error) {
             console.error(error);
-            Popup({
+            setüPopup({
                 message: error.message,
                 type: "error"
             });
@@ -207,8 +207,8 @@ const ResetPassword = () => {
                     type={popup.type}
                     onClose={() =>
                         setPopup({
-                            message,
-                            type
+                            message: "",
+                            type: "success"
                         })
                     }
                 />
