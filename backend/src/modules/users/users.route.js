@@ -24,7 +24,7 @@ route.post("/registration/vendor",uploadImage.fields([
 
 route.post("/forget_password", forgetPassword)
 route.post("/verify-reset-link", verifyResetPasswordLink)
-route.post("reset-password", resetPassword)
+route.post("/reset-password", resetPassword)
 route.post("/login", userLogin)
 route.post("/logout", userLogout)
 
