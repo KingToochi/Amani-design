@@ -327,323 +327,400 @@ const DesignerRegistration = () => {
             )
         }
 
-    return(
-        <div>
-            <form onSubmit={handleSubmit}
-            className="w-full flex flex-col gap-6 text-lg font-[abril]
-            sm:text-xl
-            md:text-2xl
-            "
-            >
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="fname"
-                    className="w-full font-semibold"
-                    >First Name</label>
-                    <input type="text" id="fname" value={formData.fname} placeholder="first name" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.fname}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="lname"
-                    className="w-full font-semibold"
-                    >Last Name</label>
-                    <input type="text" id="lname" value={formData.lname} placeholder="last name" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.lname}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="email"
-                    className="w-full font-semibold"
-                    >Email</label>
-                    <input type="email" id="email" value={formData.email} placeholder="email" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.email}</h1>
-                    <h1 className="text-green-500">{successMessage?.email}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="username"
-                    className="w-full font-semibold"
-                    >Username</label>
-                    <input type="text" id="username" value={formData.username} placeholder="username" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.username}</h1>
-                    <h1 className="text-green-500">{successMessage?.username}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="phoneNumber"
-                    className="w-full font-semibold"
-                    >Phone Number</label>
-                    <input type="text" id="phoneNumber" value={formData.phoneNumber} placeholder="phone number" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.phoneNumber}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="dob"
-                    className="w-full font-semibold"
-                    >Date of Birth</label>
-                    <input type="date" id="dob" value={formData.dob} placeholder="date of birth" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.dob}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="houseNumber"
-                    className="w-full font-semibold"
-                    >House Number</label>
-                    <input type="text" id="houseNumber" value={formData.houseNumber} placeholder="your House Number" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.houseNumber}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="streetName"
-                    className="w-full font-semibold"
-                    >Street Name</label>
-                    <input type="text" id="streetName" value={formData.streetName} placeholder="your Street Name" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.streetName}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="city"
-                    className="w-full font-semibold"
-                    >City/Town</label>
-                    <input type="text" id="city" value={formData.city} placeholder="Your City" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.city}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="state"
-                    className="w-full font-semibold"
-                    >State</label>
-                    <input type="text" id="state" value={formData.state} placeholder="your State" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.state}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="proofOfAddress"
-                    className="w-full font-semibold"
-                    >Proof Of Address</label>
-                    <input type="file" accept="image/*" id="proofOfAddress"  placeholder="proof of houseNumber"name="proofOfAddress" onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.proofOfAddress}</h1>
-                </div>
-                <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="profilePicture"
-                    className="w-full font-semibold"
-                    >Profile Picture</label>
-                    <input type="file" accept="image/*" id="profilePicture"  placeholder="profile picture" name="profilePicture" onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.profilePicture}</h1>
-                </div>
-                <div
-            className="w-full flex flex-col items-start gap-2 "
-            >
-                <select id="meansOfIdentification" value={formData.meansOfIdentification} 
-                onChange={(e)=>{
-                    const value = e.target.value
-                    setformData(prev => ({
-                    ...prev,
-                    meansOfIdentification: value,
-                    identificationNumber: "" // reset when switching ID type
-                    }))
-                    setError(prev => {
-                    const newErr = { ...prev }
-                    delete newErr.meansOfIdentification
-                    return newErr
-                    })
-                } }
-                onBlur={formInputValidation}
-                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 font-[abril]">
-                    <option value=""hidden >Select Means of Identification</option>
-                    <option value="nin">National Identification Number</option>
-                    <option value="vin">Voter's Card</option>
-                    <option value="passport">International Passport</option>
-                    <option value="driversLicense">Driver's License</option>
-                </select>
-                <h1 className="text-red-300">{error?.meansOfIdentification}</h1>
+    return (
+        <div className="max-h-[80vh] overflow-y-auto rounded-[28px] border border-slate-200 bg-white/90 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-6 lg:p-8">
+            <div className="mb-6 text-center">
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900">Register as a Designer</h2>
+                <p className="mt-2 text-sm text-slate-500">Complete your profile to start selling on AmaniSky Design</p>
             </div>
-            {formData.meansOfIdentification === "nin" && (
-                <div
-                className="w-full flex flex-col items-start gap-2 "
-                >
-                    <input type="text" placeholder="NIN Number" id="identificationNumber" onChange={formInputValidation} onBlur={formInputValidation}
-                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"/>
-                    <h1 className="text-red-300">{error?.identificationNumber}</h1>
-                </div>
-            )} 
-            {formData.meansOfIdentification === "vin" && (
-                <div
-                className="w-full flex flex-col items-start gap-2 "
-                >
-                    <input type="text" placeholder="Voter's Card Number" id="identificationNumber" onChange={formInputValidation} onBlur={formInputValidation}
-                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"/>
-                    <h1 className="text-red-300">{error?.identificationNumber}</h1>
-                </div>
-            )}
-            {formData.meansOfIdentification === "passport" && (
-                <div
-                className="w-full flex flex-col items-start gap-2 "
-                >
-                    <input type="text" placeholder="Passport Number" id="identificationNumber" onChange={formInputValidation} onBlur={formInputValidation}
-                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"/>
-                    <h1 className="text-red-300">{error?.identificationNumber}</h1>
-                </div>
-            )}
-            {formData.meansOfIdentification === "driversLicense" && (
-                <div
-                className="w-full flex flex-col items-start gap-2 "
-                >
-                    <input type="text" placeholder="Driver's License Number" id="identificationNumber" onChange={formInputValidation} onBlur={formInputValidation}
-                    className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 text-gray-900 font-semibold text-base font-[abril]"/>
-                    <h1 className="text-red-300">{error?.identificationNumber}</h1>
-                </div>
-            )}
-            <div>
-                <select id="typeOfVendor" value={formData.typeOfVendor} onBlur={formInputValidation} onChange={formInputValidation}
-                className="w-full border-2 rounded-lg border-gray-900 px-2 py-2 font-[abril]">
-                    <option value="" hidden>What type of Vendor are you</option>
-                    <option value="manufacturer">Manufacturer</option>
-                    <option value="wholesaler">Wholesaler</option>
-                    <option value="retailer">Retailer</option>
-                </select>
-                <h1 className="text-red-300">{error?.typeOfVendor}</h1>
-            </div>
-            <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="bankName"
-                    className="w-full font-semibold"
-                    >Bank</label>
-                    {/* <input type="text" id="bankName" value={formData.bankName} placeholder="Bank Name" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    /> */}
-                    <BankList id = "bankName" value={formData.bankName} formInputValidation={formInputValidation}
-                    onChange={(e)=>{
-                    const value = e.target.value
-                    setformData(prev => ({
-                    ...prev,
-                    bankName : value,
-                    }))
-                    setError(prev => {
-                    const newErr = { ...prev }
-                    delete newErr.bankName
-                    return newErr
-                    })
-                } }
-                    />
-                    <h1 className="text-red-300">{error?.bankName}</h1>
-            </div>
-            <div
-                className="flex flex-col gap-2"
-                >
-                    <label htmlFor="accountNumber"
-                    className="w-full font-semibold"
-                    >Account Number</label>
-                    <input type="text" id="accountNumber" value={formData.accountNumber} placeholder="Account Number" onBlur={formInputValidation} onChange={formInputValidation}
-                    className="w-full border-2 border-gray-900 rounded-lg px-2"
-                    />
-                    <h1 className="text-red-300">{error?.accountNumber}</h1>
-            </div>
-            <div>
-                            <label htmlFor="password">Password</label>
-                            <div
-                            className="flex items-center gap-2"
-                            >
-                                <input type={showPassword ? "text" : "password"} name="password" id="password" value={formData.password} placeholder="create password" onChange={formInputValidation} onBlur={formInputValidation}
-                                className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
-                                />
-                                {showPassword ? 
-                                <FaEyeSlash onClick={() => setShowPassword(prev => !prev)}/>
-                                : 
-                                <FaEye  onClick={() => setShowPassword(prev => !prev)}/>}
-                            </div>
-                            <h1
-                            className={`${passwordStrength === "weak" ? "text-red-300 ": passwordStrength === "moderate" ? "text-yellow-300" : "text-green-400"}`}
-                            >
-                                {`${passwordStrength}`}
-                            </h1>
-                            <h1 className="text-red-300">{error?.password}</h1>
-                        </div>
-            
-                        <div>
-                            <label htmlFor="cpassword">Confirm Password</label>
-                            <div
-                            className="flex flex-col gap-2"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <input type={showCPassword ? "text" : "password"} name="confirm password" id="cpassword" placeholder="confirm password" onBlur={formInputValidation} onChange={formInputValidation}
-                                    className="w-full border-1 border-gray-700 rounded-lg px-2 focus:outline-none"
-                                    />
-                                    {showCPassword ? 
-                                    <FaEyeSlash onClick={() => setShowCPassword(prev => !prev)}/>
-                                    : 
-                                    <FaEye  onClick={() => setShowCPassword(prev => !prev)}/>}
-                                </div>
-                                <h1 className="text-red-300">{error?.cpassword}</h1>
-                             </div>
-                        </div>
 
-                        <label className="flex items-start gap-3 rounded-lg border border-gray-300 p-3 text-sm text-gray-700">
-                            <input
-                                type="checkbox"
-                                id="termsAndCondition"
-                                name="termsAndCondition"
-                                checked={formData.termsAndCondition}
-                                onChange={formInputValidation}
-                                className="mt-1 h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                            />
-                            <span>
-                                I agree to the <a href="/terms" target="_blank" rel="noreferrer" className="text-amber-600 underline">Terms and Conditions</a>.
-                            </span>
-                        </label>
-                        {error.terms && <h1 className="text-red-300">{error.terms}</h1>}
-            <div
-            className="w-full text-center"
-            >
-                <button
-                disabled={isSubmitting}
-                className="border-2 border-gray-900 px-2 py-1 rounded-lg cursor-pointer"
-                >
-                    {isSubmitting ? "submitting" : "submit"}
-                </button>
-            </div>
+            <form onSubmit={handleSubmit} className="w-full space-y-6 text-base text-slate-700 sm:text-lg">
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="fname" className="w-full text-sm font-semibold text-slate-700">First Name</label>
+                        <input
+                            type="text"
+                            id="fname"
+                            value={formData.fname}
+                            placeholder="First name"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.fname}</h1>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="lname" className="w-full text-sm font-semibold text-slate-700">Last Name</label>
+                        <input
+                            type="text"
+                            id="lname"
+                            value={formData.lname}
+                            placeholder="Last name"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.lname}</h1>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="email" className="w-full text-sm font-semibold text-slate-700">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={formData.email}
+                            placeholder="Email address"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.email}</h1>
+                        <h1 className="text-sm text-emerald-500">{successMessage?.email}</h1>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="username" className="w-full text-sm font-semibold text-slate-700">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={formData.username}
+                            placeholder="Username"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.username}</h1>
+                        <h1 className="text-sm text-emerald-500">{successMessage?.username}</h1>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="phoneNumber" className="w-full text-sm font-semibold text-slate-700">Phone Number</label>
+                        <input
+                            type="text"
+                            id="phoneNumber"
+                            value={formData.phoneNumber}
+                            placeholder="Phone number"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.phoneNumber}</h1>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="dob" className="w-full text-sm font-semibold text-slate-700">Date of Birth</label>
+                        <input
+                            type="date"
+                            id="dob"
+                            value={formData.dob}
+                            placeholder="Date of birth"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.dob}</h1>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="houseNumber" className="w-full text-sm font-semibold text-slate-700">House Number</label>
+                        <input
+                            type="text"
+                            id="houseNumber"
+                            value={formData.houseNumber}
+                            placeholder="House number"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.houseNumber}</h1>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="streetName" className="w-full text-sm font-semibold text-slate-700">Street Name</label>
+                        <input
+                            type="text"
+                            id="streetName"
+                            value={formData.streetName}
+                            placeholder="Street name"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.streetName}</h1>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="city" className="w-full text-sm font-semibold text-slate-700">City/Town</label>
+                        <input
+                            type="text"
+                            id="city"
+                            value={formData.city}
+                            placeholder="City"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.city}</h1>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="state" className="w-full text-sm font-semibold text-slate-700">State</label>
+                        <input
+                            type="text"
+                            id="state"
+                            value={formData.state}
+                            placeholder="State"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.state}</h1>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="proofOfAddress" className="w-full text-sm font-semibold text-slate-700">Proof of Address</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            id="proofOfAddress"
+                            name="proofOfAddress"
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-slate-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-800"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.proofOfAddress}</h1>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="profilePicture" className="w-full text-sm font-semibold text-slate-700">Profile Picture</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            id="profilePicture"
+                            name="profilePicture"
+                            onChange={formInputValidation}
+                            className="w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-slate-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-800"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.profilePicture}</h1>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <select
+                        id="meansOfIdentification"
+                        value={formData.meansOfIdentification}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setformData((prev) => ({
+                                ...prev,
+                                meansOfIdentification: value,
+                                identificationNumber: ""
+                            }));
+                            setError((prev) => {
+                                const newErr = { ...prev };
+                                delete newErr.meansOfIdentification;
+                                return newErr;
+                            });
+                        }}
+                        onBlur={formInputValidation}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                    >
+                        <option value="" hidden>Select Means of Identification</option>
+                        <option value="nin">National Identification Number</option>
+                        <option value="vin">Voter's Card</option>
+                        <option value="passport">International Passport</option>
+                        <option value="driversLicense">Driver's License</option>
+                    </select>
+                    <h1 className="text-sm text-red-500">{error?.meansOfIdentification}</h1>
+                </div>
+
+                {formData.meansOfIdentification === "nin" && (
+                    <div className="space-y-2">
+                        <input
+                            type="text"
+                            placeholder="NIN Number"
+                            id="identificationNumber"
+                            onChange={formInputValidation}
+                            onBlur={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.identificationNumber}</h1>
+                    </div>
+                )}
+                {formData.meansOfIdentification === "vin" && (
+                    <div className="space-y-2">
+                        <input
+                            type="text"
+                            placeholder="Voter's Card Number"
+                            id="identificationNumber"
+                            onChange={formInputValidation}
+                            onBlur={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.identificationNumber}</h1>
+                    </div>
+                )}
+                {formData.meansOfIdentification === "passport" && (
+                    <div className="space-y-2">
+                        <input
+                            type="text"
+                            placeholder="Passport Number"
+                            id="identificationNumber"
+                            onChange={formInputValidation}
+                            onBlur={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.identificationNumber}</h1>
+                    </div>
+                )}
+                {formData.meansOfIdentification === "driversLicense" && (
+                    <div className="space-y-2">
+                        <input
+                            type="text"
+                            placeholder="Driver's License Number"
+                            id="identificationNumber"
+                            onChange={formInputValidation}
+                            onBlur={formInputValidation}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                        />
+                        <h1 className="text-sm text-red-500">{error?.identificationNumber}</h1>
+                    </div>
+                )}
+
+                <div className="space-y-2">
+                    <select
+                        id="typeOfVendor"
+                        value={formData.typeOfVendor}
+                        onBlur={formInputValidation}
+                        onChange={formInputValidation}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                    >
+                        <option value="" hidden>What type of vendor are you?</option>
+                        <option value="manufacturer">Manufacturer</option>
+                        <option value="wholesaler">Wholesaler</option>
+                        <option value="retailer">Retailer</option>
+                    </select>
+                    <h1 className="text-sm text-red-500">{error?.typeOfVendor}</h1>
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="bankName" className="w-full text-sm font-semibold text-slate-700">Bank</label>
+                    <BankList
+                        id="bankName"
+                        value={formData.bankName}
+                        formInputValidation={formInputValidation}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setformData((prev) => ({
+                                ...prev,
+                                bankName: value,
+                            }));
+                            setError((prev) => {
+                                const newErr = { ...prev };
+                                delete newErr.bankName;
+                                return newErr;
+                            });
+                        }}
+                    />
+                    <h1 className="text-sm text-red-500">{error?.bankName}</h1>
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="accountNumber" className="w-full text-sm font-semibold text-slate-700">Account Number</label>
+                    <input
+                        type="text"
+                        id="accountNumber"
+                        value={formData.accountNumber}
+                        placeholder="Account number"
+                        onBlur={formInputValidation}
+                        onChange={formInputValidation}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                    />
+                    <h1 className="text-sm text-red-500">{error?.accountNumber}</h1>
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="password" className="w-full text-sm font-semibold text-slate-700">Password</label>
+                    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 shadow-sm transition focus-within:border-rose-400 focus-within:ring-4 focus-within:ring-rose-100">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            id="password"
+                            value={formData.password}
+                            placeholder="Create password"
+                            onChange={formInputValidation}
+                            onBlur={formInputValidation}
+                            className="w-full border-0 bg-transparent py-3 text-slate-900 outline-none placeholder:text-slate-400"
+                        />
+                        {showPassword ? (
+                            <FaEyeSlash onClick={() => setShowPassword((prev) => !prev)} className="cursor-pointer text-slate-500" />
+                        ) : (
+                            <FaEye onClick={() => setShowPassword((prev) => !prev)} className="cursor-pointer text-slate-500" />
+                        )}
+                    </div>
+                    <h1 className={`${passwordStrength === "weak" ? "text-red-500" : passwordStrength === "moderate" ? "text-amber-500" : "text-emerald-500"} text-sm font-medium`}>
+                        {passwordStrength}
+                    </h1>
+                    <h1 className="text-sm text-red-500">{error?.password}</h1>
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="cpassword" className="w-full text-sm font-semibold text-slate-700">Confirm Password</label>
+                    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 shadow-sm transition focus-within:border-rose-400 focus-within:ring-4 focus-within:ring-rose-100">
+                        <input
+                            type={showCPassword ? "text" : "password"}
+                            name="confirm password"
+                            id="cpassword"
+                            placeholder="Confirm password"
+                            onBlur={formInputValidation}
+                            onChange={formInputValidation}
+                            className="w-full border-0 bg-transparent py-3 text-slate-900 outline-none placeholder:text-slate-400"
+                        />
+                        {showCPassword ? (
+                            <FaEyeSlash onClick={() => setShowCPassword((prev) => !prev)} className="cursor-pointer text-slate-500" />
+                        ) : (
+                            <FaEye onClick={() => setShowCPassword((prev) => !prev)} className="cursor-pointer text-slate-500" />
+                        )}
+                    </div>
+                    <h1 className="text-sm text-red-500">{error?.cpassword}</h1>
+                </div>
+
+                <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 shadow-sm">
+                    <input
+                        type="checkbox"
+                        id="termsAndCondition"
+                        name="termsAndCondition"
+                        checked={formData.termsAndCondition}
+                        onChange={formInputValidation}
+                        className="mt-1 h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                    />
+                    <span>
+                        I agree to the <a href="/terms" target="_blank" rel="noreferrer" className="text-amber-600 underline">Terms and Conditions</a>.
+                    </span>
+                </label>
+                {error.terms && <h1 className="text-sm text-red-500">{error.terms}</h1>}
+
+                <div className="w-full pt-2 text-center">
+                    <button
+                        disabled={isSubmitting}
+                        className="w-full rounded-xl bg-slate-900 px-4 py-3 text-base font-semibold text-white shadow-lg shadow-slate-900/10 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-400"
+                    >
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                    </button>
+                </div>
             </form>
         </div>
-    )
+    );
 }
 
 export default DesignerRegistration;

@@ -343,6 +343,7 @@ export const verifyPhoneCode = async(req, res, next) => {
 export const userLogin = async(req, res, next) => {
     try{
         const { email, password } = req.body;
+        console.log(email, password)
         validateLoginData({email, password})
         const login = await loginUser({email, password})
         const { accessToken, refreshToken, user } = login;
