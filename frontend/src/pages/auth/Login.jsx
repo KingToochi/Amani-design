@@ -40,7 +40,7 @@ const Login = () => {
                 const authVerified = await verifyAndFetchAuth();
 
                 if (authVerified) {
-                    navigate(from || "/products", { replace: true } );
+                    navigate(from, { replace: true } );
                     return;
                 }
 

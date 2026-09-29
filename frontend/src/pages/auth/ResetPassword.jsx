@@ -33,6 +33,10 @@ const ResetPassword = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [searchParams] = useSearchParams();
+    const [popup, setPopup] = useState({
+        message,
+        type
+    })
     const [formData, setFormData] = useState({
         password: "",
         confirmPassword: ""
@@ -48,7 +52,7 @@ const ResetPassword = () => {
     const verifyLink = async () => {
         try {
             if (!token) {
-                Popup({
+                setPopup({
                     message: "Invalid reset link",
                     type: "error"
                 });
@@ -67,7 +71,7 @@ const ResetPassword = () => {
             const response = await verify.json();
 
             if (!verify.ok) {
-                Popup({
+                setPopup({
                     message: response.message || "Invalid or expired reset link",
                     type: "error"
                 });
@@ -78,7 +82,7 @@ const ResetPassword = () => {
             setLoading(false);
         } catch (error) {
             console.error(error);
-            Popup({
+            setPopup({
                 message: "Unable to verify reset link",
                 type: "error"
             });
@@ -161,7 +165,7 @@ const ResetPassword = () => {
                 throw new Error(response.message || "Unable to reset password");
             }
 
-            Popup({
+            setPopup({
                 message: "Password reset successfully",
                 type: "success"
             });
@@ -197,6 +201,18 @@ const ResetPassword = () => {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-10">
+            {popup.message && (
+                <Popup
+                    message={popup.message}
+                    type={popup.type}
+                    onClose={() =>
+                        setPopup({
+                            message: "",
+                            type: "success"
+                        })
+                    }
+                />
+            )}
             <div className="w-full max-w-md">
                 <div className="rounded-[28px] border border-slate-200 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.12)] backdrop-blur-sm sm:p-8">
                     <div className="mb-6 flex items-center justify-between gap-3">

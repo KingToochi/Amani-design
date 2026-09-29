@@ -27,6 +27,10 @@ const submitRecoveryRequest = async (payload) => {
 export const UseEmailAddress = () => {
     const [email, setEmail] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [popup, setPopup] = useState({
+        message,
+        type,
+    })
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -38,7 +42,7 @@ export const UseEmailAddress = () => {
 
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
-            Popup({ message: "Please enter a valid email address", type: "error" });
+            setPopup({ message: "Please enter a valid email address", type: "error" });
             return;
         }
 
@@ -60,6 +64,18 @@ export const UseEmailAddress = () => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            {popup.message && (
+                <Popup
+                    message={popup.message}
+                    type={popup.type}
+                    onClose={() =>
+                        setPopup({
+                            message: "",
+                            type: "success"
+                        })
+                    }
+                />
+            )}
             <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700">
                     Email address
