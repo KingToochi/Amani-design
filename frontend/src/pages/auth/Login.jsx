@@ -150,10 +150,10 @@ const Login = () => {
                     >{errors.password.message}</h2>
                 )}
 
-                <button to="/forget-password" 
-                className="w-full font-medium text-left"
+                <Link to="/forget-password" 
+                className="w-full font-medium text-left cursor-pointer"
                 >Forgot your password?
-                </button>
+                </Link>
 
                 <button
                 type="submit"
