@@ -36,7 +36,7 @@ export const UseEmailAddress = () => {
         event.preventDefault();
 
         if (!email.trim()) {
-            setopup({ message: "Please enter your email address", type: "error" });
+            setPopup({ message: "Please enter your email address", type: "error" });
             return;
         }
 
@@ -63,8 +63,8 @@ export const UseEmailAddress = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            {popup.message && (
+        <>
+        {popup.message && (
                 <Popup
                     message={popup.message}
                     type={popup.type}
@@ -76,6 +76,8 @@ export const UseEmailAddress = () => {
                     }
                 />
             )}
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            
             <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700">
                     Email address
@@ -104,38 +106,56 @@ export const UseEmailAddress = () => {
                 {isSubmitting ? "Sending reset link..." : "Send reset link"}
             </button>
         </form>
+        </>
     );
 };
 
 export const UseUsername = () => {
     const [username, setUsername] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [popup, setPopup] = useState({
+        message: "",
+        type: "suceess"
+    })
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (!username.trim()) {
-            Popup({ message: "Please enter your username", type: "error" });
+            setPopup({ message: "Please enter your username", type: "error" });
             return;
         }
 
         try {
             setIsSubmitting(true);
             await submitRecoveryRequest({ username });
-            Popup({
+            setPopup({
                 message: "A verification link has been sent to your email address",
                 type: "success"
             });
             setUsername("");
         } catch (error) {
             console.error(error);
-            Popup({ message: error.message, type: "error" });
+            setPopup({ message: error.message, type: "error" });
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
+        <>
+        {popup.message && (
+                <Popup
+                    message={popup.message}
+                    type={popup.type}
+                    onClose={() =>
+                        setPopup({
+                            message:"",
+                            type: "sucess"
+                        })
+                    }
+                />
+            )}
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
                 <label htmlFor="username" className="block text-sm font-medium text-slate-700">
@@ -165,6 +185,7 @@ export const UseUsername = () => {
                 {isSubmitting ? "Sending reset link..." : "Send reset link"}
             </button>
         </form>
+        </>
     );
 };
 
