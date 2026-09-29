@@ -117,6 +117,7 @@ export const registerVendor = async({req, exists, fname, lname, email, phoneNumb
 
 export const loginUser = async({email, password}) => {
     const loginIdentifier = String(email).trim().toLowerCase();
+    console.log(email, password)
         const user = await User.findOne({ $or: [{ email: loginIdentifier }, { username: loginIdentifier }] });
         if (!user) throw new Error("User not found")
         if(user.role !== "user" && user.role !== "vendor") throw new Error( "Access denied")
