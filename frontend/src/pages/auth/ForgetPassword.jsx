@@ -70,8 +70,8 @@ export const UseEmailAddress = () => {
                     type={popup.type}
                     onClose={() =>
                         setPopup({
-                            message: "",
-                            type: "success"
+                            message,
+                            type
                         })
                     }
                 />
