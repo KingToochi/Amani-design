@@ -1,13 +1,14 @@
 import { fetchUsername, fetchEmail, fetchUser, registerVendor, registerUser, loginUser, logUserOut} from "./users.service.js";
-import { validateUserUpdatedInfo, userValidation, registrationValidation, validateVendorRegistration, validateLoginData } from "./users.validation.js";
+import { validateUserUpdatedInfo, userValidation, registrationValidation, validateVendorRegistration, validateLoginData, validateResetPasswordLink } from "./users.validation.js";
 import { parseBooleanFlag } from "../../utils/booleanFlag.js"
 import { getCookieOptions } from "../../utils/getCookieOptions.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import PhoneVerification from "../../models/PhoneVerification.js";
-import { sendRegistrationEmails, sendVerificationEmail } from "../../integrations/email/email.service.js";
+import { sendRegistrationEmails, sendVerificationEmail, changePasswordLink } from "../../integrations/email/email.service.js";
 import cloudinary from "../../config/cloudinary.js";
 import fs from "fs";
+import bcrypt from "bcryptjs";
 
 export const updateProfilePicture = async (req, res, next) => {
     try {
@@ -125,7 +126,7 @@ export const updateUser = async(req, res, next) => {
 export const getUserInfo = async(req, res, next) => {
 try {
     const auth = req.user
-    const validate = userValidation(auth)
+    userValidation(auth)
     const user = await fetchUser(auth)
     //  Explicitly define which fields to return
     const userInfo = {
@@ -342,7 +343,7 @@ export const verifyPhoneCode = async(req, res, next) => {
 export const userLogin = async(req, res, next) => {
     try{
         const { email, password } = req.body;
-        const validate = validateLoginData({email, password})
+        validateLoginData({email, password})
         const login = await loginUser({email, password})
         const { accessToken, refreshToken, user } = login;
          // Set access token in HTTP-only cookie
@@ -371,3 +372,93 @@ export const userLogout = async(req, res, next) => {
         next(error)
     }
 }
+
+export const forgetPassword = async(req, res, next) => {
+    try {
+        if (!req.body || (!req.body.email && !req.body.username)) {
+            throw new Error("email or username is required")
+        }
+        let user;
+
+        if (req.body.email) {
+            const {email} = req.body
+            user = await fetchEmail(email)
+            if(!user) throw new Error("email address does not exist");    
+        }
+
+        if (req.body.username) {
+            const {username} = req.body
+            user = await fetchUsername(username)
+            if (!user) throw new Error("username does not exist") 
+        }
+
+        if (user.role === "admin") {
+            const error = new Error("unathorized")
+            error.statuscode = 403
+            throw error
+        }
+        const token = jwt.sign({ _id: user._id, email: user.email, purpose: "password-reset"
+            
+        }, process.env.JWT_SECRET, { expiresIn: "24h" })
+        await changePasswordLink({
+            email : user.email,
+            firstName : user.fname,
+            resetPasswordUrl : `${process.env.FRONTEND_URL}/reset-password?token=${token}`
+        })
+
+        return res.status(200).json({
+            message : "verification link sent to your email"
+        })
+
+
+    }catch(error) {
+        next(error)
+    }
+}
+
+export const verifyResetPasswordLink = async(req, res, next) => {
+    try {
+        const {token} = req.body
+        if (!token) {
+            throw new Error("Reset token is required");
+        }
+        validateResetPasswordLink(token)
+        return res.status(200).json({
+            message : "verification link verified"
+        })
+
+    }catch(error){
+        next(error)
+    }
+}
+
+export const resetPassword = async(req, res, next) =>{
+    try {
+        const {token, password} = req.body
+        const decoded = validateResetPasswordLink(token)
+        const user = await fetchUser(decoded)
+
+        if (!user) {
+            return res.status(404).json({success: false, message: "User not found" })
+        }
+        if (user.role === "admin") {
+            const error = new Error("unathorized")
+            error.statuscode = 403
+            throw error
+        }
+        
+        let hashedPassword = await bcrypt.hash(password, 10)
+        user[password] = hashedPassword
+
+        await user.save()
+        return res.status(200).json({
+            message: "password updated"
+        })
+
+    }catch(error){
+        next(error)
+    }
+}
+
+
+

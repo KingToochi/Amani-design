@@ -56,3 +56,15 @@ export const sendVerificationEmail = async ({ email, verificationUrl }) => {
     });
 };
 
+export const changePasswordLink = async({
+    email,
+    firstName,
+    resetPasswordUrl
+}) => {
+    return sendEmail({
+        to : email,
+        subject : "change password",
+        html: `<h1> Hello ${firstName}</h1>, <h1>Click the link below to  change your password</h1> <p><a href="${resetPasswordUrl}">change password</a></p>`
+    })
+}
+

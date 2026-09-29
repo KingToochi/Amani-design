@@ -46,6 +46,8 @@ import PrivacyPage from "./pages/customer/PrivacyPage";
 import TermsPage from "./pages/customer/TermsPage";
 import FlutterwavePaymentData from "./features/payments/components/FlutterWavePayment";
 import InitiatePayment from "./features/payments/components/InitiatePayment";
+import ResetPassword from "./pages/auth/ResetPassword.jsx";
+import ForgetPassword from "./pages/auth/ForgetPassword.jsx";
 
 function App() {
   return (
@@ -73,6 +75,8 @@ function App() {
           <Route path="faq" element={<FAQPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="terms" element={<TermsPage />} />
+          <Route path="reset-password" element={<ResetPassword/>} /> 
+          <Route path="forget-password" element={<ForgetPassword/>} />
         </Route>
 
         <Route path="/admin-login" element={<AdminLogin />} />

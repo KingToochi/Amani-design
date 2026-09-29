@@ -1,6 +1,7 @@
 import User from "../../models/User.js";
 import { fetchEmail } from "./users.service.js";
 import { fetchUsername } from "./users.service.js";
+import jwt from "jsonwebtoken";
 
 export const validateUserUpdatedInfo = async ({updates, userId}) => {
     if (!updates || Object.keys(updates).length === 0) {
@@ -107,4 +108,15 @@ export const validateLoginData = ({email, password}) => {
     }
 
     return
+}
+
+export const validateResetPasswordLink = (token) => {
+  const decoded = jwt.verify(
+    token,
+    process.env.JWT_SECRET
+  )
+  if(!decoded) throw new Error("invalid link or link expired");
+  if(!decoded._id || !decoded.email || !decoded.purpose) throw new Error("Invalid reset link or missing information")
+  if (decoded.purpose !== "password-reset") throw new Error("invalid reset link")
+  return decoded
 }

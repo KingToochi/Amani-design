@@ -110,7 +110,7 @@ const Login = () => {
         lg:gap-6
         ">
             {serverError && <ServerError serverError={serverError} />}
-            <button 
+            {/* <button 
             className="w-full border-1 rounded-lg py-2 border-gray-100 cursor-pointer"
             >
                 <h2
@@ -118,11 +118,11 @@ const Login = () => {
                 >
                     Continue With Google
                 </h2>
-            </button>
+            </button> */}
 
-            <h2
+            {/* <h2
             className="font-bold"
-            >OR</h2>
+            >OR</h2> */}
 
             <form 
             className="w-[90%] mx-auto flex flex-col items-center gap-10
@@ -150,7 +150,7 @@ const Login = () => {
                     >{errors.password.message}</h2>
                 )}
 
-                <button to="" 
+                <button to="/forget-password" 
                 className="w-full font-medium text-left"
                 >Forgot your password?
                 </button>

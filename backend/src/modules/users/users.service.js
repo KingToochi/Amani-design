@@ -121,7 +121,7 @@ export const loginUser = async({email, password}) => {
         if (!user) throw new Error("User not found")
         if(user.role !== "user" && user.role !== "vendor") throw new Error( "Access denied")
         const hashedPassword = user.password
-        const ismatch = await bcrypt.compare(password, hashedPassword)
+        const ismatch = bcrypt.compare(password, hashedPassword)
         if (!ismatch)  throw new Error("Incorrect password")
     
         const accessToken = await generateToken(loginIdentifier, { expiresIn: "30m" })

@@ -4,9 +4,7 @@ import logo from "../../assets/images/mainLogo.jpg"
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
-import ServerError from "../../components/common/ServerError";
 import deliveryRoute from "../../components/common/deliveryRoute";
 
 const UserRegistration = () => {

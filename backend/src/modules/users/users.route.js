@@ -1,5 +1,5 @@
 import express from "express"
-import {getUsername, getEmail, getUser, updateUser, updateProfilePicture, getUserInfo, registration, vendorRegistration, userLogin, userLogout, verifyEmail, resendEmailVerification, sendPhoneVerificationCode, verifyPhoneCode} from "./users.controller.js"
+import {getUsername, getEmail, getUser, updateUser, updateProfilePicture, getUserInfo, registration, vendorRegistration, userLogin, userLogout, verifyEmail, resendEmailVerification, sendPhoneVerificationCode, verifyPhoneCode, forgetPassword, verifyResetPasswordLink, resetPassword} from "./users.controller.js"
 import verifyToken from "../../middleware/verifyToken.js"
 import multer from "multer"
 
@@ -22,7 +22,9 @@ route.post("/registration/vendor",uploadImage.fields([
   {name: "proofOfAddress", maxCount: 1}
 ]), vendorRegistration)
 
-
+route.post("/forget_password", forgetPassword)
+route.post("/verify-reset-link", verifyResetPasswordLink)
+route.post("reset-password", resetPassword)
 route.post("/login", userLogin)
 route.post("/logout", userLogout)
 
