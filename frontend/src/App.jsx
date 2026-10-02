@@ -48,6 +48,7 @@ import FlutterwavePaymentData from "./features/payments/components/FlutterWavePa
 import InitiatePayment from "./features/payments/components/InitiatePayment";
 import ResetPassword from "./pages/auth/ResetPassword.jsx";
 import ForgetPassword from "./pages/auth/ForgetPassword.jsx";
+import Subscription from "./pages/seller/subscription/Subscription.jsx";
 
 function App() {
   return (
@@ -91,6 +92,7 @@ function App() {
           <Route path="sales" element={<Sales />} />
           <Route path="messages" element={<Message />} />
           <Route path="orders/vendor_order/:id" element={<VendorOrderDetails/>}/>
+          <Route path="subscription" element={<Subscription/>}/>
         </Route> 
         </Route>
 

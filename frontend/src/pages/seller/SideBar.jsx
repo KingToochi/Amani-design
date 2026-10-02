@@ -1,4 +1,4 @@
-import { MdOutlineDashboard  } from "react-icons/md";
+import { MdOutlineDashboard, MdWorkspacePremium } from "react-icons/md";
 import { FcSalesPerformance } from "react-icons/fc"
 import { FaPalette } from "react-icons/fa6";
 import { Link } from "react-router-dom";
@@ -89,6 +89,14 @@ const SideBar = ({className, userData}) => {
                     >
                         <BsTag />
                         <h1>Sales</h1>
+                    </Link>
+                </li>
+                <li>
+                    <Link to="/vendor/subscription"
+                    className="flex w-full items-center gap-2 text-lg font-[abril] font-normal  focus:bg-purple-800/50 px-2 focus:rounded-lg"
+                    >
+                        <MdWorkspacePremium />
+                        <h1>Subscription</h1>
                     </Link>
                 </li>
                 <li>
