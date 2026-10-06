@@ -1,5 +1,5 @@
 import { useEffect, useState} from "react";
-import { MdOutlineDashboard  } from "react-icons/md"
+import { MdOutlineDashboard, MdWorkspacePremium } from "react-icons/md"
 import { FcSalesPerformance } from "react-icons/fc"
 import { Link, useLocation } from "react-router-dom";
 import { IoChatboxOutline, IoSettingsOutline } from "react-icons/io5";
@@ -194,6 +194,17 @@ const Header = ({userData}) => {
                                     >
                                         <BsTag/>
                                         <h2>Sales</h2>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/vendor/subscription" onClick={menubar}
+                                    className="flex gap-6 items-center text-lg font-semibold font-[abril]
+                                    focus:bg-purple-800/50 px-2 focus:rounded-lg
+                                    sm:text-xl
+                                    "
+                                    >
+                                        <MdWorkspacePremium />
+                                        <h2>Subscription</h2>
                                     </Link>
                                 </li>
                                 <li>

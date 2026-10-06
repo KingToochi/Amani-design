@@ -267,7 +267,7 @@ const Subscription = () => {
                                 </p>
                             </div>
                             <div className="rounded-2xl bg-slate-50 p-4">
-                                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Sales commission</p>
+                                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">MarketPlace charge</p>
                                 <p className="mt-2 text-lg font-semibold text-slate-900">
                                     {activePlan ? activePlan.commission : "—"}
                                 </p>
