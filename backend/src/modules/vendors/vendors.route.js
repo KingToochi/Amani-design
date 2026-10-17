@@ -1,6 +1,6 @@
 import express from "express"
 import verifyToken from "../../middleware/verifyToken.js"
-import { confirmItem, getOrderDetailsById, getProductAnalytics, getVendorOrders, getVendorSales, getVendorNotifications, markNotificationRead } from "./vendors.controller.js"
+import { confirmItem, getOrderDetailsById, getProductAnalytics, getVendorOrders, getVendorSales, getVendorNotifications, markNotificationRead, subscribeVendorPlan} from "./vendors.controller.js"
 
 const route = express.Router()
 
@@ -11,5 +11,6 @@ route.get("/notifications", verifyToken, getVendorNotifications)
 route.put("/notifications/:id/read", verifyToken, markNotificationRead)
 route.get("/orderDetails/:id", verifyToken, getOrderDetailsById)
 route.post("/confirmItemAvailability", verifyToken, confirmItem)
+route.post("/subscribe", verifyToken, subscribeVendorPlan)
 
 export default route

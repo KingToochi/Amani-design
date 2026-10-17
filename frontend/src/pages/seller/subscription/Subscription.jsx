@@ -3,6 +3,7 @@ import { Check, Crown, ShieldCheck, Sparkles } from "lucide-react";
 import { BASE_URL } from "../../../Url";
 import CustomFetch from "../../../hooks/useFetch";
 import Popup from "../../../components/common/Popup";
+import { useNavigate } from "react-router-dom";
 
 const subscriptionPlan = [
     {
@@ -67,6 +68,7 @@ const Subscription = () => {
     const [subscriptionStatus, setSubscriptionStatus] = useState("");
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -80,7 +82,7 @@ const Subscription = () => {
                 if (!data.success) {
                     throw new Error(data.message || "Unable to fetch your details");
                 }
-
+                console.log("User info fetched successfully:", data);
                 setCurrentSubscriptionPlan(data.user.subscriptionPlan || "basic");
                 setSubscriber(Boolean(data.subScriber));
                 setSubscriptionExpiryDate(data.user.subscriptionExpiryDate || "");
@@ -100,6 +102,35 @@ const Subscription = () => {
         fetchUserInfo();
     }, []);
 
+    const handleSubmit = async (planName, planAmount) => {
+        try{
+            const response = await CustomFetch(`${BASE_URL}/vendors/subscribe`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ planName, planAmount }),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || "Unable to submit subscription request");
+            }
+
+            Popup({
+                message: data.message || "Subscription initialized successfully",
+                type: "success",
+            });
+
+            window.location.href = data.data.authorization_url;
+        }catch(error) {
+            Popup({
+                message: error.message || "Unable to submit subscription request",
+                type: "error",
+            });
+        }
+    }
     const activePlan = useMemo(
         () => subscriptionPlan.find((plan) => plan.id === currentSubscriptionPlan?.toLowerCase()),
         [currentSubscriptionPlan]
@@ -220,6 +251,7 @@ const Subscription = () => {
 
                                 <button
                                     type="button"
+                                    onClick={()=>handleSubmit(plan.id, plan.price)}
                                     className={[
                                         "mt-8 w-full rounded-2xl px-4 py-3 text-sm font-bold transition-all",
                                         isCurrentPlan

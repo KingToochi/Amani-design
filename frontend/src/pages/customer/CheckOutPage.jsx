@@ -101,24 +101,6 @@ const CheckOut = () => {
             description: "Visa, Mastercard, Verve",
             icon: <CreditCard size={26} />,
         },
-        // {
-        //     id: "bank_transfer",
-        //     title: "Bank Transfer",
-        //     description: "Transfer directly from your bank",
-        //     icon: <Landmark size={26} />,
-        // },
-        // {
-        //     id: "ussd",
-        //     title: "USSD",
-        //     description: "Pay using your bank USSD code",
-        //     icon: <Smartphone size={26} />,
-        // },
-        // {
-        //     id: "mobile_money",
-        //     title: "Mobile Money",
-        //     description: "Wallet & Mobile Money",
-        //     icon: <Wallet size={26} />,
-        // },
     ];
 
     const handleEditMode = () => {
@@ -175,26 +157,7 @@ const CheckOut = () => {
         }, 0);
     };
 
-    // const calculateShipping = () => {
-    //     // const subtotal = calculateSubtotal();
-    //     return
-    // };
-
-    // const calculateTax = () => {
-    //     return calculateSubtotal() * 0.08;
-    // };
-
-    // const calculatePaymentFee = (subtotal = calculateSubtotal()) => {
-    //     const feeRate = Number(import.meta.env.VITE_PAYMENT_FEE_RATE || 0.029);
-    //     const feeFixed = Number(import.meta.env.VITE_PAYMENT_FEE_FIXED || 100);
-    //     return Number((subtotal * feeRate + feeFixed).toFixed(2));
-    // };
-
-    // const calculateTotal = () => {
-    //     const subtotal = calculateSubtotal();
-    //     // const paymentFee = calculatePaymentFee(subtotal);
-    //     return Number((subtotal).toFixed(2));
-    // };
+    
 
     const handlePlaceOrder = async () => {
         const subtotal = calculateSubtotal()

@@ -1,4 +1,5 @@
 import { confirmItemAvailability, fetchProductAnalytics, fetchVendorProduct, fetchVendorProductById } from "./vendors.service.js"
+import initializeSubscription from "../../integrations/paystack/initializeSubscription.js"
 import Sales from "../../models/Sales.js"
 import Orders from "../../models/Order.js"
 import Comments from "../../models/Comment.js"
@@ -386,3 +387,21 @@ export const markNotificationRead = async(req, res, next) => {
     next(error);
   }
 };
+
+export const subscribeVendorPlan = async(req, res, next) => {
+  try {
+    const subscriptionResponse = await initializeSubscription(req)
+
+    if(!subscriptionResponse.status) {
+      throw new Error(subscriptionResponse.message || "Unable to initialize subscription")
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Subscription initialized successfully",
+      data: subscriptionResponse.data
+    })
+  }catch(error) {
+    next(error)
+  }
+}
