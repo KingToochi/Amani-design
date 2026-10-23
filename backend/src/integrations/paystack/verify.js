@@ -1,25 +1,15 @@
 import axios from "axios";
 import Order from "../../models/Order.js";
+import Payment from "../../models/Payment.js"
 
 const verifyPaystackPayment = async (reference) => {
-
-    if (!reference) {
-        throw new Error("Payment reference is required");
-    }
-
-    // Check if this Paystack reference has already been used
-    const existingOrder = await Order.findOne({
-        paymentReference: reference
-    });
-
-    if (existingOrder) {
-
-        throw new Error(
-            "This payment reference has already been used"
-        );
-    }
-
     try {
+        if (!reference) {
+            throw new Error("Payment reference is required");
+        }
+
+        
+
 
         const response = await axios({
             url: `https://api.paystack.co/transaction/verify/${reference}`,
@@ -32,18 +22,49 @@ const verifyPaystackPayment = async (reference) => {
         });
 
         const payment = response.data.data;
-
-        console.log(
-            "Paystack verification response:",
-            JSON.stringify(response.data, null, 2)
-        );
+        const paymentModel = await Payment.findOne({reference})
 
         // Check whether Paystack says payment succeeded
         if (payment.status !== "success") {
+            
+            if (paymentModel && paymentModel.status === "pending") {
+                paymentModel.status = "failed"
+                await paymentModel.save()
+        }
             throw new Error("Payment was not successful");
         }
 
-        return payment;
+        if (paymentModel) {
+            if(paymentModel.purpose === "payment for products"){
+                 // Check if this Paystack reference has already been used
+                const existingOrder = await Order.findOne({
+                    paymentReference: reference
+                });
+
+                if (existingOrder) {
+
+                    throw new Error(
+                        "This payment reference has already been used"
+                    );
+                }
+            }
+
+            if(paymentModel.purpose === "Subscription payment") {
+                if (paymentModel.status === "successful") {
+                    throw new Error(
+                        "This subscription payment reference has already been used"
+                    );
+                }
+            }
+           
+        }
+
+        const data = {
+            payment,
+            paymentModel
+        }
+
+        return data;
 
     } catch (error) {
 

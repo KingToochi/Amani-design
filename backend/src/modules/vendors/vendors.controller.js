@@ -8,6 +8,7 @@ import Order from "../../models/Order.js"
 import Product from "../../models/Product.js"
 import User from "../../models/User.js"
 import Notification from "../../models/Notification.js"
+import Payment from "../../models/Payment.js"
 export const getProductAnalytics =  async(req, res, next) => {
     try{
             const auth = req.user
@@ -390,11 +391,23 @@ export const markNotificationRead = async(req, res, next) => {
 
 export const subscribeVendorPlan = async(req, res, next) => {
   try {
+    const amount = req.body.planAmount;
+    const plan = req.body.planName;
     const subscriptionResponse = await initializeSubscription(req)
 
     if(!subscriptionResponse.status) {
       throw new Error(subscriptionResponse.message || "Unable to initialize subscription")
     }
+    const payment = new Payment({
+      reference: subscriptionResponse.data.reference,
+      acessCode: subscriptionResponse.data.access_code,
+      purpose: subscriptionResponse.data.metadata.purpose,
+      amount: amount,
+      planName: plan,
+      status: "pending"
+    })
+
+    await payment.save()
 
     res.status(200).json({
       success: true,

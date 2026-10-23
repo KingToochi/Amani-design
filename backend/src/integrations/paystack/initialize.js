@@ -4,29 +4,25 @@ import calculateAmount from "../../utils/calculateAmount.js";
 const paystackInitialization = async (email, cart) => {
   try {
     console.log(cart)
-    const callBack = `${process.env.FRONTEND_URL}//payment-callback`
+    const callBack = `${process.env.FRONTEND_URL}/payment-callback`
     console.log(callBack)
         if (!email){
             throw new Error("Email is required");
-            return;
         }
         if(!cart || !Array.isArray(cart) || cart.length === 0){
             throw new Error("Cart is required and must be a non-empty array");
-            return;
         }
         const calculatedAmount = await calculateAmount(cart);
-        console.log(calculateAmount)
+        console.log(calculatedAmount)
         if (!Number.isFinite(calculatedAmount) || calculatedAmount <= 0) {
         throw new Error("A valid amount is required");
-        return
-    }
+        }
     console.log("Calculated amount:", calculatedAmount);
         const nairaToKobo = Math.round(Number(calculatedAmount) * 100);
         const amount = nairaToKobo.toString();
         console.log("Calculated amount in kobo:", amount);
         if (!amount){
             throw new Error("Amount is required");
-            return;
         }
 
       const response = await axios({
@@ -36,13 +32,17 @@ const paystackInitialization = async (email, cart) => {
             authorization : `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
             "Content-Type" : "application/json",
         },
+       
+
         data : {
             email : email,
             amount : amount,
-            callback_url :  callBack
+            callback_url :  callBack,
+            metadata: {
+            "purpose" : "payment for products",
+        }
         }
     })
-        console.log("Paystack initialization response:", JSON.stringify(response.data, null, 2));
       return response.data
   }
   catch (error) {

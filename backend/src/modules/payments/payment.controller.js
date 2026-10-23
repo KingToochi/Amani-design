@@ -1,6 +1,7 @@
 import paystackInitialization from "../../integrations/paystack/initialize.js";
 import { validatePaymentInitiation } from "./payment.validation.js";
 import { paymentVerification } from "./payment.service.js";
+import Payment from "../../models/Payment.js";
 
 export const initiatePayment = async(req, res, next) => {
     try {
@@ -9,7 +10,17 @@ export const initiatePayment = async(req, res, next) => {
             email,
             cart
         );
-        const validate = validatePaymentInitiation
+        validatePaymentInitiation(initPaystack)
+
+        const payment = new Payment({
+            reference: initPaystack.data.reference,
+            acessCode: initPaystack.data.access_code,
+            purpose: initPaystack.data.metadata.purpose,
+            amount: initPaystack.data.amount,
+            status: "pending"
+        })
+
+        await payment.save()
 
         return res.status(200).json({
             success: true,

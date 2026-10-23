@@ -2,6 +2,8 @@
 import crypto from "crypto";
 import axios from "axios";
 import User from "../../models/User"
+import verifyPaystackPayment from "./verify"
+import Payment from "../../models/Payment"
 
 export const paystackWebhook = async (req, res) => {
   const signature = req.headers["x-paystack-signature"];
@@ -31,38 +33,109 @@ export const paystackWebhook = async (req, res) => {
     console.log("Paystack event:", event);
 
     switch (event) {
-      case "subscription.create":
-        console.log("Subscription created:", data.subscription_code);
-        // Save the Paystack subscription details.
+    case "charge.success": {
+      const reference = data.reference;
+
+      if (!reference) {
+        throw new Error("Payment reference is missing");
+      }
+
+      const verifiedPayment = await verifyPaystackPayment(reference);
+      const payment = verifiedPayment.payment;
+      let paymentModel = verifiedPayment.paymentModel;
+
+      // Confirm the actual transaction succeeded.
+      if (payment.status !== "success") {
+        throw new Error("Payment was not successful");
+      }
+
+      // Make sure the verified reference matches the webhook.
+      if (payment.reference !== reference) {
+        throw new Error("Payment reference mismatch");
+      }
+
+      if (payment.currency !== "NGN") {
+        throw new Error("Invalid payment currency");
+      }
+
+      // Avoid processing an already completed payment twice.
+      if (paymentModel?.status === "successful") {
         break;
+      }
 
-      case "charge.success":
-        console.log("Payment successful:", data.reference);
-        // Verify payment details against your pending payment record.
-        const response = await axios({
-            url: `https://api.paystack.co/transaction/verify/${data.reference}`,
-            method: "GET",
+      const purpose = payment.metadata?.purpose;
 
-            headers: {
-                Authorization:
-                    `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-            },
-        });
+      if (!purpose) {
+        throw new Error("Payment purpose is missing");
+      }
 
-        const payment = response.data.data;
+      // Validate the payment against your own pending payment record.
+      if (!paymentModel) {
+        throw new Error("No matching payment record exists");
+      }
 
-        if (payment.status === "success" || payment.data.status === "success") {
-            console.log("Payment verified successfully:", payment);
-            const userEmail = payment.customer.email;
+      if (Number(paymentModel.amount) !== Number(payment.requested_amount)) {
+        throw new Error("Payment amount mismatch");
+      }
 
-            const user = await User.findOne({email : userEmail}).lean()
-            
+      if (paymentModel.purpose !== purpose) {
+        throw new Error("Payment purpose mismatch");
+      }
 
-            // Activate or renew the vendor's subscription.
+      if (purpose === "Subscription payment") {
+        const planName = payment.metadata?.planName;
+
+        const plans = {
+          basic: 200000,
+          standard: 300000,
+          premium: 500000,
+        };
+
+        if (!planName || Number(payment.requested_amount) !== plans[planName]) {
+          throw new Error("Invalid subscription plan or amount");
         }
 
-        // Activate or renew the vendor's subscription.
-        break;
+        const userEmail = payment.customer?.email;
+
+        const user = await User.findOne({ email: userEmail })
+          .select("role subscriber subscriptionDetails");
+
+        if (!user || user.role !== "vendor") {
+          throw new Error("Vendor account not found");
+        }
+
+        const now = new Date();
+        const currentExpiry = user.subscriptionDetails?.expiryDate;
+
+        // Extend an existing active subscription rather than
+        // accidentally shortening its remaining time.
+        const startDate =
+          user.subscriptionDetails?.status === "active" &&
+          currentExpiry &&
+          new Date(currentExpiry) > now
+            ? new Date(currentExpiry)
+            : now;
+
+        const expiryDate = new Date(startDate);
+        expiryDate.setMonth(expiryDate.getMonth() + 1);
+
+        user.subscriber = true;
+        user.subscriptionDetails = {
+          plan: planName,
+          status: "active",
+          startDate: now,
+          expiryDate,
+          interval: "monthly",
+        };
+
+        await user.save();
+      }
+
+      paymentModel.status = "successful";
+      await paymentModel.save();
+
+      break;
+    }
 
       case "invoice.payment_failed":
         console.log("Subscription payment failed:", data);

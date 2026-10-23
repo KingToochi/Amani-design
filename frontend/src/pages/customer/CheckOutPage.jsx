@@ -187,7 +187,6 @@ const CheckOut = () => {
 
         const responseData = await response.json();
 
-        console.log("Initialize payment response:", responseData);
 
         if (!response.ok || !responseData.success) {
             console.error(
@@ -198,8 +197,6 @@ const CheckOut = () => {
 
         const paymentData = responseData.data;
 
-        console.log("Paystack data:", paymentData);
-
         // Paystack authorization URL
         const authorizationUrl =
             paymentData.data.authorization_url;
@@ -208,8 +205,6 @@ const CheckOut = () => {
         const reference =
             paymentData.data.reference;
 
-        console.log("Reference:", reference);
-        console.log("Authorization URL:", authorizationUrl);
 
         // Redirect customer to Paystack
         window.location.href = authorizationUrl;

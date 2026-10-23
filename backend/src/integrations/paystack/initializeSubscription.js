@@ -47,10 +47,14 @@ const initializeSubscription = async(req) => {
                 email : email,
                 amount : amount,
                 plan :  plan,
+                metadata : {
+                    "purpose" : "Subscription payment",
+                    "planName" : planName,
+                    "planAmount" : planAmount,  
+                }
             }
         })
 
-        console.log("Paystack subscription initialization response:", JSON.stringify(response.data, null, 2));
         return response.data
     }catch(error){
         console.error(

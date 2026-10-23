@@ -11,7 +11,8 @@ export const validatePaymentInitiation = (initPaystack) => {
 }
 
 export const verifyPaymentStatus = (verifiedPayment) => {
-    if (verifiedPayment.status !== "success") {
+    const payment = verifiedPayment.payment
+    if (payment.status !== "success") {
         const error = new Error("unable to verify payment")
         error.statusCode = 400
         throw error
