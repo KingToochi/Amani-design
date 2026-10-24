@@ -96,7 +96,7 @@ export const paystackWebhook = async (req, res) => {
       console.log("purpose", purpose)
       console.log("paymentModel", paymentModel)
 
-      if (purpose === "subscription payment") {
+      if (purpose.toLowerCase() === "subscription payment") {
          console.log("everything good")
         const planName = payment.metadata?.planName;
 
