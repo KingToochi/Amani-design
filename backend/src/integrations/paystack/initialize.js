@@ -24,6 +24,7 @@ const paystackInitialization = async (email, cart) => {
         if (!amount){
             throw new Error("Amount is required");
         }
+        const purpose = "payment for products";
 
       const response = await axios({
         url : "https://api.paystack.co/transaction/initialize",
@@ -39,14 +40,14 @@ const paystackInitialization = async (email, cart) => {
             amount : amount,
             callback_url :  callBack,
             metadata: {
-            "purpose" : "payment for products",
+            "purpose" : purpose,
         }
         }
     })
 
     console.log("Paystack initialization response:", response.data);
     const data = response.data;
-      return {data, amount}
+      return {data, amount,purpose }
   }
   catch (error) {
     console.error(

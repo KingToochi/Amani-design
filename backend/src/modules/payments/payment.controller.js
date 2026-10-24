@@ -19,8 +19,8 @@ export const initiatePayment = async(req, res, next) => {
         const payment = new Payment({
             reference: initPaystack.data.reference,
             acessCode: initPaystack.data.access_code,
-            purpose: initPaystack.data?.metadata.purpose || "payment for products",
-            amount: initPaystack.data?.amount || math.round(Number(amount)/100) ,
+            purpose: inititate.purpose,
+            amount: Math.round(Number(amount)/100) ,
             status: "pending"
         })
 
