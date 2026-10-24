@@ -35,6 +35,8 @@ const initializeSubscription = async(req) => {
         else if (planName.toLowerCase() === "premium" && Number(planAmount) === 5000) {plan = process.env.PAYSTACK_PREMIUM_PLAN_CODE;}
         else throw new Error("Invalid plan or amount");
 
+        console.log(plan, planName, planAmount)
+
         const amount = Number(planAmount) * 100; // Convert to kobo
 
         const response = await axios({
