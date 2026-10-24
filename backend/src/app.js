@@ -41,6 +41,7 @@ import customerRoute from "./modules/customer/customer.route.js"
 import paymentRoute from "./modules/payments/payment.route.js"
 import orderRoute from "./modules/orders/orders.route.js"
 import reviewsRoute from "./modules/reviews/reviews.route.js"
+import {paystackWebhook} from "./integrations/paystack/webhook.js"
 
 
 dotenv.config();
@@ -94,6 +95,7 @@ app.use("/customer", customerRoute)
 app.use("/payment", paymentRoute)
 app.use("/order", orderRoute)
 app.use("/reviews", reviewsRoute)
+app.post("/webhook/paystack", paystackWebhook)
 
 app.use((req, res) => {
   res.status(404).json({

@@ -37,6 +37,7 @@ const initializeSubscription = async(req) => {
 
 
         const amount = Number(planAmount) * 100; // Convert to kobo
+        const purpose = "subscription payment"
 
         const response = await axios({
             url : "https://api.paystack.co/transaction/initialize",
@@ -50,7 +51,7 @@ const initializeSubscription = async(req) => {
                 amount : amount,
                 plan :  plan,
                 metadata : {
-                    "purpose" : "Subscription payment",
+                    "purpose" : purpose,
                     "planName" : planName,
                     "planAmount" : planAmount,  
                 }
@@ -58,8 +59,9 @@ const initializeSubscription = async(req) => {
         })
 
         console.log("Paystack subscription initialization response:", response.data);
+        const data = response.data;
 
-        return response.data
+        return {data, purpose, planAmount, planName}
     }catch(error){
         console.error(
         "Paystack subscription initialization error:",
