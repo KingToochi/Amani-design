@@ -408,7 +408,7 @@ export const subscribeVendorPlan = async(req, res, next) => {
     const payment = new Payment({
       reference: subscriptionResponse.data.reference,
       acessCode: subscriptionResponse.data.access_code,
-      purpose: subscriptionResponse.data.metadata.purpose,
+      purpose: purpose,
       amount: amount,
       planName: plan,
       status: "pending"
