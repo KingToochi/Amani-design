@@ -1,9 +1,9 @@
 
 import crypto from "crypto";
 import axios from "axios";
-import User from "../../models/User"
+import User from "../../models/User.js"
 import verifyPaystackPayment from "./verify"
-import Payment from "../../models/Payment"
+import Payment from "../../models/Payment.js"
 
 export const paystackWebhook = async (req, res) => {
   const signature = req.headers["x-paystack-signature"];
