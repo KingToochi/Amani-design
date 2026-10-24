@@ -12,6 +12,7 @@ export const initiatePayment = async(req, res, next) => {
             cart
         );
         validatePaymentInitiation(initPaystack)
+        console.log("Paystack initialization response:", initPaystack);
 
         const payment = new Payment({
             reference: initPaystack.data.reference,
