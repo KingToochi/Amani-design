@@ -2,7 +2,9 @@ import User from "../../models/User.js";
 import axios from "axios";
 const initializeSubscription = async(req) => {
     try {
-        const user = req.user;
+        const info = req.user;
+        const user = await User.findById(info._id).select("email role").exec();
+
         console.log("User from request:", user); // Log the user object for debugging
         const {planAmount, planName} = req.body;
 
@@ -17,15 +19,13 @@ const initializeSubscription = async(req) => {
             throw new Error("Only vendors can initialize a subscription");
         }
 
-        const userEmail = await User.findOne({
-            _id: user._id
-        }).select("email").exec();
+       
 
-         if(!userEmail?.email) {
+         if(!user?.email) {
             throw new Error("User email not found");
         }
 
-        const email = userEmail.email;
+        const email = user.email;
 
 
         let plan;
