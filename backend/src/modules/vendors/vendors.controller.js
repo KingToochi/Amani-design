@@ -395,6 +395,10 @@ export const subscribeVendorPlan = async(req, res, next) => {
     const amount = req.body.planAmount;
     const plan = req.body.planName;
     const subscriptionResponse = await initializeSubscription(req)
+    console.log("Subscription response:", subscriptionResponse); // Log the subscription response for debugging
+    if (!subscriptionResponse || !subscriptionResponse.data) {
+      throw new Error("Invalid subscription response from Paystack");
+    }
 
     if(!subscriptionResponse.status) {
       throw new Error(subscriptionResponse.message || "Unable to initialize subscription")
