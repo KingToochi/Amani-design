@@ -6,6 +6,7 @@ import verifyPaystackPayment from "./verify.js"
 import Payment from "../../models/Payment.js"
 
 export const paystackWebhook = async (req, res) => {
+  console.log("Received Paystack webhook:", req.body);
   const signature = req.headers["x-paystack-signature"];
 
   const hash = crypto

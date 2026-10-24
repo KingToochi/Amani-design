@@ -59,6 +59,17 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+// Register webhook BEFORE express.json()
+app.post(
+  "/webhook/paystack",
+  express.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf;
+    }
+}),
+  paystackWebhook
+);
+
 
 app.use(express.json());
 app.use(cookieParser());
@@ -95,7 +106,7 @@ app.use("/customer", customerRoute)
 app.use("/payment", paymentRoute)
 app.use("/order", orderRoute)
 app.use("/reviews", reviewsRoute)
-app.post("/webhook/paystack", paystackWebhook)
+
 
 app.use((req, res) => {
   res.status(404).json({
