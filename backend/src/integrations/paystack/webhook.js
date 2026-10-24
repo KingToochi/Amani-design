@@ -93,7 +93,10 @@ export const paystackWebhook = async (req, res) => {
         throw new Error("Payment purpose mismatch");
       }
 
-      if (purpose === "Subscription payment") {
+      console.log("purpose", purpose)
+      console.log("paymentModel", paymentModel)
+
+      if (purpose === "subscription payment") {
          console.log("everything good")
         const planName = payment.metadata?.planName;
 
