@@ -45,7 +45,8 @@ const paystackInitialization = async (email, cart) => {
     })
 
     console.log("Paystack initialization response:", response.data);
-      return response.data
+    const data = response.data;
+      return {data, amount}
   }
   catch (error) {
     console.error(

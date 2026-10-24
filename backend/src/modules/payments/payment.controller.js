@@ -7,18 +7,20 @@ export const initiatePayment = async(req, res, next) => {
     try {
         const { email, cart } = req.body;
         console.log("Received request body:", req.body);
-        const initPaystack = await paystackInitialization(
+        const inititate = await paystackInitialization(
             email,
             cart
         );
+        const initPaystack = inititate.data;
+        const amount = inititate.amount;
         validatePaymentInitiation(initPaystack)
         console.log("Paystack initialization:", initPaystack);
 
         const payment = new Payment({
             reference: initPaystack.data.reference,
             acessCode: initPaystack.data.access_code,
-            purpose: initPaystack.data.metadata.purpose,
-            amount: initPaystack.data.amount,
+            purpose: initPaystack.data?.metadata.purpose || "payment for products",
+            amount: initPaystack.data?.amount || math.round(Number(amount)/100) ,
             status: "pending"
         })
 
