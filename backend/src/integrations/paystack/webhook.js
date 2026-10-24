@@ -2,7 +2,7 @@
 import crypto from "crypto";
 import axios from "axios";
 import User from "../../models/User.js"
-import verifyPaystackPayment from "./verify"
+import verifyPaystackPayment from "./verify.js"
 import Payment from "../../models/Payment.js"
 
 export const paystackWebhook = async (req, res) => {
