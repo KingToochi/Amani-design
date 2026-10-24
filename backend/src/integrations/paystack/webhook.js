@@ -128,6 +128,7 @@ export const paystackWebhook = async (req, res) => {
           expiryDate,
           interval: "monthly",
         };
+        console.log(user)
 
         await user.save();
       }
