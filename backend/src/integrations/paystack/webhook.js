@@ -36,8 +36,10 @@ export const paystackWebhook = async (req, res) => {
     switch (event) {
     case "charge.success": {
       const reference = data.reference;
+      console.log("i have switch to success")
 
       if (!reference) {
+        console.log("no reference")
         throw new Error("Payment reference is missing");
       }
 
@@ -47,43 +49,52 @@ export const paystackWebhook = async (req, res) => {
 
       // Confirm the actual transaction succeeded.
       if (payment.status !== "success") {
+         console.log("not successful")
         throw new Error("Payment was not successful");
       }
 
       // Make sure the verified reference matches the webhook.
       if (payment.reference !== reference) {
+         console.log("reference not equal")
         throw new Error("Payment reference mismatch");
       }
 
       if (payment.currency !== "NGN") {
+         console.log("wrong currency")
         throw new Error("Invalid payment currency");
       }
 
       // Avoid processing an already completed payment twice.
       if (paymentModel?.status === "successful") {
+         console.log("payment is already successful")
         break;
       }
 
       const purpose = payment.metadata?.purpose;
 
       if (!purpose) {
+         console.log("no purpose")
         throw new Error("Payment purpose is missing");
       }
 
       // Validate the payment against your own pending payment record.
       if (!paymentModel) {
+         console.log("no paymentmodel")
         throw new Error("No matching payment record exists");
       }
 
       if (Number(paymentModel.amount) !== Number(payment.requested_amount) / 100) {
+         console.log("amount not equal")
         throw new Error("Payment amount mismatch");
       }
 
       if (paymentModel.purpose !== purpose) {
+         console.log("purpose not equal")
         throw new Error("Payment purpose mismatch");
       }
 
       if (purpose === "Subscription payment") {
+         console.log("everything good")
         const planName = payment.metadata?.planName;
 
         const plans = {
