@@ -31,7 +31,7 @@ export const paystackWebhook = async (req, res) => {
   try {
     const { event, data } = req.body;
 
-    console.log("Paystack event:", event);
+    console.log("Paystack event:", event, data);
 
     switch (event) {
     case "charge.success": {
