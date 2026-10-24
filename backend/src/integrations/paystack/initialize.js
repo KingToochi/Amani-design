@@ -43,6 +43,8 @@ const paystackInitialization = async (email, cart) => {
         }
         }
     })
+
+    console.log("Paystack initialization response:", response);
       return response.data
   }
   catch (error) {
