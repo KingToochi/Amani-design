@@ -391,6 +391,7 @@ export const markNotificationRead = async(req, res, next) => {
 
 export const subscribeVendorPlan = async(req, res, next) => {
   try {
+    console.log("Request body:", req.body); // Log the request body for debugging
     const amount = req.body.planAmount;
     const plan = req.body.planName;
     const subscriptionResponse = await initializeSubscription(req)

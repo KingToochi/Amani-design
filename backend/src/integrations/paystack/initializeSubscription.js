@@ -3,6 +3,7 @@ import axios from "axios";
 const initializeSubscription = async(req) => {
     try {
         const user = req.user;
+        console.log("User from request:", user); // Log the user object for debugging
         const {planAmount, planName} = req.body;
 
         if (!planAmount || !planName) {
