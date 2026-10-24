@@ -160,6 +160,8 @@ const CheckOut = () => {
     
 
     const handlePlaceOrder = async () => {
+        console.log("Placing order with cart:", cart);
+        console.log("User info:", userInfo);
         const subtotal = calculateSubtotal()
         if (!userInfo.phoneNumber || !userInfo.shippingAddress || !userInfo.city || !userInfo.state || !userInfo.deliveryCompany) {
             alert("Please complete your shipping information before proceeding to payment.");

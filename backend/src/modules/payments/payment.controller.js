@@ -6,6 +6,7 @@ import Payment from "../../models/Payment.js";
 export const initiatePayment = async(req, res, next) => {
     try {
         const { email, cart } = req.body;
+        console.log("Received request body:", req.body);
         const initPaystack = await paystackInitialization(
             email,
             cart
