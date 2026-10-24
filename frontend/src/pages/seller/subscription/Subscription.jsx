@@ -104,7 +104,7 @@ const Subscription = () => {
 
     const handleSubmit = async (planName, planAmount) => {
         try{
-            const response = await CustomFetch(`${BASE_URL}/vendors/subscribe`, {
+            const response = await CustomFetch(`${BASE_URL}/vendor/subscribe`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
