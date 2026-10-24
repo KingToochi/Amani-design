@@ -75,7 +75,7 @@ export const paystackWebhook = async (req, res) => {
         throw new Error("No matching payment record exists");
       }
 
-      if (Number(paymentModel.amount) !== Number(payment.requested_amount)) {
+      if (Number(paymentModel.amount) !== Number(payment.requested_amount) / 100) {
         throw new Error("Payment amount mismatch");
       }
 
