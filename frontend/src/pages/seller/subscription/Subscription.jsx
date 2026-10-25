@@ -260,7 +260,7 @@ const Subscription = () => {
                                                     : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
                                             ].join(" ")}
                                         >
-                                            Unsubscribe
+                                            Cancel subscription
                                         </button>
 
                                         :
@@ -275,7 +275,7 @@ const Subscription = () => {
                                                     : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
                                             ].join(" ")}
                                         >
-                                             `Choose ${plan.name}`
+                                             Choose {plan.name}
                                         </button>
                                     }
                                 </div>
