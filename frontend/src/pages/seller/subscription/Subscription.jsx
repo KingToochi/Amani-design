@@ -184,7 +184,6 @@ const Subscription = () => {
                 <div className="grid gap-6 lg:grid-cols-3">
                     {subscriptionPlan.map((plan) => {
                         const isCurrentPlan = subscriber && (currentSubscriptionPlan?.toLowerCase() === plan.id);
-                        console.log("isCurrentPlan", isCurrentPlan, "currentSubscriptionPlan", currentSubscriptionPlan, "plan.id", plan.id, "subscriber", subscriber)
 
                         return (
                             <div
@@ -250,18 +249,36 @@ const Subscription = () => {
                                     ))}
                                 </ul>
 
-                                <button
-                                    type="button"
-                                    onClick={()=>handleSubmit(plan.id, plan.price)}
-                                    className={[
-                                        "mt-8 w-full rounded-2xl px-4 py-3 text-sm font-bold transition-all",
-                                        isCurrentPlan
-                                            ? "cursor-default bg-slate-900 text-white shadow-md shadow-slate-300"
-                                            : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
-                                    ].join(" ")}
-                                >
-                                    {isCurrentPlan ? "Your active plan" : `Choose ${plan.name}`}
-                                </button>
+                                <div>
+                                    {isCurrentPlan ? 
+                                        <button
+                                            type="button"g
+                                            className={[
+                                                "mt-8 w-full rounded-2xl px-4 py-3 text-sm font-bold transition-all",
+                                                isCurrentPlan
+                                                    ? "cursor-default bg-slate-900 text-white shadow-md shadow-slate-300"
+                                                    : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
+                                            ].join(" ")}
+                                        >
+                                            Unsubscribe
+                                        </button>
+
+                                        :
+
+                                        <button
+                                            type="button"
+                                            onClick={()=>handleSubmit(plan.id, plan.price)}
+                                            className={[
+                                                "mt-8 w-full rounded-2xl px-4 py-3 text-sm font-bold transition-all",
+                                                isCurrentPlan
+                                                    ? "cursor-default bg-slate-900 text-white shadow-md shadow-slate-300"
+                                                    : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
+                                            ].join(" ")}
+                                        >
+                                             `Choose ${plan.name}`
+                                        </button>
+                                    }
+                                </div>
                             </div>
                         );
                     })}
