@@ -187,6 +187,8 @@ const Subscription = () => {
                 <div className="grid gap-6 lg:grid-cols-3">
                     {subscriptionPlan.map((plan) => {
                         const isCurrentPlan = subscriber && (currentSubscriptionPlan?.toLowerCase() === plan.id);
+                        // const isUpgrade = activePlan && plan.level > activePlan.level;
+                        // const isDowngrade = activePlan && plan.level < activePlan.level;
 
                         return (
                             <div
@@ -273,7 +275,14 @@ const Subscription = () => {
                                                     : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
                                             ].join(" ")}
                                         >
-                                             {plan.level > (activePlan?.level || 0) ? "Upgrade plan" : `Choose ${plan.name}`}
+                                             {!activePlan 
+                                             ?
+                                            `Choose ${plan.name}`
+                                            : 
+                                            plan.level > activePlan.level
+                                            ? `Upgrade to ${plan.name}`
+                                            : `Downgrade to ${plan.name}`
+                                            }
                                         </button>
                                     }
                                 </div>
