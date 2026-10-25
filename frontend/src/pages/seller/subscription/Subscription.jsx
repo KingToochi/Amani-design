@@ -183,8 +183,8 @@ const Subscription = () => {
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     {subscriptionPlan.map((plan) => {
-                        const isCurrentPlan = subscriber && currentSubscriptionPlan?.toLowerCase() === plan.id;
-                        console.log("isCurrentPlan", isCurrentPlan, "currentSubscriptionPlan", currentSubscriptionPlan, "plan.id", plan.id)
+                        const isCurrentPlan = subscriber && (currentSubscriptionPlan?.toLowerCase() === plan.id);
+                        console.log("isCurrentPlan", isCurrentPlan, "currentSubscriptionPlan", currentSubscriptionPlan, "plan.id", plan.id, "subscriber", subscriber)
 
                         return (
                             <div
