@@ -6,7 +6,7 @@ import Order from "../../models/Order.js";
 export const fetchProductAnalytics = async(auth) => {
     const user = await User.findById(auth._id).select("_id role");
 
-    const validate = validateVendor(user)
+    validateVendor(user)
      // get all vendor products
         const products = await Product.find(
           { vendorId: user._id },
@@ -20,7 +20,7 @@ export const fetchProductAnalytics = async(auth) => {
 export const fetchVendorProduct = async(auth) => {
     const user = await User.findById(auth._id).select("_id role");
 
-    const validate = validateVendor(user)
+  validateVendor(user)
      // get all vendor products
         const products = await Product.find(
           { vendorId: user._id }
@@ -33,7 +33,7 @@ export const fetchVendorProduct = async(auth) => {
 export const fetchVendorProductById = async(auth) => {
     const user = await User.findById(auth._id).select("_id role");
 
-    const validate = validateVendor(user)
+     validateVendor(user)
      // get all vendor products
         const products = await Product.find(
           { vendorId: user._id }

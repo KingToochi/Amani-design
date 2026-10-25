@@ -9,6 +9,7 @@ import Product from "../../models/Product.js"
 import User from "../../models/User.js"
 import Notification from "../../models/Notification.js"
 import Payment from "../../models/Payment.js"
+import { validateVendor } from "./vendors.validation.js"
 export const getProductAnalytics =  async(req, res, next) => {
     try{
             const auth = req.user
@@ -343,7 +344,8 @@ export const confirmItem = async(req, res, next) => {
 export const getVendorNotifications = async(req, res, next) => {
   try {
     const auth = req.user;
-
+    const user = await User.findById(auth._id).select("_id role");
+    validateVendor(user)
     const notifications = await Notification.find({
       recipient: auth._id,
     })
@@ -366,6 +368,8 @@ export const markNotificationRead = async(req, res, next) => {
   try {
     const auth = req.user;
     const { id } = req.params;
+    const user = await User.findById(auth._id).select("_id role");
+    validateVendor(user)
 
     const notification = await Notification.findOneAndUpdate(
       { _id: id, recipient: auth._id },

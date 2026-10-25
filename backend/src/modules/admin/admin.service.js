@@ -133,7 +133,7 @@ export const fetchVendorDetailsById = async({auth, req}) => {
  
 export const fetchCustomerDetailsById = async({auth, req}) => {
      const user = await User.findOne({_id: auth._id})
-     const validate = validateAdmin(user)
+     validateAdmin(user)
      const customer = await User.findOne({_id: req.params.id})
      if (!customer) {
       const  error = new Error("customer not found")
