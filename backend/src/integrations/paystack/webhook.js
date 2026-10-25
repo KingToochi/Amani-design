@@ -126,6 +126,7 @@ export const paystackWebhook = async (req, res) => {
         // accidentally shortening its remaining time.
         const startDate =
           user.subscriptionDetails?.status === "active" &&
+          user.subscriptionDetails?.plan === planName &&
           currentExpiry &&
           new Date(currentExpiry) > now
             ? new Date(currentExpiry)

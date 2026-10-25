@@ -273,7 +273,7 @@ const Subscription = () => {
                                                     : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
                                             ].join(" ")}
                                         >
-                                             {plan.level > (activePlan?.level || 0) ? "Upgrade plan" : "Downgrade plan"}
+                                             {plan.level > (activePlan?.level || 0) ? "Upgrade plan" : `Choose ${plan.name}`}
                                         </button>
                                     }
                                 </div>
