@@ -83,7 +83,7 @@ const Subscription = () => {
                     throw new Error(data.message || "Unable to fetch your details");
                 }
                 console.log("User info fetched successfully:", data);
-                setCurrentSubscriptionPlan(data.user.subscriptionPlan || "basic");
+                setCurrentSubscriptionPlan(data.user.subscriptionPlan || "none");
                 setSubscriber(Boolean(data.subScriber));
                 setSubscriptionExpiryDate(data.user.subscriptionExpiryDate || "");
                 setSubscriptionStartDate(data.user.subscriptionStartDate || "");
@@ -184,6 +184,7 @@ const Subscription = () => {
                 <div className="grid gap-6 lg:grid-cols-3">
                     {subscriptionPlan.map((plan) => {
                         const isCurrentPlan = subscriber && currentSubscriptionPlan?.toLowerCase() === plan.id;
+                        console.log()
 
                         return (
                             <div
@@ -207,11 +208,11 @@ const Subscription = () => {
                                         <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-600">{plan.badge}</p>
                                         <h2 className="mt-3 text-3xl font-black text-slate-900">{plan.name}</h2>
                                     </div>
-                                    {plan.id === "standard" && (
+                                    {/* {plan.id === "standard" && (
                                         <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
                                             Recommended
                                         </span>
-                                    )}
+                                    )} */}
                                 </div>
 
                                 <p className="mt-4 text-sm leading-6 text-slate-600">{plan.description}</p>
