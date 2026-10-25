@@ -210,11 +210,6 @@ const Subscription = () => {
                                         <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-600">{plan.badge}</p>
                                         <h2 className="mt-3 text-3xl font-black text-slate-900">{plan.name}</h2>
                                     </div>
-                                    {/* {plan.id === "standard" && (
-                                        <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
-                                            Recommended
-                                        </span>
-                                    )} */}
                                 </div>
 
                                 <p className="mt-4 text-sm leading-6 text-slate-600">{plan.description}</p>
@@ -278,7 +273,7 @@ const Subscription = () => {
                                                     : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
                                             ].join(" ")}
                                         >
-                                             Choose {plan.name}
+                                             {plan.level > (activePlan?.level || 0) ? "Upgrade plan" : "Downgrade plan"}
                                         </button>
                                     }
                                 </div>
