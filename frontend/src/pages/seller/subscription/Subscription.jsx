@@ -84,7 +84,7 @@ const Subscription = () => {
                 }
                 console.log("User info fetched successfully:", data);
                 setCurrentSubscriptionPlan(data.user.subscriptionPlan || "none");
-                setSubscriber(Boolean(data.subScriber));
+                setSubscriber(Boolean(data.user.subscriber));
                 setSubscriptionExpiryDate(data.user.subscriptionExpiryDate || "");
                 setSubscriptionStartDate(data.user.subscriptionStartDate || "");
                 setSubscriptionStatus(data.user.subscriptionStatus || "inactive");
