@@ -11,6 +11,7 @@ const subscriptionPlan = [
         name: "Basic",
         price: 2000,
         commission: "10%",
+        level : 1,
         badge: "Starter",
         description: "Perfect for new sellers testing the market.",
         productLimit: "10 active products",
@@ -26,6 +27,7 @@ const subscriptionPlan = [
         name: "Standard",
         price: 3000,
         commission: "7%",
+        level: 2,
         badge: "Most popular",
         description: "Built for growing brands that want more reach.",
         productLimit: "10 active products",
@@ -41,6 +43,7 @@ const subscriptionPlan = [
         name: "Premium",
         price: 5000,
         commission: "5%",
+        level: 3,
         badge: "Best value",
         description: "For sellers ready to scale fast and maximize sales.",
         productLimit: "Unlimited listings",
@@ -260,7 +263,7 @@ const Subscription = () => {
                                                     : "bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.99]",
                                             ].join(" ")}
                                         >
-                                            Cancel subscription
+                                            Your active plan
                                         </button>
 
                                         :
