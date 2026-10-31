@@ -18,7 +18,7 @@ export const userPutAndDeleteAuthorisation = async (productId, user) => {
 
     const product = await Product
         .findById(productId)
-        .select("vendorId");
+        .select("vendorId productImages");
 
     if (!product) {
         throw new Error("Product not found");

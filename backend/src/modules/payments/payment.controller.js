@@ -53,3 +53,11 @@ export const verifyPayment = async(req, res, next) => {
         next(error)
     }
 }
+
+export const intiateVendorPayment = async(req, res, next) => {
+    try {
+        const { email, amount } = req.body;
+    }catch(error) {
+        next(error)
+    }
+}

@@ -245,3 +245,38 @@ export const fetchDataAnalytics = async(auth) => {
 
            return { totalUsers, totalSales, totalOrders, totalProducts, topSeller, topBuyer, pendingApprovals, pendingOrders, deliveredOrders }
 }
+
+export const fetchVendorsDueForPayout = async (auth) => {
+    const user = await User.findById(auth._id);
+    validateAdmin(user);
+
+    const vendorsDueForPayout = await Order.aggregate([
+        {
+            $match: {
+                "items.Status": {
+                    $in: ["confirmed", "in_transit", "delivered"]
+                }
+            }
+        },
+        {
+            $project: {
+                transactionId: 1,
+                items : 1,
+                "vendorOrderQuantityDetails.confirmedAt": 1,
+                deliveryCompany : 1,
+                customerName : 1,
+                customerNumber : 1,
+                customerEmail : 1,
+                createdAt: 1
+            }
+        },
+        {
+            $group: {
+                _id: "$items.productId",
+                items: { $push: "$$ROOT" }
+            }
+        }
+    ]);
+
+    return vendors;
+};

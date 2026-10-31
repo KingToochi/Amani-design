@@ -1,4 +1,4 @@
-import { fetchAdmin,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics} from "./admin.service.js"
+import { fetchAdmin,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout} from "./admin.service.js"
 import { validateAdminLoginData } from "./admin.validation.js"
 import { getCookieOptions } from "../../utils/getCookieOptions.js";
 export const adminDetails = async(req, res, next) => {
@@ -114,5 +114,14 @@ export const dataAnalytics = async(req, res, next) => {
         next(error)
     }
 
+}
+
+export const getVendorsDueForPayout = async(req, res, next) => {
+    try {
+        const auth = req.user
+        const vendorsDueForPayout = await fetchVendorsDueForPayout(auth)
+    }catch(error) {
+        next(error)
+    }
 }
     

@@ -9,6 +9,7 @@ import { productDelete } from "./product.service.js"
 import { validatePostProduct } from "./product.validation.js"
 import { createNewProduct } from "./product.service.js"
 import { sortProducts } from "../../utils/sortProducts.js"
+import {deleteImageFromCloudinary} from "../../integrations/cloudinary/deleteImage.js"
 
 
 export const getVendorProducts = async(req, res, next) => {
@@ -76,8 +77,9 @@ export const deleteProduct = async(req,res, next) => {
     const productId = req.params.id
     const auth = req.user
     const user = await userValidation(auth)
-    const validatedUser = await userPutAndDeleteAuthorisation(productId, user)
-    const removeProduct = await productDelete({productId})
+    const product = await userPutAndDeleteAuthorisation(productId, user)
+    await productDelete({productId})
+    await deleteImageFromCloudinary(product.productImages)
     return res.status(200).json({
             message : "Product deleted successfully",
         });
