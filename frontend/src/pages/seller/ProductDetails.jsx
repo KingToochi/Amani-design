@@ -13,6 +13,8 @@ import CustomFetch from "../../hooks/useFetch";
 
 const ProductDetails = () => {
     const [editPrice, setEditPrice] = useState(false)
+    const [isUpdating, setIsUpdating] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
     const [editDescription, setEditDescription] = useState(false)
     const [editCategory, setEditCategory] = useState(false)
     const [editBaseColor, setEditBaseColor] = useState(false)
@@ -132,6 +134,7 @@ const ProductDetails = () => {
     setEditBaseSize(false)
     setEditPrice(false)
     setEditVariant(false)
+    setIsUpdating(true)
     console.log(productDetails)
     try {
         let response = await fetch (url, {
@@ -153,10 +156,13 @@ const ProductDetails = () => {
 
     } catch(error){
         console.log(error)
+    }finally {
+        setIsUpdating(false)
     }
   }
 
   const handleDelete = async() => {
+    setIsDeleting(true)
     try {
         let response = await fetch (url, {
             "method": "GET",
@@ -182,6 +188,8 @@ const ProductDetails = () => {
     }catch(error){
         console.log(error)
         setMessage("Failed to delete product")
+    }finally{
+        setIsDeleting(false)
     }
   }
   
@@ -418,13 +426,13 @@ useEffect(()=> {
                         onClick={(e)=> handleUpdate(productDetails, e)}
                         className="w-auto border-1 border-gray-100 px-4 rounded-lg text-blue-300 cursor-pointer"
                         >
-                            <h1>update</h1>
+                            <h1>{isUpdating ? "Updating..." : "Update"}</h1>
                         </button>
                         <button
                         onClick={handleDelete}
                         className="w-auto border-1 border-gray-100 px-4 rounded-lg text-red-500 cursor-pointer"
                         >
-                            <h1>delete</h1>
+                            <h1>{isDeleting ? "Deleting..." : "Delete"}</h1>
                         </button>
                     </div>
                     </div>
@@ -453,13 +461,7 @@ useEffect(()=> {
                         </div>
                     </section>
         </div>
-        {/* {
-                            productDetails.productImages?.map((image, index) => (
-                                <div key={index} className="w-full flex flex-row items-center justify-center">
-                                    <img src={image} alt={`Product Image ${index + 1}`} className="w-full h-auto object-cover rounded-lg" />
-                                </div>
-                            ))
-                        } */}
+       
 
         <div className="w-full grid grid-cols-4 gap-2">
             {productDetails?.productImages?.map((image, index) => (
