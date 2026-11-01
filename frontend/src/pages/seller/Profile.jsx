@@ -72,6 +72,7 @@ const Profile = () => {
                 setUserDetails(data.user);
                 setForm({ ...emptyForm, ...data.user });
                 setAuth(data.user);
+                console.log(data.user)
             }
         } catch {
             setFeedback({ type: "error", message: "We could not load your profile." });

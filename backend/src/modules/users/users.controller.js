@@ -7,19 +7,29 @@ import crypto from "crypto";
 import PhoneVerification from "../../models/PhoneVerification.js";
 import { sendRegistrationEmails, sendVerificationEmail, changePasswordLink } from "../../integrations/email/email.service.js";
 import cloudinary from "../../config/cloudinary.js";
+import {deleteImageFromCloudinary} from "../../integrations/cloudinary/deleteImage.js"
 import fs from "fs";
 import bcrypt from "bcryptjs";
 
 export const updateProfilePicture = async (req, res, next) => {
+    const auth = req.user;
     try {
         if (!req.file) {
             return res.status(400).json({ success: false, message: "A profile picture is required" });
         }
 
-        const user = await fetchUser(req.user);
+        userValidation(auth);
+
+        const user = await fetchUser(auth);
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
+
+        if (user._id.toString() !== auth._id.toString()) {
+            return res.status(403).json({ success: false, message: "Unauthorized to update this profile picture" });
+        }
+
+        const oldProfilePictureUrl = user.profilePicture;
 
         const cloudRes = await cloudinary.uploader.upload(req.file.path, {
             folder: "my_website_users",
@@ -27,6 +37,11 @@ export const updateProfilePicture = async (req, res, next) => {
 
         user.profilePicture = cloudRes.secure_url;
         await user.save();
+
+        if (oldProfilePictureUrl) {
+            await deleteImageFromCloudinary([oldProfilePictureUrl]);
+        }
+        
 
         return res.json({
             success: true,
@@ -102,6 +117,9 @@ export const updateUser = async(req, res, next) => {
         if (!user) {
             return res.status(404).json({success: false, message: "User not found" })
         }
+        if (user._id.toString() !== auth._id.toString()) {
+            return res.status(403).json({success: false, message: "Unauthorized to update this user" })
+        }
         // Update user fields
         Object.keys(updates).forEach(key => {
             if (key !== "_id") {
@@ -138,6 +156,11 @@ try {
       dob: user.dob,
       city: user.city,
       state: user.state,
+      meansOfIdentification: user.meansOfIdentification,
+      identificationNumber: user.identificationNumber,
+      bankName: user.bankName,
+      bankAccountNumber: user.accountNumber,
+      proofOfAddress: user.proofOfAddress,
       profilePicture: user.profilePicture,
       username: user.username,
       role: user.role,
@@ -461,5 +484,97 @@ export const resetPassword = async(req, res, next) =>{
     }
 }
 
+export const updateProofOfAddress = async(req, res, next) => {
+    try {
+        const auth = req.user
+        if(!req.file) {
+            return res.status(400).json({success: false, message: "A proof of address is required" })
+        }
+        userValidation(auth)
+        const user = await fetchUser(auth)
 
+
+        if (!user) {
+            return res.status(404).json({success: false, message: "User not found" })
+        }
+        if(user.role !== "vendor") {
+            return res.status(403).json({success: false, message: "Unauthorized to update proof of address" })
+        }
+        if(user._id.toString() !== auth._id.toString()) {
+            return res.status(403).json({success: false, message: "Unauthorized to update this proof of address" })
+        }
+
+        const oldProofOfAddressUrl = user.proofOfAddress;
+
+        const cloudRes = await cloudinary.uploader.upload(req.file.path, {
+            folder: "my_website_users/proof_of_address",
+        });
+
+        user.proofOfAddress = cloudRes.secure_url
+        await user.save()
+
+        if (oldProofOfAddressUrl) {
+            await deleteImageFromCloudinary([oldProofOfAddressUrl]);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Proof of address updated successfully",
+            proofOfAddress: user.proofOfAddress,
+        });
+
+
+    }catch(error){
+        next(error)
+    }
+}
+
+export const updateMeansOfIdentification = async(req, res, next) => {
+    try {
+        const auth = req.user
+        validateUser(auth)
+
+        const user = await fetchUser(auth)
+
+        if (!user) {
+            return res.status(404).json({success: false, message: "User not found" })
+        }
+
+        if(user.role !== "vendor") {
+            return res.status(403).json({success: false, message: "Unauthorized to update means of identification" })
+        }
+
+        if(user._id.toString() !== auth._id.toString()) {
+            return res.status(403).json({success: false, message: "Unauthorized to update this means of identification" })
+        }
+
+        const {meansOfIdentification, identificationNumber} = req.body
+        if (!meansOfIdentification || !identificationNumber) {
+            return res.status(400).json({
+                success: false,
+                message: "Identification type and number are required"
+            });
+        }
+
+        const allowedIDs = ["NIN", "Voters Card", "Drivers License", "International Passport"];
+
+        if (!allowedIDs.includes(meansOfIdentification)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid means of identification"
+            });
+        }
+        user.meansOfIdentification = meansOfIdentification
+        user.identificationNumber = identificationNumber
+        await user.save()
+        return res.status(200).json({
+            success: true,
+            message: "Means of identification updated successfully",
+            meansOfIdentification: user.meansOfIdentification,
+            identificationNumber: user.identificationNumber
+        })
+    }catch(error){
+        next(error)
+    }
+}
 
