@@ -1,5 +1,5 @@
 import express from "express"
-import {getUsername, getEmail, getUser, updateUser, updateProfilePicture, getUserInfo, registration, vendorRegistration, userLogin, userLogout, verifyEmail, resendEmailVerification, sendPhoneVerificationCode, verifyPhoneCode, forgetPassword, verifyResetPasswordLink, resetPassword} from "./users.controller.js"
+import {getUsername, getEmail, getUser, updateUser, updateProfilePicture, getUserInfo, registration, vendorRegistration, userLogin, userLogout, verifyEmail, resendEmailVerification, sendPhoneVerificationCode, verifyPhoneCode, forgetPassword, verifyResetPasswordLink, resetPassword, updateProofOfAddress, updateMeansOfIdentification} from "./users.controller.js"
 import verifyToken from "../../middleware/verifyToken.js"
 import multer from "multer"
 
@@ -15,6 +15,8 @@ route.post("/phone/send-code", verifyToken, sendPhoneVerificationCode)
 route.post("/phone/verify-code", verifyToken, verifyPhoneCode)
 route.put("/update", verifyToken, updateUser)
 route.post("/profile-picture", verifyToken, uploadImage.single("profilePicture"), updateProfilePicture)
+route.put("/proof-of-address", verifyToken, uploadImage.single("proofOfAddress"), updateProofOfAddress)
+route.put("/means-of-identification", verifyToken, updateMeansOfIdentification)
 route.get("/info", verifyToken, getUserInfo)
 route.post("/registration", registration)
 route.post("/registration/vendor",uploadImage.fields([

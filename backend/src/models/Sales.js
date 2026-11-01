@@ -8,6 +8,7 @@ const salesSchema = new mongoose.Schema({
     required: [true, 'Product ID is required'],
     index: true
   },
+  itemId : String,
   productName: {
     type: String,
     required: [true, 'Product name is required'],

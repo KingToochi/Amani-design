@@ -1,4 +1,4 @@
-import { fetchAdmin,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout} from "./admin.service.js"
+import { fetchAdmin,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout, saveVendorDocumentVerification} from "./admin.service.js"
 import { validateAdminLoginData } from "./admin.validation.js"
 import { getCookieOptions } from "../../utils/getCookieOptions.js";
 export const adminDetails = async(req, res, next) => {
@@ -90,6 +90,20 @@ export const getVendorById = async(req, res, next) => {
         const auth = req.user
         const vendor = await fetchVendorDetailsById({ auth, req })
         return res.json({ success: true, vendor });
+    }catch(error) {
+        next(error)
+    }
+}
+
+export const verifyVendorDocuments = async(req, res, next) => {
+    try {
+        const vendor = await saveVendorDocumentVerification({
+            auth: req.user,
+            vendorId: req.params.id,
+            proofOfAddressVerification: req.body.proofOfAddressVerification,
+            identificationVerification: req.body.identificationVerification,
+        })
+        return res.json({ success: true, message: "Vendor documents reviewed successfully", vendor })
     }catch(error) {
         next(error)
     }

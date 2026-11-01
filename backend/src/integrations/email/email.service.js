@@ -68,3 +68,59 @@ export const changePasswordLink = async({
     })
 }
 
+export const sendRejectionEmail = async ({
+    email,
+    firstName,
+    updateUrl,
+    rejectedFields
+}) => {
+    return sendEmail({
+        to: email,
+        subject: "Action Required: Update Your Vendor Verification Documents",
+        html: `
+            <h2>Hello ${firstName},</h2>
+
+            <p>
+                Your application to join AmaniSky Fashion as a vendor
+                could not be approved because your ${rejectedFields}
+                did not meet our verification requirements.
+            </p>
+
+            <p>
+                Please review and update the affected document(s)
+                using the link below.
+            </p>
+
+            <p>
+                <a href="${updateUrl}">Update Your Documents</a>
+            </p>
+
+            <p>
+                Thank you for choosing AmaniSky Fashion.
+            </p>
+        `
+    });
+};
+
+export const sendApprovalEmail = async ({ email, firstName }) => {
+    return sendEmail({
+        to: email,
+        subject: "Congratulations! Your Vendor Application Has Been Approved",
+        html: `
+            <h2>Hello ${firstName},</h2>
+
+            <p>
+                Congratulations! Your application to join
+                AmaniSky Fashion as a vendor has been approved.
+            </p>
+
+            <p>
+                You can now access your vendor account and start
+                selling on AmaniSky Fashion.
+            </p>
+
+            <p>Thank you for choosing AmaniSky.</p>
+        `
+    });
+};
+

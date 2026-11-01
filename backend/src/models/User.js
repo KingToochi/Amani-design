@@ -16,9 +16,19 @@ const userSchema = new mongoose.Schema({
   state: String,
   shippingAddress: String,
   proofOfAddress: String,
+  proofOfAddressVerification: {
+    type: String,
+    enum: ["pending", "verified", "rejected"],
+    default: "pending",
+  },
   profilePicture: String,
   meansOfIdentification: String,
   identificationNumber: String,
+  identificationVerification: {
+    type: String,
+    enum: ["pending", "verified", "rejected"],
+    default: "pending",
+  },
   password: String,
   deliveryCompany : String,
   status: {

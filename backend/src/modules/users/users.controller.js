@@ -156,8 +156,11 @@ try {
       dob: user.dob,
       city: user.city,
       state: user.state,
+      identificationVerification: user.identificationVerification,
       meansOfIdentification: user.meansOfIdentification,
       identificationNumber: user.identificationNumber,
+        proofOfAddressVerification: user.proofOfAddressVerification,
+      id: user._id.toString(),
       bankName: user.bankName,
       bankAccountNumber: user.accountNumber,
       proofOfAddress: user.proofOfAddress,
@@ -503,6 +506,9 @@ export const updateProofOfAddress = async(req, res, next) => {
         if(user._id.toString() !== auth._id.toString()) {
             return res.status(403).json({success: false, message: "Unauthorized to update this proof of address" })
         }
+        if (user.proofOfAddressVerification !== "rejected") {
+            return res.status(400).json({success: false, message: "Only rejected proof of address documents can be updated" })
+        }
 
         const oldProofOfAddressUrl = user.proofOfAddress;
 
@@ -511,6 +517,8 @@ export const updateProofOfAddress = async(req, res, next) => {
         });
 
         user.proofOfAddress = cloudRes.secure_url
+        user.proofOfAddressVerification = "pending"
+        user.status = "pending"
         await user.save()
 
         if (oldProofOfAddressUrl) {
@@ -521,18 +529,25 @@ export const updateProofOfAddress = async(req, res, next) => {
             success: true,
             message: "Proof of address updated successfully",
             proofOfAddress: user.proofOfAddress,
+            proofOfAddressVerification: user.proofOfAddressVerification,
         });
 
 
     }catch(error){
         next(error)
+    } finally {
+        if (req.file?.path) {
+            await fs.promises.unlink(req.file.path).catch((cleanupError) => {
+                console.error("Failed to remove uploaded proof-of-address file:", cleanupError);
+            });
+        }
     }
 }
 
 export const updateMeansOfIdentification = async(req, res, next) => {
     try {
         const auth = req.user
-        validateUser(auth)
+        userValidation(auth)
 
         const user = await fetchUser(auth)
 
@@ -546,6 +561,9 @@ export const updateMeansOfIdentification = async(req, res, next) => {
 
         if(user._id.toString() !== auth._id.toString()) {
             return res.status(403).json({success: false, message: "Unauthorized to update this means of identification" })
+        }
+        if (user.identificationVerification !== "rejected") {
+            return res.status(400).json({success: false, message: "Only rejected identification details can be updated" })
         }
 
         const {meansOfIdentification, identificationNumber} = req.body
@@ -566,15 +584,17 @@ export const updateMeansOfIdentification = async(req, res, next) => {
         }
         user.meansOfIdentification = meansOfIdentification
         user.identificationNumber = identificationNumber
+        user.identificationVerification = "pending"
+        user.status = "pending"
         await user.save()
         return res.status(200).json({
             success: true,
             message: "Means of identification updated successfully",
             meansOfIdentification: user.meansOfIdentification,
-            identificationNumber: user.identificationNumber
+            identificationNumber: user.identificationNumber,
+            identificationVerification: user.identificationVerification
         })
     }catch(error){
         next(error)
     }
 }
-

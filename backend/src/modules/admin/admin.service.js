@@ -5,6 +5,7 @@ import Order from "../../models/Order.js"
 import { validateAdmin } from "./admin.validation.js"
 import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"
+import { sendApprovalEmail, sendRejectionEmail } from "../../integrations/email/email.service.js";
 
 
 
@@ -130,6 +131,89 @@ export const fetchVendorDetailsById = async({auth, req}) => {
      } 
      return vendor
 }
+
+export const saveVendorDocumentVerification = async ({
+    auth,
+    vendorId,
+    proofOfAddressVerification,
+    identificationVerification,
+    next
+}) => {
+    try {
+        const admin = await User.findById(auth._id);
+        validateAdmin(admin);
+
+        const validStatuses = ["verified", "rejected"];
+
+        if (
+            !validStatuses.includes(proofOfAddressVerification) ||
+            !validStatuses.includes(identificationVerification)
+        ) {
+            const error = new Error(
+                "Choose verified or rejected for both documents"
+            );
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const vendor = await User.findOne({
+            _id: vendorId,
+            role: "vendor"
+        });
+
+        if (!vendor) {
+            const error = new Error("Vendor not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // Update individual document verification statuses
+        vendor.proofOfAddressVerification = proofOfAddressVerification;
+        vendor.identificationVerification = identificationVerification;
+
+        // Determine the overall vendor status
+        const bothVerified =
+            proofOfAddressVerification === "verified" &&
+            identificationVerification === "verified";
+
+        vendor.status = bothVerified ? "verified" : "rejected";
+
+        await vendor.save();
+
+        // Send approval email
+        if (bothVerified) {
+            await sendApprovalEmail({
+                email: vendor.email,
+                firstName: vendor.fname
+            });
+        } else {
+            // Identify the documents that were rejected
+            const rejectedFields = [];
+
+            if (proofOfAddressVerification === "rejected") {
+                rejectedFields.push("proof of address");
+            }
+
+            if (identificationVerification === "rejected") {
+                rejectedFields.push("means of identification");
+            }
+
+            const updateUrl = `${process.env.FRONTEND_URL}/vendor/update-verification/${vendor._id}`;
+
+            await sendRejectionEmail({
+                email: vendor.email,
+                firstName: vendor.fname,
+                updateUrl,
+                rejectedFields: rejectedFields.join(" and ")
+            });
+        }
+
+        return vendor;
+
+    } catch (error) {
+        next(error);
+    }
+};
  
 export const fetchCustomerDetailsById = async({auth, req}) => {
      const user = await User.findOne({_id: auth._id})
@@ -143,7 +227,7 @@ export const fetchCustomerDetailsById = async({auth, req}) => {
 }
 export const fetchDataAnalytics = async(auth) => {
      const user = await User.findOne({_id: auth._id});
-     const validate = validateAdmin(user);
+     validateAdmin(user);
      const totalUsers = await User.countDocuments();
        const totalSales = await Sales.countDocuments();
        const totalOrders = await Order.countDocuments();

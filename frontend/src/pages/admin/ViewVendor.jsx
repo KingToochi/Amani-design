@@ -16,6 +16,13 @@ const ViewVendor = () => {
   const [vendorDetails, setVendorDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [verification, setVerification] = useState({
+    proofOfAddressVerification: "",
+    identificationVerification: "",
+  });
+  const [isSubmittingVerification, setIsSubmittingVerification] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState("");
+  const [verificationError, setVerificationError] = useState("");
   const { id } = useParams();
   const url = `${BASE_URL}/admin/viewVendor/${id}`;
 
@@ -32,6 +39,10 @@ const ViewVendor = () => {
           return;
         }
         setVendorDetails(data.vendor);
+        setVerification({
+          proofOfAddressVerification: data.vendor.proofOfAddressVerification || "",
+          identificationVerification: data.vendor.identificationVerification || "",
+        });
       } catch (err) {
         console.error(err);
         setError("Unable to load vendor details");
@@ -42,6 +53,67 @@ const ViewVendor = () => {
 
     fetchVendor();
   }, [url]);
+
+  const handleVerificationChoice = (field, value) => {
+    setVerification((current) => ({ ...current, [field]: value }));
+    setVerificationMessage("");
+    setVerificationError("");
+  };
+
+  const handleSubmitVerification = async () => {
+    setIsSubmittingVerification(true);
+    setVerificationMessage("");
+    setVerificationError("");
+
+    try {
+      const response = await CustomFetch(`${BASE_URL}/admin/vendors/${id}/verification`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(verification),
+      });
+      const data = response ? await response.json() : null;
+
+      if (!response?.ok || !data?.success) {
+        throw new Error(data?.message || "Unable to submit document verification.");
+      }
+
+      setVendorDetails(data.vendor);
+      setVerification({
+        proofOfAddressVerification: data.vendor.proofOfAddressVerification,
+        identificationVerification: data.vendor.identificationVerification,
+      });
+      setVerificationMessage(data.message || "Document verification submitted.");
+    } catch (submitError) {
+      setVerificationError(submitError.message || "Unable to submit document verification.");
+    } finally {
+      setIsSubmittingVerification(false);
+    }
+  };
+
+  const renderVerificationChoices = (field, status) => (
+    <div className="mt-3 flex flex-wrap gap-2">
+      {[
+        { value: "verified", label: "Verified" },
+        { value: "rejected", label: "Reject" },
+      ].map((choice) => (
+        <button
+          key={choice.value}
+          type="button"
+          aria-pressed={status === choice.value}
+          onClick={() => handleVerificationChoice(field, choice.value)}
+          className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+            status === choice.value
+              ? choice.value === "verified"
+                ? "border-emerald-700 bg-emerald-700 text-white"
+                : "border-rose-700 bg-rose-700 text-white"
+              : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+          }`}
+        >
+          {choice.label}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-10">
@@ -150,9 +222,65 @@ const ViewVendor = () => {
 
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h3 className="text-lg font-semibold text-slate-900">Identity</h3>
-                <div className="mt-4 space-y-3 text-sm text-slate-700">
-                  <p>Proof of address: {vendorDetails.proofOfAddress || "Not provided"}</p>
-                  <p>ID number: {vendorDetails.identificationNumber || "Not provided"}</p>
+                <div className="mt-5 space-y-5">
+                  <div>
+                    <p className="mb-3 text-sm font-medium text-slate-600">Proof of address</p>
+                    {vendorDetails.proofOfAddress ? (
+                      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                        <img
+                          src={vendorDetails.proofOfAddress}
+                          alt="Proof of address document"
+                          className="mx-auto block max-h-[560px] w-full rounded-xl object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                        No proof of address provided.
+                      </div>
+                    )}
+                    {renderVerificationChoices(
+                      "proofOfAddressVerification",
+                      verification.proofOfAddressVerification
+                    )}
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 px-4 py-3">
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Means of identification</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-800">
+                      {vendorDetails.meansOfIdentification || "Not provided"}
+                    </p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">ID number</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-800">
+                      {vendorDetails.identificationNumber || "Not provided"}
+                    </p>
+                    {renderVerificationChoices(
+                      "identificationVerification",
+                      verification.identificationVerification
+                    )}
+                  </div>
+                  {(verificationError || verificationMessage) && (
+                    <p
+                      role={verificationError ? "alert" : "status"}
+                      className={`rounded-xl px-4 py-3 text-sm ${
+                        verificationError
+                          ? "bg-rose-50 text-rose-700"
+                          : "bg-emerald-50 text-emerald-700"
+                      }`}
+                    >
+                      {verificationError || verificationMessage}
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleSubmitVerification}
+                    disabled={
+                      isSubmittingVerification ||
+                      !verification.proofOfAddressVerification ||
+                      !verification.identificationVerification
+                    }
+                    className="w-full rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isSubmittingVerification ? "Submitting..." : "Submit verification"}
+                  </button>
                 </div>
               </div>
             </div>
