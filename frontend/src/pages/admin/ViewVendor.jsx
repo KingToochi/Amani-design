@@ -64,6 +64,7 @@ const ViewVendor = () => {
     setIsSubmittingVerification(true);
     setVerificationMessage("");
     setVerificationError("");
+    console.log(verification)
 
     try {
       const response = await CustomFetch(`${BASE_URL}/admin/vendors/${id}/verification`, {

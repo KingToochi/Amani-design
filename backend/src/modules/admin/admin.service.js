@@ -137,7 +137,6 @@ export const saveVendorDocumentVerification = async ({
     vendorId,
     proofOfAddressVerification,
     identificationVerification,
-    next
 }) => {
     try {
         const admin = await User.findById(auth._id);
@@ -212,7 +211,7 @@ export const saveVendorDocumentVerification = async ({
         return vendor;
 
     } catch (error) {
-        next(error);
+        throw new Error("unable to verify document")
     }
 };
  
