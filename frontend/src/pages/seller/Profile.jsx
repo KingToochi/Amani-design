@@ -23,6 +23,7 @@ import { AuthContext } from "../../context/AuthContext";
 import CustomFetch from "../../hooks/useFetch";
 import { BASE_URL } from "../../Url";
 import Popup from "../../components/common/Popup";
+import BankList from "../../components/common/BankList";
 
 const emptyForm = {
     fname: "",
@@ -33,6 +34,8 @@ const emptyForm = {
     city: "",
     state: "",
     typeOfVendor: "",
+    bankName: "",
+    accountNumber: "",
 };
 
 const formatDate = (value) => {
@@ -67,12 +70,15 @@ const Profile = () => {
             }
 
             const data = await response.json();
-            console.log(data)
             if (data.success) {
+                console.log("Profile data:", data.user);
                 setUserDetails(data.user);
-                setForm({ ...emptyForm, ...data.user });
+                setForm({
+                    ...emptyForm,
+                    ...data.user,
+                    accountNumber: data.user.bankAccountNumber ?? data.user.accountNumber ?? "",
+                });
                 setAuth(data.user);
-                console.log(data.user)
             }
         } catch {
             setFeedback({ type: "error", message: "We could not load your profile." });
@@ -116,6 +122,15 @@ const Profile = () => {
                 typeOfVendor: form.typeOfVendor,
             };
 
+            const hasBankDetails = form.bankName.trim() || form.accountNumber.trim();
+            if (hasBankDetails && (!form.bankName.trim() || !form.accountNumber.trim())) {
+                throw new Error("Please provide both your bank name and account number.");
+            }
+            if (hasBankDetails) {
+                updates.bankName = form.bankName.trim();
+                updates.accountNumber = form.accountNumber.trim();
+            }
+
             if (userDetails.emailVerified || updates.email === userDetails.email) {
                 delete updates.email;
             }
@@ -132,7 +147,11 @@ const Profile = () => {
             const data = await response.json();
             if (!response.ok || !data.success) throw new Error(data.message || "Unable to save changes.");
 
-            const updatedUser = { ...userDetails, ...form };
+            const updatedUser = {
+                ...userDetails,
+                ...form,
+                bankAccountNumber: form.accountNumber,
+            };
             setUserDetails(updatedUser);
             setAuth(updatedUser);
             localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -287,6 +306,33 @@ const Profile = () => {
                             <Field label="Vendor category" name="typeOfVendor" value={form.typeOfVendor} onChange={handleChange} disabled={!isEditing} icon={<Building2 size={16} />} />
                             <Field label="City" name="city" value={form.city} onChange={handleChange} disabled={!isEditing} icon={<MapPin size={16} />} />
                             <Field label="State" name="state" value={form.state} onChange={handleChange} disabled={!isEditing} icon={<MapPin size={16} />} />
+                            <label className="block">
+                                <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-stone-500">
+                                    <Building2 size={16} /> Bank
+                                </span>
+                                {isEditing ? (
+                                    <BankList
+                                        id="bankName"
+                                        value={form.bankName}
+                                        onChange={handleChange}
+                                    />
+                                ) : (
+                                    <div className="w-full rounded-xl border border-transparent bg-stone-100/70 px-4 py-3 text-sm text-stone-800">
+                                        {form.bankName || "Not set"}
+                                    </div>
+                                )}
+                            </label>
+                            <Field
+                                label="Account number"
+                                name="accountNumber"
+                                type="text"
+                                inputMode="numeric"
+                                autoComplete="off"
+                                value={form.accountNumber}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                                icon={<CreditCard size={16} />}
+                            />
                         </div>
                         {isEditing && <div className="mt-8 flex justify-end gap-3 border-t border-stone-100 pt-6"><button type="button" onClick={handleCancel} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-stone-500 hover:bg-stone-100">Cancel</button><button disabled={saving} className="flex items-center gap-2 rounded-xl bg-stone-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-stone-700 disabled:opacity-60">{saving ? <LoaderCircle size={16} className="animate-spin" /> : <Save size={16} />} Save changes</button></div>}
                     </form>

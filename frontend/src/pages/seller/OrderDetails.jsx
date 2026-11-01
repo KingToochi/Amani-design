@@ -754,7 +754,7 @@ const VendorOrderDetails = () => {
 
                                             </div>)}
                                             
-                                            {availability?.confirmed && availability?.hasProduct !== false && !["in_transit", "delivered", "completed", "unavailable", "returned"].includes(item.status) && (
+                                            {item.availabilityConfirmed && item.availability?.hasProduct === true && !["in_transit", "delivered", "completed", "unavailable", "returned"].includes(item.status) && (
                                                 <button
                                                     onClick={() => handleItemSent(item._id || item.productId || index)}
                                                     disabled={sendingItem === (item._id || item.productId || index)}

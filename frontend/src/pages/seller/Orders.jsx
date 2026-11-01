@@ -14,6 +14,22 @@ const statusColors = {
   returned: "bg-orange-100 text-orange-700",
   unknown: "bg-slate-100 text-slate-700"
 };
+const statusOrder = {
+  pending: 0,
+  in_transit: 1,
+  delivered: 2,
+};
+const maxOrdersPerGroup = 4;
+
+const compareByCreatedAt = (first, second) => {
+  const firstCreatedAt = Date.parse(first.createdAt);
+  const secondCreatedAt = Date.parse(second.createdAt);
+
+  if (Number.isNaN(firstCreatedAt)) return Number.isNaN(secondCreatedAt) ? 0 : 1;
+  if (Number.isNaN(secondCreatedAt)) return -1;
+  return secondCreatedAt - firstCreatedAt;
+};
+
 const formatDate = (dateString) => {
   if (!dateString) return "-"
   return new Date(dateString).toLocaleString("en-US", {
@@ -33,6 +49,7 @@ const Orders = () => {
   const [totalOrder, setTotalOrder] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [expandedGroups, setExpandedGroups] = useState(() => new Set())
   const url = `${BASE_URL}/vendor/orders`
 
   useEffect(() => {
@@ -59,6 +76,7 @@ const Orders = () => {
         }
 
         setTotalOrder(data.totalOrder || [])
+        console.log("Fetched orders:", data.totalOrder || [])
       } catch (fetchError) {
         console.error(fetchError)
         setError("Unable to load orders")
@@ -89,6 +107,15 @@ const Orders = () => {
   const pendingOrders = orderSummary.byStatus.pending || 0
   const deliveredOrders = orderSummary.byStatus.delivered || 0
   const otherOrders = totalOrders - pendingOrders - deliveredOrders
+  const sortedGroups = orderSummary.groups
+    .map((group) => ({
+      ...group,
+      orders: [...(group.orders || [])].sort(compareByCreatedAt),
+    }))
+    .sort(
+      (first, second) =>
+        (statusOrder[first.status] ?? 3) - (statusOrder[second.status] ?? 3)
+    );
 
   const getBadgeClasses = (status) => {
     const normalized = status?.toString()?.toLowerCase() || "unknown"
@@ -169,7 +196,13 @@ const Orders = () => {
                 No orders available yet.
               </div>
             ) : (
-              orderSummary.groups.map((group) => (
+              sortedGroups.map((group) => {
+                const isExpanded = expandedGroups.has(group.status);
+                const visibleOrders = isExpanded
+                  ? group.orders
+                  : group.orders.slice(0, maxOrdersPerGroup);
+
+                return (
                 <div key={group.status} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -186,7 +219,7 @@ const Orders = () => {
                   </div>
 
                   <div className="mt-6 space-y-4">
-                    {(group.orders || []).map((order) => (
+                    {visibleOrders.map((order) => (
                     <Link
                     key={order._id}
                     to={`vendor_order/${order._id}`}
@@ -237,9 +270,30 @@ const Orders = () => {
                       </div>
                     </Link>
                   ))}
+                    {group.orders.length > maxOrdersPerGroup && (
+                      <button
+                        type="button"
+                        aria-expanded={isExpanded}
+                        onClick={() => {
+                          setExpandedGroups((current) => {
+                            const next = new Set(current);
+                            if (next.has(group.status)) {
+                              next.delete(group.status);
+                            } else {
+                              next.add(group.status);
+                            }
+                            return next;
+                          });
+                        }}
+                        className="w-full rounded-xl py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+                      >
+                        {isExpanded ? "See less" : "See more"}
+                      </button>
+                    )}
                 </div>
                 </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
