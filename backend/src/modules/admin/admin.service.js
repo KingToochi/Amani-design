@@ -175,7 +175,7 @@ export const saveVendorDocumentVerification = async ({
             proofOfAddressVerification === "verified" &&
             identificationVerification === "verified";
 
-        vendor.status = bothVerified ? "verified" : "rejected";
+        vendor.status = bothVerified ? "approved" : "rejected";
 
         await vendor.save();
 
