@@ -49,7 +49,7 @@ import InitiatePayment from "./features/payments/components/InitiatePayment";
 import ResetPassword from "./pages/auth/ResetPassword.jsx";
 import ForgetPassword from "./pages/auth/ForgetPassword.jsx";
 import Subscription from "./pages/seller/subscription/Subscription.jsx";
-import UpdateVerification from "./pages/seller/UpdateVerification.jsx";
+import UpdateVerification from "./pages/seller/updateVerification.jsx";
 
 function App() {
   return (

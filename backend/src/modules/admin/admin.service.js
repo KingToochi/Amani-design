@@ -198,7 +198,8 @@ export const saveVendorDocumentVerification = async ({
                 rejectedFields.push("means of identification");
             }
 
-            const updateUrl = `${process.env.FRONTEND_URL}/vendor/update-verification/${vendor._id}`;
+            const frontendUrl = process.env.FRONTEND_URL?.replace(/\/+$/, "");
+            const updateUrl = `${frontendUrl}/vendor/update-verification/${vendor._id}`;
 
             await sendRejectionEmail({
                 email: vendor.email,
