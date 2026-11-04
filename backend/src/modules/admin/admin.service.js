@@ -2,7 +2,7 @@ import User from "../../models/User.js"
 import Product from "../../models/Product.js"
 import Sales from "../../models/Sales.js"
 import Order from "../../models/Order.js"
-import { validateAdmin } from "./admin.validation.js"
+import { validateAdmin, validateAdminAccessCode } from "./admin.validation.js"
 import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"
 import { sendApprovalEmail, sendRejectionEmail } from "../../integrations/email/email.service.js";
@@ -60,6 +60,176 @@ export const fetchVendorDetails = async(auth) => {
      return vendors
 }
 
+const getVendorOrderPayouts = async () => {
+  const orderItems = await Order.aggregate([
+    {
+      $match: {
+        $or: [
+          {
+            paymentStatus: "successful",
+            orderStatus: "delivered",
+            "items.status": "delivered"
+          },
+          { "items.status": "in_transit" }
+        ]
+      }
+    },
+    { $unwind: "$items" },
+    {
+      $addFields: {
+        "items.productObjectId": {
+          $convert: {
+            input: "$items.productId",
+            to: "objectId",
+            onError: null,
+            onNull: null
+          }
+        },
+        "items.receiptMatches": {
+          $filter: {
+            input: { $ifNull: ["$customerOrderReceivedDetails", []] },
+            as: "receipt",
+            cond: {
+              $and: [
+                {
+                  $eq: [
+                    { $toString: "$$receipt.itemId" },
+                    { $toString: "$items._id" }
+                  ]
+                },
+                {
+                  $or: [
+                    { $eq: ["$$receipt.receivedItem", true] },
+                    { $ne: ["$$receipt.receivedAt", null] },
+                    { $in: ["$$receipt.itemStatus", ["received", "partially_received"]] }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      $match: {
+        $or: [
+          {
+            paymentStatus: "successful",
+            orderStatus: "delivered",
+            "items.status": "delivered"
+          },
+          {
+            "items.status": "in_transit",
+            $expr: { $eq: [{ $size: "$items.receiptMatches" }, 0] }
+          }
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: Product.collection.name,
+        localField: "items.productObjectId",
+        foreignField: "_id",
+        as: "product"
+      }
+    },
+    { $unwind: "$product" },
+    {
+      $lookup: {
+        from: User.collection.name,
+        localField: "product.vendorId",
+        foreignField: "_id",
+        as: "vendor"
+      }
+    },
+    { $unwind: "$vendor" },
+    { $match: { "vendor.role": "vendor" } },
+    {
+      $project: {
+        _id: 0,
+        vendorId: "$vendor._id",
+        vendorName: {
+          $trim: {
+            input: {
+              $concat: [
+                { $ifNull: ["$vendor.fname", ""] },
+                " ",
+                { $ifNull: ["$vendor.lname", ""] }
+              ]
+            }
+          }
+        },
+        vendorEmail: "$vendor.email",
+        vendorPhoneNumber: "$vendor.phoneNumber",
+        order: {
+          orderId: "$_id",
+          orderNumber: "$orderNumber",
+          paymentStatus: "$paymentStatus",
+          paymentReference: "$paymentReference",
+          orderStatus: "$orderStatus",
+          customerName: "$customerName",
+          customerEmail: "$customerEmail",
+          customerPhone: "$customerPhone",
+          createdAt: "$createdAt",
+          itemId: "$items._id",
+          productId: "$items.productId",
+          productName: "$items.name",
+          quantity: "$items.quantity",
+          price: "$items.price",
+          itemStatus: "$items.status",
+          sentAt: "$items.sentAt",
+          receiptDetails: { $arrayElemAt: ["$items.receiptMatches", 0] }
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$vendorId",
+        vendor: {
+          $first: {
+            _id: "$vendorId",
+            name: "$vendorName",
+            email: "$vendorEmail",
+            phoneNumber: "$vendorPhoneNumber"
+          }
+        },
+        orderItems: { $push: "$order" }
+      }
+    },
+    { $sort: { "vendor.name": 1 } }
+  ]);
+
+  const vendorsDueForPayout = [];
+  const vendorsForManualReview = [];
+
+  for (const result of orderItems) {
+    const dueOrders = result.orderItems.filter(
+      (order) =>
+        order.paymentStatus === "successful" &&
+        order.orderStatus === "delivered" &&
+        order.itemStatus === "delivered"
+    );
+    const reviewOrders = result.orderItems.filter(
+      (order) => order.itemStatus === "in_transit" && !order.receiptDetails
+    );
+
+    if (dueOrders.length) {
+      vendorsDueForPayout.push({ ...result.vendor, orders: dueOrders });
+    }
+    if (reviewOrders.length) {
+      vendorsForManualReview.push({ ...result.vendor, orders: reviewOrders });
+    }
+  }
+
+  return { vendorsDueForPayout, vendorsForManualReview };
+};
+
+export const fetchVendorsPayoutDetails = async ({ auth, adminAccessCode }) => {
+  const user = await User.findById(auth._id);
+  validateAdmin(user);
+  validateAdminAccessCode(adminAccessCode);
+  return getVendorOrderPayouts();
+};
 export const fetchCustomerDetails = async(auth) => {
      const user = await User.findOne({_id: auth._id})
      const validate = validateAdmin(user)
@@ -333,34 +503,5 @@ export const fetchDataAnalytics = async(auth) => {
 export const fetchVendorsDueForPayout = async (auth) => {
     const user = await User.findById(auth._id);
     validateAdmin(user);
-
-    const vendorsDueForPayout = await Order.aggregate([
-        {
-            $match: {
-                "items.Status": {
-                    $in: ["confirmed", "in_transit", "delivered"]
-                }
-            }
-        },
-        {
-            $project: {
-                transactionId: 1,
-                items : 1,
-                "vendorOrderQuantityDetails.confirmedAt": 1,
-                deliveryCompany : 1,
-                customerName : 1,
-                customerNumber : 1,
-                customerEmail : 1,
-                createdAt: 1
-            }
-        },
-        {
-            $group: {
-                _id: "$items.productId",
-                items: { $push: "$$ROOT" }
-            }
-        }
-    ]);
-
-    return vendors;
+    return getVendorOrderPayouts();
 };

@@ -35,6 +35,7 @@ import ViewProduct from "./pages/admin/ViewProduct";
 import ViewCustomer from "./pages/admin/VIewCustomer";
 import Customer from "./pages/admin/Customers";
 import ProductAdmin from "./pages/admin/Product";
+import PayoutManagement from "./pages/admin/PayoutManagement";
 import CustomerOrder from "./pages/customer/Orders";
 import OrderDetails from "./pages/customer/OrderDetails";
 import VendorOrderDetails from "./pages/seller/OrderDetails";
@@ -106,6 +107,7 @@ function App() {
             <Route path="viewProduct/:id" element={<ViewProduct />} />
             <Route path="viewCustomer/:id" element={<ViewCustomer />} />
             <Route path="orders" element={<Order />} />
+            <Route path="payouts" element={<PayoutManagement />} />
             <Route path="customers" element={<Customer />} />
             <Route path="products" element={<ProductAdmin />} />
           </Route>

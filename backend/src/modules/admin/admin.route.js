@@ -1,6 +1,6 @@
 import express from "express"
 import verifyToken from "../../middleware/verifyToken.js"
-import { adminDetails, getCustomers, getOrders, getProducts, getVendors, getProductById, getVendorById, getCustomerById,dataAnalytics, adminLogin, verifyVendorDocuments } from "./admin.controller.js"
+import { adminDetails, getCustomers, getOrders, getProducts, getVendors, getProductById, getVendorById, getCustomerById, dataAnalytics, adminLogin, verifyVendorDocuments, getVendorsDueForPayout, payvendor } from "./admin.controller.js"
 const route = express.Router()
 route.post ("/login", adminLogin)
 route.get("/details",verifyToken, adminDetails)
@@ -13,5 +13,7 @@ route.get("/viewVendor/:id", verifyToken, getVendorById)
 route.put("/vendors/:id/verification", verifyToken, verifyVendorDocuments)
 route.get("/viewCustomer/:id", verifyToken, getCustomerById)
 route.get("/data-analytics", verifyToken, dataAnalytics)
+route.get("/vendorPayout", verifyToken, getVendorsDueForPayout)
+route.post("/vendorPayout", verifyToken, payvendor)
 
 export default route

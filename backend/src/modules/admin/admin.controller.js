@@ -1,6 +1,7 @@
-import { fetchAdmin,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout, saveVendorDocumentVerification} from "./admin.service.js"
+import { fetchAdmin, fetchVendorsPayoutDetails,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout, saveVendorDocumentVerification} from "./admin.service.js"
 import { validateAdminLoginData } from "./admin.validation.js"
 import { getCookieOptions } from "../../utils/getCookieOptions.js";
+
 export const adminDetails = async(req, res, next) => {
     try {
         const auth = req.user
@@ -10,7 +11,6 @@ export const adminDetails = async(req, res, next) => {
         next(error)
     }
 }
-
 export const getVendors = async(req, res, next) => {
     try {
         const auth = req.user
@@ -134,8 +134,20 @@ export const getVendorsDueForPayout = async(req, res, next) => {
     try {
         const auth = req.user
         const vendorsDueForPayout = await fetchVendorsDueForPayout(auth)
+        return res.json({ success: true, ...vendorsDueForPayout })
     }catch(error) {
         next(error)
     }
 }
-    
+
+export const payvendor = async(req, res, next) => {
+    try {
+        const auth = req.user
+        const {adminAccessCode} = req.body
+        const vendorsPayoutDetails = await fetchVendorsPayoutDetails({auth, adminAccessCode})
+        return res.status(200).json({ success: true, ...vendorsPayoutDetails })
+
+    }catch(error) {
+        next(error)
+    }
+}

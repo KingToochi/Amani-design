@@ -17,3 +17,14 @@ export const validateAdminLoginData = ({email, password}) => {
 
     return
 }
+
+export const validateAdminAccessCode = (adminAccessCode) => {
+  const storedCode = process.env.ADMIN_ACCESS_CODE?.trim();
+  const suppliedCode = String(adminAccessCode ?? "").trim();
+
+  if (!storedCode || !suppliedCode || storedCode !== suppliedCode) {
+    const error = new Error("Invalid access code")
+    error.statusCode = 401
+    throw error
+  }
+};
