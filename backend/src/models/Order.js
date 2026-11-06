@@ -83,6 +83,15 @@ const orderSchema = new mongoose.Schema({
       enum: ["pending","confirmed", "unavailable", "in_transit", "delivered", "cancelled", "returned", "completed"],
       default: "pending",
     },
+    manualReviewStatus: {
+      type: String,
+      enum: ["pending", "approved", "declined"],
+      default: "pending",
+    },
+    manualReviewAt: {
+      type: Date,
+      default: null,
+    },
     availabilityConfirmed: {
       type: Boolean,
       default: false,

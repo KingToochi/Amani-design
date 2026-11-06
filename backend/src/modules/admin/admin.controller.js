@@ -1,4 +1,4 @@
-import { fetchAdmin, fetchVendorsPayoutDetails,  loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout, saveVendorDocumentVerification} from "./admin.service.js"
+import { fetchAdmin, fetchVendorsPayoutDetails, reviewVendorPayout, loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout, saveVendorDocumentVerification} from "./admin.service.js"
 import { validateAdminLoginData } from "./admin.validation.js"
 import { getCookieOptions } from "../../utils/getCookieOptions.js";
 
@@ -147,6 +147,20 @@ export const payvendor = async(req, res, next) => {
         const vendorsPayoutDetails = await fetchVendorsPayoutDetails({auth, adminAccessCode})
         return res.status(200).json({ success: true, ...vendorsPayoutDetails })
 
+    }catch(error) {
+        next(error)
+    }
+}
+
+export const reviewVendorPayoutItem = async(req, res, next) => {
+    try {
+        const result = await reviewVendorPayout({
+            auth: req.user,
+            orderId: req.params.orderId,
+            itemId: req.params.itemId,
+            decision: req.body.decision,
+        })
+        return res.status(200).json({ success: true, ...result })
     }catch(error) {
         next(error)
     }

@@ -6,6 +6,7 @@ import { validateAdmin, validateAdminAccessCode } from "./admin.validation.js"
 import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"
 import { sendApprovalEmail, sendRejectionEmail } from "../../integrations/email/email.service.js";
+import { updateOrderStatusFromItems } from "../../utils/updateOrderStatus.js";
 
 
 
@@ -64,14 +65,8 @@ const getVendorOrderPayouts = async () => {
   const orderItems = await Order.aggregate([
     {
       $match: {
-        $or: [
-          {
-            paymentStatus: "successful",
-            orderStatus: "delivered",
-            "items.status": "delivered"
-          },
-          { "items.status": "in_transit" }
-        ]
+        paymentStatus: "successful",
+        "items.status": { $in: ["delivered", "in_transit"] }
       }
     },
     { $unwind: "$items" },
@@ -113,11 +108,7 @@ const getVendorOrderPayouts = async () => {
     {
       $match: {
         $or: [
-          {
-            paymentStatus: "successful",
-            orderStatus: "delivered",
-            "items.status": "delivered"
-          },
+          { "items.status": "delivered" },
           {
             "items.status": "in_transit",
             $expr: { $eq: [{ $size: "$items.receiptMatches" }, 0] }
@@ -178,6 +169,8 @@ const getVendorOrderPayouts = async () => {
           price: "$items.price",
           itemStatus: "$items.status",
           sentAt: "$items.sentAt",
+          manualReviewStatus: "$items.manualReviewStatus",
+          manualReviewAt: "$items.manualReviewAt",
           receiptDetails: { $arrayElemAt: ["$items.receiptMatches", 0] }
         }
       }
@@ -206,11 +199,13 @@ const getVendorOrderPayouts = async () => {
     const dueOrders = result.orderItems.filter(
       (order) =>
         order.paymentStatus === "successful" &&
-        order.orderStatus === "delivered" &&
         order.itemStatus === "delivered"
     );
     const reviewOrders = result.orderItems.filter(
-      (order) => order.itemStatus === "in_transit" && !order.receiptDetails
+      (order) =>
+        order.itemStatus === "in_transit" &&
+        order.manualReviewStatus !== "declined" &&
+        !order.receiptDetails
     );
 
     if (dueOrders.length) {
@@ -229,6 +224,54 @@ export const fetchVendorsPayoutDetails = async ({ auth, adminAccessCode }) => {
   validateAdmin(user);
   validateAdminAccessCode(adminAccessCode);
   return getVendorOrderPayouts();
+};
+
+export const reviewVendorPayout = async ({ auth, orderId, itemId, decision }) => {
+  const user = await User.findById(auth._id);
+  validateAdmin(user);
+
+  if (!["approve", "decline"].includes(decision)) {
+    const error = new Error("Decision must be approve or decline");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const order = await Order.findById(orderId);
+  if (!order) {
+    const error = new Error("Order not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const item = order.items.id(itemId);
+  if (!item) {
+    const error = new Error("Order item not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const hasCustomerReceipt = (order.customerOrderReceivedDetails || []).some(
+    (receipt) => receipt.itemId?.toString() === itemId
+  );
+  if (
+    item.status !== "in_transit" ||
+    item.manualReviewStatus === "declined" ||
+    hasCustomerReceipt
+  ) {
+    const error = new Error("This order item is no longer awaiting manual review");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  item.manualReviewStatus = decision === "approve" ? "approved" : "declined";
+  if (decision === "approve") {
+    item.status = "delivered";
+    item.manualReviewAt = new Date();
+    order.orderStatus = updateOrderStatusFromItems(order);
+  }
+
+  await order.save();
+  return { decision, orderId: order._id, itemId: item._id };
 };
 export const fetchCustomerDetails = async(auth) => {
      const user = await User.findOne({_id: auth._id})
