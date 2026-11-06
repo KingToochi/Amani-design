@@ -4,6 +4,8 @@ import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/useFetch";
 import AdminAccessCodeForm from "../../components/common/AdminAccessCodeForm";
 
+const MAX_DISPLAY_ROWS = 10;
+
 const formatCurrency = (amount, currency = "NGN") =>
   new Intl.NumberFormat("en-NG", {
     style: "currency",
@@ -35,6 +37,8 @@ const PayoutManagement = () => {
   const [accessCodeSuccess, setAccessCodeSuccess] = useState("");
   const [submittingAccessCode, setSubmittingAccessCode] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [showAllPayoutRows, setShowAllPayoutRows] = useState(false);
+  const [showAllReviewRows, setShowAllReviewRows] = useState(false);
   const url = `${BASE_URL}/admin/vendorPayout`;
 
   const fetchPayouts = useCallback(async () => {
@@ -80,7 +84,11 @@ const PayoutManagement = () => {
       const response = await CustomFetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminAccessCode }),
+        body: JSON.stringify({
+          adminAccessCode,
+          vendorId: accessCodePayout.vendor._id,
+          amount: Number(accessCodePayout.order.price) * Number(accessCodePayout.order.quantity),
+        }),
       });
       const data = response ? await response.json() : null;
 
@@ -91,7 +99,7 @@ const PayoutManagement = () => {
 
       setAccessCodeSuccess(
         `Access code verified for ${accessCodePayout?.vendor?.name || "this payout"}. ` +
-          "A bank transfer has not been initiated."
+          "The payout request was sent to the server; no bank transfer has been initiated."
       );
     } catch (submitError) {
       console.error("Error verifying payout access code:", submitError);
@@ -103,6 +111,12 @@ const PayoutManagement = () => {
 
   const reviewRows = flattenVendorOrders(vendorsForManualReview);
   const payoutRows = flattenVendorOrders(vendorsDueForPayout);
+  const displayedPayoutRows = showAllPayoutRows
+    ? payoutRows
+    : payoutRows.slice(0, MAX_DISPLAY_ROWS);
+  const displayedReviewRows = showAllReviewRows
+    ? reviewRows
+    : reviewRows.slice(0, MAX_DISPLAY_ROWS);
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-10">
@@ -128,59 +142,6 @@ const PayoutManagement = () => {
           <>
             <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
               <div className="border-b border-slate-200 px-6 py-5">
-                <h2 className="text-xl font-semibold text-slate-900">Awaiting manual review</h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Review each shipped order before approving or declining it.
-                </p>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-                  <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                      <th className="px-6 py-3 font-medium">Vendor</th>
-                      <th className="px-6 py-3 font-medium">Order</th>
-                      <th className="px-6 py-3 font-medium">Product</th>
-                      <th className="px-6 py-3 font-medium">Amount</th>
-                      <th className="px-6 py-3 font-medium">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {reviewRows.map(({ vendor, order }) => (
-                      <tr key={`${order.orderId}-${order.itemId}`}>
-                        <td className="whitespace-nowrap px-6 py-4 font-medium text-slate-900">
-                          {vendor.name || "Vendor"}
-                        </td>
-                        <td className="whitespace-nowrap px-6 py-4 text-slate-600">
-                          {order.orderNumber || order.orderId}
-                        </td>
-                        <td className="px-6 py-4 text-slate-600">{order.productName || "Order item"}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-slate-600">
-                          {formatCurrency(order.price * order.quantity)}
-                        </td>
-                        <td className="whitespace-nowrap px-6 py-4">
-                          <Link
-                            to={`/admin/payouts/review/${vendor._id}/${order.orderId}/${order.itemId}`}
-                            className="inline-flex rounded-lg bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700"
-                          >
-                            View &amp; review
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                    {reviewRows.length === 0 && (
-                      <tr>
-                        <td colSpan="5" className="px-6 py-10 text-center text-slate-500">
-                          No vendors are awaiting manual review.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-200 px-6 py-5">
                 <h2 className="text-xl font-semibold text-slate-900">Vendors due for payout</h2>
                 <p className="mt-1 text-sm text-slate-500">
                   Pay Now appears after 24 hours have passed since the item was received or manually approved.
@@ -199,7 +160,7 @@ const PayoutManagement = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {payoutRows.map(({ vendor, order }) => {
+                    {displayedPayoutRows.map(({ vendor, order }) => {
                       const receiptTime = getReceiptTime(order);
                       const eligible = isEligibleForPayment(order, now);
 
@@ -250,6 +211,81 @@ const PayoutManagement = () => {
                   </tbody>
                 </table>
               </div>
+              {payoutRows.length > MAX_DISPLAY_ROWS && (
+                <div className="border-t border-slate-200 px-6 py-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllPayoutRows((showAll) => !showAll)}
+                    className="text-sm font-medium text-indigo-700 hover:text-indigo-900"
+                  >
+                    {showAllPayoutRows ? "See less" : `See more (${payoutRows.length - MAX_DISPLAY_ROWS} more)`}
+                  </button>
+                </div>
+              )}
+            </section>
+
+            <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-200 px-6 py-5">
+                <h2 className="text-xl font-semibold text-slate-900">Awaiting manual review</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Review each shipped order before approving or declining it.
+                </p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                    <tr>
+                      <th className="px-6 py-3 font-medium">Vendor</th>
+                      <th className="px-6 py-3 font-medium">Order</th>
+                      <th className="px-6 py-3 font-medium">Product</th>
+                      <th className="px-6 py-3 font-medium">Amount</th>
+                      <th className="px-6 py-3 font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {displayedReviewRows.map(({ vendor, order }) => (
+                      <tr key={`${order.orderId}-${order.itemId}`}>
+                        <td className="whitespace-nowrap px-6 py-4 font-medium text-slate-900">
+                          {vendor.name || "Vendor"}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-slate-600">
+                          {order.orderNumber || order.orderId}
+                        </td>
+                        <td className="px-6 py-4 text-slate-600">{order.productName || "Order item"}</td>
+                        <td className="whitespace-nowrap px-6 py-4 text-slate-600">
+                          {formatCurrency(order.price * order.quantity)}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <Link
+                            to={`/admin/payouts/review/${vendor._id}/${order.orderId}/${order.itemId}`}
+                            className="inline-flex rounded-lg bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700"
+                          >
+                            View &amp; review
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                    {reviewRows.length === 0 && (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-10 text-center text-slate-500">
+                          No vendors are awaiting manual review.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              {reviewRows.length > MAX_DISPLAY_ROWS && (
+                <div className="border-t border-slate-200 px-6 py-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllReviewRows((showAll) => !showAll)}
+                    className="text-sm font-medium text-indigo-700 hover:text-indigo-900"
+                  >
+                    {showAllReviewRows ? "See less" : `See more (${reviewRows.length - MAX_DISPLAY_ROWS} more)`}
+                  </button>
+                </div>
+              )}
             </section>
           </>
         )}
