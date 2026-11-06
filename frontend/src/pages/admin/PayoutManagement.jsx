@@ -48,7 +48,7 @@ const PayoutManagement = () => {
     try {
       const response = await CustomFetch(url, { method: "GET" });
       const data = response ? await response.json() : null;
-
+      console.log(data)
       if (!response?.ok || !data?.success) {
         setError(data?.message || "Unable to load vendor payouts.");
         setVendorsDueForPayout([]);
