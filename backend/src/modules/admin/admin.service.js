@@ -282,10 +282,10 @@ const loadPayoutDetails = async ({ vendorId, orderId, itemId, orderNumber }) => 
 
    let paidAmount = 0;
 
-  if (subscriber && subscriptionDetails?.plan === "standard") {
+  if (vendor.subscriber && vendor.subscriptionDetails?.plan === "standard") {
     paidAmount = Number(item.price) * receivedQuantity * 0.93;
 
-  } else if (subscriber && subscriptionDetails?.plan === "premium") {
+  } else if (vendor.subscriber && vendor.subscriptionDetails?.plan === "premium") {
     paidAmount = Number(item.price) * receivedQuantity * 0.95;
 
   } else {
