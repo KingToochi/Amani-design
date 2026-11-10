@@ -278,14 +278,26 @@ const loadPayoutDetails = async ({ vendorId, orderId, itemId, orderNumber }) => 
   }
 
   const vendor = await User.findById(product.vendorId)
-    .select("_id fname lname email bankName accountNumber bankCode recipientCode");
-  const paidAmount = Number(item.price) * receivedQuantity;
+    .select("_id fname lname email bankName accountNumber bankCode recipientCode subscriber subscriptionDetails");
+
+   let paidAmount = 0;
+
+  if (subscriber && subscriptionDetails?.plan === "standard") {
+    paidAmount = Number(item.price) * receivedQuantity * 0.93;
+
+  } else if (subscriber && subscriptionDetails?.plan === "premium") {
+    paidAmount = Number(item.price) * receivedQuantity * 0.95;
+
+  } else {
+    // Basic subscribers and non-subscribers
+    paidAmount = Number(item.price) * receivedQuantity * 0.90;
+  }
+
   if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
     const error = new Error("Unable to calculate a valid payout amount");
     error.statusCode = 400;
     throw error;
   }
-
   console.log(order, item, vendor, paidAmount)
 
   return { order, item, vendor, paidAmount };
