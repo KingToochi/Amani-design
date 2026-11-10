@@ -9,6 +9,20 @@ const salesSchema = new mongoose.Schema({
     index: true
   },
   itemId : String,
+  orderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order",
+  },
+  orderItemId: mongoose.Schema.Types.ObjectId,
+  vendorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  payoutReference: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   productName: {
     type: String,
     required: [true, 'Product name is required'],

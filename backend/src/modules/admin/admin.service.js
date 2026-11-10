@@ -290,6 +290,53 @@ const loadPayoutDetails = async ({ vendorId, orderId, itemId, orderNumber }) => 
 };
 
 const markPayoutSuccessful = async (payment) => {
+  const order = await Order.findById(payment.relatedOrderId);
+  const item = order?.items.id(payment.orderItemId);
+  if (!order || !item || item.payoutReference !== payment.reference) {
+    const error = new Error("Payout transfer succeeded, but its order item could not be found");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  payment.status = "successful";
+  await payment.save();
+
+  await Sales.findOneAndUpdate(
+    { payoutReference: payment.reference },
+    {
+      $set: {
+        orderId: order._id,
+        orderItemId: item._id,
+        vendorId: payment.vendorId,
+        productId: item.productId,
+        itemId: item.id,
+        productName: item.name,
+        customerId: order.customerId,
+        customerEmail: order.customerEmail,
+        customerName: order.customerName,
+        quantity: Math.round(Number(payment.amount) / Number(item.price)),
+        unitPrice: item.price,
+        totalAmount: payment.amount,
+        finalAmount: payment.amount,
+        paymentMethod: "bank_transfer",
+        paymentStatus: "completed",
+        transactionId: payment.reference,
+        status: "delivered",
+        saleDate: payment.transferDate || new Date(),
+        shippingAddress: order.shippingAddress
+          ? {
+              street: order.shippingAddress,
+              city: order.city,
+              state: order.state,
+              country: "Nigeria",
+            }
+          : undefined,
+        createdBy: payment.vendorId,
+      },
+    },
+    { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
+  );
+
   const result = await Order.updateOne(
     {
       _id: payment.relatedOrderId,
@@ -308,8 +355,6 @@ const markPayoutSuccessful = async (payment) => {
     error.statusCode = 409;
     throw error;
   }
-  payment.status = "successful";
-  await payment.save();
 };
 
 export const initiateVendorPayout = async ({
@@ -418,6 +463,10 @@ export const finalizeVendorPayout = async ({ auth, adminAccessCode, paymentId, o
     const error = new Error("Payout transfer was not found or does not require finalization");
     error.statusCode = 404;
     throw error;
+  }
+  if (payment.status === "successful") {
+    await markPayoutSuccessful(payment);
+    return { reference: payment.reference, status: "successful" };
   }
   if (payment.status !== "otp_required") {
     const error = new Error("Payout transfer is not awaiting OTP finalization");
