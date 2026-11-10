@@ -286,6 +286,8 @@ const loadPayoutDetails = async ({ vendorId, orderId, itemId, orderNumber }) => 
     throw error;
   }
 
+  console.log(order, item, vendor, paidAmount)
+
   return { order, item, vendor, paidAmount };
 };
 
@@ -366,6 +368,7 @@ export const initiateVendorPayout = async ({
   const { order, item, vendor, paidAmount } = await loadPayoutDetails({
     vendorId, orderId, itemId, orderNumber,
   });
+  console.log(vendor)
   if (!vendor.bankCode || !vendor.accountNumber) {
     const error = new Error("Vendor bank code and account number are required for payout");
     error.statusCode = 400;
