@@ -124,3 +124,6 @@ export const sendApprovalEmail = async ({ email, firstName }) => {
     });
 };
 
+export const sendSuccessfulPaymentEmail = async({fname,email, paidAmount}) => {
+    
+}

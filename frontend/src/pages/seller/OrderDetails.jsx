@@ -754,7 +754,7 @@ const VendorOrderDetails = () => {
 
                                             </div>)}
                                             
-                                            {item.availabilityConfirmed && item.availability?.hasProduct === true && !["in_transit", "delivered", "completed", "unavailable", "returned"].includes(item.status) && (
+                                            {item.availabilityConfirmed && item.availability?.hasProduct === true && !["sending", "in_transit", "delivered", "completed", "unavailable", "returned"].includes(item.status) && (
                                                 <button
                                                     onClick={() => handleItemSent(item._id || item.productId || index)}
                                                     disabled={sendingItem === (item._id || item.productId || index)}
@@ -777,7 +777,9 @@ const VendorOrderDetails = () => {
                                             {item.status === "in_transit" && (
                                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg border border-green-200">
                                                     <CheckCircle className="h-4 w-4" />
-                                                    <span className="text-sm font-medium">Item has been sent to customer</span>
+                                                    <span className="text-sm font-medium">
+                                                        Sent {item.sentQuantity || item.quantity} of {item.quantity} to customer
+                                                    </span>
                                                 </div>
                                             )}
 

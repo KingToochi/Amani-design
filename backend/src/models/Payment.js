@@ -22,8 +22,20 @@ const paymentSchema = new mongoose.Schema( {
     },
     status : {
         type : String,
-        enum: ["pending","successful", "failed"],
+        enum: ["pending","successful", "failed", "reversed", "cancelled", "otp_required", "otp_verified", "otp_invalid", "otp_expired", "otp_not_sent", "otp_not_required"],
         default: "pending",
+    },
+    transferCode : String,
+    recipientCode : String,
+    transferDate : Date,
+    relatedOrderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Order",
+    },
+    orderItemId: mongoose.Schema.Types.ObjectId,
+    vendorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
     },
     createdAt: {
     type: Date,

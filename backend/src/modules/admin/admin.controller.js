@@ -1,4 +1,4 @@
-import { fetchAdmin, fetchVendorsPayoutDetails, reviewVendorPayout, loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout, saveVendorDocumentVerification} from "./admin.service.js"
+import { fetchAdmin, initiateVendorPayout, finalizeVendorPayout, reviewVendorPayout, loginAdmin, fetchVendorDetails, fetchCustomerDetails, fetchProducts, fetchOrders, fetchProductDetailsById, fetchVendorDetailsById, fetchCustomerDetailsById, fetchDataAnalytics, fetchVendorsDueForPayout, saveVendorDocumentVerification} from "./admin.service.js"
 import { validateAdminLoginData } from "./admin.validation.js"
 import { getCookieOptions } from "../../utils/getCookieOptions.js";
 
@@ -142,11 +142,30 @@ export const getVendorsDueForPayout = async(req, res, next) => {
 
 export const payvendor = async(req, res, next) => {
     try {
-        const auth = req.user
-        const {adminAccessCode} = req.body
-        const vendorsPayoutDetails = await fetchVendorsPayoutDetails({auth, adminAccessCode})
-        return res.status(200).json({ success: true, ...vendorsPayoutDetails })
+        const result = await initiateVendorPayout({
+            auth: req.user,
+            adminAccessCode: req.body.adminAccessCode,
+            vendorId: req.body.vendorId,
+            orderId: req.body.orderId,
+            itemId: req.body.itemId,
+            orderNumber: req.body.orderNumber,
+        })
+        return res.status(200).json({ success: true, ...result })
 
+    }catch(error) {
+        next(error)
+    }
+}
+
+export const finalizeVendorPayoutPayment = async(req, res, next) => {
+    try {
+        const result = await finalizeVendorPayout({
+            auth: req.user,
+            adminAccessCode: req.body.adminAccessCode,
+            paymentId: req.body.paymentId,
+            otp: req.body.otp,
+        })
+        return res.status(200).json({ success: true, ...result })
     }catch(error) {
         next(error)
     }

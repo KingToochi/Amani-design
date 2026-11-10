@@ -162,6 +162,7 @@ try {
         proofOfAddressVerification: user.proofOfAddressVerification,
       id: user._id.toString(),
       bankName: user.bankName,
+      bankCode: user.bankCode,
       bankAccountNumber: user.accountNumber,
       proofOfAddress: user.proofOfAddress,
       profilePicture: user.profilePicture,
@@ -220,11 +221,11 @@ export const registration = async(req, res, next) => {
 
 export const vendorRegistration = async(req, res, next) => {
     try {
-        const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted} = req.body
+        const {fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, bankCode, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted} = req.body
         const acceptedTerms = parseBooleanFlag(termsAndCondition ?? termsAccepted);
-        const validate = await validateVendorRegistration({fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
+        const validate = await validateVendorRegistration({fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, bankCode, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
         const exists = validate
-        const saveUser = await registerVendor({req, exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
+        const saveUser = await registerVendor({req, exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, bankCode, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms})
         const {accessToken, refreshToken, user} = saveUser
         await sendRegistrationEmails({
             email: user.email,

@@ -10,13 +10,14 @@ const productSchema = new mongoose.Schema({
   basePrice: Number,
   baseColor: String,
   baseSize: String,
+  stock: { type: Number, min: 0, default: 0 },
   createdAt: { type: Date, default: Date.now },
   productImages: [String], // Array of URLs
   variants: [{
     size: String,
     color: String,
     price: Number,
-    stock: { type: Number, default: 0 }
+    stock: { type: Number, min: 0, default: 0 }
   }],
   hasVariants: { type: Boolean, default: false }
 }, { timestamps: true });

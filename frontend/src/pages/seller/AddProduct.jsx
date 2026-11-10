@@ -30,6 +30,7 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
         } },
         { element: "input", type: "text", id: "color", name: "color", placeholder: "add product color", value: "", label: "Color" },
         { element: "input", type: "number", id: "productPrice", value: "", name: "productPrice", placeholder: "Price", label: "Price" },
+        { element: "input", type: "number", id: "stock", value: "0", name: "stock", placeholder: "Stock quantity", label: "Stock quantity", min: "0", step: "1" },
     ]);
     
 
@@ -51,6 +52,7 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
         const variantSizeId = "VariantSize" + newCount;
         const variantColorId = "VariantColor" + newCount;
         const variantPriceId = "VariantPrice" + newCount;
+        const variantStockId = "VariantStock" + newCount;
 
         setVariant(prev => [
             ...prev,
@@ -88,6 +90,17 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
                     label: `Variant ${newCount} price`,
                     value: "",
                     placeholder: "Enter price"
+                },
+                {
+                    element: "input",
+                    type: "number",
+                    id: variantStockId,
+                    name: `stock${newCount}`,
+                    label: `Variant ${newCount} stock`,
+                    value: "0",
+                    placeholder: "Enter stock quantity",
+                    min: "0",
+                    step: "1"
                 }
             ]
         ]);
@@ -361,6 +374,8 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
                                     name={field.name}
                                     placeholder={field.placeholder}
                                     value={field.value}
+                                    min={field.min}
+                                    step={field.step}
                                     onChange={handleChange}
                                     className="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                 />
@@ -440,6 +455,8 @@ const AddProduct = ({ setHideModal, productList, fetchProduct, imageLimits }) =>
                                         <label className="block text-sm font-medium text-slate-700">{variantField.label}</label>
                                         <input
                                             type={variantField.type}
+                                            min={variantField.min}
+                                            step={variantField.step}
                                             placeholder={variantField.placeholder}
                                             value={variantField.value}
                                             onChange={(e) => handleVariantChange(variantIndex, fieldIndex, e)}

@@ -35,6 +35,7 @@ const emptyForm = {
     state: "",
     typeOfVendor: "",
     bankName: "",
+    bankCode: "",
     accountNumber: "",
 };
 
@@ -76,6 +77,7 @@ const Profile = () => {
                 setForm({
                     ...emptyForm,
                     ...data.user,
+                    bankCode: data.user.bankCode ?? "",
                     accountNumber: data.user.bankAccountNumber ?? data.user.accountNumber ?? "",
                 });
                 setAuth(data.user);
@@ -128,6 +130,7 @@ const Profile = () => {
             }
             if (hasBankDetails) {
                 updates.bankName = form.bankName.trim();
+                updates.bankCode = form.bankCode.trim();
                 updates.accountNumber = form.accountNumber.trim();
             }
 
@@ -150,6 +153,7 @@ const Profile = () => {
             const updatedUser = {
                 ...userDetails,
                 ...form,
+                bankCode: form.bankCode,
                 bankAccountNumber: form.accountNumber,
             };
             setUserDetails(updatedUser);
@@ -314,7 +318,13 @@ const Profile = () => {
                                     <BankList
                                         id="bankName"
                                         value={form.bankName}
-                                        onChange={handleChange}
+                                        onChange={(event) => {
+                                            setForm((current) => ({
+                                                ...current,
+                                                bankName: event.target.value,
+                                                bankCode: event.target.bankCode,
+                                            }));
+                                        }}
                                     />
                                 ) : (
                                     <div className="w-full rounded-xl border border-transparent bg-stone-100/70 px-4 py-3 text-sm text-stone-800">

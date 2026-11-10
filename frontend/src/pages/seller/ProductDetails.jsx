@@ -261,6 +261,22 @@ useEffect(()=> {
                         }
                     </div>
 
+                    <div className="w-full flex items-center justify-between gap-3 pt-2">
+                        <label htmlFor="product-stock" className="font-semibold">Main product stock</label>
+                        <input
+                            id="product-stock"
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={productDetails.stock ?? 0}
+                            onChange={(event) => setProductDetails({
+                                ...productDetails,
+                                stock: event.target.value,
+                            })}
+                            className="w-28 rounded-lg border border-gray-300 px-3 py-2 text-base"
+                        />
+                    </div>
+
                     <div className="w-full">
                         {editBaseColor
                         ?
@@ -361,6 +377,24 @@ useEffect(()=> {
                                 {productDetails.variants?.map((variant, index) => (
                                     <div key={variant._id} className="w-full flex flex-col gap-2 border-1 border-gray-300 rounded-lg p-4">
                                         <h2 className="text-lg font-semibold">Variants[{index+1}]</h2>
+                                        <label className="flex items-center justify-between gap-3 text-base">
+                                            <span>Stock</span>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="1"
+                                                value={variant.stock ?? 0}
+                                                onChange={(event) => setProductDetails({
+                                                    ...productDetails,
+                                                    variants: productDetails.variants.map((currentVariant) =>
+                                                        currentVariant._id === variant._id
+                                                            ? { ...currentVariant, stock: event.target.value }
+                                                            : currentVariant
+                                                    ),
+                                                })}
+                                                className="w-28 rounded-lg border border-gray-300 px-3 py-2 text-base"
+                                            />
+                                        </label>
                                         {
                                             (editVariant && editingField === "price" && variantToEdit._id === variant._id) 
                                             ?

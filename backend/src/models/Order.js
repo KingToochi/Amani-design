@@ -80,8 +80,12 @@ const orderSchema = new mongoose.Schema({
     productId: String,
     status :  {
       type: String,
-      enum: ["pending","confirmed", "unavailable", "in_transit", "delivered", "cancelled", "returned", "completed"],
+      enum: ["pending","confirmed", "sending", "unavailable", "in_transit", "delivered", "cancelled", "returned", "completed"],
       default: "pending",
+    },
+    sentQuantity: {
+      type: Number,
+      default: 0,
     },
     manualReviewStatus: {
       type: String,
@@ -115,6 +119,19 @@ const orderSchema = new mongoose.Schema({
       },
     },
     sentAt: {
+      type: Date,
+      default: null,
+    },
+    payoutStatus: {
+      type: String,
+      enum: ["not_paid", "processing", "paid", "failed"],
+      default: "not_paid",
+    },
+    payoutReference: {
+      type: String,
+      default: null,
+    },
+    payoutPaidAt: {
       type: Date,
       default: null,
     },

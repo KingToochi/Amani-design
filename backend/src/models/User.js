@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   dob: String,
   bankName: String,
   accountNumber: String,
+  bankCode : String,
+  recipientCode : String,
   houseNumber: String,
   streetName: String,
   city: String,

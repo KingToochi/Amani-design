@@ -21,6 +21,7 @@ export const editProduct = async ({ productId, productDetails }) => {
     "basePrice",
     "baseColor",
     "baseSize",
+    "stock",
     "variants"
   ];
   const updates = Object.fromEntries(
@@ -28,6 +29,35 @@ export const editProduct = async ({ productId, productDetails }) => {
       .filter(field => productDetails[field] !== undefined)
       .map(field => [field, productDetails[field]])
   );
+  if (updates.stock !== undefined) {
+    if (String(updates.stock).trim() === "") {
+      const error = new Error("Stock must be a non-negative whole number");
+      error.statusCode = 400;
+      throw error;
+    }
+    updates.stock = Number(updates.stock);
+    if (!Number.isInteger(updates.stock) || updates.stock < 0) {
+      const error = new Error("Stock must be a non-negative whole number");
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+  if (updates.variants !== undefined) {
+    updates.variants = updates.variants.map((variant) => {
+      if (variant.stock !== undefined && String(variant.stock).trim() === "") {
+        const error = new Error("Variant stock must be a non-negative whole number");
+        error.statusCode = 400;
+        throw error;
+      }
+      const stock = Number(variant.stock ?? 0);
+      if (!Number.isInteger(stock) || stock < 0) {
+        const error = new Error("Variant stock must be a non-negative whole number");
+        error.statusCode = 400;
+        throw error;
+      }
+      return { ...variant, stock };
+    });
+  }
 
     const updatedProduct = await Product.findByIdAndUpdate(
         productId,
@@ -81,17 +111,28 @@ export const createNewProduct = async({files, body, vendorId}) => {
             color,
             size
         } = body;
+        if (body.stock !== undefined && String(body.stock).trim() === "") {
+          const error = new Error("Stock must be a non-negative whole number");
+          error.statusCode = 400;
+          throw error;
+        }
+        const stock = Number(body.stock ?? 0);
+        if (!Number.isInteger(stock) || stock < 0) {
+          const error = new Error("Stock must be a non-negative whole number");
+          error.statusCode = 400;
+          throw error;
+        }
 
         // 5️⃣ Extract variants from form data
       const variants = [];
       const variantKeys = Object.keys(body).filter(key => 
-        key.match(/^(size|color|price)\d+$/)
+        key.match(/^(size|color|price|stock)\d+$/)
       );
       
       // Group variants by index
       const variantMap = new Map();
       variantKeys.forEach(key => {
-        const match = key.match(/(size|color|price)(\d+)/);
+        const match = key.match(/(size|color|price|stock)(\d+)/);
         if (match) {
           const [, type, index] = match;
           if (!variantMap.has(index)) {
@@ -103,11 +144,22 @@ export const createNewProduct = async({files, body, vendorId}) => {
       // Convert map to array
             variantMap.forEach((variant, index) => {
               if (variant.size && variant.color && variant.price) {
+                if (variant.stock !== undefined && String(variant.stock).trim() === "") {
+                  const error = new Error("Variant stock must be a non-negative whole number");
+                  error.statusCode = 400;
+                  throw error;
+                }
+                const stock = Number(variant.stock ?? 0);
+                if (!Number.isInteger(stock) || stock < 0) {
+                  const error = new Error("Variant stock must be a non-negative whole number");
+                  error.statusCode = 400;
+                  throw error;
+                }
                 variants.push({
                   size: variant.size,
                   color: variant.color,
                   price: Number(variant.price),
-                  stock: 0
+                  stock
                 });
               }
             });
@@ -124,6 +176,7 @@ export const createNewProduct = async({files, body, vendorId}) => {
               basePrice: productPrice ? Number(productPrice) : null,
               baseColor: color,
               baseSize: size,
+              stock,
               productImages: productImageUrls, // Store as array
               variants: variants.length > 0 ? variants : [],
               hasVariants: variants.length > 0

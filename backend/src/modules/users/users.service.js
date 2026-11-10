@@ -54,7 +54,7 @@ export const registerUser = async({exists, fname, lname, username, email, passwo
     
 }
 
-export const registerVendor = async({req, exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms}) => {
+export const registerVendor = async({req, exists, fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, bankCode, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms}) => {
     if (exists) {
       const error = new Error("Email or username already exists")
       error.statusCode = 400
@@ -95,6 +95,7 @@ export const registerVendor = async({req, exists, fname, lname, email, phoneNumb
             streetName,
             typeOfVendor,
             bankName,
+            bankCode,
             accountNumber,
             meansOfIdentification,
             identificationNumber,

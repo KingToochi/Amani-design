@@ -83,8 +83,8 @@ export const registrationValidation = async ({fname, lname, username, email, pas
         return exists
 }
 
-export const validateVendorRegistration = async({fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms}) => {
-    if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !typeOfVendor || !bankName || !accountNumber || !identificationNumber || !city || !state ) {
+export const validateVendorRegistration = async({fname, lname, email, phoneNumber, username, dob, password, houseNumber, streetName, meansOfIdentification, typeOfVendor, bankName, bankCode, accountNumber, identificationNumber, city, state, termsAndCondition, termsAccepted, acceptedTerms}) => {
+    if (!fname || !lname || !email || !phoneNumber || !dob || !houseNumber || !streetName || !meansOfIdentification || !typeOfVendor || !bankName || !bankCode || !accountNumber || !identificationNumber || !city || !state ) {
       throw new Error( "All fields required")
     }
     

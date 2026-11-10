@@ -2,11 +2,17 @@ import User from "../../models/User.js"
 import Product from "../../models/Product.js"
 import Sales from "../../models/Sales.js"
 import Order from "../../models/Order.js"
+import mongoose from "mongoose";
 import { validateAdmin, validateAdminAccessCode } from "./admin.validation.js"
 import bcrypt from "bcryptjs";
 import {generateToken} from "../../utils/generateToken.js"
 import { sendApprovalEmail, sendRejectionEmail } from "../../integrations/email/email.service.js";
 import { updateOrderStatusFromItems } from "../../utils/updateOrderStatus.js";
+import { randomUUID } from "crypto";
+import Payment from "../../models/Payment.js";
+import { initiateTransfer } from "../../integrations/paystack/initiateTransfer.js";
+import { finalizeTransfer } from "../../integrations/paystack/finalizeTransfer.js";
+import { createTransferRecipient } from "../../integrations/paystack/transferRecipient.js";
 
 
 
@@ -171,6 +177,7 @@ const getVendorOrderPayouts = async () => {
           sentAt: "$items.sentAt",
           manualReviewStatus: "$items.manualReviewStatus",
           manualReviewAt: "$items.manualReviewAt",
+          payoutStatus: "$items.payoutStatus",
           receiptDetails: { $arrayElemAt: ["$items.receiptMatches", 0] }
         }
       }
@@ -199,7 +206,8 @@ const getVendorOrderPayouts = async () => {
     const dueOrders = result.orderItems.filter(
       (order) =>
         order.paymentStatus === "successful" &&
-        order.itemStatus === "delivered"
+        order.itemStatus === "delivered" &&
+        !["processing", "paid"].includes(order.payoutStatus)
     );
     const reviewOrders = result.orderItems.filter(
       (order) =>
@@ -219,11 +227,214 @@ const getVendorOrderPayouts = async () => {
   return { vendorsDueForPayout, vendorsForManualReview };
 };
 
-export const fetchVendorsPayoutDetails = async ({ auth, adminAccessCode }) => {
+const loadPayoutDetails = async ({ vendorId, orderId, itemId, orderNumber }) => {
+  if (![vendorId, orderId, itemId].every((id) => mongoose.Types.ObjectId.isValid(id))) {
+    const error = new Error("Valid vendor, order, and item IDs are required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const order = await Order.findOne({ _id: orderId, orderNumber });
+  if (!order || order.paymentStatus !== "successful") {
+    const error = new Error("Eligible paid order not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const item = order.items.id(itemId);
+  if (!item || item.status !== "delivered") {
+    const error = new Error("Order item is not eligible for payout");
+    error.statusCode = 409;
+    throw error;
+  }
+  if (["processing", "paid"].includes(item.payoutStatus)) {
+    const error = new Error("Payout for this order item is already in progress or complete");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  const product = await Product.findById(item.productId).select("vendorId");
+  if (!product || product.vendorId.toString() !== vendorId) {
+    const error = new Error("Order item does not belong to this vendor");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  const receipt = order.customerOrderReceivedDetails.find(
+    (detail) => detail.itemId?.toString() === item._id.toString()
+  );
+  const receivedQuantity = receipt?.receivedQuantity ??
+    (item.manualReviewStatus === "approved" ? item.quantity : 0);
+  const receivedAt = receipt?.receivedAt || item.manualReviewAt;
+  if (!Number.isInteger(receivedQuantity) || receivedQuantity < 1 || !receivedAt) {
+    const error = new Error("A confirmed receipt is required before payout");
+    error.statusCode = 409;
+    throw error;
+  }
+  if (Date.now() - new Date(receivedAt).getTime() < 24 * 60 * 60 * 1000) {
+    const error = new Error("Payout is available 24 hours after receipt confirmation");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  const vendor = await User.findById(product.vendorId)
+    .select("_id fname lname email bankName accountNumber bankCode recipientCode");
+  const paidAmount = Number(item.price) * receivedQuantity;
+  if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
+    const error = new Error("Unable to calculate a valid payout amount");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return { order, item, vendor, paidAmount };
+};
+
+const markPayoutSuccessful = async (payment) => {
+  const result = await Order.updateOne(
+    {
+      _id: payment.relatedOrderId,
+      "items._id": payment.orderItemId,
+      "items.payoutReference": payment.reference,
+    },
+    {
+      $set: {
+        "items.$.payoutStatus": "paid",
+        "items.$.payoutPaidAt": new Date(),
+      },
+    }
+  );
+  if (!result.matchedCount) {
+    const error = new Error("Payout transfer succeeded, but its order item could not be updated");
+    error.statusCode = 409;
+    throw error;
+  }
+  payment.status = "successful";
+  await payment.save();
+};
+
+export const initiateVendorPayout = async ({
+  auth, adminAccessCode, vendorId, orderId, itemId, orderNumber,
+}) => {
   const user = await User.findById(auth._id);
   validateAdmin(user);
   validateAdminAccessCode(adminAccessCode);
-  return getVendorOrderPayouts();
+  const { order, item, vendor, paidAmount } = await loadPayoutDetails({
+    vendorId, orderId, itemId, orderNumber,
+  });
+  if (!vendor.bankCode || !vendor.accountNumber) {
+    const error = new Error("Vendor bank code and account number are required for payout");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await createTransferRecipient(vendor);
+  const reference = `vendor-payout-${randomUUID()}`;
+  const reservation = await Order.updateOne(
+    {
+      _id: order._id,
+      paymentStatus: "successful",
+      items: {
+        $elemMatch: {
+          _id: item._id,
+          status: "delivered",
+          payoutStatus: { $nin: ["processing", "paid"] },
+        },
+      },
+    },
+    {
+      $set: {
+        "items.$.payoutStatus": "processing",
+        "items.$.payoutReference": reference,
+      },
+    }
+  );
+  if (!reservation.matchedCount) {
+    const error = new Error("Payout for this order item is already in progress or complete");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  const payment = new Payment({
+    reference,
+    acessCode: reference,
+    purpose: "vendor_payout",
+    amount: paidAmount,
+    status: "pending",
+    relatedOrderId: order._id,
+    orderItemId: item._id,
+    vendorId: vendor._id,
+  });
+  try {
+    await payment.save();
+  } catch (error) {
+    await Order.updateOne(
+      { _id: order._id, "items._id": item._id, "items.payoutReference": reference },
+      { $set: { "items.$.payoutStatus": "failed" } }
+    );
+    throw error;
+  }
+
+  try {
+    const transfer = await initiateTransfer({ vendor, paidAmount, reference });
+    payment.transferCode = transfer.transferCode;
+    payment.recipientCode = transfer.recipientCode || vendor.recipientCode;
+    payment.transferDate = transfer.transferDate;
+    if (transfer.status === "otp") {
+      payment.status = "otp_required";
+      await payment.save();
+      return { paymentId: payment._id, reference, amount: paidAmount, requireOtp: true };
+    }
+    if (transfer.status === "success") {
+      await markPayoutSuccessful(payment);
+      return { paymentId: payment._id, reference, amount: paidAmount, status: "successful" };
+    }
+    await payment.save();
+    return { paymentId: payment._id, reference, amount: paidAmount, status: "pending" };
+  } catch (error) {
+    if (error.response) {
+      payment.status = "failed";
+      await payment.save();
+      await Order.updateOne(
+        { _id: order._id, "items._id": item._id, "items.payoutReference": reference },
+        { $set: { "items.$.payoutStatus": "failed" } }
+      );
+    }
+    throw error;
+  }
+};
+
+export const finalizeVendorPayout = async ({ auth, adminAccessCode, paymentId, otp }) => {
+  const user = await User.findById(auth._id);
+  validateAdmin(user);
+  validateAdminAccessCode(adminAccessCode);
+  if (!mongoose.Types.ObjectId.isValid(paymentId)) {
+    const error = new Error("Valid payout payment ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const payment = await Payment.findOne({ _id: paymentId, purpose: "vendor_payout" });
+  if (!payment || !payment.transferCode) {
+    const error = new Error("Payout transfer was not found or does not require finalization");
+    error.statusCode = 404;
+    throw error;
+  }
+  if (payment.status !== "otp_required") {
+    const error = new Error("Payout transfer is not awaiting OTP finalization");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  const transfer = await finalizeTransfer({ otp, transferCode: payment.transferCode });
+  payment.transferDate = transfer.transferDate || payment.transferDate;
+  if (transfer.status === "success") {
+    await markPayoutSuccessful(payment);
+    return { reference: payment.reference, status: "successful" };
+  }
+
+  payment.status = "pending";
+  await payment.save();
+  return { reference: payment.reference, status: "pending" };
 };
 
 export const reviewVendorPayout = async ({ auth, orderId, itemId, decision }) => {

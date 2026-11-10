@@ -114,6 +114,35 @@ const PDetails = () => {
         }
     }
 
+    const getSelectedVariant = () => productDetails?.variants?.find(
+        (variant) => variant.color === selectedColor && variant.size === selectedSize
+    );
+
+    const isBaseProductSelected = () =>
+        selectedColor === productDetails?.baseColor && selectedSize === productDetails?.baseSize;
+
+    const allVariantsOutOfStock = productDetails?.hasVariants &&
+        Number(productDetails.stock ?? 0) <= 0 &&
+        productDetails.variants?.every((variant) => Number(variant.stock ?? 0) <= 0);
+    const selectedStock = productDetails && !productDetails.hasVariants
+        ? Number(productDetails.stock ?? 0)
+        : selectedSize && selectedColor
+            ? Number(isBaseProductSelected()
+                ? productDetails?.stock ?? 0
+                : getSelectedVariant()?.stock ?? 0)
+            : allVariantsOutOfStock
+                ? 0
+                : null;
+    const selectedOutOfStock = selectedStock !== null && selectedStock <= 0;
+    const selectedItemId = isBaseProductSelected()
+        ? productDetails?._id
+        : getSelectedVariant()?._id;
+    const selectedCartQuantity = selectedItemId
+        ? cart.find((item) => item.itemId === selectedItemId)?.quantity || 0
+        : 0;
+    const exceedsSelectedStock = selectedStock !== null &&
+        selectedCartQuantity + quantity > selectedStock;
+
     const handleCart = () => {
         if (!productDetails) return;
         if (!selectedSize || !selectedColor) {
@@ -123,13 +152,13 @@ const PDetails = () => {
 
         let itemId;
 
-        const isBaseProduct = selectedColor === productDetails.baseColor && selectedSize === productDetails.baseSize
+        const isBaseProduct = isBaseProductSelected();
 
         if (isBaseProduct) {
             itemId = productDetails._id
 
         }else {
-            const selectedVariant = productDetails.variants?.find(variant => selectedColor === variant.color && selectedSize === variant.size)
+            const selectedVariant = getSelectedVariant()
             if (!selectedVariant){
                 setMessage("Selected variant not available.");
                 return;
@@ -137,6 +166,16 @@ const PDetails = () => {
             }
             itemId = selectedVariant._id
             
+        }
+
+        if (selectedStock <= 0) {
+            setMessage("Out of stock.");
+            return false;
+        }
+        const existing = cart.find((item) => item.itemId === itemId);
+        if ((existing?.quantity || 0) + quantity > selectedStock) {
+            setMessage(`Only ${selectedStock} item(s) are in stock.`);
+            return false;
         }
        
 
@@ -175,6 +214,8 @@ const PDetails = () => {
         // Reset quantity to 1 after adding
         setQuantity(1)
         setPopupMessage("Item added to cart")
+        setMessage("")
+        return true
     }
 
     const addColors = (data) => {
@@ -207,6 +248,7 @@ const PDetails = () => {
 
     const handleSelectedSize = (size) => {
         setSelectedSize(size)
+        setSelectedColor(null)
        
 
         const baseColor = (productDetails.baseSize === size) ? productDetails.baseColor : null
@@ -357,6 +399,12 @@ const PDetails = () => {
                     </div>
 
                     {/* Quantity Selector */}
+                    {selectedOutOfStock && (
+                        <p role="status" className="font-semibold text-red-600">Out of stock</p>
+                    )}
+                    {selectedStock > 0 && (
+                        <p className="text-sm text-gray-600">{selectedStock} in stock</p>
+                    )}
                     <div className="flex items-center gap-4">
                         <h1>Quantity:</h1>
                         <div className="flex items-center border rounded">
@@ -369,7 +417,8 @@ const PDetails = () => {
                             <span className="px-4 py-1 border-x">{quantity}</span>
                             <button 
                                 onClick={() => setQuantity(prev => prev + 1)}
-                                className="px-3 py-1 hover:bg-gray-100"
+                                disabled={selectedStock !== null && selectedCartQuantity + quantity >= selectedStock}
+                                className="px-3 py-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                             >
                                 +
                             </button>
@@ -387,20 +436,17 @@ const PDetails = () => {
                                 return;
                             }
 
-                            const addAndGoToCheckout = () => {
-                                handleCart();
-                                navigate('/checkout');
-                            };
-
-                            addAndGoToCheckout();
+                            if (handleCart()) navigate('/checkout');
                         }}
-                        className="border-1 px-4 py-2 rounded-lg bg-blue-700 cursor-pointer hover:bg-blue-800 transition"
+                        disabled={selectedOutOfStock || exceedsSelectedStock}
+                        className="border-1 px-4 py-2 rounded-lg bg-blue-700 cursor-pointer hover:bg-blue-800 transition disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <h1>Buy Now</h1>
                         </button>
                         <button 
                             onClick={handleCart}
-                            className="border-1 px-4 py-2 rounded-lg bg-pink-700 cursor-pointer hover:bg-pink-800 transition"
+                            disabled={selectedOutOfStock || exceedsSelectedStock}
+                            className="border-1 px-4 py-2 rounded-lg bg-pink-700 cursor-pointer hover:bg-pink-800 transition disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <h1>Add to Cart ({quantity})</h1>
                         </button>

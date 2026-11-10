@@ -101,6 +101,10 @@ const ViewProduct = () => {
                     <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Color / Size</p>
                     <p className="mt-2 text-lg font-semibold text-slate-900">{productDetails.baseColor || "—"} / {productDetails.baseSize || "—"}</p>
                   </div>
+                  <div className="rounded-3xl bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Main product stock</p>
+                    <p className="mt-2 text-lg font-semibold text-slate-900">{productDetails.stock ?? 0}</p>
+                  </div>
                 </div>
                 <div className="rounded-3xl bg-slate-50 p-4">
                   <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Created</p>

@@ -36,6 +36,9 @@ const PayoutManagement = () => {
   const [accessCodeError, setAccessCodeError] = useState("");
   const [accessCodeSuccess, setAccessCodeSuccess] = useState("");
   const [submittingAccessCode, setSubmittingAccessCode] = useState(false);
+  const [transferOtp, setTransferOtp] = useState("");
+  const [submittingOtp, setSubmittingOtp] = useState(false);
+  const [payoutNotice, setPayoutNotice] = useState("");
   const [now, setNow] = useState(Date.now());
   const [showAllPayoutRows, setShowAllPayoutRows] = useState(false);
   const [showAllReviewRows, setShowAllReviewRows] = useState(false);
@@ -87,7 +90,9 @@ const PayoutManagement = () => {
         body: JSON.stringify({
           adminAccessCode,
           vendorId: accessCodePayout.vendor._id,
-          amount: Number(accessCodePayout.order.price) * Number(accessCodePayout.order.quantity),
+          itemId: accessCodePayout.order.itemId,
+          orderId: accessCodePayout.order.orderId,
+          orderNumber: accessCodePayout.order.orderNumber,
         }),
       });
       const data = response ? await response.json() : null;
@@ -97,15 +102,70 @@ const PayoutManagement = () => {
         return;
       }
 
+      if (data.requireOtp) {
+        setTransferOtp("");
+        setAccessCodePayout((current) => ({
+          ...current,
+          paymentId: data.paymentId,
+          requiresOtp: true,
+        }));
+        setAccessCodeSuccess("");
+        return;
+      }
+
       setAccessCodeSuccess(
-        `Access code verified for ${accessCodePayout?.vendor?.name || "this payout"}. ` +
-          "The payout request was sent to the server; no bank transfer has been initiated."
+        data.status === "successful"
+          ? "Vendor payout completed successfully."
+          : "Payout submitted to Paystack and is pending."
       );
+      setPayoutNotice(
+        data.status === "successful"
+          ? `Payout to ${accessCodePayout.vendor.name || "vendor"} completed.`
+          : `Payout to ${accessCodePayout.vendor.name || "vendor"} is pending with Paystack.`
+      );
+      await fetchPayouts();
     } catch (submitError) {
       console.error("Error verifying payout access code:", submitError);
-      setAccessCodeError("Unable to verify the admin access code.");
+      setAccessCodeError(submitError.message || "Unable to initiate vendor payout.");
     } finally {
       setSubmittingAccessCode(false);
+    }
+  };
+
+  const handleTransferOtpSubmit = async (event) => {
+    event.preventDefault();
+    setSubmittingOtp(true);
+    setAccessCodeError("");
+    try {
+      const adminAccessCode = event.currentTarget.elements.adminAccessCode.value;
+      const response = await CustomFetch(`${url}/finalize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminAccessCode,
+          paymentId: accessCodePayout.paymentId,
+          otp: transferOtp,
+        }),
+      });
+      const data = response ? await response.json() : null;
+      if (!response?.ok || !data?.success) {
+        setAccessCodeError(data?.message || "Unable to finalize vendor payout.");
+        return;
+      }
+
+      setPayoutNotice(
+        data.status === "successful"
+          ? `Payout to ${accessCodePayout.vendor.name || "vendor"} completed.`
+          : `Payout to ${accessCodePayout.vendor.name || "vendor"} is pending with Paystack.`
+      );
+      setAccessCodePayout(null);
+      setTransferOtp("");
+      await fetchPayouts();
+    } catch (submitError) {
+      console.error("Error finalizing vendor payout:", submitError);
+      setAccessCodeError(submitError.message || "Unable to finalize vendor payout.");
+    } finally {
+      setSubmittingOtp(false);
     }
   };
 
@@ -131,6 +191,11 @@ const PayoutManagement = () => {
         {error && (
           <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
             {error}
+          </div>
+        )}
+        {payoutNotice && (
+          <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+            {payoutNotice}
           </div>
         )}
 
@@ -292,18 +357,84 @@ const PayoutManagement = () => {
       </div>
 
       {accessCodePayout && (
-        <AdminAccessCodeForm
-          title={`Pay ${accessCodePayout.vendor.name || "vendor"}`}
-          error={accessCodeError}
-          success={accessCodeSuccess}
-          loading={submittingAccessCode}
-          onSubmit={handleAccessCodeSubmit}
-          onCancel={() => {
-            setAccessCodePayout(null);
-            setAccessCodeError("");
-            setAccessCodeSuccess("");
-          }}
-        />
+        accessCodePayout.requiresOtp ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-8">
+            <section
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="payout-otp-title"
+              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+            >
+              <h2 id="payout-otp-title" className="text-xl font-semibold text-slate-900">
+                Finalize payout to {accessCodePayout.vendor.name || "vendor"}
+              </h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Enter the Paystack transfer OTP and your admin access code to complete this payout.
+              </p>
+              <form className="mt-5 space-y-4" onSubmit={handleTransferOtpSubmit}>
+                <label className="block text-sm font-medium text-slate-700" htmlFor="payout-transfer-otp">
+                  Paystack OTP
+                </label>
+                <input
+                  id="payout-transfer-otp"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  required
+                  value={transferOtp}
+                  onChange={(event) => setTransferOtp(event.target.value)}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                />
+                <label className="block text-sm font-medium text-slate-700" htmlFor="payout-admin-code">
+                  Admin access code
+                </label>
+                <input
+                  id="payout-admin-code"
+                  name="adminAccessCode"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                />
+                {accessCodeError && <p role="alert" className="text-sm text-rose-700">{accessCodeError}</p>}
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAccessCodePayout(null);
+                      setAccessCodeError("");
+                      setTransferOtp("");
+                    }}
+                    disabled={submittingOtp}
+                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingOtp || !transferOtp.trim()}
+                    className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {submittingOtp ? "Finalizing..." : "Finalize payout"}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        ) : (
+          <AdminAccessCodeForm
+            title={`Pay ${accessCodePayout.vendor.name || "vendor"}`}
+            error={accessCodeError}
+            success={accessCodeSuccess}
+            loading={submittingAccessCode}
+            onSubmit={handleAccessCodeSubmit}
+            onCancel={() => {
+              setAccessCodePayout(null);
+              setAccessCodeError("");
+              setAccessCodeSuccess("");
+            }}
+          />
+        )
       )}
     </main>
   );

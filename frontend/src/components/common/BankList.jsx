@@ -98,6 +98,7 @@ const BankList = ({ id, value, onChange, formInputValidation, name = id }) => {
         id,
         name,
         value: bank.name,
+        bankCode: bank.code,
         type: "text",
       },
     });

@@ -27,6 +27,7 @@ const DesignerRegistration = () => {
         state: "",
         typeOfVendor: "",
         bankName: "",
+        bankCode: "",
         accountNumber: "",
         phoneNumber: "",
         proofOfAddress: "",
@@ -624,6 +625,7 @@ const DesignerRegistration = () => {
                             setformData((prev) => ({
                                 ...prev,
                                 bankName: value,
+                                bankCode: e.target.bankCode,
                             }));
                             setError((prev) => {
                                 const newErr = { ...prev };
