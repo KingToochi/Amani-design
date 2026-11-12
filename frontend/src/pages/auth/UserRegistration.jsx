@@ -93,7 +93,6 @@ const UserRegistration = () => {
                         body: JSON.stringify({username:value})
                     })
                     let data = await response.json()
-                    console.log(data)
 
                     if (data.status === "exists") {
                         setError(prev => ({...prev, [id]: data.message}))
@@ -104,14 +103,17 @@ const UserRegistration = () => {
                             delete newErr.username
                             return newErr
                         })
-                        console.log(error)
                     }
                     
                 }catch(error){
-                    console.log(error)
+                    setPopup({
+                        message: error.message || "Unable to validate username. Please try again.",
+                        type: "error",
+                        title: "Username validation failed",
+                    });
                 }
             }
-        }
+        }       
         // validate the email address
         if (id === "email") {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -246,7 +248,6 @@ const UserRegistration = () => {
             ...Object.fromEntries(Object.keys(validationErrors).map(id => [id, true]))
         }))
 
-        console.log("Validation Errors:", validationErrors)
 
       if (Object.keys(validationErrors).length > 0) {
         const errorMessages = Object.keys(validationErrors).map((error) => {
@@ -292,7 +293,11 @@ const UserRegistration = () => {
                     setIsSubmitting(false)
                 }     
             } catch(error){
-                console.log(error)
+                setPopup({
+                    message: "An unexpected error occurred. Please try again.",
+                    type: "error",
+                    title: "Unexpected Error",
+                });
                 setServerError(error)
                 setIsSubmitting(false)
             }

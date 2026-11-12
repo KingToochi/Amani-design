@@ -15,6 +15,7 @@ import WishList from "./pages/customer/WishList";
 import ProfilePage from "./pages/customer/ProfilePage";
 import Login from "./pages/auth/Login";
 import UserRegistration from "./pages/auth/UserRegistration"
+import DesignerRegistration from "./pages/auth/DesignersRegistration";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Page404 from "./pages/errors/404";
 import Unauthorized from "./pages/errors/Unauthorized"
@@ -59,6 +60,7 @@ function App() {
     ">
       <Routes>
         <Route index element={<HomePage />} />    
+        <Route path="/vendor-registration" element={<DesignerRegistration />} />
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
           <Route path="products" element={<Products />} />

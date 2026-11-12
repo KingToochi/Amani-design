@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import logo from "../../assets/images/mainLogo.jpg";
-import Registration from "./DesignersRegistration";
 import { BASE_URL } from "../../Url";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
@@ -16,13 +15,10 @@ const Login = () => {
     const location = useLocation();
     const from = location.state?.from || "/products";
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
-    const [showRegistrationModal, SetShowRegistrationModal] = useState(false);
-    const handlRegistration = () => SetShowRegistrationModal(true);
     const { verifyAndFetchAuth } = useContext(AuthContext);
 
     const onSubmit = async (data) => {
         setServerError(null);
-        console.log(data)
 
         try {
             const response = await fetch(`${url}/users/login`, {
@@ -55,37 +51,8 @@ const Login = () => {
         }
     };
 
-    const displayShowRegistrationModal = () => {
-        return (
-            showRegistrationModal && (
-                <div className="absolute inset-0 z-40 flex items-start justify-center overflow-y-auto bg-slate-900/40 px-4 py-6 pb-[95px] backdrop-blur-sm">
-                    <div className="relative max-h-[calc(100vh-110px)] w-full max-w-3xl overflow-y-auto rounded-[28px] bg-white px-4 py-5 shadow-2xl sm:px-6 lg:px-8">
-                        <div className="mb-6 flex flex-col items-center gap-3">
-                            <img className="h-12 w-12 rounded-full object-cover" src={logo} alt="AmaniSky Design logo" />
-                            <h1 className="text-center text-2xl font-bold text-slate-900">AmaniSky Design</h1>
-                        </div>
-                        <h1 className="text-center text-2xl font-semibold text-slate-600">Registration Form</h1>
-                        <div className="absolute right-4 top-3">
-                            <button
-                                type="button"
-                                onClick={() => SetShowRegistrationModal(false)}
-                                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl font-bold text-slate-600 transition hover:bg-slate-200 hover:text-slate-900"
-                            >
-                                x
-                            </button>
-                        </div>
-
-                        <div className="mt-6 w-full">
-                            <Registration />
-                        </div>
-                    </div>
-                </div>
-            )
-        );
-    };
-
     return (
-        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-10">
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-10 pb-20 ">
             <div className="absolute -left-16 top-12 h-52 w-52 rounded-full bg-rose-200/40 blur-3xl" />
             <div className="absolute -right-12 bottom-10 h-64 w-64 rounded-full bg-slate-200/70 blur-3xl" />
 
@@ -165,21 +132,18 @@ const Login = () => {
                         </Link>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-center gap-2 text-sm">
-                        <span className="text-slate-600">Are you a designer?</span>
-                        <button
+                    <div className="mt-4 flex items-center justify-center gap-2 text-sm"> 
+                        <span className="text-slate-600">Are you a vendor?</span>
+                        <Link
+                            to="/vendor-registration"
                             className="inline-flex items-center gap-2 font-semibold text-rose-500 transition hover:text-rose-600"
-                            onClick={handlRegistration}
-                            type="button"
                         >
                             <FaUserPlus className="text-xs" />
                             Get started here!
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
-
-            {displayShowRegistrationModal()}
         </div>
     );
 };

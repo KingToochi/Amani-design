@@ -3,8 +3,8 @@ import { BASE_URL } from "../../Url"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import ServerError from "../../components/common/ServerError";
 import BankList from "../../components/common/BankList";
+import Popup from "../../components/common/Popup";
 
 
 const DesignerRegistration = () => {
@@ -14,7 +14,6 @@ const DesignerRegistration = () => {
     const [passwordStrength, setPasswordStrength] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [showCPassword, setShowCPassword] = useState(false)
-    const [serverError, setServerError] = useState(null)
     const [formData, setformData] = useState({
         fname : "",
         lname : "",
@@ -41,8 +40,9 @@ const DesignerRegistration = () => {
     const [error, setError] = useState({})
     const [successMessage, setSuccessMessage] = useState({})
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [popup, setPopup] = useState(null)
+
     const formInputValidation = async(event) => {
-        console.log(event)
         event.preventDefault()
         let {name, id, value, files, type, checked} = event.target
         const file = files?.[0]
@@ -108,6 +108,11 @@ const DesignerRegistration = () => {
         if (id === "username") {
             if (value.length < 5) {
                 setError(prev => ({...prev, [id]: `${name} too short (min 5 characters)`}))
+                setSuccessMessage(prev => {
+                    let newMsg = {...prev}
+                    delete newMsg.username
+                    return newMsg
+                }) 
             }else if (!/^[A-Za-z][A-Za-z0-9]*$/.test(value)) {
                 setError(prev => ({...prev, [id]: "username must start with a letter and contain only letters or numbers"}))
             }else {
@@ -119,7 +124,6 @@ const DesignerRegistration = () => {
                     })
                     let data = await response.json()
                     if (data.status === "exists") {
-                        console.log(data.message)
                         setError(prev => ({...prev, [id]: data.message}))
                         setSuccessMessage(prev => {
                             let newMsg = {...prev}
@@ -135,11 +139,11 @@ const DesignerRegistration = () => {
                         })
                     }
                 }catch(error){
-                    console.log(error)
-                    setServerError(error)
-                    setTimeout(() => {
-                        setServerError(null)
-                    }, 5000)
+                    setPopup({
+                        message: error.message || "Unable to validate username. Please try again.",
+                        type: "error",
+                        title: "Username validation failed",
+                    })
                 }
             }
         }
@@ -147,10 +151,16 @@ const DesignerRegistration = () => {
         if (id === "email"){
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(value)) {
-            setError(prev => ({
-            ...prev,
-            email: "Invalid email format"
-                }));
+                setError(prev => ({
+                ...prev,
+                email: "Invalid email format"
+            }));
+            setSuccessMessage(prev => {
+                let newMsg = {...prev}
+                delete newMsg.username
+                return newMsg
+            }) 
+            
             }else {
                 setError(prev => {
                     const newErr = { ...prev };
@@ -169,11 +179,11 @@ const DesignerRegistration = () => {
                     })
                     let data = await response.json()
 
-                    if (data.status === "exist") {
+                    if (data.status === "exists") {
                         setError(prev => ({...prev, [id]: data.message}))
                         setSuccessMessage(prev => {
                             let newMsg = {...prev}
-                            delete newMsg.username
+                            delete newMsg.email
                             return newMsg
                         })  
                     } else {
@@ -185,10 +195,11 @@ const DesignerRegistration = () => {
                     });
                     }
                 } catch(error) {
-                    setServerError(error)
-                    setTimeout(() => {
-                        setServerError(null)
-                    }, 5000)
+                    setPopup({
+                        message: error.message || "Unable to validate email. Please try again.",
+                        type: "error",
+                        title: "Email validation failed",
+                    })
                 }
                     
             }
@@ -264,6 +275,11 @@ const DesignerRegistration = () => {
                 })
                 const data = await response.json()
                 if (data.status === "exists") validationErrors.username = data.message
+                setSuccessMessage(prev => {
+                    let newMsg = {...prev}
+                    delete newMsg.username
+                    return newMsg
+                }) 
             }
             if (!validationErrors.email && formData.email) {
                 const response = await fetch(`${url}/users/email`, {
@@ -272,16 +288,57 @@ const DesignerRegistration = () => {
                     body: JSON.stringify({ email: formData.email })
                 })
                 const data = await response.json()
-                if (data.status === "exist") validationErrors.email = data.message
+                if (data.status === "exists") validationErrors.email = data.message
+                setSuccessMessage(prev => {
+                    let newMsg = {...prev}
+                    delete newMsg.email
+                    return newMsg
+                }) 
             }
         } catch (validationError) {
-            setServerError(validationError)
+            setPopup({
+                message: validationError.message || "Unable to validate your information. Please try again.",
+                type: "error",
+                title: "Validation failed",
+            })
             setIsSubmitting(false)
             return
         }
 
         setError(validationErrors)
+        if (Object.keys(validationErrors).length > 0) {
+            const errorMessages = Object.keys(validationErrors).map((error) => {
+                if (error === "fname") return "First name is required";
+                if (error === "lname") return "Last name is required";
+                if (error === "username") return validationErrors.username;
+                if (error === "email") return validationErrors.email;
+                if (error === "password") return "Password is required";
+                if (error === "cpassword") return validationErrors.cpassword;
+                if (error === "houseNumber") return "House number is required";
+                if (error === "streetName") return "Street name is required";
+                if (error === "city") return "City is required";
+                if (error === "state") return "State is required";
+                if (error === "phoneNumber") return "Phone number is required";
+                if (error === "dob") return "Date of birth is required";
+                if (error === "meansOfIdentification") return "Means of identification is required";
+                if (error === "identificationNumber") return "Identification number is required";
+                if (error === "proofOfAddress") return "Proof of address is required";
+                if (error === "profilePicture") return "Profile picture is required";
+                if (error === "bankName") return "Bank name is required";
+                if (error === "bankCode") return "Bank code is required";
+                if (error === "accountNumber") return "Account number is required";
+                if (error === "typeOfVendor") return "Type of vendor is required";
+                if (error === "terms") return validationErrors.terms;
 
+                return null;
+            }).filter(Boolean);
+
+            setPopup({
+                message: errorMessages,
+                type: "error",
+                title: "Validation Error",
+            });
+        }
         if (Object.keys(validationErrors).length === 0) {
             const form = new FormData()
             for (const [key, value] of Object.entries(formData)) {
@@ -310,11 +367,17 @@ const DesignerRegistration = () => {
                 }
 
                 setIsSubmitting(false)
-                setServerError(data.message || "Registration failed")
-                setTimeout(() => setServerError(null), 5000)
+                setPopup({
+                    message: data.message || "Registration failed. Please try again.",
+                    type: "error",
+                    title: "Registration failed",
+                })
                 } catch(error){
-                    console.log(error)
-                    setServerError(error)
+                    setPopup({
+                        message: error.message || "Unable to complete registration. Please try again.",
+                        type: "error",
+                        title: "Registration failed",
+                    })
                     setIsSubmitting(false)
                 }
         } else {
@@ -322,20 +385,23 @@ const DesignerRegistration = () => {
         }
     }
 
-        if (serverError) {
-            return(
-                <ServerError serverError={serverError} />
-            )
-        }
-
     return (
-        <div className="max-h-[80vh] overflow-y-auto rounded-[28px] border border-slate-200 bg-white/90 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-6 lg:p-8">
-            <div className="mb-6 text-center">
-                <h2 className="text-2xl font-bold tracking-tight text-slate-900">Register as a Designer</h2>
-                <p className="mt-2 text-sm text-slate-500">Complete your profile to start selling on AmaniSky Design</p>
-            </div>
+        <>
+            {popup && (
+                <Popup
+                    {...popup}
+                    onClose={() => setPopup(null)}
+                />
+            )}
+            <main className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-8">
+                <div className="mx-auto max-w-4xl">
+                    <div className="max-h-[80vh] overflow-y-auto rounded-[28px] border border-slate-200 bg-white/90 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-6 lg:p-8">
+                <div className="mb-6 text-center">
+                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">Register as a Vendor</h2>
+                    <p className="mt-2 text-sm text-slate-500">Complete your profile to start selling on AmaniSky Design</p>
+                </div>
 
-            <form onSubmit={handleSubmit} className="w-full space-y-6 text-base text-slate-700 sm:text-lg">
+                <form onSubmit={handleSubmit} className="w-full space-y-6 text-base text-slate-700 sm:text-lg">
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="flex flex-col gap-2">
                         <label htmlFor="fname" className="w-full text-sm font-semibold text-slate-700">First Name</label>
@@ -720,8 +786,11 @@ const DesignerRegistration = () => {
                         {isSubmitting ? "Submitting..." : "Submit"}
                     </button>
                 </div>
-            </form>
-        </div>
+                </form>
+                    </div>
+                </div>
+            </main>
+        </>
     );
 }
 
