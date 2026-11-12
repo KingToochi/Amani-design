@@ -1,67 +1,66 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fab } from "@fortawesome/free-brands-svg-icons";
-import { fas } from "@fortawesome/free-solid-svg-icons";
-import { far } from "@fortawesome/free-regular-svg-icons";
-import DesignerLayout from "./pages/seller/Layout";
-import Product from "./pages/seller/Products";
-import Profile from "./pages/seller/Profile.jsx";
-import ProductDetails from "./pages/seller/ProductDetails";
-import Layout from "./pages/customer/MarketPlaceLayout";
-import Products from "./pages/customer/Products";
-import PDetails from "./pages/customer/PDetails";
-import Cart from "./pages/customer/Cart";
-import WishList from "./pages/customer/WishList";
-import ProfilePage from "./pages/customer/ProfilePage";
-import Login from "./pages/auth/Login";
-import UserRegistration from "./pages/auth/UserRegistration"
-import DesignerRegistration from "./pages/auth/DesignersRegistration";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import Page404 from "./pages/errors/404";
-import Unauthorized from "./pages/errors/Unauthorized"
-import HomePage from "./pages/customer/HomePage";
-import CheckOut from "./pages/customer/CheckOutPage";
-import PaymentCallback from "./features/payments/components/PaymentCallback";
-import AdminDashboard from "./pages/admin/AdminDashboard"
-import AdminLayout from "./pages/admin/AdminLayout";
-import AdminLogin from "./pages/admin/AdmniLogin";
-import Dashboard from "./pages/seller/Dashboard";
-import Orders from "./pages/seller/Orders";
-import Sales from "./pages/seller/Sales";
-import Message from "./pages/seller/message";
-import Order from "./pages/admin/Order";
-import Vendors from "./pages/admin/Vendors";
-import ViewVendor from "./pages/admin/ViewVendor";
-import ViewProduct from "./pages/admin/ViewProduct";
-import ViewCustomer from "./pages/admin/VIewCustomer";
-import Customer from "./pages/admin/Customers";
-import ProductAdmin from "./pages/admin/Product";
-import PayoutManagement from "./pages/admin/PayoutManagement";
-import PayoutReview from "./pages/admin/PayoutReview";
-import CustomerOrder from "./pages/customer/Orders";
-import OrderDetails from "./pages/customer/OrderDetails";
-import VendorOrderDetails from "./pages/seller/OrderDetails";
-import CollectionPage from "./pages/customer/CollectionPage";
-import AboutPage from "./pages/customer/AboutPage";
-import ContactPage from "./pages/customer/ContactPage";
-import FAQPage from "./pages/customer/FAQPage";
-import PrivacyPage from "./pages/customer/PrivacyPage";
-import TermsPage from "./pages/customer/TermsPage";
-import FlutterwavePaymentData from "./features/payments/components/FlutterWavePayment";
-import InitiatePayment from "./features/payments/components/InitiatePayment";
-import ResetPassword from "./pages/auth/ResetPassword.jsx";
-import ForgetPassword from "./pages/auth/ForgetPassword.jsx";
-import Subscription from "./pages/seller/subscription/Subscription.jsx";
-import UpdateVerification from "./pages/seller/updateVerification.jsx";
+
+const DesignerLayout = lazy(() => import("./pages/seller/Layout"));
+const Product = lazy(() => import("./pages/seller/Products"));
+const Profile = lazy(() => import("./pages/seller/Profile.jsx"));
+const ProductDetails = lazy(() => import("./pages/seller/ProductDetails"));
+const Layout = lazy(() => import("./pages/customer/MarketPlaceLayout"));
+const Products = lazy(() => import("./pages/customer/Products"));
+const PDetails = lazy(() => import("./pages/customer/PDetails"));
+const Cart = lazy(() => import("./pages/customer/Cart"));
+const WishList = lazy(() => import("./pages/customer/WishList"));
+const ProfilePage = lazy(() => import("./pages/customer/ProfilePage"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const UserRegistration = lazy(() => import("./pages/auth/UserRegistration"));
+const DesignerRegistration = lazy(() => import("./pages/auth/DesignersRegistration"));
+const Page404 = lazy(() => import("./pages/errors/404"));
+const Unauthorized = lazy(() => import("./pages/errors/Unauthorized"));
+const HomePage = lazy(() => import("./pages/customer/HomePage"));
+const CheckOut = lazy(() => import("./pages/customer/CheckOutPage"));
+const PaymentCallback = lazy(() => import("./features/payments/components/PaymentCallback"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminLogin = lazy(() => import("./pages/admin/AdmniLogin"));
+const Dashboard = lazy(() => import("./pages/seller/Dashboard"));
+const Orders = lazy(() => import("./pages/seller/Orders"));
+const Sales = lazy(() => import("./pages/seller/Sales"));
+const Message = lazy(() => import("./pages/seller/message"));
+const Order = lazy(() => import("./pages/admin/Order"));
+const Vendors = lazy(() => import("./pages/admin/Vendors"));
+const ViewVendor = lazy(() => import("./pages/admin/ViewVendor"));
+const ViewProduct = lazy(() => import("./pages/admin/ViewProduct"));
+const ViewCustomer = lazy(() => import("./pages/admin/VIewCustomer"));
+const Customer = lazy(() => import("./pages/admin/Customers"));
+const ProductAdmin = lazy(() => import("./pages/admin/Product"));
+const PayoutManagement = lazy(() => import("./pages/admin/PayoutManagement"));
+const PayoutReview = lazy(() => import("./pages/admin/PayoutReview"));
+const CustomerOrder = lazy(() => import("./pages/customer/Orders"));
+const OrderDetails = lazy(() => import("./pages/customer/OrderDetails"));
+const VendorOrderDetails = lazy(() => import("./pages/seller/OrderDetails"));
+const CollectionPage = lazy(() => import("./pages/customer/CollectionPage"));
+const AboutPage = lazy(() => import("./pages/customer/AboutPage"));
+const ContactPage = lazy(() => import("./pages/customer/ContactPage"));
+const FAQPage = lazy(() => import("./pages/customer/FAQPage"));
+const PrivacyPage = lazy(() => import("./pages/customer/PrivacyPage"));
+const TermsPage = lazy(() => import("./pages/customer/TermsPage"));
+const FlutterwavePaymentData = lazy(() => import("./features/payments/components/FlutterWavePayment"));
+const InitiatePayment = lazy(() => import("./features/payments/components/InitiatePayment"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPassword.jsx"));
+const ForgetPassword = lazy(() => import("./pages/auth/ForgetPassword.jsx"));
+const Subscription = lazy(() => import("./pages/seller/subscription/Subscription.jsx"));
+const UpdateVerification = lazy(() => import("./pages/seller/updateVerification.jsx"));
 
 function App() {
   return (
     <div className="w-full overflow-x-hidden min-h-screen bg-gray-50
     ">
-      <Routes>
-        <Route index element={<HomePage />} />    
-        <Route path="/vendor-registration" element={<DesignerRegistration />} />
-        <Route path="/" element={<Layout />}>
+      <Suspense fallback={<div className="p-6 text-center" role="status">Loading page...</div>}>
+        <Routes>
+          <Route index element={<HomePage />} />
+          <Route path="/vendor-registration" element={<DesignerRegistration />} />
+          <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
           <Route path="products" element={<Products />} />
           <Route path="product-details/:_id" element={<PDetails />} />
@@ -83,12 +82,12 @@ function App() {
           <Route path="terms" element={<TermsPage />} />
           <Route path="reset-password" element={<ResetPassword/>} /> 
           <Route path="forget-password" element={<ForgetPassword/>} />
-        </Route>
+          </Route>
 
-        <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
 
-        <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
-        <Route path="/vendor" element={<DesignerLayout/>}>
+          <Route element={<ProtectedRoute allowedRole={["vendor", "designer", "admin"]}/>}>
+          <Route path="/vendor" element={<DesignerLayout/>}>
           <Route index element={<Dashboard />} />
           <Route path="products" element={<Product/>} />
           <Route path="profile" element={<Profile />} />
@@ -99,11 +98,11 @@ function App() {
           <Route path="orders/vendor_order/:id" element={<VendorOrderDetails/>}/>
           <Route path="subscription" element={<Subscription/>}/>
           <Route path="update-verification/:id" element={<UpdateVerification />} />
-        </Route> 
-        </Route>
+          </Route>
+          </Route>
 
-        <Route element={<ProtectedRoute allowedRole={["admin"]}/>}>
-          <Route path="/admin" element={<AdminLayout />} >
+          <Route element={<ProtectedRoute allowedRole={["admin"]}/>}>
+            <Route path="/admin" element={<AdminLayout />} >
             <Route index element={<AdminDashboard />} />
             <Route path="vendors" element={<Vendors />} />
             <Route path="viewVendor/:id" element={<ViewVendor />} />
@@ -114,16 +113,16 @@ function App() {
             <Route path="payouts/review/:vendorId/:orderId/:itemId" element={<PayoutReview />} />
             <Route path="customers" element={<Customer />} />
             <Route path="products" element={<ProductAdmin />} />
+            </Route>
           </Route>
-        </Route>
         
 
-         <Route path="Unauthorized" element={<Unauthorized />} />
-        <Route path="*" element={<Page404 />} />
-      </Routes>
+           <Route path="Unauthorized" element={<Unauthorized />} />
+          <Route path="*" element={<Page404 />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
 
 export default App;
-library.add(fab, fas, far);

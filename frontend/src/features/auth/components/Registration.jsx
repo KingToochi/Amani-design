@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { BASE_URL } from "../../../Url";
@@ -124,7 +125,7 @@ export const BasicInformation = ({setMeansOfIdentification, onClick}) => {
             "
             type="submit"
             >
-                <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                <FontAwesomeIcon icon={faArrowRight} />
                 Next
             </button>
         </form>
@@ -205,7 +206,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 type="button"
                 onClick={onClickPrev}
                 >
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-left" />
+                    <FontAwesomeIcon icon={faArrowLeft} />
                     Prev
                 </button>
 
@@ -214,7 +215,7 @@ export const DetailsVerification = ({meansOfIdentification, onClickNext, onClick
                 type="submit"
                 >
                     Next
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-right" />
+                    <FontAwesomeIcon icon={faArrowRight} />
                 </button>
             </div>
         </form>

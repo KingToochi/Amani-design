@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart, faHeart, faUser, faBars } from "@fortawesome/free-solid-svg-icons";
 
 export const ShoppingCart = ({className}) => {
     return (
         <div className={className}>
             <FontAwesomeIcon 
-            icon="fa fa-shopping-cart" />
+            icon={faShoppingCart} />
             <h6
             className="hidden group-hover:flex absolute text-xs text-gray-300 w-auto"
             >Selected items</h6>
@@ -18,7 +19,7 @@ export const WishList = ({className}) => {
         <div 
         className={className}>
             <FontAwesomeIcon 
-            icon="fa fa-heart" />
+            icon={faHeart} />
             <h6
             className="hidden group-hover:flex absolute text-xs text-gray-300 w-auto"
             >Wishlist</h6>
@@ -31,7 +32,7 @@ export const UserLogo = ({className}) => {
     return (
         <div className={className}>
             <FontAwesomeIcon 
-            icon="fa fa-user" />
+            icon={faUser} />
             <h6
             className="hidden group-hover:flex absolute text-xs text-gray-300 w-auto"
             >User details</h6>
@@ -45,7 +46,7 @@ const MenuBar = ({className, onClick}) => {
         <div className={className}>
             <FontAwesomeIcon 
             onClick={onClick}
-            icon="fa fa-bars" />
+            icon={faBars} />
         </div>
      );
 }
