@@ -53,9 +53,22 @@ const Popup = ({
                     <p className="text-sm font-semibold text-slate-900">
                         {title || style.title}
                     </p>
-                    <p className="mt-1 break-words text-sm leading-5 text-slate-600">
-                        {message}
-                    </p>
+                    <div className="mt-2 flex flex-col gap-2">
+                        {Array.isArray(message) ? (
+                            message.map((item, index) => (
+                                <p
+                                    key={index}
+                                    className="break-words text-sm leading-5 text-slate-600"
+                                >
+                                    {item}
+                                </p>
+                            ))
+                        ) : (
+                            <p className="break-words text-sm leading-5 text-slate-600">
+                                {message}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {onClose && (

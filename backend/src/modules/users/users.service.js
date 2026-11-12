@@ -6,12 +6,12 @@ import cloudinary from "../../config/cloudinary.js";
 import {getCookieOptions} from "../../utils/getCookieOptions.js"
 
 export const fetchUsername = async(username) => {
-    const user = await User.findOne({ username: username.toLowerCase() });
+    const user = await User.findOne({username: new RegExp(`^${username}$`, "i")});
     return user
 }
 
 export const fetchEmail = async(email) => {
-    const user = await User.findOne({email: email.toLowerCase()})
+    const user = await User.findOne({email: new RegExp(`^${email}$`, "i")});
     return user
 }
 

@@ -6,6 +6,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import deliveryRoute from "../../components/common/deliveryRoute";
+import Popup from "../../components/common/Popup";
 
 const UserRegistration = () => {
     const url = BASE_URL
@@ -16,6 +17,7 @@ const UserRegistration = () => {
     const [isSubmiting, setIsSubmitting] = useState(false)
     const [passwordStrength, setPasswordStrength] = useState("")
     const [serverError, setServerError] = useState(null)
+    const [popup, setPopup] = useState(null)
 
     const [showMessage, setShowMessage] = useState({
         fname: false,
@@ -244,6 +246,29 @@ const UserRegistration = () => {
             ...Object.fromEntries(Object.keys(validationErrors).map(id => [id, true]))
         }))
 
+        console.log("Validation Errors:", validationErrors)
+
+      if (Object.keys(validationErrors).length > 0) {
+        const errorMessages = Object.keys(validationErrors).map((error) => {
+            if (error === "fname") return "First name is required";
+            if (error === "lname") return "Last name is required";
+            if (error === "username") return validationErrors.username;
+            if (error === "email") return validationErrors.email;
+            if (error === "password") return "Password is required";
+            if (error === "cpassword") return validationErrors.cpassword;
+            if (error === "deliveryRoute") return "Delivery company is required";
+            if (error === "terms") return validationErrors.terms;
+
+            return null;
+        }).filter(Boolean);
+
+        setPopup({
+            message: errorMessages,
+            type: "error",
+            title: "Validation Error",
+        });
+    }
+
         if (Object.keys(validationErrors).length === 0) {
             try {
                 const response = await fetch(`${url}/users/registration`, {
@@ -277,7 +302,15 @@ const UserRegistration = () => {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-8">
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-8 pb-20">
+            <div className="fixed inset-x-4 top-5 z-50 flex justify-center sm:inset-x-auto sm:right-6 sm:top-6 sm:justify-end">
+                    {popup && (
+                    <Popup
+                        {...popup}
+                        onClose={() => setPopup(null)}
+                    />
+                )}
+            </div>
             <div className="w-full max-w-xl">
                 <div className="rounded-[30px] border border-slate-200 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur-sm sm:p-7">
                     <div className="mb-6 flex flex-col items-center text-center">
