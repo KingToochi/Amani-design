@@ -56,7 +56,7 @@ function App() {
   return (
     <div className="w-full overflow-x-hidden min-h-screen bg-gray-50
     ">
-      <Suspense fallback={<div className="p-6 text-center" role="status">Loading page...</div>}>
+      <Suspense fallback={<div className="flex min-h-screen items-center justify-center" role="status">Loading page...</div>}>
         <Routes>
           <Route index element={<HomePage />} />
           <Route path="/vendor-registration" element={<DesignerRegistration />} />
