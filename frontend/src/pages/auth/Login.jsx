@@ -4,13 +4,12 @@ import { BASE_URL } from "../../Url";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import ServerError from "../../components/common/ServerError";
 import { FaEnvelope, FaLock, FaUserPlus } from "react-icons/fa";
 import Popup from "../../components/common/Popup";
 
 const Login = () => {
     const url = BASE_URL;
-    const [serverError, setServerError] = useState(null);
+    const [popup, setPopup] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from || "/products";
@@ -18,7 +17,7 @@ const Login = () => {
     const { verifyAndFetchAuth } = useContext(AuthContext);
 
     const onSubmit = async (data) => {
-        setServerError(null);
+        setPopup(null);
 
         try {
             const response = await fetch(`${url}/users/login`, {
@@ -32,7 +31,6 @@ const Login = () => {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                console.log("Login successful:", result);
                 const authVerified = await verifyAndFetchAuth();
 
                 if (authVerified) {
@@ -46,31 +44,39 @@ const Login = () => {
             throw new Error(result.message || result.error || "Login failed");
         } catch (error) {
             console.error(error);
-            setServerError(error);
-            setTimeout(() => { setServerError(null); }, 5000);
+            setPopup({
+                message: error.message || "Unable to log in. Please try again.",
+                type: "error",
+                title: "Login failed",
+            });
         }
     };
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-10 pb-20 ">
-            <div className="absolute -left-16 top-12 h-52 w-52 rounded-full bg-rose-200/40 blur-3xl" />
-            <div className="absolute -right-12 bottom-10 h-64 w-64 rounded-full bg-slate-200/70 blur-3xl" />
+        <>
+            {popup && (
+                <Popup
+                    {...popup}
+                    onClose={() => setPopup(null)}
+                />
+            )}
+            <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-rose-50 via-white to-slate-100 px-4 py-10 pb-20 ">
+                <div className="absolute -left-16 top-12 h-52 w-52 rounded-full bg-rose-200/40 blur-3xl" />
+                <div className="absolute -right-12 bottom-10 h-64 w-64 rounded-full bg-slate-200/70 blur-3xl" />
 
-            <div className="relative w-full max-w-md">
-                <div className="rounded-[30px] border border-slate-200 bg-white/90 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur-sm sm:p-8">
-                    <div className="mb-6 flex flex-col items-center text-center">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-white shadow-md ring-4 ring-rose-50">
-                            <img className="h-12 w-12 rounded-full object-cover" src={logo} alt="AmaniSky Design logo" />
+                <div className="relative w-full max-w-md">
+                    <div className="rounded-[30px] border border-slate-200 bg-white/90 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur-sm sm:p-8">
+                        <div className="mb-6 flex flex-col items-center text-center">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-white shadow-md ring-4 ring-rose-50">
+                                <img className="h-12 w-12 rounded-full object-cover" src={logo} alt="AmaniSky Design logo" />
+                            </div>
+                            <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">Welcome back</h1>
+                            <p className="mt-2 text-sm text-slate-500">Log in to continue shopping with AmaniSky Design</p>
                         </div>
-                        <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">Welcome back</h1>
-                        <p className="mt-2 text-sm text-slate-500">Log in to continue shopping with AmaniSky Design</p>
-                    </div>
 
-                    {serverError && <ServerError serverError={serverError} />}
-
-                    <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+                        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
                         <div className="space-y-2">
-                            <label htmlFor="email" className="block text-sm font-medium text-slate-700">Email</label>
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-700">Email/Username</label>
                             <div className="relative">
                                 <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">
                                     <FaEnvelope />
@@ -79,7 +85,7 @@ const Login = () => {
                                     id="email"
                                     className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-base text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
                                     type="text"
-                                    placeholder="Enter your email"
+                                    placeholder="Enter your email or username"
                                     {...register("email", { required: "The email address is required" })}
                                 />
                             </div>
@@ -145,6 +151,7 @@ const Login = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 

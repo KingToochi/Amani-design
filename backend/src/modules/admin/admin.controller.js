@@ -24,7 +24,7 @@ export const getVendors = async(req, res, next) => {
 export const adminLogin = async(req, res, next)=> {
     try {
           const { email, password } = req.body;
-          const validate = validateAdminLoginData({email, password})
+          validateAdminLoginData({email, password})
           const logAdminIn = await loginAdmin({email, password})
           const { accessToken, refreshToken, user } = logAdminIn
             // Set access token in HTTP-only cookie
