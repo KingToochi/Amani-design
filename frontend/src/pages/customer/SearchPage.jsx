@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import OptimizedImage from "../../components/product/OptimizeImage"
 
 const Search = ({ searchedProduct, setShowSearchedProduct, setShowSearchBar}) => {
 
@@ -24,7 +25,7 @@ const Search = ({ searchedProduct, setShowSearchedProduct, setShowSearchBar}) =>
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        {searchedProduct?.map(items => (
+        {searchedProduct?.map((items, index) => (
           <div 
             key={items._id} 
             className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -36,10 +37,11 @@ const Search = ({ searchedProduct, setShowSearchedProduct, setShowSearchBar}) =>
             >
               {/* Image Container */}
               <div className="relative aspect-square overflow-hidden bg-gray-100">
-                <img
-                  src={items.productImages[0]}
+                <OptimizedImage
+                  src={items.productImages?.[0]}
                   alt={items.productDescription || "Product image"}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  priority={index === 0}
                 />
                 
                 {/* Quick View Overlay */}

@@ -4,6 +4,7 @@ import { TbCurrencyNaira } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import OptimizedImage from "../../components/product/OptimizeImage";
 
 
 const Cart = ()=> {
@@ -75,7 +76,7 @@ console.log(cart)
                 "
                 >
                     {
-                        cart.map(cartItems => (
+                        cart.map((cartItems, index) => (
                             <div key ={cartItems.itemId}>
                             <div
                             className="w-full flex  gap-2 mb-4 h-[200px] items-center px-2 border-b-1 
@@ -88,11 +89,12 @@ console.log(cart)
                                 lg:w-[20%]
                               "
                                 >
-                                    <img src={cartItems?.productImages[0]} alt={cartItems.productName}
+                                    <OptimizedImage src={cartItems?.productImages?.[0]} alt={cartItems.productName}
                                     className="w-full object-conver rounded-lg break-inside-avoid
                                     sm:h-[200px] 
                                     lg:object-contain
                                     "
+                                    priority={index === 0}
                                     />
                                 </div>
                                 <div

@@ -169,13 +169,13 @@ const Products = () => {
             lg:columns-4
             "
             >
-            {filteredDesigns.map(design =>(
+            {filteredDesigns.map((design, index) =>(
                 <div key={design._id}
                 className="w-full flex relative"
                 >
                     <Link key={design._id} to={`/product-details/${design._id}`}
                     >
-                        <Slide imageArray={design.productImages} alt={design.productName} className="rounded-lg break-inside-avoid mb-2"/>
+                        <Slide imageArray={design.productImages} alt={design.productName} className="rounded-lg break-inside-avoid mb-2" priority={index === 0}/>
 
                     </Link>
                     <div

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/useFetch";
+import OptimizedImage from "../../components/product/OptimizeImage";
 
 const formatDate = (value) => {
   if (!value) return "-";
@@ -130,7 +131,7 @@ const ViewProduct = () => {
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {(productDetails.productImages || []).slice(0, 4).map((src, index) => (
-                    <img key={index} src={src} alt={`Product image ${index + 1}`} className="h-28 w-full rounded-3xl object-cover" />
+                    <OptimizedImage key={index} src={src} alt={`Product image ${index + 1}`} className="h-28 w-full rounded-3xl object-cover" />
                   ))}
                 </div>
               </div>

@@ -27,6 +27,7 @@ import logo from "../../assets/images/mainLogo.jpg"
 import CustomFetch from "../../hooks/useFetch"
 import PaymentCallback from '../../features/payments/components/PaymentCallback';
 import deliveryRoute from '../../components/common/deliveryRoute';
+import OptimizedImage from "../../components/product/OptimizeImage";
 
 
 const CheckOut = () => {
@@ -531,7 +532,7 @@ const CheckOut = () => {
                                     >
                                         <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
                                             {item?.productImages ? (
-                                                <img src={item?.productImages?.[0]} alt={item.name} className="w-full h-full object-cover rounded-xl" />
+                                                <OptimizedImage src={item?.productImages?.[0]} alt={item.name} className="w-full h-full object-cover rounded-xl" priority={index === 0} />
                                             ) : (
                                                 <Package className="h-6 w-6 text-gray-400" />
                                             )}

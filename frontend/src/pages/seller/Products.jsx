@@ -185,10 +185,10 @@ const Products = () => {
                         <button onClick={handleAddProduct} className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">Add Product</button> 
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {productList?.map((product) => (
+                        {productList?.map((product, index) => (
                             <Link key={product._id} to={`/vendor/productdetails/${product._id}`}>
                                 <div className="rounded p-4 w-full h-full relative overflow-hidden">
-                                    <Slide imageArray={product.productImages} alt = {product.productName}/>
+                                    <Slide imageArray={product.productImages} alt = {product.productName} priority={index === 0}/>
                                     <h2 className="text-lg font-semibold mb-2">{product.productName}</h2>
                                     
                                 </div>

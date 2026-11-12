@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { BASE_URL } from "../../Url";
 import { TbCurrencyNaira } from "react-icons/tb";
 import { matchesCategory } from "../../utils/categoryMatcher";
+import OptimizedImage from "../../components/product/OptimizeImage";
 
 const categoryConfig = {
   men: {
@@ -88,13 +89,14 @@ const CollectionPage = () => {
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {featuredProducts.map((product) => (
+            {featuredProducts.map((product, index) => (
               <div key={product._id} className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                 <Link to={`/product-details/${product._id}`}>
-                  <img
+                  <OptimizedImage
                     src={product.productImages?.[0] || "https://placehold.co/600x800?text=AmaniSky"}
                     alt={product.productName}
                     className="h-72 w-full object-cover"
+                    priority={index === 0}
                   />
                 </Link>
                 <div className="space-y-3 p-5">

@@ -10,6 +10,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/useFetch";
+import OptimizedImage from "../../components/product/OptimizeImage";
 
 const ProductDetails = () => {
     const [editPrice, setEditPrice] = useState(false)
@@ -231,7 +232,12 @@ useEffect(()=> {
                     md:w-[50%] md:h-auto 
                     "
                     >
-                        <img src={productDetails.productImages?.[0]} className="w-full h-full rounded-lg "/>
+                        <OptimizedImage
+                            src={productDetails.productImages?.[0]}
+                            alt={productDetails.productName || "Product"}
+                            className="w-full h-full rounded-lg"
+                            priority
+                        />
                     </div>
                     <div
                     className="w-full flex flex-col gap-2 border-1 border-gray-300 rounded-lg p-4 md:w-1/2  
@@ -499,7 +505,7 @@ useEffect(()=> {
 
         <div className="w-full grid grid-cols-4 gap-2">
             {productDetails?.productImages?.map((image, index) => (
-                <img 
+                <OptimizedImage
                 key={index} 
                 src={image} 
                 alt={`Product ${index + 1}`}

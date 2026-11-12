@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { BASE_URL } from "../../Url";
 import CustomFetch from "../../hooks/useFetch";
 import ServerError from "../../components/common/ServerError";
+import OptimizedImage from "../../components/product/OptimizeImage";
 import { 
   Loader, 
   ShoppingBag, 
@@ -330,10 +331,11 @@ const OrderDetails = () => {
                                             <Link key={item.productId} to={`/product-details/${item.productId}`}>
                                             <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
                                                 {item.image ? (
-                                                    <img 
+                                                    <OptimizedImage
                                                         src={item.image} 
                                                         alt={item.name}
                                                         className="w-full h-full object-cover rounded-xl"
+                                                        priority={index === 0}
                                                     />
                                                 ) : (
                                                     <Package className="h-8 w-8 text-gray-400" />

@@ -9,6 +9,7 @@ import { AuthContext } from "../../context/AuthContext"
 import { BASE_URL } from "../../Url"
 import CustomFetch from "../../hooks/useFetch"
 import Popup from "../../components/common/Popup"
+import OptimizedImage from "../../components/product/OptimizeImage"
 
 const PDetails = () => {
     const url = BASE_URL
@@ -340,11 +341,12 @@ const PDetails = () => {
             md:flex-row
             "
             >
-                <img src={productDetails?.productImages[0]}
+                <OptimizedImage src={productDetails?.productImages?.[0]}
                 className="rounded-lg
                  md:w-[50%] md:max-h-screen object-cover
                 "
                 alt={productDetails?.productName}
+                priority
                 />
                 <div
                 className="mt-4 flex flex-col px-6 gap-4
@@ -461,10 +463,10 @@ const PDetails = () => {
                 </div>
             </div>
             <div className="w-full mt-6">
-                    {productDetails.productImages.length > 1 && (
+                    {productDetails?.productImages?.length > 1 && (
                         <div className="w-full grid grid-cols-4 gap-2">
                             {productDetails?.productImages?.map((image, index) => (
-                            <img 
+                            <OptimizedImage
                             key={index} 
                             src={image} 
                             alt={`Product ${index + 1}`}

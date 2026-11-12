@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Products from "../../pages/customer/Products";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../../Url";
+import OptimizedImage from "./OptimizeImage";
 
 const Categories = () => {
     const [menProducts, setMenProducts] = useState([]);
@@ -99,7 +100,7 @@ const Categories = () => {
                         >
                             {/* Image */}
                             <div className="w-full  h-full overflow-hidden">
-                                <img
+                                <OptimizedImage
                                     src={category.image}
                                     alt={`${category.name} category`}
                                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
